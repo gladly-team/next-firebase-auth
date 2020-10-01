@@ -6,6 +6,19 @@
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
   "author": "Gladly Team",
   "license": "MIT",
+  "scripts": {
+    "build": "npm-run-all -s build:clean build:src",
+    "build:clean": "rm -rf ./build",
+    "build:src": "babel src --out-dir build --ignore \"src/**/__tests__/*\",\"src/**/__mocks__/*\"",
+    "lint": "eslint ./src/",
+    "test": "npm-run-all -s lint test:coverage coverage",
+    "test:run": "jest --env=jsdom --testPathIgnorePatterns=prebidPatches",
+    "test:coverage": "yarn run test:run --coverage",
+    "test:watch": "yarn run test:run --watch",
+    "coverage": "if-env LOG_TEST_COVERAGE=true && codecov || echo 'Skipping test coverage logging.'",
+    "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
+    "dev:yalc-publish-push": "yalc publish --push"
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
@@ -28,6 +41,7 @@
     "eslint-plugin-react-hooks": "^4.0.8",
     "jest": "^26.1.0",
     "jsdom": "^16.3.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
