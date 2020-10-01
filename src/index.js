@@ -1,3 +1,5 @@
+import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
+
 // TODO
 export const init = () => {}
 
@@ -11,4 +13,4 @@ export const useAuthUser = () => {}
 export const withAuthUserSSR = () => {}
 
 // TODO
-export const withAuthUserTokenSSR = () => {}
+export const withAuthUserTokenSSR = withAuthUserTokenSSRModule
