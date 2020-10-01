@@ -1,0 +1,2 @@
+# next-firebase-auth
+WIP
