@@ -3,6 +3,7 @@ module.exports = {
   plugins: ['prettier', 'react-hooks'],
   rules: {
     'prettier/prettier': 'error',
+    'react/jsx-filename-extension': 0,
     // The jsx-wrap-multilines rule conflicts with Prettier.
     // https://github.com/prettier/prettier/issues/1009#issuecomment-286993938
     'react/jsx-wrap-multilines': [

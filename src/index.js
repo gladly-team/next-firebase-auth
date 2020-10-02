@@ -1,4 +1,6 @@
 import { setConfig } from 'src/config'
+import withAuthUserModule from 'src/withAuthUser'
+import useAuthUserModule from 'src/useAuthUser'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 import setAuthCookiesModule from 'src/setAuthCookies'
 import unsetAuthCookiesModule from 'src/unsetAuthCookies'
@@ -7,20 +9,15 @@ export const init = (config) => {
   setConfig(config)
 }
 
-// TODO
-export const withAuthUser = () => {}
+export const withAuthUser = withAuthUserModule
 
-// TODO
-export const useAuthUser = () => {}
+export const useAuthUser = useAuthUserModule
 
 // TODO
 export const withAuthUserSSR = () => {}
 
-// TODO
 export const withAuthUserTokenSSR = withAuthUserTokenSSRModule
 
-// TODO
 export const setAuthCookies = setAuthCookiesModule
 
-// TODO
 export const unsetAuthCookies = unsetAuthCookiesModule
