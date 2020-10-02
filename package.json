@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
-    "build:src": "babel src --out-dir build --ignore \"src/**/__tests__/*\",\"src/**/__mocks__/*\"",
+    "build:src": "webpack",
     "lint": "eslint ./src/",
     "test": "npm-run-all -s lint test:coverage coverage",
     "test:run": "jest --env=jsdom --testPathIgnorePatterns=prebidPatches",
@@ -49,7 +49,9 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
   },
   "peerDependencies": {
     "firebase": "^7.0.0",
