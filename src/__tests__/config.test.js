@@ -27,13 +27,12 @@ const getMockFullUserConfig = () => ({
   },
 })
 
-describe('init', () => {
+describe('config', () => {
   it('returns the set config', () => {
     expect.assertions(1)
-    const init = require('src/init').default
-    const { getConfig } = require('src/init')
+    const { getConfig, setConfig } = require('src/config')
     const mockConfig = getMockFullUserConfig()
-    init(mockConfig)
+    setConfig(mockConfig)
     expect(getConfig()).toEqual(mockConfig)
   })
 })

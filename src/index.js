@@ -1,10 +1,11 @@
-import initModule from 'src/initModule'
+import { setConfig } from 'src/config'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 import setAuthCookiesModule from 'src/setAuthCookies'
 import unsetAuthCookiesModule from 'src/unsetAuthCookies'
 
-// TODO
-export const init = initModule
+export const init = (config) => {
+  setConfig(config)
+}
 
 // TODO
 export const withAuthUser = () => {}

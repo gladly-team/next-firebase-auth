@@ -1,7 +1,5 @@
 let config
 
-// TODO: move config logic to separate module?
-
 // TODO
 // eslint-disable-next-line
 const isServerSide = typeof window === 'undefined'
@@ -55,7 +53,7 @@ const validateConfig = (config) => {
   return true
 }
 
-const setConfig = (userConfig = {}) => {
+export const setConfig = (userConfig = {}) => {
   const {
     cookies: { cookieOptions = {}, ...otherUserCookieOptions } = {},
     ...otherUserConfig
@@ -85,10 +83,3 @@ export const getConfig = () => {
   }
   return config
 }
-
-const init = async (userConfig) => {
-  console.log('next-firebase-auth-config', userConfig) // eslint-disable-line
-  setConfig(userConfig)
-}
-
-export default init
