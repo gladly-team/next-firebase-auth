@@ -1,3 +1,6 @@
+// TODO: make this easier to understand (given various input types)
+// and merge serialization logic
+
 /**
  * Take the user object (either an AuthUserSerializable object or a user
  * from client-side Firebase JS SDK) and return an AuthUser object.

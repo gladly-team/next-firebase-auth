@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin'
+import createAuthUser from 'src/createAuthUser'
 
 // Initialize the Firebase app.
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
@@ -75,6 +76,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
   }
 }
 
+// TODO: update documentation
 /**
  * Given a Firebase ID token, create a custom token. This
  * provides us access to a refresh token that we can use to
@@ -111,8 +113,11 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   }
   const { idToken, refreshToken } = refreshTokenJSON
 
+  const AuthUser = createAuthUser(firebaseUser)
+
   return {
     idToken,
     refreshToken,
+    AuthUser,
   }
 }
