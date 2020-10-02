@@ -12,8 +12,6 @@ module.exports = {
   ],
   plugins: [
     ['@babel/plugin-transform-runtime'],
-    // Even though Next.js has built-in absolute imports, we need
-    // this for imports in Jest tests.
     [
       'module-resolver',
       {
