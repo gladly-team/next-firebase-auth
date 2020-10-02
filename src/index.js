@@ -1,9 +1,10 @@
+import initModule from 'src/initModule'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
+import setAuthCookiesModule from 'src/setAuthCookies'
+import unsetAuthCookiesModule from 'src/unsetAuthCookies'
 
 // TODO
-export const init = (config) => {
-  console.log('next-firebase-auth-config', config) // eslint-disable-line
-}
+export const init = initModule
 
 // TODO
 export const withAuthUser = () => {}
@@ -18,7 +19,7 @@ export const withAuthUserSSR = () => {}
 export const withAuthUserTokenSSR = withAuthUserTokenSSRModule
 
 // TODO
-export const setAuthCookies = async () => {}
+export const setAuthCookies = setAuthCookiesModule
 
 // TODO
-export const unsetAuthCookies = async () => {}
+export const unsetAuthCookies = unsetAuthCookiesModule
