@@ -49,7 +49,7 @@
   },
   "peerDependencies": {
     "next": "^9.5.0",
-    "prop-types": "15.x",
+    "prop-types": "^15.5.7",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   }
