@@ -39,6 +39,10 @@ module.exports = {
   env: {
     es6: true,
   },
+  globals: {
+    // Polyfilled in Next.js 9.4.
+    fetch: 'writable',
+  },
   settings: {
     // Handle linting for absolute imports.
     'import/resolver': {
