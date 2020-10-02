@@ -42,3 +42,21 @@ describe('index.js: withAuthUserTokenSSR', () => {
     expect(index.withAuthUserTokenSSR).toEqual(expect.any(Function))
   })
 })
+
+describe('index.js: setAuthCookies', () => {
+  it('exports setAuthCookies', () => {
+    expect.assertions(2)
+    const index = require('src/index')
+    expect(index.setAuthCookies).toBeDefined()
+    expect(index.setAuthCookies).toEqual(expect.any(Function))
+  })
+})
+
+describe('index.js: unsetAuthCookies', () => {
+  it('exports unsetAuthCookies', () => {
+    expect.assertions(2)
+    const index = require('src/index')
+    expect(index.unsetAuthCookies).toBeDefined()
+    expect(index.unsetAuthCookies).toEqual(expect.any(Function))
+  })
+})
