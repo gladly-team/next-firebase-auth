@@ -48,6 +48,8 @@
     "regenerator-runtime": "^0.13.7"
   },
   "peerDependencies": {
+    "firebase": "^7.0.0",
+    "firebase-admin": "^9.0.0",
     "next": "^9.5.0",
     "prop-types": "^15.5.7",
     "react": "^16.8.0",
