@@ -3,9 +3,17 @@ import { setConfig } from 'src/config'
 import withAuthUserModule from 'src/withAuthUser'
 import useAuthUserModule from 'src/useAuthUser'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
+import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
+
+const isClientSide = typeof window !== 'undefined'
 
 const init = (config) => {
   setConfig(config)
+
+  // On the client side, initialize the Firebase JS SDK.
+  if (isClientSide) {
+    initFirebaseClientSDK()
+  }
 }
 
 const withAuthUser = withAuthUserModule
