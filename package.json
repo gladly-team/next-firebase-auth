@@ -55,7 +55,8 @@
     "regenerator-runtime": "^0.13.7",
     "webpack": "^4.44.2",
     "webpack-bundle-analyzer": "^3.9.0",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-node-externals": "^2.5.2"
   },
   "peerDependencies": {
     "firebase": "^7.0.0",

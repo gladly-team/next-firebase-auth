@@ -1,5 +1,6 @@
 const path = require('path')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const nodeExternals = require('webpack-node-externals')
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -20,14 +21,12 @@ const sharedConfig = {
       },
     ],
   },
-  externals: {
-    firebase: 'commonjs firebase',
-    'firebase-admin': 'commonjs firebase-admin',
-    next: 'commonjs next',
-    'prop-types': 'commonjs prop-types',
-    react: 'commonjs react',
-    'react-dom': 'commonjs react-dom',
-  },
+  externals: [
+    // By default, don't bundle anything from node_modules.
+    nodeExternals({
+      allowlist: ['cookies'],
+    }),
+  ],
 }
 
 const serverConfig = {
