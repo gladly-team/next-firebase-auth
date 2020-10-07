@@ -41,6 +41,7 @@ const defaultConfig = {
   },
 }
 
+// TODO: add more validation
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
