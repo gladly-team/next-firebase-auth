@@ -2,14 +2,15 @@
   "name": "next-firebase-auth",
   "version": "0.0.1",
   "description": "Easy Firebase authentication for all Next.js rendering strategies",
-  "main": "build/index.js",
+  "browser": "build/index.browser.js",
+  "main": "build/index.node.js",
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
   "author": "Gladly Team",
   "license": "MIT",
   "scripts": {
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
-    "build:src": "babel src --out-dir build --ignore \"src/**/__tests__/*\",\"src/**/__mocks__/*\"",
+    "build:src": "NODE_ENV=production webpack",
     "lint": "eslint ./src/",
     "test": "npm-run-all -s lint test:coverage coverage",
     "test:run": "jest --env=jsdom --testPathIgnorePatterns=prebidPatches",
@@ -17,7 +18,8 @@
     "test:watch": "yarn run test:run --watch",
     "coverage": "if-env LOG_TEST_COVERAGE=true && codecov || echo 'Skipping test coverage logging.'",
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
-    "dev:yalc-publish-push": "yalc publish --push"
+    "dev:yalc-publish-push": "yalc publish --push",
+    "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -26,6 +28,7 @@
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
     "babel-jest": "^26.1.0",
+    "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "codecov": "^3.7.2",
     "core-js": "^3.6.5",
@@ -49,7 +52,11 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "webpack": "^4.44.2",
+    "webpack-bundle-analyzer": "^3.9.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-node-externals": "^2.5.2"
   },
   "peerDependencies": {
     "firebase": "^7.0.0",

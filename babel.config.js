@@ -5,7 +5,7 @@ module.exports = {
       '@babel/preset-env',
       {
         targets: {
-          browsers: ['>0.2%', 'not dead', 'not op_mini all'],
+          esmodules: true,
         },
       },
     ],
