@@ -1,22 +1,6 @@
 import * as admin from 'firebase-admin'
 import createAuthUser from 'src/createAuthUser'
 
-// Initialize the Firebase app.
-const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
-if (!admin.apps.length) {
-  // TODO: use user's config
-  // TODO: throw if not provided
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // https://stackoverflow.com/a/41044630/1332513
-      privateKey: firebasePrivateKey.replace(/\\n/g, '\n'),
-    }),
-    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  })
-}
-
 // https://firebase.google.com/docs/auth/admin/errors
 const FIREBASE_ERROR_TOKEN_EXPIRED = 'auth/id-token-expired'
 

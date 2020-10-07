@@ -7,7 +7,7 @@ export default function initFirebaseClientSDK() {
     const { firebaseClientInitConfig } = getConfig()
     if (!firebaseClientInitConfig) {
       throw new Error(
-        'If not initializing the Firebase JS SDK elsewhere, you must pass the "firebaseClientInitConfig" to next-firebase-auth.'
+        'If not initializing the Firebase JS SDK elsewhere, you must provide "firebaseClientInitConfig" to next-firebase-auth.'
       )
     }
     firebase.initializeApp(firebaseClientInitConfig)
