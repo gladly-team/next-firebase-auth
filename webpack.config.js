@@ -3,6 +3,11 @@ const path = require('path')
 const sharedConfig = {
   mode: 'production',
   entry: './src/index.js',
+  output: {
+    // filename set in individual configs below.
+    path: path.resolve(__dirname, 'build'),
+    libraryTarget: 'commonjs2',
+  },
   module: {
     rules: [
       {
@@ -26,9 +31,8 @@ const serverConfig = {
   ...sharedConfig,
   target: 'node',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    ...sharedConfig.output,
     filename: 'index.node.js',
-    libraryTarget: 'commonjs2',
   },
 }
 
@@ -36,9 +40,8 @@ const clientConfig = {
   ...sharedConfig,
   target: 'web',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    ...sharedConfig.output,
     filename: 'index.browser.js',
-    libraryTarget: 'commonjs2',
   },
 }
 
