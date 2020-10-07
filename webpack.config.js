@@ -29,12 +29,6 @@ const sharedConfig = {
     react: 'commonjs react',
     'react-dom': 'commonjs react-dom',
   },
-  plugins: [
-    new BundleAnalyzerPlugin({
-      analyzerMode: analyzeBundle ? 'static' : 'disabled',
-      defaultSizes: 'stat',
-    }),
-  ],
 }
 
 const serverConfig = {
@@ -44,6 +38,13 @@ const serverConfig = {
     ...sharedConfig.output,
     filename: 'index.node.js',
   },
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: analyzeBundle ? 'static' : 'disabled',
+      defaultSizes: 'stat',
+      reportFilename: 'report.index.node.html',
+    }),
+  ],
 }
 
 const clientConfig = {
@@ -53,6 +54,13 @@ const clientConfig = {
     ...sharedConfig.output,
     filename: 'index.browser.js',
   },
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: analyzeBundle ? 'static' : 'disabled',
+      defaultSizes: 'stat',
+      reportFilename: 'report.index.browser.html',
+    }),
+  ],
 }
 
 module.exports = [serverConfig, clientConfig]
