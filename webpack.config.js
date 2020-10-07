@@ -7,6 +7,7 @@ const sharedConfig = {
     // filename set in individual configs below.
     path: path.resolve(__dirname, 'build'),
     libraryTarget: 'commonjs2',
+    libraryExport: 'default',
   },
   module: {
     rules: [

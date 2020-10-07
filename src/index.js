@@ -4,31 +4,41 @@ import withAuthUserModule from 'src/withAuthUser'
 import useAuthUserModule from 'src/useAuthUser'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 
-export const init = (config) => {
+const init = (config) => {
   setConfig(config)
 }
 
-export const withAuthUser = withAuthUserModule
+const withAuthUser = withAuthUserModule
 
-export const useAuthUser = useAuthUserModule
+const useAuthUser = useAuthUserModule
 
 // TODO
-export const withAuthUserSSR = () => {}
+const withAuthUserSSR = () => {}
 
-export const withAuthUserTokenSSR = withAuthUserTokenSSRModule
+const withAuthUserTokenSSR = withAuthUserTokenSSRModule
 
-export const setAuthCookies = async (args) => {
+const setAuthCookies = async (args) => {
   if (typeof window !== 'undefined') {
     throw new Error('setAuthCookies can only be called server-side.')
   }
-  const setAuthCookiesModule = require('src/setAuthCookies').default
-  setAuthCookiesModule(...args)
+  // const setAuthCookiesModule = require('src/setAuthCookies').default
+  // setAuthCookiesModule(...args)
 }
 
-export const unsetAuthCookies = async (args) => {
+const unsetAuthCookies = async (args) => {
   if (typeof window !== 'undefined') {
     throw new Error('unsetAuthCookies can only be called server-side.')
   }
-  const unsetAuthCookiesModule = require('src/unsetAuthCookies').default
-  unsetAuthCookiesModule(...args)
+  // const unsetAuthCookiesModule = require('src/unsetAuthCookies').default
+  // unsetAuthCookiesModule(...args)
+}
+
+export default {
+  init,
+  withAuthUser,
+  useAuthUser,
+  withAuthUserSSR,
+  withAuthUserTokenSSR,
+  setAuthCookies,
+  unsetAuthCookies,
 }
