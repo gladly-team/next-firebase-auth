@@ -31,7 +31,8 @@ const sharedConfig = {
   },
   plugins: [
     new BundleAnalyzerPlugin({
-      analyzerMode: analyzeBundle ? 'server' : 'disabled',
+      analyzerMode: analyzeBundle ? 'static' : 'disabled',
+      defaultSizes: 'stat',
     }),
   ],
 }
