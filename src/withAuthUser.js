@@ -3,12 +3,7 @@ import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
-
-// TODO: real import
-const useFirebaseUser = () => ({
-  user: null,
-  initialized: true,
-})
+import useFirebaseUser from 'src/useFirebaseUser'
 
 // A higher-order component to provide pages with the
 // authenticated user. This must be used if using `useAuthUser`.

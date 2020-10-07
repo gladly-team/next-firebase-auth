@@ -94,7 +94,7 @@ export const setConfig = (userConfig = {}) => {
 
 export const getConfig = () => {
   if (!config) {
-    throw new Error('Config not set.')
+    throw new Error('next-firebase-auth must be initialized before rendering.')
   }
   return config
 }
