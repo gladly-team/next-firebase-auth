@@ -106,9 +106,10 @@ const withAuthUser = ({
   }
 
   WithAuthUserHOC.propTypes = {
+    // Won't be defined for static pages.
     // TODO: specify fields
     // eslint-disable-next-line
-    AuthUserSerializable: PropTypes.object.isRequired,
+    AuthUserSerializable: PropTypes.object,
   }
 
   return WithAuthUserHOC
