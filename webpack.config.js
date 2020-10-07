@@ -26,6 +26,7 @@ const sharedConfig = {
     nodeExternals({
       allowlist: ['cookies'],
     }),
+    'fetch',
   ],
 }
 

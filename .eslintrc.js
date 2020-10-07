@@ -40,7 +40,7 @@ module.exports = {
     es6: true,
   },
   globals: {
-    // Polyfilled in Next.js 9.4.
+    // Polyfilled in Next.js 9.4. Set as a Webpack external.
     fetch: 'writable',
   },
   settings: {
