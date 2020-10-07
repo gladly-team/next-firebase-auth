@@ -1,7 +1,4 @@
 let config
-
-// TODO
-// eslint-disable-next-line
 const isServerSide = typeof window === 'undefined'
 
 const defaultConfig = {
@@ -44,13 +41,27 @@ const defaultConfig = {
   },
 }
 
-// TODO
-// eslint-disable-next-line
-const validateConfig = (config) => {
+const validateConfig = (mergedConfig) => {
+  const errorMessages = []
+
   // Use isServerSide to prevent or allow certain config
   // properties based on client/server context.
-  // TODO
-  return true
+  if (!isServerSide) {
+    if (mergedConfig.firebaseAdminInitConfig) {
+      errorMessages.push(
+        'Setting "firebaseAdminInitConfig" should not be available on the client side.'
+      )
+    }
+    if (mergedConfig.cookies.keys) {
+      errorMessages.push(
+        'Setting "cookies.keys" should not be available on the client side.'
+      )
+    }
+  }
+  return {
+    isValid: errorMessages.length === 0,
+    errors: errorMessages,
+  }
 }
 
 export const setConfig = (userConfig = {}) => {
@@ -73,7 +84,10 @@ export const setConfig = (userConfig = {}) => {
       },
     },
   }
-  validateConfig(config)
+  const { isValid, errors } = validateConfig(mergedConfig)
+  if (!isValid) {
+    throw new Error(`Invalid next-firebase-auth options: ${errors.join(' ')}`)
+  }
   config = mergedConfig
 }
 
