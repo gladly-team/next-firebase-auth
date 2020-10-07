@@ -17,20 +17,16 @@ const withAuthUserSSR = () => {}
 
 const withAuthUserTokenSSR = withAuthUserTokenSSRModule
 
-const setAuthCookies = async (args) => {
+const setAuthCookies = () => {
   if (typeof window !== 'undefined') {
     throw new Error('setAuthCookies can only be called server-side.')
   }
-  // const setAuthCookiesModule = require('src/setAuthCookies').default
-  // setAuthCookiesModule(...args)
 }
 
-const unsetAuthCookies = async (args) => {
+const unsetAuthCookies = () => {
   if (typeof window !== 'undefined') {
     throw new Error('unsetAuthCookies can only be called server-side.')
   }
-  // const unsetAuthCookiesModule = require('src/unsetAuthCookies').default
-  // unsetAuthCookiesModule(...args)
 }
 
 export default {

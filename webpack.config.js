@@ -5,7 +5,6 @@ const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
 const sharedConfig = {
   mode: 'production',
-  entry: './src/index.js',
   output: {
     // filename set in individual configs below.
     path: path.resolve(__dirname, 'build'),
@@ -33,6 +32,7 @@ const sharedConfig = {
 
 const serverConfig = {
   ...sharedConfig,
+  entry: './src/index.server.js',
   target: 'node',
   output: {
     ...sharedConfig.output,
@@ -49,6 +49,7 @@ const serverConfig = {
 
 const clientConfig = {
   ...sharedConfig,
+  entry: './src/index.js',
   target: 'web',
   output: {
     ...sharedConfig.output,
