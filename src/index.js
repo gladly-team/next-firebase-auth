@@ -18,15 +18,11 @@ const withAuthUserSSR = () => {}
 const withAuthUserTokenSSR = withAuthUserTokenSSRModule
 
 const setAuthCookies = () => {
-  if (typeof window !== 'undefined') {
-    throw new Error('setAuthCookies can only be called server-side.')
-  }
+  throw new Error('"setAuthCookies" can only be called server-side.')
 }
 
 const unsetAuthCookies = () => {
-  if (typeof window !== 'undefined') {
-    throw new Error('unsetAuthCookies can only be called server-side.')
-  }
+  throw new Error('"unsetAuthCookies" can only be called server-side.')
 }
 
 export default {
