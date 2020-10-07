@@ -1,18 +1,8 @@
 const path = require('path')
 
-module.exports = {
+const sharedConfig = {
   mode: 'production',
   entry: './src/index.js',
-  output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'build'),
-  },
-  // Absolute imports
-  resolve: {
-    alias: {
-      src: path.resolve(__dirname, './src'),
-    },
-  },
   module: {
     rules: [
       {
@@ -22,5 +12,32 @@ module.exports = {
       },
     ],
   },
-  target: 'node',
+  externals: {
+    firebase: 'commonjs firebase',
+    'firebase-admin': 'commonjs firebase-admin',
+    next: 'commonjs next',
+    'prop-types': 'commonjs prop-types',
+    react: 'commonjs react',
+    'react-dom': 'commonjs react-dom',
+  },
 }
+
+const serverConfig = {
+  ...sharedConfig,
+  target: 'node',
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    filename: 'index.node.js',
+  },
+}
+
+const clientConfig = {
+  ...sharedConfig,
+  target: 'web',
+  output: {
+    path: path.resolve(__dirname, 'build'),
+    filename: 'index.browser.js',
+  },
+}
+
+module.exports = [serverConfig, clientConfig]
