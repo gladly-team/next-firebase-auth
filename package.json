@@ -18,7 +18,8 @@
     "test:watch": "yarn run test:run --watch",
     "coverage": "if-env LOG_TEST_COVERAGE=true && codecov || echo 'Skipping test coverage logging.'",
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
-    "dev:yalc-publish-push": "yalc publish --push"
+    "dev:yalc-publish-push": "yalc publish --push",
+    "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -53,6 +54,7 @@
     "react-dom": "^16.13.1",
     "regenerator-runtime": "^0.13.7",
     "webpack": "^4.44.2",
+    "webpack-bundle-analyzer": "^3.9.0",
     "webpack-cli": "^3.3.12"
   },
   "peerDependencies": {

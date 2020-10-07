@@ -1,4 +1,7 @@
 const path = require('path')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
+const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
 const sharedConfig = {
   mode: 'production',
@@ -26,6 +29,11 @@ const sharedConfig = {
     react: 'commonjs react',
     'react-dom': 'commonjs react-dom',
   },
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: analyzeBundle ? 'server' : 'disabled',
+    }),
+  ],
 }
 
 const serverConfig = {
