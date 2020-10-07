@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
-    "build:src": "webpack",
+    "build:src": "NODE_ENV=production webpack",
     "lint": "eslint ./src/",
     "test": "npm-run-all -s lint test:coverage coverage",
     "test:run": "jest --env=jsdom --testPathIgnorePatterns=prebidPatches",
