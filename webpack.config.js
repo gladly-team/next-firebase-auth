@@ -28,6 +28,7 @@ const serverConfig = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.node.js',
+    libraryTarget: 'commonjs2',
   },
 }
 
@@ -37,6 +38,7 @@ const clientConfig = {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.browser.js',
+    libraryTarget: 'commonjs2',
   },
 }
 
