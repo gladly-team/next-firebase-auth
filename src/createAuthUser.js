@@ -1,20 +1,33 @@
 /* eslint no-underscore-dangle: 0 */
 
 /**
- * TODO
- *
+ * Take a representation of a Firebase user from one of: the Firebase JS SDK,
+ * Firebase JS SDK, or serialized AuthUser instance. Return a standardized
+ * AuthUser object.
+ * from client-side Firebase JS SDK) and return an AuthUser object.
+ * @param {Object} params
+ * @return {Object|undefined} params.firebaseUserClientSDK - The Firebase
+ *   user returned from the Firebase JS SDK.
+ * @return {Object|undefined} params.firebaseUserAdminSDK - The Firebase
+ *   user returned from the Firebase admin SDK.
+ * @return {String|undefined} params.serializedAuthUser - The string of
+ *   a serialized AuthUser, previously returned from an AuthUser instance's
+ *   serialize method.
+ * @return {Object|null} AuthUser - The user object.
  * @param {Boolean} clientInitialized - This should be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.
- * @return {Object|null} AuthUser - The user object.
+ * @return {Object|null} AuthUser - The authenticated user's info.
  * @return {String|null} AuthUser.id - The user's ID
  * @return {String|null} AuthUser.email - The user's email
  * @return {Boolean} AuthUser.emailVerified - Whether the user has verified their email
  * @return {Function} AuthUser.getIdToken - An asynchronous function that
  *   resolves to the Firebase user's ID token string, or null if the user is
- *   not authenticated.
+ *   not authenticated or we do not have access to a token.
  * @return {Boolean} AuthUser.clientInitialized - Whether the client-side
  *   Firebase JS SDK has initialized.
+ * @return {Function} AuthUser.serialize - An function that returns a
+ *   serialized version of AuthUser.
  */
 const createAuthUser = ({
   firebaseUserClientSDK,
