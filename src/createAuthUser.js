@@ -58,23 +58,28 @@ const createAuthUser = ({
   let email = null
   let emailVerified = false
   let getIdTokenFunc = async () => null
+  let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
     getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
+    tokenString = null
   } else if (firebaseUserAdminSDK) {
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
     getIdTokenFunc = async () => token
+    tokenString = token
   } else if (serializedAuthUser) {
+    // TODO: this should parse a string
     userId = serializedAuthUser.id
     email = serializedAuthUser.email
     emailVerified = serializedAuthUser.emailVerified
     getIdTokenFunc = async () => serializedAuthUser._token || null
+    tokenString = serializedAuthUser._token
   }
-  return {
+  const AuthUserBeforeSerialize = {
     id: userId,
     email,
     emailVerified,
@@ -89,6 +94,18 @@ const createAuthUser = ({
     // the Firebase JS SDK.
     clientInitialized,
   }
+  const AuthUser = {
+    ...AuthUserBeforeSerialize,
+    serialize: () =>
+      JSON.stringify({
+        id: userId,
+        email,
+        emailVerified,
+        clientInitialized,
+        _token: tokenString,
+      }),
+  }
+  return AuthUser
 }
 
 /**

@@ -22,10 +22,12 @@ const getMockFirebaseUserAdminSDK = () => ({
   // ... other properties
 })
 
+// TODO: this should return a string
 const getMockSerializedAuthUser = () => ({
   id: 'ghi-789',
   email: 'ghi@example.com',
   emailVerified: true,
+  clientInitialized: false,
   _token: 'my-id-token-ghi-789',
 })
 
@@ -39,6 +41,7 @@ describe('createAuthUser: basic tests', () => {
       emailVerified: false,
       getIdToken: expect.any(Function),
       id: null,
+      serialize: expect.any(Function),
     })
   })
 
@@ -109,6 +112,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
     })
   })
 
@@ -120,6 +124,24 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     })
     const token = await AuthUser.getIdToken()
     expect(token).toEqual('my-id-token-abc-123')
+  })
+
+  it('returns the expected value from serialize', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'abc-123',
+        email: 'abc@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: null,
+      })
+    )
   })
 })
 
@@ -135,6 +157,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
     })
   })
 
@@ -159,6 +182,44 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     const token = await AuthUser.getIdToken()
     expect(token).toEqual('my-id-token-def-456')
   })
+
+  it('returns the expected value from serialize when a token is not provided', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      // token: undefined, // no token
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'def-456',
+        email: 'def@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: null,
+      })
+    )
+  })
+
+  it('returns the expected value from serialize when a token is provided', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      token: 'my-id-token-def-456',
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'def-456',
+        email: 'def@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: 'my-id-token-def-456',
+      })
+    )
+  })
 })
 
 describe('createAuthUser: serializedAuthUser', () => {
@@ -173,6 +234,18 @@ describe('createAuthUser: serializedAuthUser', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
     })
+  })
+
+  it('returns the original value from serialize', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const mockSerializedAuthUser = getMockSerializedAuthUser()
+    const AuthUser = createAuthUser({
+      serializedAuthUser: mockSerializedAuthUser,
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(JSON.stringify(mockSerializedAuthUser))
   })
 })
