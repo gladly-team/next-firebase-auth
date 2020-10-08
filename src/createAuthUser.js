@@ -1,11 +1,8 @@
-// TODO: make this easier to understand (given various input types)
-// and merge serialization logic
+/* eslint no-underscore-dangle: 0 */
 
 /**
- * Take the user object (either an AuthUserSerializable object or a user
- * from client-side Firebase JS SDK) and return an AuthUser object.
- * @param {Object} user - Either: a Firebase JS SDK user object or an
- *   AuthUserSerializable object.
+ * TODO
+ *
  * @param {Boolean} clientInitialized - This should be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.
@@ -19,21 +16,75 @@
  * @return {Boolean} AuthUser.clientInitialized - Whether the client-side
  *   Firebase JS SDK has initialized.
  */
-const createAuthUser = (user, clientInitialized = false) => {
+const createAuthUser = ({
+  firebaseUserClientSDK,
+  firebaseUserAdminSDK,
+  serializedAuthUser,
+  clientInitialized = false,
+  token = null,
+} = {}) => {
+  // Ensure only one of the user input types is defined.
+  const numUserInputsDefined = [
+    firebaseUserClientSDK,
+    firebaseUserAdminSDK,
+    serializedAuthUser,
+  ].reduce((acc, item) => {
+    if (item) {
+      return acc + 1
+    }
+    return acc
+  }, 0)
+  if (numUserInputsDefined > 1) {
+    throw new Error(
+      'createAuthUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
+    )
+  }
+
+  // The clientInitialized value should not be set server-side.
+  if (clientInitialized && !firebaseUserClientSDK) {
+    throw new Error(
+      'The "clientInitialized" value can only be true if the "firebaseUserClientSDK" property is defined.'
+    )
+  }
+
+  // The token value should only be provided with the decoded admin value.
+  if (token && !firebaseUserAdminSDK) {
+    throw new Error(
+      'The "token" value can only be set if the "firebaseUserAdminSDK" property is defined.'
+    )
+  }
+
+  let userId = null
+  let email = null
+  let emailVerified = false
+  let getIdTokenFunc = async () => null
+  if (firebaseUserClientSDK) {
+    userId = firebaseUserClientSDK.uid
+    email = firebaseUserClientSDK.email
+    emailVerified = firebaseUserClientSDK.emailVerified
+    getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
+  } else if (firebaseUserAdminSDK) {
+    userId = firebaseUserAdminSDK.uid
+    email = firebaseUserAdminSDK.email
+    emailVerified = firebaseUserAdminSDK.email_verified
+    getIdTokenFunc = async () => token
+  } else if (serializedAuthUser) {
+    userId = serializedAuthUser.id
+    email = serializedAuthUser.email
+    emailVerified = serializedAuthUser.emailVerified
+    getIdTokenFunc = async () => serializedAuthUser._token || null
+  }
   return {
-    id: user && user.uid ? user.uid : null,
-    email: user && user.email ? user.email : null,
-    emailVerified: user && user.emailVerified ? user.emailVerified : false,
+    id: userId,
+    email,
+    emailVerified,
     // We want this method to be isomorphic.
     // When `user` is an AuthUserSerializable object, take the token value
     // and return it from this method.
     // After the Firebase JS SDK has initialized on the client side, use the
     // Firebase SDK's getIdToKen method, which will handle refreshing the token
     // as needed.
-    getIdToken:
-      user && user.getIdToken
-        ? async () => user.getIdToken()
-        : async () => (user && user.token ? user.token : null),
+    getIdToken: getIdTokenFunc,
     // clientInitialized is true if the user state is determined by
     // the Firebase JS SDK.
     clientInitialized,
