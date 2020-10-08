@@ -121,4 +121,4 @@ const createAuthUser = ({
   return AuthUser
 }
 
-export const createAuthUser
+export default createAuthUser
