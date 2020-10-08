@@ -1,4 +1,10 @@
 import createAuthUser from 'src/createAuthUser'
+import { getCookie } from 'src/cookies'
+import { verifyIdToken } from 'src/firebaseAdmin'
+
+// TODO: use user config
+const baseAuthCookieName = 'myDemo'
+const authTokensCookieName = `${baseAuthCookieName}.AuthUserTokens`
 
 // An auth wrapper for a page's exported getServerSideProps.
 // See this discussion on how best to use getServerSideProps
@@ -8,23 +14,27 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
   getServerSidePropsFunc
 ) => {
   return async (ctx) => {
-    // TODO: remove eslint comment
-    // eslint-disable-next-line no-unused-vars
     const { req, res } = ctx
 
-    // Get the user's token from their cookie, verify it (refreshing
-    // as needed), and return the AuthUser object in props.
-    // TODO
-    const mockFirebaseAdminUser = {
-      uid: 'abc',
-      email: 'abc@example.com',
-      email_verified: true,
+    // Get the user's ID token from their cookie, verify it (refreshing
+    // as needed), and return the serialized AuthUser in props.
+    const { idToken, refreshToken } = getCookie(authTokensCookieName, {
+      req,
+      res,
+    })
+    let firebaseAdminUser
+    let token
+    if (idToken) {
+      ;({ user: firebaseAdminUser, token } = await verifyIdToken(
+        idToken,
+        refreshToken
+      ))
     }
-    const mockToken = 'some-token-abc'
-
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: mockFirebaseAdminUser,
-      token: mockToken,
+      ...(firebaseAdminUser && {
+        firebaseUserAdminSDK: firebaseAdminUser,
+        token,
+      }),
     })
     const AuthUserSerialized = AuthUser.serialize()
 

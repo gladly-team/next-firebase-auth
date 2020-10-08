@@ -22,9 +22,11 @@ const setAuthCookies = async (req, res) => {
 
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
-  // providing a valid Firebase ID token for server-side rendering.
+  // providing a valid Firebase ID token (refreshed as needed)
+  // for server-side rendering.
   setCookie(
     `${baseAuthCookieName}.AuthUserTokens`,
+    // TODO: use createAuthUserTokens
     JSON.stringify({
       idToken,
       refreshToken,
@@ -32,12 +34,15 @@ const setAuthCookies = async (req, res) => {
     { req, res }
   )
 
-  // TODO: need to serialize AuthUser
-  // setCookie(
-  //   `${baseAuthCookieName}.AuthUser`,
-  //   JSON.stringify(AuthUser),
-  //   { req, res }
-  // )
+  // Store the AuthUser data. This cookie will be available
+  // to future requests to pages, providing the user data. It
+  // will not necessarily contain a valid Firebase ID token,
+  // because it may have expired, but provides the AuthUser
+  // data without any additional server-side requests.
+  setCookie(`${baseAuthCookieName}.AuthUser`, AuthUser.serialize(), {
+    req,
+    res,
+  })
 
   return {
     idToken,
