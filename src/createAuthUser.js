@@ -72,12 +72,12 @@ const createAuthUser = ({
     getIdTokenFunc = async () => token
     tokenString = token
   } else if (serializedAuthUser) {
-    // TODO: this should parse a string
-    userId = serializedAuthUser.id
-    email = serializedAuthUser.email
-    emailVerified = serializedAuthUser.emailVerified
-    getIdTokenFunc = async () => serializedAuthUser._token || null
-    tokenString = serializedAuthUser._token
+    const deserializedUser = JSON.parse(serializedAuthUser)
+    userId = deserializedUser.id
+    email = deserializedUser.email
+    emailVerified = deserializedUser.emailVerified
+    getIdTokenFunc = async () => deserializedUser._token || null
+    tokenString = deserializedUser._token
   }
   const AuthUserBeforeSerialize = {
     id: userId,
