@@ -1,5 +1,6 @@
+import isClientSide from 'src/isClientSide'
+
 let config
-const isServerSide = typeof window === 'undefined'
 
 const defaultConfig = {
   // Optional function. Called when the user's auth state
@@ -47,15 +48,15 @@ const validateConfig = (mergedConfig) => {
 
   // Use isServerSide to prevent or allow certain config
   // properties based on client/server context.
-  if (!isServerSide) {
+  if (isClientSide()) {
     if (mergedConfig.firebaseAdminInitConfig) {
       errorMessages.push(
-        'Setting "firebaseAdminInitConfig" should not be available on the client side.'
+        'The "firebaseAdminInitConfig" setting should not be available on the client side.'
       )
     }
     if (mergedConfig.cookies.keys) {
       errorMessages.push(
-        'Setting "cookies.keys" should not be available on the client side.'
+        'The "cookies.keys" setting should not be available on the client side.'
       )
     }
   }
