@@ -120,32 +120,3 @@ const createAuthUser = ({
   }
   return AuthUser
 }
-
-/**
- * Take the user object from the Firebase admin SDK and return a
- * serializable object, AuthUserSerializable. This can be returned from
- * `getServerSideProps`. It can be passed to `createAuthUser` during render
- * to create an AuthUser object.
- * @param {Object} firebaseUser - A decoded user from the Firebase admin SDK
- * @return {Object|null} AuthUserSerializable - The user object.
- * @return {String|null} AuthUserSerializable.uid - The user's ID
- * @return {String|null} AuthUserSerializable.email - The user's email
- * @return {Boolean} AuthUserSerializable.emailVerified - Whether the user has
- *   verified their email
- * @return {String} AuthUserSerializable.token - The user's ID token
- */
-export const createAuthUserSerializable = (firebaseUser, idToken = null) => {
-  return {
-    uid: firebaseUser && firebaseUser.uid ? firebaseUser.uid : null,
-    email: firebaseUser && firebaseUser.email ? firebaseUser.email : null,
-    emailVerified:
-      firebaseUser && firebaseUser.email_verified
-        ? firebaseUser.email_verified
-        : false,
-    // Provide this so the token can be available during SSR and
-    // client-side renders prior to the Firebase JS SDK initializing.
-    token: idToken,
-  }
-}
-
-export default createAuthUser
