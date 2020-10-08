@@ -105,11 +105,14 @@ const withAuthUser = ({
     )
   }
 
+  // TODO: probably remove propTypes peer dependency
   WithAuthUserHOC.propTypes = {
     // Won't be defined for static pages.
-    // TODO: specify fields
-    // eslint-disable-next-line
-    AuthUserSerialized: PropTypes.object,
+    AuthUserSerialized: PropTypes.string,
+  }
+
+  WithAuthUserHOC.defaultProps = {
+    AuthUserSerialized: null,
   }
 
   return WithAuthUserHOC

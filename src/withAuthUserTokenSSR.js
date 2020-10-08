@@ -1,3 +1,5 @@
+import createAuthUser from 'src/createAuthUser'
+
 // An auth wrapper for a page's exported getServerSideProps.
 // See this discussion on how best to use getServerSideProps
 // with a higher-order component pattern:
@@ -13,8 +15,18 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
     // Get the user's token from their cookie, verify it (refreshing
     // as needed), and return the AuthUser object in props.
     // TODO
-    const AuthUser = { id: 'abc' }
-    const AuthUserSerializable = AuthUser
+    const mockFirebaseAdminUser = {
+      uid: 'abc',
+      email: 'abc@example.com',
+      email_verified: true,
+    }
+    const mockToken = 'some-token-abc'
+
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: mockFirebaseAdminUser,
+      token: mockToken,
+    })
+    const AuthUserSerialized = AuthUser.serialize()
 
     // If auth is required but the user is not authed, don't return
     // any props.
@@ -35,7 +47,7 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
     }
     return {
       props: {
-        AuthUserSerializable,
+        AuthUserSerialized,
         ...composedProps,
       },
     }
