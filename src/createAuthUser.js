@@ -92,7 +92,7 @@ const createAuthUser = ({
     getIdTokenFunc = async () => deserializedUser._token || null
     tokenString = deserializedUser._token
   }
-  const AuthUserBeforeSerialize = {
+  return {
     id: userId,
     email,
     emailVerified,
@@ -106,9 +106,6 @@ const createAuthUser = ({
     // clientInitialized is true if the user state is determined by
     // the Firebase JS SDK.
     clientInitialized,
-  }
-  const AuthUser = {
-    ...AuthUserBeforeSerialize,
     serialize: () =>
       JSON.stringify({
         id: userId,
@@ -118,7 +115,6 @@ const createAuthUser = ({
         _token: tokenString,
       }),
   }
-  return AuthUser
 }
 
 export default createAuthUser
