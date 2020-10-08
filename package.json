@@ -1,8 +1,15 @@
 {
   "name": "next-firebase-auth",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "Simple Firebase authentication for all Next.js rendering strategies",
-  "keywords": ["Next", "Next.js", "Firebase", "authentication", "ssr", "token"],
+  "keywords": [
+    "Next",
+    "Next.js",
+    "Firebase",
+    "authentication",
+    "ssr",
+    "token"
+  ],
   "browser": "build/index.browser.js",
   "main": "build/index.node.js",
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
