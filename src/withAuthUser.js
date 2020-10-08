@@ -14,8 +14,10 @@ const withAuthUser = ({
   redirectIfAuthed = false,
 } = {}) => (ChildComponent) => {
   const WithAuthUserHOC = (props) => {
-    const { AuthUserSerializable, ...otherProps } = props
-    const AuthUserFromServer = createAuthUser(AuthUserSerializable)
+    const { AuthUserSerialized, ...otherProps } = props
+    const AuthUserFromServer = createAuthUser({
+      serializedAuthUser: AuthUserSerialized,
+    })
 
     // TODO: add event listener for auth status callback
 
@@ -23,7 +25,10 @@ const withAuthUser = ({
       user: firebaseUser,
       initialized: firebaseInitialized,
     } = useFirebaseUser()
-    const AuthUserFromClient = createAuthUser(firebaseUser, firebaseInitialized)
+    const AuthUserFromClient = createAuthUser({
+      firebaseUserClientSDK: firebaseUser,
+      clientInitialized: firebaseInitialized,
+    })
 
     // Set the AuthUser to values from the Firebase JS SDK user
     // once it has initialized. On the server side and before the
@@ -104,7 +109,7 @@ const withAuthUser = ({
     // Won't be defined for static pages.
     // TODO: specify fields
     // eslint-disable-next-line
-    AuthUserSerializable: PropTypes.object,
+    AuthUserSerialized: PropTypes.object,
   }
 
   return WithAuthUserHOC

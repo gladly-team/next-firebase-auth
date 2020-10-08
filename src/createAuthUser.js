@@ -1,9 +1,10 @@
 /* eslint no-underscore-dangle: 0 */
 
 /**
- * Take a representation of a Firebase user from one of: the Firebase JS SDK,
- * Firebase JS SDK, or serialized AuthUser instance. Return a standardized
- * AuthUser object.
+ * Take a representation of a Firebase user from a maximum of one of:
+ * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
+ * Return a standardized AuthUser object. If no Firebase user info is provided,
+ * return null (unauthenticated) user info.
  * from client-side Firebase JS SDK) and return an AuthUser object.
  * @param {Object} params
  * @return {Object|undefined} params.firebaseUserClientSDK - The Firebase

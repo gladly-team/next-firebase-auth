@@ -97,7 +97,7 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   }
   const { idToken, refreshToken } = refreshTokenJSON
 
-  const AuthUser = createAuthUser(firebaseUser)
+  const AuthUser = createAuthUser({ firebaseUserAdminSDK: firebaseUser })
 
   return {
     idToken,
