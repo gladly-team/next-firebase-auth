@@ -94,6 +94,15 @@ describe('index.js: withAuthUserSSR', () => {
     expect(index.withAuthUserSSR).toBeDefined()
     expect(index.withAuthUserSSR).toEqual(expect.any(Function))
   })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.withAuthUserSSR()
+    }).toThrow('"withAuthUserSSR" can only be called server-side.')
+  })
 })
 
 describe('index.js: withAuthUserTokenSSR', () => {
@@ -102,6 +111,15 @@ describe('index.js: withAuthUserTokenSSR', () => {
     const index = require('src/index').default
     expect(index.withAuthUserTokenSSR).toBeDefined()
     expect(index.withAuthUserTokenSSR).toEqual(expect.any(Function))
+  })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.withAuthUserTokenSSR()
+    }).toThrow('"withAuthUserTokenSSR" can only be called server-side.')
   })
 })
 
@@ -112,6 +130,15 @@ describe('index.js: setAuthCookies', () => {
     expect(index.setAuthCookies).toBeDefined()
     expect(index.setAuthCookies).toEqual(expect.any(Function))
   })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.setAuthCookies()
+    }).toThrow('"setAuthCookies" can only be called server-side.')
+  })
 })
 
 describe('index.js: unsetAuthCookies', () => {
@@ -120,5 +147,14 @@ describe('index.js: unsetAuthCookies', () => {
     const index = require('src/index').default
     expect(index.unsetAuthCookies).toBeDefined()
     expect(index.unsetAuthCookies).toEqual(expect.any(Function))
+  })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.unsetAuthCookies()
+    }).toThrow('"unsetAuthCookies" can only be called server-side.')
   })
 })

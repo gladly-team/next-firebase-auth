@@ -22,7 +22,7 @@ const withAuthUser = withAuthUserModule
 const useAuthUser = useAuthUserModule
 
 const withAuthUserSSR = () => {
-  throw new Error('"withAuthUserToken" can only be called server-side.')
+  throw new Error('"withAuthUserSSR" can only be called server-side.')
 }
 
 const withAuthUserTokenSSR = () => {
