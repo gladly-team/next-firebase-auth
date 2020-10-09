@@ -20,6 +20,30 @@ describe('index.server.js: init', () => {
     expect(indexServer.init).toBeDefined()
     expect(indexServer.init).toEqual(expect.any(Function))
   })
+
+  it('calls initFirebaseAdminSDK', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.init({ fake: 'config' })
+    expect(initFirebaseAdminSDK).toHaveBeenCalled()
+  })
+
+  it('calls index.js (client) init', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    const index = require('src/index').default
+    indexServer.init({ fake: 'config' })
+    expect(index.init).toHaveBeenCalledWith({ fake: 'config' })
+  })
+
+  it('returns the value of the index.js (client) init', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    const index = require('src/index').default
+    index.init.mockReturnValueOnce({ some: 'response' })
+    const response = indexServer.init({ fake: 'config' })
+    expect(response).toEqual({ some: 'response' })
+  })
 })
 
 describe('index.server.js: withAuthUser', () => {
