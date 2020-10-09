@@ -46,7 +46,7 @@ describe('createAuthUser: basic tests', () => {
     )
   })
 
-  it('throws if "clientInitialized" is true but "firebaseUserClientSDK is not defined (only the client should set clientInitialized)', () => {
+  it('throws if "clientInitialized" is true but "firebaseUserAdminSDK" is set (only the client should set clientInitialized)', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
@@ -55,8 +55,34 @@ describe('createAuthUser: basic tests', () => {
         clientInitialized: true,
       })
     }).toThrow(
-      'The "clientInitialized" value can only be true if the "firebaseUserClientSDK" property is defined.'
+      'The "clientInitialized" value can only be true when called with the "firebaseUserClientSDK" property or no user.'
     )
+  })
+
+  it('throws if "clientInitialized" is true but "serializedAuthUser" is set (only the client should set clientInitialized)', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    expect(() => {
+      createAuthUser({
+        serializedAuthUser: getMockSerializedAuthUser(),
+        clientInitialized: true,
+      })
+    }).toThrow(
+      'The "clientInitialized" value can only be true when called with the "firebaseUserClientSDK" property or no user.'
+    )
+  })
+
+  it('does not throw if "clientInitialized" is true and no user property is defined (here, the user is logged out on the client side)', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    expect(() => {
+      createAuthUser({
+        firebaseUserClientSDK: undefined,
+        firebaseUserAdminSDK: undefined,
+        serializedAuthUser: undefined,
+        clientInitialized: true,
+      })
+    }).not.toThrow()
   })
 
   it('throws if "token" is defined but "firebaseUserAdminSDK" is not defined (only the server should manually set the token this way)', () => {

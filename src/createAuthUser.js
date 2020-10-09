@@ -1,4 +1,5 @@
 /* eslint no-underscore-dangle: 0 */
+import logDebug from 'src/logDebug'
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -37,6 +38,13 @@ const createAuthUser = ({
   clientInitialized = false,
   token = null,
 } = {}) => {
+  logDebug('Called createAuthUser with arguments:', {
+    firebaseUserClientSDK,
+    firebaseUserAdminSDK,
+    serializedAuthUser,
+    clientInitialized,
+    token,
+  })
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,
@@ -55,9 +63,9 @@ const createAuthUser = ({
   }
 
   // The clientInitialized value should not be set server-side.
-  if (clientInitialized && !firebaseUserClientSDK) {
+  if (clientInitialized && (firebaseUserAdminSDK || serializedAuthUser)) {
     throw new Error(
-      'The "clientInitialized" value can only be true if the "firebaseUserClientSDK" property is defined.'
+      'The "clientInitialized" value can only be true when called with the "firebaseUserClientSDK" property or no user.'
     )
   }
 
