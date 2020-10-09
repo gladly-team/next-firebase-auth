@@ -18,24 +18,24 @@ afterEach(() => {
 })
 
 describe('unsetAuthCookies', () => {
-  it('calls setCookie with an undefined value for the AuthUser cookie', () => {
+  it('calls setCookie with an undefined value for the AuthUser cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
     const mockReq = getMockReq()
     const mockRes = getMockRes()
-    unsetAuthCookies(mockReq, mockRes)
+    await unsetAuthCookies(mockReq, mockRes)
     expect(setCookie).toHaveBeenCalledWith('SomeName.AuthUser', undefined, {
       req: mockReq,
       res: mockRes,
     })
   })
 
-  it('calls setCookie with an undefined value for the AuthUserTokens cookie', () => {
+  it('calls setCookie with an undefined value for the AuthUserTokens cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
     const mockReq = getMockReq()
     const mockRes = getMockRes()
-    unsetAuthCookies(mockReq, mockRes)
+    await unsetAuthCookies(mockReq, mockRes)
     expect(setCookie).toHaveBeenCalledWith(
       'SomeName.AuthUserTokens',
       undefined,
