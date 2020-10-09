@@ -1,10 +1,7 @@
 import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
-
-// TODO: use user config
-const baseAuthCookieName = 'myDemo'
-const authTokensCookieName = `${baseAuthCookieName}.AuthUserTokens`
+import { getAuthUserTokensCookieName } from 'src/authCookies'
 
 // An auth wrapper for a page's exported getServerSideProps.
 // See this discussion on how best to use getServerSideProps
@@ -19,7 +16,7 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
     // Get the user's ID token from their cookie, verify it (refreshing
     // as needed), and return the serialized AuthUser in props.
     const { idToken, refreshToken } =
-      getCookie(authTokensCookieName, {
+      getCookie(getAuthUserTokensCookieName(), {
         req,
         res,
       }) || {}

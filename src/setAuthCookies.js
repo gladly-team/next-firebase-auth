@@ -1,8 +1,9 @@
 import { getCustomIdAndRefreshTokens } from 'src/firebaseAdmin'
 import { setCookie } from 'src/cookies'
-
-// TODO: use user config
-const baseAuthCookieName = 'myDemo'
+import {
+  getAuthUserCookieName,
+  getAuthUserTokensCookieName,
+} from 'src/authCookies'
 
 // eslint-disable-next-line
 const setAuthCookies = async (req, res) => {
@@ -25,8 +26,9 @@ const setAuthCookies = async (req, res) => {
   // providing a valid Firebase ID token (refreshed as needed)
   // for server-side rendering.
   setCookie(
-    `${baseAuthCookieName}.AuthUserTokens`,
-    // TODO: use createAuthUserTokens
+    getAuthUserTokensCookieName(),
+    // Note: any change to cookie data structure needs to be
+    // backwards-compatible.
     JSON.stringify({
       idToken,
       refreshToken,
@@ -39,10 +41,16 @@ const setAuthCookies = async (req, res) => {
   // will not necessarily contain a valid Firebase ID token,
   // because it may have expired, but provides the AuthUser
   // data without any additional server-side requests.
-  setCookie(`${baseAuthCookieName}.AuthUser`, AuthUser.serialize(), {
-    req,
-    res,
-  })
+  setCookie(
+    getAuthUserCookieName(),
+    // Note: any change to cookie data structure needs to be
+    // backwards-compatible.
+    AuthUser.serialize(),
+    {
+      req,
+      res,
+    }
+  )
 
   return {
     idToken,
