@@ -36,7 +36,7 @@ const getMockFullUserConfig = () => ({
 })
 
 describe('config', () => {
-  it('returns the set config [server-side]', () => {
+  it('[server-side] returns the set config', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
@@ -46,10 +46,10 @@ describe('config', () => {
     expect(getConfig()).toEqual(mockConfig)
   })
 
-  it('returns the set config with defaults [client-side]', () => {
+  it('[client-side] returns the set config with defaults', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
-    isClientSide.mockReturnValue(false)
+    isClientSide.mockReturnValue(true)
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
       ...getMockFullUserConfig(),
@@ -77,7 +77,7 @@ describe('config', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
-  it('throws if the user provides firebaseAdminInitConfig on the client side', () => {
+  it('[client-side] throws if the user provides firebaseAdminInitConfig on the client side', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
@@ -94,15 +94,17 @@ describe('config', () => {
     )
   })
 
-  it('throws if the user provides cookies.keys on the client side', () => {
+  it('[client-side] throws if the user provides cookies.keys', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
+    const config = getMockFullUserConfig()
     const mockConfig = {
-      ...getMockFullUserConfig(),
+      ...config,
       firebaseAdminInitConfig: undefined,
       cookies: {
+        ...config.cookies,
         keys: ['some', 'keys'],
       },
     }
@@ -110,6 +112,26 @@ describe('config', () => {
       setConfig(mockConfig)
     }).toThrow(
       'The "cookies.keys" setting should not be available on the client side.'
+    )
+  })
+
+  it('[server-side] throws if the user does not provide cookies.cookieName', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const config = getMockFullUserConfig()
+    const mockConfig = {
+      ...config,
+      cookies: {
+        ...config.cookies,
+        cookieName: undefined,
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "cookies.cookieName" setting is required on the server side.'
     )
   })
 })

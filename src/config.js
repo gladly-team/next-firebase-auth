@@ -46,8 +46,7 @@ const defaultConfig = {
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
-  // Use isServerSide to prevent or allow certain config
-  // properties based on client/server context.
+  // Validate client-side config.
   if (isClientSide()) {
     if (mergedConfig.firebaseAdminInitConfig) {
       errorMessages.push(
@@ -59,6 +58,11 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.keys" setting should not be available on the client side.'
       )
     }
+    // Validate server-side config.
+  } else if (!mergedConfig.cookies.cookieName) {
+    errorMessages.push(
+      'The "cookies.cookieName" setting is required on the server side.'
+    )
   }
   return {
     isValid: errorMessages.length === 0,
