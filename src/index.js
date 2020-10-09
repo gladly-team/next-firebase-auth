@@ -3,14 +3,16 @@ import { setConfig } from 'src/config'
 import withAuthUserModule from 'src/withAuthUser'
 import useAuthUserModule from 'src/useAuthUser'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
+import { setDebugEnabled } from 'src/logDebug'
+import isClientSide from 'src/isClientSide'
 
-const isClientSide = typeof window !== 'undefined'
+const init = (config = {}) => {
+  setDebugEnabled(config.debug === true)
 
-const init = (config) => {
   setConfig(config)
 
   // On the client side, initialize the Firebase JS SDK.
-  if (isClientSide) {
+  if (isClientSide()) {
     initFirebaseClientSDK()
   }
 }

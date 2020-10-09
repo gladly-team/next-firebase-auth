@@ -4,6 +4,7 @@ import logDebug from 'src/logDebug'
 let config
 
 const defaultConfig = {
+  debug: false,
   // Optional string: the URL to navigate to when the user
   // needs to log in.
   loginRedirectURL: undefined,

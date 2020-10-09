@@ -1,4 +1,5 @@
 export const getMockConfig = () => ({
+  debug: false,
   loginRedirectURL: undefined, // TODO
   appRedirectURL: undefined, // TODO
   firebaseAdminInitConfig: {
