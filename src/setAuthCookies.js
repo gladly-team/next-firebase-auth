@@ -5,7 +5,6 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 
-// eslint-disable-next-line
 const setAuthCookies = async (req, res) => {
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).json({ error: 'Missing Authorization header value' })
