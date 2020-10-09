@@ -1,0 +1,69 @@
+import firebase from 'firebase/app'
+import { setConfig } from 'src/config'
+import { getMockConfig } from 'src/test-utils'
+
+jest.mock('firebase/app')
+jest.mock('firebase/auth')
+jest.mock('src/config')
+
+beforeEach(() => {
+  const mockConfig = getMockConfig()
+  setConfig(mockConfig)
+
+  firebase.apps = []
+})
+
+afterEach(() => {
+  jest.clearAllMocks()
+})
+
+describe('initFirebaseClientSDK', () => {
+  it('calls firebase.initializeApp with the expected values', () => {
+    expect.assertions(1)
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    initFirebaseClientSDK()
+    expect(firebase.initializeApp).toHaveBeenCalledWith({
+      apiKey: 'fakeAPIKey123',
+      authDomain: 'my-example-app.firebaseapp.com',
+      databaseURL: 'https://my-example-app.firebaseio.com',
+      projectId: 'my-example-app-id',
+    })
+  })
+
+  it('does not call firebase.initializeApp if Firebase already has an initialized app', () => {
+    expect.assertions(1)
+    firebase.apps = [{ some: 'app' }]
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    initFirebaseClientSDK()
+    expect(firebase.initializeApp).not.toHaveBeenCalled()
+  })
+
+  it('throws if config.firebaseClientInitConfig is not set and no app is initialized', () => {
+    expect.assertions(1)
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: undefined,
+    })
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    expect(() => {
+      initFirebaseClientSDK()
+    }).toThrow(
+      'If not initializing the Firebase JS SDK elsewhere, you must provide "firebaseClientInitConfig" to next-firebase-auth.'
+    )
+  })
+
+  it('does not throw if config.firebaseClientInitConfig is not set but a Firebase app is already initialized', () => {
+    expect.assertions(1)
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: undefined,
+    })
+    firebase.apps = [{ some: 'app' }]
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    expect(() => {
+      initFirebaseClientSDK()
+    }).not.toThrow()
+  })
+})
