@@ -1,6 +1,6 @@
 export const getMockConfig = () => ({
-  // loginRedirectURL: undefined, // TODO
-  // appRedirectURL: undefined, // TODO
+  loginRedirectURL: undefined, // TODO
+  appRedirectURL: undefined, // TODO
   firebaseAdminInitConfig: {
     credential: {
       projectId: 'my-example-app',

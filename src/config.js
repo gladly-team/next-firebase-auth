@@ -3,10 +3,6 @@ import isClientSide from 'src/isClientSide'
 let config
 
 const defaultConfig = {
-  // Optional function. Called when the user's auth state
-  // changes in the Firebase JS SDK so that the client can
-  // update the auth cookies.
-  onAuthStateChanged: () => {},
   // Optional string: the URL to navigate to when the user
   // needs to log in.
   loginRedirectURL: undefined,

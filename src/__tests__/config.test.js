@@ -1,3 +1,5 @@
+import { getMockConfig } from 'src/test-utils'
+
 jest.mock('src/isClientSide')
 
 beforeEach(() => {
@@ -10,38 +12,13 @@ afterEach(() => {
   jest.resetModules()
 })
 
-const getMockFullUserConfig = () => ({
-  onAuthStateChanged: () => {},
-  loginRedirectURL: '/auth',
-  appRedirectURL: '/foo',
-  firebaseAdminInitConfig: {
-    some: 'thing',
-  },
-  firebaseClientInitConfig: {
-    another: 'thing',
-  },
-  cookies: {
-    cookieName: 'myAppAuth',
-    keys: ['abc', 'def'],
-    cookieOptions: {
-      domain: undefined,
-      httpOnly: true,
-      maxAge: 604800000, // week
-      overwrite: true,
-      path: '/subpath/',
-      sameSite: 'lax',
-      secure: true,
-    },
-  },
-})
-
 describe('config', () => {
   it('[server-side] returns the set config', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfig = getMockFullUserConfig()
+    const mockConfig = getMockConfig()
     setConfig(mockConfig)
     expect(getConfig()).toEqual(mockConfig)
   })
@@ -52,7 +29,7 @@ describe('config', () => {
     isClientSide.mockReturnValue(true)
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
-      ...getMockFullUserConfig(),
+      ...getMockConfig(),
       firebaseAdminInitConfig: undefined,
       cookies: undefined,
     }
@@ -83,7 +60,7 @@ describe('config', () => {
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
     const mockConfig = {
-      ...getMockFullUserConfig(),
+      ...getMockConfig(),
       firebaseAdminInitConfig: { some: 'stuff' },
       cookies: undefined,
     }
@@ -99,12 +76,12 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
-    const config = getMockFullUserConfig()
+    const mockConfigDefault = getMockConfig()
     const mockConfig = {
-      ...config,
+      ...mockConfigDefault,
       firebaseAdminInitConfig: undefined,
       cookies: {
-        ...config.cookies,
+        ...mockConfigDefault.cookies,
         keys: ['some', 'keys'],
       },
     }
@@ -120,11 +97,11 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { setConfig } = require('src/config')
-    const config = getMockFullUserConfig()
+    const mockConfigDefault = getMockConfig()
     const mockConfig = {
-      ...config,
+      ...mockConfigDefault,
       cookies: {
-        ...config.cookies,
+        ...mockConfigDefault.cookies,
         cookieName: undefined,
       },
     }
