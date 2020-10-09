@@ -1,9 +1,9 @@
-const firebaseAdmin = jest.createMockFromModule('firebase-admin')
+const firebaseAdminMock = jest.createMockFromModule('firebase-admin')
 
-firebaseAdmin.auth = jest.fn(() => ({
+firebaseAdminMock.auth = jest.fn(() => ({
   verifyIdToken: jest.fn(() => Promise.resolve(null)),
 }))
 
-firebaseAdmin.apps = jest.fn(() => [])
+firebaseAdminMock.apps = []
 
-module.exports = firebaseAdmin
+module.exports = firebaseAdminMock
