@@ -1,4 +1,5 @@
 import isClientSide from 'src/isClientSide'
+import logDebug from 'src/logDebug'
 
 let config
 
@@ -67,6 +68,7 @@ const validateConfig = (mergedConfig) => {
 }
 
 export const setConfig = (userConfig = {}) => {
+  logDebug('Setting config with provided value:', userConfig)
   const {
     cookies: { cookieOptions = {}, ...otherUserCookieOptions } = {},
     ...otherUserConfig
