@@ -1,29 +1,26 @@
 export const getMockConfig = () => ({
-  loginRedirectURL: undefined,
-  // Optional string: the URL to navigate to when the user
-  // is alredy logged in but on an authentication page.
-  appRedirectURL: undefined,
-  // Optional object: the config passed to the Firebase
-  // Node admin SDK's firebaseAdmin.initializeApp.
-  // Not required if the app is initializing the admin SDK
-  // elsewhere.
-  firebaseAdminInitConfig: undefined,
-  // Optional object: the config passed to the Firebase
-  // client JS SDK firebase.initializeApp. Not required if
-  // the app is initializing the JS SDK elsewhere.
-  firebaseClientInitConfig: undefined,
+  // loginRedirectURL: undefined, // TODO
+  // appRedirectURL: undefined, // TODO
+  firebaseAdminInitConfig: {
+    credential: {
+      projectId: 'my-example-app',
+      clientEmail: 'my-example-app@example.com',
+      privateKey: 'fakePrivateKey123',
+    },
+    databaseURL: 'https://my-example-app.firebaseio.com',
+  },
+  firebaseClientInitConfig: {
+    apiKey: 'fakeAPIKey123',
+    authDomain: 'my-example-app.firebaseapp.com',
+    databaseURL: 'https://my-example-app.firebaseio.com',
+    projectId: 'my-example-app-id',
+  },
   cookies: {
-    // Required string. The base name for the auth cookies.
-    cookieName: undefined,
-    // Required string or array.
-    keys: undefined,
-    // Required object: options to pass to cookies.set.
-    // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-    // We'll default to stricter, more secure options.
+    cookieName: 'someExample',
+    keys: ['abc', 'def'],
     cookieOptions: {
-      domain: undefined,
       httpOnly: true,
-      maxAge: 604800000, // week
+      maxAge: 172800, // two days
       overwrite: true,
       path: '/',
       sameSite: 'strict',
