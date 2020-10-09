@@ -1,10 +1,9 @@
-import { setConfig } from 'src/config'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
 import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
-jest.mock('src/config')
+jest.mock('src/index')
 jest.mock('src/setAuthCookies')
 jest.mock('src/unsetAuthCookies')
 jest.mock('src/withAuthUserTokenSSR')
@@ -71,6 +70,12 @@ describe('index.server.js: withAuthUserTokenSSR', () => {
     expect(indexServer.withAuthUserTokenSSR).toBeDefined()
     expect(indexServer.withAuthUserTokenSSR).toEqual(expect.any(Function))
   })
+
+  it('exports the expected module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    expect(indexServer.withAuthUserTokenSSR).toEqual(withAuthUserTokenSSR)
+  })
 })
 
 describe('index.server.js: setAuthCookies', () => {
@@ -80,6 +85,12 @@ describe('index.server.js: setAuthCookies', () => {
     expect(indexServer.setAuthCookies).toBeDefined()
     expect(indexServer.setAuthCookies).toEqual(expect.any(Function))
   })
+
+  it('exports the expected module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    expect(indexServer.setAuthCookies).toEqual(setAuthCookies)
+  })
 })
 
 describe('index.server.js: unsetAuthCookies', () => {
@@ -88,5 +99,11 @@ describe('index.server.js: unsetAuthCookies', () => {
     const indexServer = require('src/index.server').default
     expect(indexServer.unsetAuthCookies).toBeDefined()
     expect(indexServer.unsetAuthCookies).toEqual(expect.any(Function))
+  })
+
+  it('exports the expected module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    expect(indexServer.unsetAuthCookies).toEqual(unsetAuthCookies)
   })
 })
