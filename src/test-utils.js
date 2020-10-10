@@ -94,7 +94,7 @@ export const getMockReq = () => ({
     referer: 'https://example.com/some-page/',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-US,en;q=0.9,es;q=0.8,es-419;q=0.7',
-    cookie: 'someCookie=foo; somethingElse=bar}',
+    cookie: 'someCookie=foo; somethingElse=bar',
   },
   rawHeaders: {
     // stuff here

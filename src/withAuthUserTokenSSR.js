@@ -15,11 +15,13 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
 
     // Get the user's ID token from their cookie, verify it (refreshing
     // as needed), and return the serialized AuthUser in props.
-    const { idToken, refreshToken } =
-      getCookie(getAuthUserTokensCookieName(), {
-        req,
-        res,
-      }) || {}
+    const cookieValStr = getCookie(getAuthUserTokensCookieName(), {
+      req,
+      res,
+    })
+    const { idToken, refreshToken } = cookieValStr
+      ? JSON.parse(cookieValStr)
+      : {}
     let firebaseAdminUser
     let token
     if (idToken) {
