@@ -1,4 +1,4 @@
-import { getMockConfig } from 'src/test-utils'
+import getMockConfig from 'src/testHelpers/getMockConfig'
 
 jest.mock('src/isClientSide')
 

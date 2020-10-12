@@ -1,6 +1,9 @@
 // import Cookies from 'cookies'
 import { setConfig } from 'src/config'
-import { getMockConfig, getMockReq, getMockRes } from 'src/test-utils'
+
+import getMockConfig from 'src/testHelpers/getMockConfig'
+import getMockReq from 'src/testHelpers/getMockReq'
+import getMockRes from 'src/testHelpers/getMockRes'
 import { encodeBase64 } from 'src/encoding'
 
 // jest.mock('cookies')

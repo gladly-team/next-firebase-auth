@@ -3,7 +3,8 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { setCookie } from 'src/cookies'
-import { getMockReq, getMockRes } from 'src/test-utils'
+import getMockReq from 'src/testHelpers/getMockReq'
+import getMockRes from 'src/testHelpers/getMockRes'
 
 jest.mock('src/authCookies')
 jest.mock('src/cookies')

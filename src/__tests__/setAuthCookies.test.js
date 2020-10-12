@@ -4,7 +4,8 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
-import { getMockReq, getMockRes } from 'src/test-utils'
+import getMockReq from 'src/testHelpers/getMockReq'
+import getMockRes from 'src/testHelpers/getMockRes'
 
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')

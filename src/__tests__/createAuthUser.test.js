@@ -2,7 +2,7 @@ import {
   getMockFirebaseUserClientSDK,
   getMockFirebaseUserAdminSDK,
   getMockSerializedAuthUser,
-} from 'src/test-utils'
+} from 'src/testHelpers/authUserInputs'
 
 describe('createAuthUser: basic tests', () => {
   it('returns the expected data for an unauthenticated user', () => {

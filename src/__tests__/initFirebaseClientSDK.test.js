@@ -1,6 +1,6 @@
 import firebase from 'firebase/app'
 import { setConfig } from 'src/config'
-import { getMockConfig } from 'src/test-utils'
+import getMockConfig from 'src/testHelpers/getMockConfig'
 
 jest.mock('firebase/app')
 jest.mock('firebase/auth')

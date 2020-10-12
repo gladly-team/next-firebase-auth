@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
 import { setConfig } from 'src/config'
-import { getMockConfig } from 'src/test-utils'
+import getMockConfig from 'src/testHelpers/getMockConfig'
 
 jest.mock('firebase-admin')
 jest.mock('src/config')
