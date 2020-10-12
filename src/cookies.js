@@ -1,9 +1,6 @@
 import Cookies from 'cookies'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
-const encode = (val) => encodeBase64(val)
-const decode = (val) => decodeBase64(val)
-
 const createCookieMgr = (req, res) => {
   // FIXME: use user config
   // An array is useful for rotating secrets without invalidating old sessions.
@@ -23,7 +20,7 @@ export const getCookie = (cookieName, { req, res }) => {
   const cookies = createCookieMgr(req, res)
   try {
     // FIXME: don't try to decode undefined value
-    return decode(
+    return decodeBase64(
       cookies.get(cookieName, {
         // FIXME: use user config
         // signed: true,
@@ -41,7 +38,7 @@ export const setCookie = (cookieName, cookieVal, { req, res }) => {
 
   // If the value is not defined, set the value to undefined
   // so that the cookie will be deleted.
-  const valToSet = cookieVal == null ? undefined : encode(cookieVal)
+  const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
   // FIXME: use user config
   cookies.set(cookieName, valToSet, {
