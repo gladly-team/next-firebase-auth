@@ -9,7 +9,7 @@
 
 // https://nextjs.org/docs/basic-features/typescript
 // https://github.com/vercel/next.js/blob/bbc1a21c749c423e842586ab116889c9f9c7024e/packages/next/next-server/lib/utils.ts#L198
-const createMockRequest = (...args) => {
+const createMockRequest = () => {
   // TODO
   // Implement IncomingMessage and next addons.
 }
