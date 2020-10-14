@@ -64,3 +64,38 @@ describe('cookies.js: getCookie', () => {
     })
   })
 })
+
+describe('cookies.js: setCookie', () => {
+  it('returns the expected cookie value', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(MOCK_COOKIE_NAME, MOCK_COOKIE_VALUE, {
+          req,
+          res,
+        })
+        setCookie('foo', 'bar', {
+          req,
+          res,
+        })
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookieVal = response.headers.get('set-cookie')
+        // TODO: better parsing
+        // TODO: mock date to test expiry
+        const expectedVal = encodeBase64(MOCK_COOKIE_VALUE)
+        expect(setCookieVal.indexOf(`${MOCK_COOKIE_NAME}=${expectedVal}`)).toBe(
+          0
+        )
+      },
+    })
+  })
+
+  // TODO: test multiple set cookies
+  // TODO: test other cookie options
+})

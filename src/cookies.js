@@ -1,3 +1,4 @@
+// https://github.com/pillarjs/cookies
 import Cookies from 'cookies'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
