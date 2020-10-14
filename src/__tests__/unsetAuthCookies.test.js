@@ -31,12 +31,6 @@ describe('unsetAuthCookies', () => {
         unsetAuthCookies(req, res)
         return res.status(200).end()
       },
-      requestPatcher: (req) => {
-        mockReq = req
-      },
-      responsePatcher: (res) => {
-        mockRes = res
-      },
       test: async ({ fetch }) => {
         await fetch()
         expect(setCookie).toHaveBeenCalledWith('SomeName.AuthUser', undefined, {
@@ -59,12 +53,6 @@ describe('unsetAuthCookies', () => {
         mockRes = res
         unsetAuthCookies(req, res)
         return res.status(200).end()
-      },
-      requestPatcher: (req) => {
-        mockReq = req
-      },
-      responsePatcher: (res) => {
-        mockRes = res
       },
       test: async ({ fetch }) => {
         await fetch()
