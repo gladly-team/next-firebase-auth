@@ -26,6 +26,13 @@ import { encodeBase64 } from 'src/encoding'
 
 jest.mock('src/config')
 
+// Handles splitting cookies set in a single "set-cookie" header.
+// https://github.com/nfriedly/set-cookie-parser#usage-in-react-native
+const parseCookies = (headerVal) => {
+  const splitCookieHeaders = setCookieParser.splitCookiesString(headerVal)
+  return setCookieParser.parse(splitCookieHeaders)
+}
+
 beforeEach(() => {
   const mockConfig = getMockConfig()
   setConfig({
@@ -78,17 +85,13 @@ describe('cookies.js: setCookie', () => {
           req,
           res,
         })
-        setCookie('foo', 'bar', {
-          req,
-          res,
-        })
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
         const response = await fetch()
-        const setCookieVal = response.headers.get('set-cookie')
-        const setCookiesParsed = setCookieParser(setCookieVal)
-        // TODO: mock date to test expiry
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
         const expectedVal = encodeBase64(MOCK_COOKIE_VALUE)
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
@@ -98,6 +101,37 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
-  // TODO: test multiple set cookies
+  it('allows setting multiple cookies', async () => {
+    expect.assertions(3)
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie('something', 'here', {
+          req,
+          res,
+        })
+        setCookie('foo', 'bar', {
+          req,
+          res,
+        })
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(setCookiesParsed.length).toBe(2)
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === 'something')
+        ).toBeDefined()
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === 'foo')
+        ).toBeDefined()
+      },
+    })
+  })
+
+  // TODO: mock date to test expiry
   // TODO: test other cookie options
 })
