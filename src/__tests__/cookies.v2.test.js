@@ -134,8 +134,6 @@ describe('cookies.js: setCookie', () => {
 
   it('does not set any cookies when not calling setCookie', async () => {
     expect.assertions(1)
-    const MOCK_COOKIE_NAME = 'myStuff'
-    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
     await testApiHandler({
       handler: async (req, res) => {
         // Shouldn't set any cookies.
