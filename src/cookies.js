@@ -4,7 +4,9 @@ import { encodeBase64, decodeBase64 } from 'src/encoding'
 
 const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
   if (secure && !keys) {
-    throw new Error('cookies.keys must be set to use signed cookies.')
+    throw new Error(
+      'The "keys" value must be provided when using signed cookies.'
+    )
   }
 
   // https://github.com/pillarjs/cookies
@@ -30,8 +32,6 @@ export const getCookie = (cookieName, { req, res }, { keys } = {}) => {
   }
 }
 
-const ONE_WEEK_IN_MS = 60 * 60 * 24 * 7 * 1000
-
 export const setCookie = (
   cookieName,
   cookieVal,
@@ -51,15 +51,7 @@ export const setCookie = (
 
   // FIXME: use user config
   cookies.set(cookieName, valToSet, {
-    ...cookieOptions,
     // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-    domain: undefined,
-    httpOnly: true,
-    maxAge: ONE_WEEK_IN_MS,
-    overwrite: true,
-    path: '/',
-    sameSite: 'strict',
-    secure,
-    signed: true,
+    ...cookieOptions,
   })
 }

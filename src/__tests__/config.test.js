@@ -47,6 +47,7 @@ describe('config', () => {
           path: '/',
           sameSite: 'strict',
           secure: true,
+          signed: true,
         },
       },
     }
@@ -109,6 +110,30 @@ describe('config', () => {
       setConfig(mockConfig)
     }).toThrow(
       'The "cookies.cookieName" setting is required on the server side.'
+    )
+  })
+
+  it('[server-side] throws if the user does not provide cookies.keys but is using signed cookies', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: undefined,
+        cookieOptions: {
+          ...mockConfigDefault.cookies.cookieOptions,
+          signed: true,
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
     )
   })
 })

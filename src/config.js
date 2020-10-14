@@ -3,6 +3,8 @@ import logDebug from 'src/logDebug'
 
 let config
 
+const ONE_WEEK_IN_MS = 60 * 60 * 24 * 7 * 1000
+
 const defaultConfig = {
   debug: false,
   // Optional string: the URL to navigate to when the user
@@ -31,11 +33,12 @@ const defaultConfig = {
     cookieOptions: {
       domain: undefined,
       httpOnly: true,
-      maxAge: 604800000, // week
+      maxAge: ONE_WEEK_IN_MS,
       overwrite: true,
       path: '/',
       sameSite: 'strict',
       secure: true,
+      signed: true,
     },
   },
 }
@@ -57,10 +60,20 @@ const validateConfig = (mergedConfig) => {
       )
     }
     // Validate server-side config.
-  } else if (!mergedConfig.cookies.cookieName) {
-    errorMessages.push(
-      'The "cookies.cookieName" setting is required on the server side.'
-    )
+  } else {
+    if (!mergedConfig.cookies.cookieName) {
+      errorMessages.push(
+        'The "cookies.cookieName" setting is required on the server side.'
+      )
+    }
+    if (
+      mergedConfig.cookies.cookieOptions.signed &&
+      !mergedConfig.cookies.keys
+    ) {
+      throw new Error(
+        'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      )
+    }
   }
   return {
     isValid: errorMessages.length === 0,

@@ -22,12 +22,14 @@ const getMockConfig = () => ({
     cookieName: 'someExample',
     keys: ['abc', 'def'],
     cookieOptions: {
+      domain: undefined,
       httpOnly: true,
       maxAge: 172800, // two days
       overwrite: true,
       path: '/',
       sameSite: 'strict',
       secure: true,
+      signed: true,
     },
   },
 })
