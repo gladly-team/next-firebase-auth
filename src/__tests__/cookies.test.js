@@ -158,7 +158,10 @@ describe('cookies.js: setCookie', () => {
         const setCookiesParsed = parseCookies(
           response.headers.get('set-cookie')
         )
-        expect(setCookiesParsed.length).toBe(2)
+
+        // Two cookies and two associated .sig hashes.
+        expect(setCookiesParsed.length).toBe(4)
+
         expect(
           setCookiesParsed.find((cookie) => cookie.name === 'something')
         ).toBeDefined()
