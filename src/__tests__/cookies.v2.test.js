@@ -19,6 +19,7 @@
 // Meanwhile, here's a project that helps out:
 // https://github.com/Xunnamius/next-test-api-route-handler
 import { testApiHandler } from 'next-test-api-route-handler'
+import setCookieParser from 'set-cookie-parser'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/getMockConfig'
 import { encodeBase64 } from 'src/encoding'
@@ -66,7 +67,7 @@ describe('cookies.js: getCookie', () => {
 })
 
 describe('cookies.js: setCookie', () => {
-  it('returns the expected cookie value', async () => {
+  it('sets the expected cookie value', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
     const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
@@ -86,12 +87,13 @@ describe('cookies.js: setCookie', () => {
       test: async ({ fetch }) => {
         const response = await fetch()
         const setCookieVal = response.headers.get('set-cookie')
-        // TODO: better parsing
+        const setCookiesParsed = setCookieParser(setCookieVal)
         // TODO: mock date to test expiry
         const expectedVal = encodeBase64(MOCK_COOKIE_VALUE)
-        expect(setCookieVal.indexOf(`${MOCK_COOKIE_NAME}=${expectedVal}`)).toBe(
-          0
-        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .value
+        ).toEqual(expectedVal)
       },
     })
   })
