@@ -33,6 +33,8 @@ export const getCookie = (cookieName, { req, res }) => {
 }
 
 export const setCookie = (cookieName, cookieVal, { req, res }) => {
+  // TODO: probably cap maxAge to two weeks to enforce security.
+
   const cookies = createCookieMgr(req, res)
 
   // If the value is not defined, set the value to undefined
