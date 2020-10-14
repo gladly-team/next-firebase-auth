@@ -25,7 +25,7 @@ describe('unsetAuthCookies', () => {
     let mockRes
     await testApiHandler({
       handler: async (req, res) => {
-        // Store the req/res to use in assertion.
+        // Store the req/res to use in the test assertion.
         mockReq = req
         mockRes = res
         unsetAuthCookies(req, res)
@@ -48,7 +48,7 @@ describe('unsetAuthCookies', () => {
     let mockRes
     await testApiHandler({
       handler: async (req, res) => {
-        // Store the req/res to use in assertion.
+        // Store the req/res to use in the test assertion.
         mockReq = req
         mockRes = res
         unsetAuthCookies(req, res)
