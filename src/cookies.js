@@ -19,13 +19,11 @@ const createCookieMgr = (req, res) => {
 export const getCookie = (cookieName, { req, res }) => {
   const cookies = createCookieMgr(req, res)
   try {
-    // FIXME: don't try to decode undefined value
-    return decodeBase64(
-      cookies.get(cookieName, {
-        // FIXME: use user config
-        // signed: true,
-      })
-    )
+    const cookieVal = cookies.get(cookieName, {
+      // FIXME: use user config
+      // signed: true,
+    })
+    return cookieVal ? decodeBase64(cookieVal) : undefined
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e)
