@@ -132,6 +132,25 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
+  it('does not set any cookies when not calling setCookie', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        // Shouldn't set any cookies.
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(setCookiesParsed.length).toBe(0)
+      },
+    })
+  })
+
   // TODO: mock date to test expiry
   // TODO: test other cookie options
 })
