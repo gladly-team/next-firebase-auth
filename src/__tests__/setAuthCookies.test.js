@@ -1,11 +1,10 @@
+import { testApiHandler } from 'next-test-api-route-handler'
 import { getCustomIdAndRefreshTokens } from 'src/firebaseAdmin'
 import { setCookie } from 'src/cookies'
 import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
-import getMockReq from 'src/testHelpers/getMockReq'
-import getMockRes from 'src/testHelpers/getMockRes'
 
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
@@ -44,99 +43,119 @@ describe('setAuthCookies', () => {
   it('returns a 400 if req.headers.authorization is not set', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    const mockReq = getMockReq()
-    const mockRes = getMockRes()
-    await setAuthCookies(mockReq, mockRes)
-    expect(mockRes.status).toHaveBeenCalledWith(400)
-  })
-
-  it('returns a 400 error description if req.headers.authorization is not set', async () => {
-    expect.assertions(1)
-    const setAuthCookies = require('src/setAuthCookies').default
-    const mockReq = getMockReq()
-    const mockRes = getMockRes()
-    await setAuthCookies(mockReq, mockRes)
-    expect(mockRes.json).toHaveBeenCalledWith({
-      error: 'Missing Authorization header value',
+    await testApiHandler({
+      handler: async (req, res) => {
+        // TODO: expect setAuthCookies to throw
+        await setAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch() // no Authorization header
+        expect(response.status).toEqual(400)
+      },
     })
   })
 
   it('passes the token from req.headers.authorization to Firebase admin', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    const defaultMockReq = getMockReq()
-    const mockReq = {
-      ...defaultMockReq,
-      headers: {
-        authorization: 'some-token-here',
-        ...defaultMockReq.headers,
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res)
+        return res.status(200).end()
       },
-    }
-    const mockRes = getMockRes()
-    await setAuthCookies(mockReq, mockRes)
-    expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith('some-token-here')
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith(
+          'some-token-here'
+        )
+      },
+    })
   })
 
   it('sets the AuthUser cookie as expected', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    const defaultMockReq = getMockReq()
-    const mockReq = {
-      ...defaultMockReq,
-      headers: {
-        authorization: 'some-token-here',
-        ...defaultMockReq.headers,
+    let mockReq
+    let mockRes
+    await testApiHandler({
+      handler: async (req, res) => {
+        // Store the req/res to use in the test assertion.
+        mockReq = req
+        mockRes = res
+        await setAuthCookies(req, res)
+        return res.status(200).end()
       },
-    }
-    const mockRes = getMockRes()
-    await setAuthCookies(mockReq, mockRes)
-    expect(setCookie).toHaveBeenCalledWith(
-      'SomeName.AuthUser',
-      mockAuthUser.serialize(),
-      { req: mockReq, res: mockRes }
-    )
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(setCookie).toHaveBeenCalledWith(
+          'SomeName.AuthUser',
+          mockAuthUser.serialize(),
+          { req: mockReq, res: mockRes }
+        )
+      },
+    })
   })
 
   it('sets the AuthUserTokens cookie as expected', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    const defaultMockReq = getMockReq()
-    const mockReq = {
-      ...defaultMockReq,
-      headers: {
-        authorization: 'some-token-here',
-        ...defaultMockReq.headers,
+    let mockReq
+    let mockRes
+    await testApiHandler({
+      handler: async (req, res) => {
+        // Store the req/res to use in the test assertion.
+        mockReq = req
+        mockRes = res
+        await setAuthCookies(req, res)
+        return res.status(200).end()
       },
-    }
-    const mockRes = getMockRes()
-    await setAuthCookies(mockReq, mockRes)
-    expect(setCookie).toHaveBeenCalledWith(
-      'SomeName.AuthUserTokens',
-      JSON.stringify({
-        idToken: 'fake-custom-id-token-here',
-        refreshToken: 'fake-refresh-token-here',
-      }),
-      { req: mockReq, res: mockRes }
-    )
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(setCookie).toHaveBeenCalledWith(
+          'SomeName.AuthUserTokens',
+          JSON.stringify({
+            idToken: 'fake-custom-id-token-here',
+            refreshToken: 'fake-refresh-token-here',
+          }),
+          { req: mockReq, res: mockRes }
+        )
+      },
+    })
   })
 
   it('returns the expected values', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    const defaultMockReq = getMockReq()
-    const mockReq = {
-      ...defaultMockReq,
-      headers: {
-        authorization: 'some-token-here',
-        ...defaultMockReq.headers,
+    await testApiHandler({
+      handler: async (req, res) => {
+        const response = await setAuthCookies(req, res)
+        expect(response).toEqual({
+          idToken: 'fake-custom-id-token-here',
+          refreshToken: 'fake-refresh-token-here',
+          AuthUser: mockAuthUser,
+        })
+        return res.status(200).end()
       },
-    }
-    const mockRes = getMockRes()
-    const response = await setAuthCookies(mockReq, mockRes)
-    expect(response).toEqual({
-      idToken: 'fake-custom-id-token-here',
-      refreshToken: 'fake-refresh-token-here',
-      AuthUser: mockAuthUser,
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+      },
     })
   })
 })

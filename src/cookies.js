@@ -1,3 +1,4 @@
+// https://github.com/pillarjs/cookies
 import Cookies from 'cookies'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
@@ -19,13 +20,11 @@ const createCookieMgr = (req, res) => {
 export const getCookie = (cookieName, { req, res }) => {
   const cookies = createCookieMgr(req, res)
   try {
-    // FIXME: don't try to decode undefined value
-    return decodeBase64(
-      cookies.get(cookieName, {
-        // FIXME: use user config
-        // signed: true,
-      })
-    )
+    const cookieVal = cookies.get(cookieName, {
+      // FIXME: use user config
+      // signed: true,
+    })
+    return cookieVal ? decodeBase64(cookieVal) : undefined
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e)
@@ -34,6 +33,8 @@ export const getCookie = (cookieName, { req, res }) => {
 }
 
 export const setCookie = (cookieName, cookieVal, { req, res }) => {
+  // TODO: probably cap maxAge to two weeks to enforce security.
+
   const cookies = createCookieMgr(req, res)
 
   // If the value is not defined, set the value to undefined

@@ -6,6 +6,8 @@ import {
 } from 'src/authCookies'
 
 const setAuthCookies = async (req, res) => {
+  // TODO: throw instead of returning a response. Let the
+  //   calling API route handle its response.
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).json({ error: 'Missing Authorization header value' })
   }
