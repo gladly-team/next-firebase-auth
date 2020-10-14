@@ -47,27 +47,64 @@ beforeEach(() => {
 describe('cookies.js: getCookie', () => {
   it('returns the expected cookie value', async () => {
     expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = {
+      my: ['data', 'here'],
+    }
     await testApiHandler({
       handler: async (req, res) => {
         const { getCookie } = require('src/cookies')
-        const MOCK_COOKIE_NAME = 'myStuff'
         const cookieVal = getCookie(MOCK_COOKIE_NAME, { req, res })
-        expect(JSON.parse(cookieVal)).toEqual({
-          my: ['data', 'here'],
-        })
+        expect(JSON.parse(cookieVal)).toEqual(MOCK_COOKIE_VAL)
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
         await fetch({
           headers: {
             foo: 'blah',
-            cookie: `myStuff="${encodeBase64(
-              JSON.stringify({
-                my: ['data', 'here'],
-              })
+            cookie: `${MOCK_COOKIE_NAME}="${encodeBase64(
+              JSON.stringify(MOCK_COOKIE_VAL)
             )}";`,
           },
         })
+      },
+    })
+  })
+
+  it('returns undefined if the cookie is not set', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'nonexistentCookie'
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        const cookieVal = getCookie(MOCK_COOKIE_NAME, { req, res })
+        expect(cookieVal).toBeUndefined()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+            cookie: `someOtherCookie=abc;`,
+          },
+        })
+      },
+    })
+  })
+
+  it('returns undefined if no cookies are set', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'nonexistentCookie'
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        const cookieVal = getCookie(MOCK_COOKIE_NAME, { req, res })
+        expect(cookieVal).toBeUndefined()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        // No cookie header.
+        await fetch()
       },
     })
   })
