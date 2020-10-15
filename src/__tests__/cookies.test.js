@@ -25,11 +25,19 @@
 // testing. Here are a few related discussions:
 // https://github.com/vercel/next.js/discussions/15166
 // https://github.com/vercel/next.js/discussions/17528
+import moment from 'moment'
+import MockDate from 'mockdate'
 import { testApiHandler } from 'next-test-api-route-handler'
 import setCookieParser from 'set-cookie-parser'
 import { encodeBase64 } from 'src/encoding'
 
 jest.mock('src/config')
+
+const mockNow = '2020-10-15T18:00:00.000Z'
+
+beforeEach(() => {
+  MockDate.set(moment(mockNow))
+})
 
 // Handles splitting cookies set in a single "set-cookie" header.
 // https://github.com/nfriedly/set-cookie-parser#usage-in-react-native
@@ -48,7 +56,7 @@ const createSetCookieOptions = () => ({
   domain: undefined,
   httpOnly: true,
   keys: ['some-key', 'another-key'],
-  maxAge: 60 * 60 * 24, // one day
+  maxAge: 60 * 60 * 24 * 1000, // one day
   overwrite: true,
   path: '/',
   sameSite: 'strict',
