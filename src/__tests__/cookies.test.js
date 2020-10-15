@@ -1,3 +1,12 @@
+// Here, we decided to test against the unmocked third-party
+// cookies library to 1) make sure it does not have any problems
+// with Next's request object, and 2) to make it easier to swap
+// it out for another cookies library if needed.
+//
+// We're using next-test-api-route-handler to facilitate testing
+// that better reflects the production environment:
+// https://github.com/Xunnamius/next-test-api-route-handler
+// Some background on this:
 // Testing Next.js API routes is a little tricky, because there's
 // not an easy way to provide mock request and response objects.
 // https://nextjs.org/docs/api-routes/introduction
@@ -16,8 +25,6 @@
 // testing. Here are a few related discussions:
 // https://github.com/vercel/next.js/discussions/15166
 // https://github.com/vercel/next.js/discussions/17528
-// Meanwhile, here's a project that helps out:
-// https://github.com/Xunnamius/next-test-api-route-handler
 import { testApiHandler } from 'next-test-api-route-handler'
 import setCookieParser from 'set-cookie-parser'
 import { encodeBase64 } from 'src/encoding'
