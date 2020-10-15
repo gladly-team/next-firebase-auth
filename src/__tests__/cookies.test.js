@@ -57,7 +57,7 @@ const createSetCookieOptions = () => ({
 })
 
 describe('cookies.js: getCookie', () => {
-  it('returns the expected cookie value', async () => {
+  it('returns the expected cookie value [unsigned]', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
     const MOCK_COOKIE_VAL = {
@@ -132,10 +132,40 @@ describe('cookies.js: getCookie', () => {
       },
     })
   })
+
+  it('throws if the "signed" option is true but "keys" is not defined', async () => {
+    expect.assertions(1)
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        expect(() => {
+          getCookie(
+            'foo',
+            { req, res },
+            { ...createGetCookieOptions(), keys: undefined, signed: true }
+          )
+        }).toThrow(
+          'The "keys" value must be provided when using signed cookies.'
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+          },
+        })
+      },
+    })
+  })
+
+  // TODO: test getting a signed cookie
+  // TODO: test that getting a signed cookie without a .sig returns undefined
 })
 
 describe('cookies.js: setCookie', () => {
-  it('sets the expected cookie value', async () => {
+  // TODO: test the .sig cookie
+  it('sets the expected base64-encoded cookie value', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
     const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
@@ -224,6 +254,32 @@ describe('cookies.js: setCookie', () => {
           response.headers.get('set-cookie')
         )
         expect(setCookiesParsed.length).toBe(0)
+      },
+    })
+  })
+
+  it('throws if the "signed" option is true but "keys" is not defined', async () => {
+    expect.assertions(1)
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        expect(() => {
+          setCookie(
+            'foo',
+            'bar',
+            {
+              req,
+              res,
+            },
+            { ...createSetCookieOptions(), keys: undefined, signed: true }
+          )
+        }).toThrow(
+          'The "keys" value must be provided when using signed cookies.'
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch()
       },
     })
   })
