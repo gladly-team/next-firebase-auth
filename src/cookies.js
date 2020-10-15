@@ -16,7 +16,6 @@ export const getCookie = (
   { req, res },
   { keys, secure, signed } = {}
 ) => {
-  // TODO: test
   if (signed && !keys) {
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
@@ -53,7 +52,6 @@ export const setCookie = (
 ) => {
   // TODO: probably cap maxAge to two weeks to enforce security.
 
-  // TODO: test
   if (signed && !keys) {
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
@@ -66,6 +64,7 @@ export const setCookie = (
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
+  // TODO: test
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
   cookies.set(cookieName, valToSet, {
     domain,
