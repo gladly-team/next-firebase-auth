@@ -205,6 +205,80 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
+  it('sets a .sig cookie value when "signed" is true', async () => {
+    expect.assertions(2)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          { ...createSetCookieOptions(), signed: true, keys: ['some-key'] }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+
+        // This is the encoded SHA1 HMAC value from the Keygrip library
+        // used by the `cookies` module. It's signed using the provided
+        // value in keys[0].
+        // To get the expected value, we just copy-pasted the signed value
+        // rather than computing it ourselves.
+        const expectedVal = '2wlX_EwpqDlcxq5G8s6Pxs6fvos'
+
+        expect(
+          setCookiesParsed.find(
+            (cookie) => cookie.name === `${MOCK_COOKIE_NAME}.sig` // note .sig
+          ).value
+        ).toEqual(expectedVal)
+        expect(setCookiesParsed.length).toBe(2)
+      },
+    })
+  })
+
+  it('does not set a .sig cookie value when "signed" is false', async () => {
+    expect.assertions(2)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          { ...createSetCookieOptions(), signed: false, keys: undefined }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find(
+            (cookie) => cookie.name === `${MOCK_COOKIE_NAME}.sig` // note .sig
+          )
+        ).toBeUndefined()
+        expect(setCookiesParsed.length).toBe(1)
+      },
+    })
+  })
+
   it('allows setting multiple cookies', async () => {
     expect.assertions(3)
     await testApiHandler({
