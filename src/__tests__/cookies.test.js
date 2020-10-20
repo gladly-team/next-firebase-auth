@@ -86,9 +86,103 @@ describe('cookies.js: getCookie', () => {
         await fetch({
           headers: {
             foo: 'blah',
-            cookie: `${MOCK_COOKIE_NAME}="${encodeBase64(
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
               JSON.stringify(MOCK_COOKIE_VAL)
-            )}";`,
+            )};`,
+          },
+        })
+      },
+    })
+  })
+
+  it('returns the expected cookie value [signed]', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = 'abc123'
+
+    // This is the encoded SHA1 HMAC value from the Keygrip library
+    // used by the `cookies` module. It's signed using the provided
+    // value in keys[0].
+    // To get the expected value, we just copy-pasted the signed value
+    // rather than computing it ourselves.
+    const MOCK_COOKIE_SIG_VAL = 'eOOK_EF-fiTOtyFgpFpik6OyEMA'
+
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+
+        const cookieVal = getCookie(
+          MOCK_COOKIE_NAME,
+          { req, res },
+          { ...createGetCookieOptions(), keys: ['some-key'], signed: true }
+        )
+        expect(cookieVal).toEqual(MOCK_COOKIE_VAL)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
+              MOCK_COOKIE_VAL
+            )}; ${MOCK_COOKIE_NAME}.sig=${MOCK_COOKIE_SIG_VAL};`,
+          },
+        })
+      },
+    })
+  })
+
+  it('returns undefined if the signed cookie value is incorrect [signed]', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = 'abc123'
+    const MOCK_COOKIE_SIG_VAL = 'xyzxyzxyz' // this is not correct
+
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+
+        const cookieVal = getCookie(
+          MOCK_COOKIE_NAME,
+          { req, res },
+          { ...createGetCookieOptions(), keys: ['some-key'], signed: true }
+        )
+        expect(cookieVal).toBeUndefined()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
+              MOCK_COOKIE_VAL
+            )}; ${MOCK_COOKIE_NAME}.sig=${MOCK_COOKIE_SIG_VAL};`,
+          },
+        })
+      },
+    })
+  })
+
+  it('returns undefined if the signed cookie value is missing [signed]', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = 'abc123'
+    const MOCK_COOKIE_SIG_VAL = 'xyzxyzxyz' // this is not correct
+
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+
+        const cookieVal = getCookie(
+          MOCK_COOKIE_NAME,
+          { req, res },
+          { ...createGetCookieOptions(), keys: ['some-key'], signed: true }
+        )
+        expect(cookieVal).toBeUndefined()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(MOCK_COOKIE_VAL)};`, // missing .sig cookie
           },
         })
       },
@@ -172,7 +266,6 @@ describe('cookies.js: getCookie', () => {
 })
 
 describe('cookies.js: setCookie', () => {
-  // TODO: test the .sig cookie
   it('sets the expected base64-encoded cookie value', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
@@ -208,7 +301,7 @@ describe('cookies.js: setCookie', () => {
   it('sets a .sig cookie value when "signed" is true', async () => {
     expect.assertions(2)
     const MOCK_COOKIE_NAME = 'myStuff'
-    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    const MOCK_COOKIE_VALUE = 'abc123'
     await testApiHandler({
       handler: async (req, res) => {
         const { setCookie } = require('src/cookies')
@@ -234,7 +327,7 @@ describe('cookies.js: setCookie', () => {
         // value in keys[0].
         // To get the expected value, we just copy-pasted the signed value
         // rather than computing it ourselves.
-        const expectedVal = '2wlX_EwpqDlcxq5G8s6Pxs6fvos'
+        const expectedVal = 'eOOK_EF-fiTOtyFgpFpik6OyEMA'
 
         expect(
           setCookiesParsed.find(
