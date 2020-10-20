@@ -260,9 +260,6 @@ describe('cookies.js: getCookie', () => {
       },
     })
   })
-
-  // TODO: test getting a signed cookie
-  // TODO: test that getting a signed cookie without a .sig returns undefined
 })
 
 describe('cookies.js: setCookie', () => {
