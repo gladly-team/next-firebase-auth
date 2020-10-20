@@ -165,7 +165,6 @@ describe('cookies.js: getCookie', () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
     const MOCK_COOKIE_VAL = 'abc123'
-    const MOCK_COOKIE_SIG_VAL = 'xyzxyzxyz' // this is not correct
 
     await testApiHandler({
       handler: async (req, res) => {
