@@ -34,7 +34,19 @@ const setAuthCookies = async (req, res) => {
       idToken,
       refreshToken,
     }),
-    { req, res }
+    { req, res },
+    {
+      // FIXME: use config
+      keys: ['fake-key', 'another-fake-key'],
+      domain: undefined,
+      httpOnly: true,
+      maxAge: 1000000,
+      overwrite: true,
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+      signed: true,
+    }
   )
 
   // Store the AuthUser data. This cookie will be available
@@ -50,6 +62,18 @@ const setAuthCookies = async (req, res) => {
     {
       req,
       res,
+    },
+    {
+      // FIXME: use config
+      keys: ['fake-key', 'another-fake-key'],
+      domain: undefined,
+      httpOnly: true,
+      maxAge: 1000000,
+      overwrite: true,
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+      signed: true,
     }
   )
 
