@@ -57,7 +57,6 @@ export const setCookie = (
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
-  // TODO: test
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
   cookies.set(cookieName, valToSet, {
     domain,

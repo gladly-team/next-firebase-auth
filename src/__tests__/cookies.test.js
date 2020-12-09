@@ -958,5 +958,77 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
-  // TODO: mock date to test expiry
+  it('sets the "expire" option to the expected point in the near future', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            maxAge: 4 * 60 * 1e3, // 4 minutes from now
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        const setCookieVal = setCookiesParsed.find(
+          (cookie) => cookie.name === MOCK_COOKIE_NAME
+        )
+        const { expires } = setCookieVal
+        expect(moment(expires).toISOString()).toEqual(
+          moment(mockNow).add(4, 'minutes').toISOString()
+        )
+      },
+    })
+  })
+
+  it('sets the "expire" option to the expected point in the distant future', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            maxAge: 368 * 60 * 60 * 24 * 1000, // 368 days from now
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        const setCookieVal = setCookiesParsed.find(
+          (cookie) => cookie.name === MOCK_COOKIE_NAME
+        )
+        const { expires } = setCookieVal
+        expect(moment(expires).toISOString()).toEqual(
+          moment(mockNow).add(368, 'days').toISOString()
+        )
+      },
+    })
+  })
 })
