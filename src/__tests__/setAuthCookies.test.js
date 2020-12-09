@@ -5,7 +5,7 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
-import { setConfig, getConfig } from 'src/config'
+import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/getMockConfig'
 
 jest.mock('src/config')
