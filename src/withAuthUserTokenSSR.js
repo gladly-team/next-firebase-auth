@@ -35,6 +35,7 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
   })
   const AuthUserSerialized = AuthUser.serialize()
 
+  // FIXME: can probably use Next 10's new redirect feature.
   // If auth is required but the user is not authed, don't return
   // any props.
   // Ideally, this should redirect on the server-side. See this
