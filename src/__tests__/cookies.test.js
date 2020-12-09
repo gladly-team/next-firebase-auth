@@ -324,6 +324,40 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
+  it('sets the expected default options when no options are provided', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          }
+          // no options specified
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+        ).toEqual({
+          name: 'myStuff',
+          value: expect.any(String),
+          // no other options are specified
+        })
+      },
+    })
+  })
+
   it('sets a .sig cookie value when "signed" is true', async () => {
     expect.assertions(2)
     const MOCK_COOKIE_NAME = 'myStuff'
