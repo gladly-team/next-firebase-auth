@@ -1,8 +1,6 @@
 import { getConfig } from 'src/config'
 
-const getBaseCookieName = () => {
-  return getConfig().cookies.cookieName
-}
+const getBaseCookieName = () => getConfig().cookies.cookieName
 
 export const getAuthUserCookieName = () => {
   const baseAuthCookieName = getBaseCookieName()

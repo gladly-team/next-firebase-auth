@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
@@ -105,15 +104,7 @@ const withAuthUser = ({
     )
   }
 
-  // TODO: probably remove propTypes peer dependency
-  WithAuthUserHOC.propTypes = {
-    // Won't be defined for static pages.
-    AuthUserSerialized: PropTypes.string,
-  }
-
-  WithAuthUserHOC.defaultProps = {
-    AuthUserSerialized: null,
-  }
+  WithAuthUserHOC.displayName = 'WithAuthUserHOC'
 
   return WithAuthUserHOC
 }
