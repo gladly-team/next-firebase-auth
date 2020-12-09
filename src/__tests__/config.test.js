@@ -149,7 +149,7 @@ describe('config', () => {
         ...mockConfigDefault.cookies,
         cookieOptions: {
           ...mockConfigDefault.cookies.cookieOptions,
-          maxAge: 14 * 86400000 + 2, // two ms greaer than 14 days
+          maxAge: 14 * 86400000 + 2, // two ms greater than 14 days
         },
       },
     }
