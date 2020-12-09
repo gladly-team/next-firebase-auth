@@ -43,6 +43,7 @@ beforeEach(() => {
     cookies: {
       ...mockConfig.cookies,
       cookieName: 'SomeName',
+      keys: ['a-fake-key', 'another-fake-key'],
       cookieOptions: {
         ...mockConfig.cookies.cookieOptions,
         domain: 'example.co.uk',
@@ -125,6 +126,7 @@ describe('setAuthCookies', () => {
           { req: mockReq, res: mockRes },
           // Options from the mock config.
           {
+            keys: ['a-fake-key', 'another-fake-key'],
             domain: 'example.co.uk',
             httpOnly: true,
             maxAge: 12345678,
@@ -167,6 +169,7 @@ describe('setAuthCookies', () => {
           { req: mockReq, res: mockRes },
           // Options from the mock config.
           {
+            keys: ['a-fake-key', 'another-fake-key'],
             domain: 'example.co.uk',
             httpOnly: true,
             maxAge: 12345678,
