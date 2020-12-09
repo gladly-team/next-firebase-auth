@@ -4,6 +4,7 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
+import { getConfig } from 'src/config'
 
 const setAuthCookies = async (req, res) => {
   // TODO: throw instead of returning a response. Let the
@@ -22,6 +23,8 @@ const setAuthCookies = async (req, res) => {
     token
   )
 
+  const { cookieOptions } = getConfig().cookies
+
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
   // providing a valid Firebase ID token (refreshed as needed)
@@ -35,18 +38,7 @@ const setAuthCookies = async (req, res) => {
       refreshToken,
     }),
     { req, res },
-    {
-      // FIXME: use config
-      keys: ['fake-key', 'another-fake-key'],
-      domain: undefined,
-      httpOnly: true,
-      maxAge: 1000000,
-      overwrite: true,
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-      signed: true,
-    }
+    cookieOptions
   )
 
   // Store the AuthUser data. This cookie will be available
@@ -63,18 +55,7 @@ const setAuthCookies = async (req, res) => {
       req,
       res,
     },
-    {
-      // FIXME: use config
-      keys: ['fake-key', 'another-fake-key'],
-      domain: undefined,
-      httpOnly: true,
-      maxAge: 1000000,
-      overwrite: true,
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-      signed: true,
-    }
+    cookieOptions
   )
 
   return {
