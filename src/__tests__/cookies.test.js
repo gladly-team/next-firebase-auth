@@ -415,10 +415,9 @@ describe('cookies.js: setCookie', () => {
   it('does not set any cookies when not calling setCookie', async () => {
     expect.assertions(1)
     await testApiHandler({
-      handler: async (req, res) => {
+      handler: async (req, res) =>
         // Shouldn't set any cookies.
-        return res.status(200).end()
-      },
+        res.status(200).end(),
       test: async ({ fetch }) => {
         const response = await fetch()
         const setCookiesParsed = parseCookies(

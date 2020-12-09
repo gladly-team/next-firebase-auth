@@ -4,6 +4,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': 0,
+    'react/prop-types': 0,
+    'jsx-a11y/anchor-is-valid': 0, // https://github.com/zeit/next.js/issues/5533
     // The jsx-wrap-multilines rule conflicts with Prettier.
     // https://github.com/prettier/prettier/issues/1009#issuecomment-286993938
     'react/jsx-wrap-multilines': [
