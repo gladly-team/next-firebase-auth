@@ -3,6 +3,7 @@ import '../styles/globals.css'
 
 import { init as initAuth } from 'next-firebase-auth'
 
+const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
 const isServerSide = typeof window === 'undefined'
 initAuth({
   debug: false,
@@ -28,9 +29,22 @@ initAuth({
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   },
   cookies: {
-    cookieName: 'myDemo',
-    // FIXME: use real keys
-    ...(isServerSide && { keys: ['fake-key', 'another-fake-key'] }),
+    cookieName: 'ExampleApp',
+    ...(isServerSide && {
+      keys: [
+        process.env.COOKIE_SECRET_CURRENT,
+        process.env.COOKIE_SECRET_PREVIOUS,
+      ],
+    }),
+    cookieOptions: {
+      httpOnly: true,
+      maxAge: TWELVE_DAYS_IN_MS,
+      overwrite: true,
+      path: '/',
+      sameSite: 'strict',
+      secure: process.env.NEXT_PUBLIC_COOKIE_SECURE === 'true',
+      signed: true,
+    },
   },
 })
 
