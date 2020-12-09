@@ -70,12 +70,11 @@
     "webpack-node-externals": "^2.5.2"
   },
   "peerDependencies": {
-    "firebase": "^7.0.0",
+    "firebase": ">=7.0.0 <9",
     "firebase-admin": "^9.0.0",
-    "next": "^9.5.0",
-    "prop-types": "^15.5.7",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "next": ">=9.5.0 <11",
+    "react": ">=16.8.0 <18",
+    "react-dom": ">=16.8.0 <18"
   },
   "dependencies": {
     "cookies": "^0.8.0"
