@@ -3,6 +3,9 @@ import logDebug from 'src/logDebug'
 
 let config
 
+const ONE_WEEK_IN_MS = 7 * 60 * 60 * 24 * 1000
+const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
+
 const defaultConfig = {
   debug: false,
   // Optional string: the URL to navigate to when the user
@@ -31,11 +34,12 @@ const defaultConfig = {
     cookieOptions: {
       domain: undefined,
       httpOnly: true,
-      maxAge: 604800000, // week
+      maxAge: ONE_WEEK_IN_MS,
       overwrite: true,
       path: '/',
       sameSite: 'strict',
       secure: true,
+      signed: true,
     },
   },
 }
@@ -57,10 +61,31 @@ const validateConfig = (mergedConfig) => {
       )
     }
     // Validate server-side config.
-  } else if (!mergedConfig.cookies.cookieName) {
-    errorMessages.push(
-      'The "cookies.cookieName" setting is required on the server side.'
-    )
+  } else {
+    if (!mergedConfig.cookies.cookieName) {
+      errorMessages.push(
+        'The "cookies.cookieName" setting is required on the server side.'
+      )
+    }
+    if (
+      mergedConfig.cookies.cookieOptions.signed &&
+      !mergedConfig.cookies.keys
+    ) {
+      throw new Error(
+        'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      )
+    }
+
+    // Limit the max cookie age to two weeks for security. This matches
+    // Firebase's limit for user identity cookies:
+    // https://firebase.google.com/docs/auth/admin/manage-cookies
+    // By default, the cookie will be refreshed each time the user loads
+    // the client-side app.
+    if (mergedConfig.cookies.cookieOptions.maxAge > TWO_WEEKS_IN_MS) {
+      throw new Error(
+        `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
+      )
+    }
   }
   return {
     isValid: errorMessages.length === 0,

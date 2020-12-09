@@ -2,6 +2,7 @@ import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import { getAuthUserTokensCookieName } from 'src/authCookies'
+import { getConfig } from 'src/config'
 
 // An auth wrapper for a page's exported getServerSideProps.
 // See this discussion on how best to use getServerSideProps
@@ -12,12 +13,19 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
 ) => async (ctx) => {
   const { req, res } = ctx
 
+  const { keys, cookieOptions } = getConfig().cookies
+  const { secure, signed } = cookieOptions
+
   // Get the user's ID token from their cookie, verify it (refreshing
   // as needed), and return the serialized AuthUser in props.
-  const cookieValStr = getCookie(getAuthUserTokensCookieName(), {
-    req,
-    res,
-  })
+  const cookieValStr = getCookie(
+    getAuthUserTokensCookieName(),
+    {
+      req,
+      res,
+    },
+    { keys, secure, signed }
+  )
   const { idToken, refreshToken } = cookieValStr ? JSON.parse(cookieValStr) : {}
   let firebaseAdminUser
   let token
@@ -35,6 +43,7 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
   })
   const AuthUserSerialized = AuthUser.serialize()
 
+  // FIXME: can probably use Next 10's new redirect feature.
   // If auth is required but the user is not authed, don't return
   // any props.
   // Ideally, this should redirect on the server-side. See this

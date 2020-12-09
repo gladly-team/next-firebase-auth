@@ -5,7 +5,10 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
+import { setConfig } from 'src/config'
+import getMockConfig from 'src/testHelpers/getMockConfig'
 
+jest.mock('src/config')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
@@ -32,6 +35,27 @@ beforeEach(() => {
     idToken: 'fake-custom-id-token-here',
     refreshToken: 'fake-refresh-token-here',
     AuthUser: mockAuthUser,
+  })
+
+  const mockConfig = getMockConfig()
+  setConfig({
+    ...mockConfig,
+    cookies: {
+      ...mockConfig.cookies,
+      cookieName: 'SomeName',
+      keys: ['a-fake-key', 'another-fake-key'],
+      cookieOptions: {
+        ...mockConfig.cookies.cookieOptions,
+        domain: 'example.co.uk',
+        httpOnly: true,
+        maxAge: 12345678,
+        overwrite: true,
+        path: '/my-path',
+        sameSite: 'strict',
+        secure: true,
+        signed: true,
+      },
+    },
   })
 })
 
@@ -99,7 +123,19 @@ describe('setAuthCookies', () => {
         expect(setCookie).toHaveBeenCalledWith(
           'SomeName.AuthUser',
           mockAuthUser.serialize(),
-          { req: mockReq, res: mockRes }
+          { req: mockReq, res: mockRes },
+          // Options from the mock config.
+          {
+            keys: ['a-fake-key', 'another-fake-key'],
+            domain: 'example.co.uk',
+            httpOnly: true,
+            maxAge: 12345678,
+            overwrite: true,
+            path: '/my-path',
+            sameSite: 'strict',
+            secure: true,
+            signed: true,
+          }
         )
       },
     })
@@ -130,7 +166,19 @@ describe('setAuthCookies', () => {
             idToken: 'fake-custom-id-token-here',
             refreshToken: 'fake-refresh-token-here',
           }),
-          { req: mockReq, res: mockRes }
+          { req: mockReq, res: mockRes },
+          // Options from the mock config.
+          {
+            keys: ['a-fake-key', 'another-fake-key'],
+            domain: 'example.co.uk',
+            httpOnly: true,
+            maxAge: 12345678,
+            overwrite: true,
+            path: '/my-path',
+            sameSite: 'strict',
+            secure: true,
+            signed: true,
+          }
         )
       },
     })

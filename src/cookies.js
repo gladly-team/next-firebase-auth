@@ -2,49 +2,70 @@
 import Cookies from 'cookies'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
-const createCookieMgr = (req, res) => {
-  // FIXME: use user config
-  // An array is useful for rotating secrets without invalidating old sessions.
-  // The first will be used to sign cookies, and the rest to validate them.
-  // const sessionSecrets = ['abc', 'def']
-
+const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
   // https://github.com/pillarjs/cookies
   const cookies = Cookies(req, res, {
-    // keys: sessionSecrets,
-    // Recommended: set other options, such as "secure", "sameSite", etc.
-    // https://github.com/pillarjs/cookies#readme
+    keys,
+    secure,
   })
   return cookies
 }
 
-export const getCookie = (cookieName, { req, res }) => {
-  const cookies = createCookieMgr(req, res)
-  try {
-    const cookieVal = cookies.get(cookieName, {
-      // FIXME: use user config
-      // signed: true,
-    })
-    return cookieVal ? decodeBase64(cookieVal) : undefined
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e)
-    return undefined
+export const getCookie = (
+  cookieName,
+  { req, res },
+  { keys, secure, signed } = {}
+) => {
+  if (signed && !keys) {
+    throw new Error(
+      'The "keys" value must be provided when using signed cookies.'
+    )
   }
+
+  const cookies = createCookieMgr({ req, res }, { keys, secure })
+
+  // https://github.com/pillarjs/cookies#cookiesget-name--options--
+  const cookieVal = cookies.get(cookieName, { signed })
+  return cookieVal ? decodeBase64(cookieVal) : undefined
 }
 
-export const setCookie = (cookieName, cookieVal, { req, res }) => {
-  // TODO: probably cap maxAge to two weeks to enforce security.
+export const setCookie = (
+  cookieName,
+  cookieVal,
+  { req, res },
+  {
+    keys,
+    domain,
+    httpOnly,
+    maxAge,
+    overwrite,
+    path,
+    sameSite,
+    secure,
+    signed,
+  } = {}
+) => {
+  if (signed && !keys) {
+    throw new Error(
+      'The "keys" value must be provided when using signed cookies.'
+    )
+  }
 
-  const cookies = createCookieMgr(req, res)
+  const cookies = createCookieMgr({ req, res }, { keys, secure })
 
   // If the value is not defined, set the value to undefined
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
-  // FIXME: use user config
+  // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
   cookies.set(cookieName, valToSet, {
-    httpOnly: true,
-    maxAge: 604800000, // week
-    overwrite: true,
+    domain,
+    httpOnly,
+    maxAge,
+    overwrite,
+    path,
+    sameSite,
+    secure,
+    signed,
   })
 }
