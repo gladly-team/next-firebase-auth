@@ -23,15 +23,10 @@ export const getCookie = (
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
-  try {
-    // https://github.com/pillarjs/cookies#cookiesget-name--options--
-    const cookieVal = cookies.get(cookieName, { signed })
-    return cookieVal ? decodeBase64(cookieVal) : undefined
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e)
-    return undefined
-  }
+
+  // https://github.com/pillarjs/cookies#cookiesget-name--options--
+  const cookieVal = cookies.get(cookieName, { signed })
+  return cookieVal ? decodeBase64(cookieVal) : undefined
 }
 
 export const setCookie = (
