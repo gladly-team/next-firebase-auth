@@ -3,7 +3,8 @@ import logDebug from 'src/logDebug'
 
 let config
 
-const ONE_WEEK_IN_MS = 60 * 60 * 24 * 7 * 1000
+const ONE_WEEK_IN_MS = 7 * 60 * 60 * 24 * 1000
+const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 
 const defaultConfig = {
   debug: false,
@@ -72,6 +73,17 @@ const validateConfig = (mergedConfig) => {
     ) {
       throw new Error(
         'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      )
+    }
+
+    // Limit the max cookie age to two weeks for security. This matches
+    // Firebase's limit for user identity cookies:
+    // https://firebase.google.com/docs/auth/admin/manage-cookies
+    // By default, the cookie will be refreshed each time the user loads
+    // the client-side app.
+    if (mergedConfig.cookies.cookieOptions.maxAge > TWO_WEEKS_IN_MS) {
+      throw new Error(
+        `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
       )
     }
   }

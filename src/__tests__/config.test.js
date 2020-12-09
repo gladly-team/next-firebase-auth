@@ -136,4 +136,27 @@ describe('config', () => {
       'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
     )
   })
+
+  it('[server-side] throws if the user sets a maxAge of greater than two weeks', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        cookieOptions: {
+          ...mockConfigDefault.cookies.cookieOptions,
+          maxAge: 14 * 86400000 + 2, // two ms greaer than 14 days
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "cookies.maxAge" setting must be less than two weeks (1209600000 ms).'
+    )
+  })
 })

@@ -40,7 +40,6 @@ const setAuthCookies = async (req, res) => {
       keys: ['fake-key', 'another-fake-key'],
       domain: undefined,
       httpOnly: true,
-      // TODO: probably cap maxAge to two weeks to enforce security.
       maxAge: 1000000,
       overwrite: true,
       path: '/',
