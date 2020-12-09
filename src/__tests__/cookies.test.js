@@ -454,6 +454,445 @@ describe('cookies.js: setCookie', () => {
     })
   })
 
+  it('uses the domain option as expected', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            domain: 'example.com',
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .domain
+        ).toEqual('example.com')
+      },
+    })
+  })
+
+  it('sets "httpOnly" to true when the httpOnly option is true', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            httpOnly: true,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .httpOnly
+        ).toBe(true)
+      },
+    })
+  })
+
+  it('does not set "httpOnly" when the httpOnly option is false', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            httpOnly: false,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .httpOnly
+        ).toBeUndefined()
+      },
+    })
+  })
+
+  it('overwrites a cookie value when the overwrite option is true', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_ORIGINAL_VALUE = JSON.stringify({ original: 'stuff' })
+    const MOCK_COOKIE_NEW_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_ORIGINAL_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            signed: false, // makes things easier to test
+          }
+        )
+
+        // This SHOULD overwrite the previous value.
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_NEW_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            signed: false, // makes things easier to test
+            overwrite: true,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .value
+        ).toEqual(encodeBase64(MOCK_COOKIE_NEW_VALUE))
+      },
+    })
+  })
+
+  it('does not overwrite a cookie value when the overwrite option is false', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_ORIGINAL_VALUE = JSON.stringify({ original: 'stuff' })
+    const MOCK_COOKIE_NEW_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_ORIGINAL_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            signed: false, // makes things easier to test
+          }
+        )
+
+        // This should NOT overwrite the previous value.
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_NEW_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            signed: false, // makes things easier to test
+            overwrite: false,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .value
+        ).toEqual(encodeBase64(MOCK_COOKIE_ORIGINAL_VALUE))
+      },
+    })
+  })
+
+  it('uses the path option as expected', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            path: '/some/path',
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .path
+        ).toEqual('/some/path')
+      },
+    })
+  })
+
+  it('sets "sameSite" to "strict" when the sameSite option is set to "strict"', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            sameSite: 'strict',
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .sameSite
+        ).toEqual('strict')
+      },
+    })
+  })
+
+  it('sets "sameSite" to "strict" when the sameSite option is set to `true`', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            sameSite: true, // equals "strict"
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .sameSite
+        ).toEqual('strict')
+      },
+    })
+  })
+
+  it('sets "sameSite" to "lax" when the sameSite option is set to "lax"', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            sameSite: 'lax',
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .sameSite
+        ).toEqual('lax')
+      },
+    })
+  })
+
+  it('sets "sameSite" to "none" when the sameSite option is set to "none"', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            sameSite: 'none',
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .sameSite
+        ).toEqual('none')
+      },
+    })
+  })
+
+  it('sets "secure" to "true" when the secure option is set to true', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            secure: true,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .secure
+        ).toBe(true)
+      },
+    })
+  })
+
+  it('does not set "secure" when the secure option is set to false', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        setCookie(
+          MOCK_COOKIE_NAME,
+          MOCK_COOKIE_VALUE,
+          {
+            req,
+            res,
+          },
+          {
+            ...createSetCookieOptions(),
+            secure: false,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .secure
+        ).toBeUndefined()
+      },
+    })
+  })
+
   // TODO: mock date to test expiry
-  // TODO: test other cookie options
 })
