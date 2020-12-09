@@ -95,6 +95,36 @@ describe('cookies.js: getCookie', () => {
     })
   })
 
+  it('returns the expected cookie value when no options are provided, defaulting to secure=false and unsigned', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = {
+      my: ['data', 'here'],
+    }
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        const cookieVal = getCookie(
+          MOCK_COOKIE_NAME,
+          { req, res }
+          // no options specified
+        )
+        expect(JSON.parse(cookieVal)).toEqual(MOCK_COOKIE_VAL)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
+              JSON.stringify(MOCK_COOKIE_VAL)
+            )};`,
+          },
+        })
+      },
+    })
+  })
+
   it('returns the expected cookie value [signed]', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
