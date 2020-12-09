@@ -99,7 +99,8 @@ describe('setAuthCookies', () => {
         expect(setCookie).toHaveBeenCalledWith(
           'SomeName.AuthUser',
           mockAuthUser.serialize(),
-          { req: mockReq, res: mockRes }
+          { req: mockReq, res: mockRes },
+          expect.any(Object) // TODO: test that we use config values
         )
       },
     })
@@ -130,7 +131,8 @@ describe('setAuthCookies', () => {
             idToken: 'fake-custom-id-token-here',
             refreshToken: 'fake-refresh-token-here',
           }),
-          { req: mockReq, res: mockRes }
+          { req: mockReq, res: mockRes },
+          expect.any(Object) // TODO: test that we use config values
         )
       },
     })

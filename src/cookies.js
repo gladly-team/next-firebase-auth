@@ -50,8 +50,6 @@ export const setCookie = (
     signed,
   } = {}
 ) => {
-  // TODO: probably cap maxAge to two weeks to enforce security.
-
   if (signed && !keys) {
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
