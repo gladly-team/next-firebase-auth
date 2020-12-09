@@ -21,7 +21,7 @@
     "build:src": "NODE_ENV=production webpack",
     "lint": "eslint ./src/",
     "test": "npm-run-all -s lint test:coverage coverage",
-    "test:run": "jest --env=jsdom --testPathIgnorePatterns=prebidPatches",
+    "test:run": "jest --env=jsdom",
     "test:coverage": "yarn run test:run --coverage",
     "test:watch": "yarn run test:run --watch",
     "coverage": "if-env LOG_TEST_COVERAGE=true && codecov || echo 'Skipping test coverage logging.'",
