@@ -36,6 +36,7 @@ const useFirebaseUser = () => {
     setAuthCookie(firebaseUser)
   }
 
+  // TODO: we also need onAuthStateChanged to update the Firebase user.
   useEffect(() => {
     const unsubscribe = firebase.auth().onIdTokenChanged(onChange)
     return () => unsubscribe()

@@ -115,6 +115,9 @@ const createAuthUser = ({
     // clientInitialized is true if the user state is determined by
     // the Firebase JS SDK.
     clientInitialized,
+    // firebaseUser is null if the Firebase JS SDK has not initialized.
+    // Otherwise, it is the user value from the Firebase JS SDK.
+    firebaseUser: firebaseUserClientSDK || null,
     serialize: () =>
       JSON.stringify({
         id: userId,

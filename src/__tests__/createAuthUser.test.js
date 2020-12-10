@@ -14,6 +14,7 @@ describe('createAuthUser: basic tests', () => {
       emailVerified: false,
       getIdToken: expect.any(Function),
       id: null,
+      firebaseUser: null,
       serialize: expect.any(Function),
     })
   })
@@ -103,14 +104,16 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
   it('returns the expected data', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserJSSDK = getMockFirebaseUserClientSDK()
     expect(
-      createAuthUser({ firebaseUserClientSDK: getMockFirebaseUserClientSDK() })
+      createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
     ).toEqual({
       id: 'abc-123',
       email: 'abc@example.com',
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: firebaseUserJSSDK,
       serialize: expect.any(Function),
     })
   })
@@ -156,6 +159,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: null,
       serialize: expect.any(Function),
     })
   })
@@ -233,6 +237,7 @@ describe('createAuthUser: serializedAuthUser', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: null,
       serialize: expect.any(Function),
     })
   })
