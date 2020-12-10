@@ -4,6 +4,11 @@ import {
   getMockSerializedAuthUser,
 } from 'src/testHelpers/authUserInputs'
 
+jest.mock('firebase/auth')
+jest.mock('firebase/app')
+
+// TODO: test that signOut is a noop unless using client JS SDK
+
 describe('createAuthUser: basic tests', () => {
   it('returns the expected data for an unauthenticated user', () => {
     expect.assertions(1)
@@ -15,6 +20,7 @@ describe('createAuthUser: basic tests', () => {
       getIdToken: expect.any(Function),
       id: null,
       firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -114,6 +120,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       clientInitialized: false,
       getIdToken: expect.any(Function),
       firebaseUser: firebaseUserJSSDK,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -160,6 +167,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       clientInitialized: false,
       getIdToken: expect.any(Function),
       firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -238,6 +246,7 @@ describe('createAuthUser: serializedAuthUser', () => {
       clientInitialized: false,
       getIdToken: expect.any(Function),
       firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })

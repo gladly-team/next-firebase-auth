@@ -1,5 +1,16 @@
 /* eslint no-underscore-dangle: 0 */
 import logDebug from 'src/logDebug'
+import isClientSide from 'src/isClientSide'
+
+// TODO: explain rationale
+let signOut = async () => {}
+if (isClientSide()) {
+  // eslint-disable-next-line global-require
+  require('firebase/auth')
+  // eslint-disable-next-line global-require
+  const firebase = require('firebase/app').default
+  signOut = firebase.auth().signOut
+}
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -105,19 +116,23 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
-    // We want this method to be isomorphic.
-    // When `user` is an AuthUserSerializable object, take the token value
-    // and return it from this method.
-    // After the Firebase JS SDK has initialized on the client side, use the
-    // Firebase SDK's getIdToKen method, which will handle refreshing the token
-    // as needed.
+    // We want the "getIdToken" method to be isomorphic.
+    // When `user` is an AuthUserSerializable object, we take the token
+    // value and return it from this method.
+    // After the Firebase JS SDK has initialized on the client side, we
+    // use the Firebase SDK's getIdToken method, which will handle refreshing
+    // the token as needed.
     getIdToken: getIdTokenFunc,
     // clientInitialized is true if the user state is determined by
     // the Firebase JS SDK.
     clientInitialized,
-    // firebaseUser is null if the Firebase JS SDK has not initialized.
-    // Otherwise, it is the user value from the Firebase JS SDK.
+    // The "firebaseUser" value is null if the Firebase JS SDK has not
+    // initialized. Otherwise, it is the user value from the Firebase JS SDK.
     firebaseUser: firebaseUserClientSDK || null,
+    // The "signOut" method is a noop when the Firebase JS SDK has not
+    // initialized. Otherwise, it is the SDK's "signOut" method:
+    // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout
+    signOut,
     serialize: () =>
       JSON.stringify({
         id: userId,
