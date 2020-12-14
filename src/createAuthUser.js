@@ -5,19 +5,19 @@ import isClientSide from 'src/isClientSide'
 /**
  * Take a representation of a Firebase user from a maximum of one of:
  * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
- * Return a standardized AuthUser object. If no Firebase user info is provided,
- * return null (unauthenticated) user info.
- * from client-side Firebase JS SDK) and return an AuthUser object.
+ * Return a standardized AuthUser object.
+ *
  * @param {Object} params
- * @return {Object|undefined} params.firebaseUserClientSDK - The Firebase
+ * @param {Object|undefined} params.firebaseUserClientSDK - The Firebase
  *   user returned from the Firebase JS SDK.
- * @return {Object|undefined} params.firebaseUserAdminSDK - The Firebase
+ * @param {Object|undefined} params.firebaseUserAdminSDK - The Firebase
  *   user returned from the Firebase admin SDK.
- * @return {String|undefined} params.serializedAuthUser - The string of
+ * @param {String|undefined} params.serializedAuthUser - The string of
  *   a serialized AuthUser, previously returned from an AuthUser instance's
  *   serialize method.
+ *
  * @return {Object|null} AuthUser - The user object.
- * @param {Boolean} clientInitialized - This should be true if the
+ * @return {Boolean} AuthUser.clientInitialized - This will be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.
  * @return {Object|null} AuthUser - The authenticated user's info.
@@ -31,6 +31,12 @@ import isClientSide from 'src/isClientSide'
  *   Firebase JS SDK has initialized.
  * @return {Function} AuthUser.serialize - An function that returns a
  *   serialized version of AuthUser.
+ *  @return {Object|null} AuthUser.firebaseUser - null if the Firebase JS SDK has not
+ *   initialized. Otherwise, it is the user value from the Firebase JS SDK.
+ * @return {Function} AuthUser.signOut - An asynchronous function that, after the
+ *   client side Firebase SDK has initialized, signs the user out. In other
+ *   contexts, it is a noop.
+
  */
 const createAuthUser = ({
   firebaseUserClientSDK,
