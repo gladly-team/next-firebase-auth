@@ -12,6 +12,7 @@ afterEach(() => {
 
 describe('useFirebaseUser', () => {
   it('returns an undefined user and initialized=false before the Firebase JS SDK has initialized', () => {
+    expect.assertions(1)
     const { result } = renderHook(() => useFirebaseUser())
     expect(result.current).toEqual({
       user: undefined,
@@ -20,6 +21,8 @@ describe('useFirebaseUser', () => {
   })
 
   it('returns the Firebase user and initialized=true after the Firebase JS SDK has initialized', () => {
+    expect.assertions(1)
+
     // Capture the onIdTokenChanged callback.
     let onIdTokenChangedCallback
     firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
@@ -37,5 +40,17 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       initialized: true,
     })
+  })
+
+  it('unsubscribes from the Firebase event when it unmounts', () => {
+    expect.assertions(2)
+    const onIdTokenChangedUnsubscribe = jest.fn()
+    firebase
+      .auth()
+      .onIdTokenChanged.mockImplementation(() => onIdTokenChangedUnsubscribe)
+    const { unmount } = renderHook(() => useFirebaseUser())
+    expect(onIdTokenChangedUnsubscribe).not.toHaveBeenCalled()
+    unmount()
+    expect(onIdTokenChangedUnsubscribe).toHaveBeenCalled()
   })
 })
