@@ -53,6 +53,7 @@ export const setCookie = (
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
 
+  // TODO: move this to its own method and test.
   // If the value is not defined, set the value to undefined
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)

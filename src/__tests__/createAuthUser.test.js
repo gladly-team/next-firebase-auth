@@ -1,8 +1,16 @@
+import firebase from 'firebase/app'
 import {
   getMockFirebaseUserClientSDK,
   getMockFirebaseUserAdminSDK,
   getMockSerializedAuthUser,
 } from 'src/testHelpers/authUserInputs'
+
+jest.mock('firebase/auth')
+jest.mock('firebase/app')
+
+afterEach(() => {
+  jest.clearAllMocks()
+})
 
 describe('createAuthUser: basic tests', () => {
   it('returns the expected data for an unauthenticated user', () => {
@@ -14,6 +22,8 @@ describe('createAuthUser: basic tests', () => {
       emailVerified: false,
       getIdToken: expect.any(Function),
       id: null,
+      firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -103,14 +113,17 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
   it('returns the expected data', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserJSSDK = getMockFirebaseUserClientSDK()
     expect(
-      createAuthUser({ firebaseUserClientSDK: getMockFirebaseUserClientSDK() })
+      createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
     ).toEqual({
       id: 'abc-123',
       email: 'abc@example.com',
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: firebaseUserJSSDK,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -142,6 +155,26 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       })
     )
   })
+
+  it("calls Firebase's signOut method when we call AuthUser.signOut", async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+    })
+    await AuthUser.signOut()
+    expect(firebase.auth().signOut).toHaveBeenCalled()
+  })
+
+  it("does not call Firebase's signOut method when we call AuthUser.signOut and the user is unauthed", async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserClientSDK: null,
+    })
+    await AuthUser.signOut()
+    expect(firebase.auth().signOut).not.toHaveBeenCalled()
+  })
 })
 
 describe('createAuthUser: firebaseUserAdminSDK', () => {
@@ -156,6 +189,8 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -219,6 +254,17 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       })
     )
   })
+
+  it("does not call Firebase's signOut method when we call AuthUser.signOut (it should be a noop)", async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      token: 'my-id-token-def-456',
+    })
+    await AuthUser.signOut()
+    expect(firebase.auth().signOut).not.toHaveBeenCalled()
+  })
 })
 
 describe('createAuthUser: serializedAuthUser', () => {
@@ -233,6 +279,8 @@ describe('createAuthUser: serializedAuthUser', () => {
       emailVerified: true,
       clientInitialized: false,
       getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
       serialize: expect.any(Function),
     })
   })
@@ -250,6 +298,17 @@ describe('createAuthUser: serializedAuthUser', () => {
       ...AuthUser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
+      signOut: expect.any(Function),
     })
+  })
+
+  it("does not call Firebase's signOut method when we call AuthUser.signOut (it should be a noop)", async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      serializedAuthUser: getMockSerializedAuthUser(),
+    })
+    await AuthUser.signOut()
+    expect(firebase.auth().signOut).not.toHaveBeenCalled()
   })
 })
