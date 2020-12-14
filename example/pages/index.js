@@ -19,12 +19,12 @@ const Demo = () => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <p>
-          This page is does not require user auth, so it won't redirect to the
-          login page if you are not signed in.
+          This page is does not require authentication, so it won't redirect to
+          the login page if you are not signed in.
         </p>
         <p>
-          If you remove getServerSideProps from this page, the page will be
-          static and load the authed user on the client side.
+          If you remove `getServerSideProps` from this page, it will be static
+          and load the authed user only on the client side.
         </p>
       </div>
     </div>
