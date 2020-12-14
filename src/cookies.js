@@ -53,7 +53,6 @@ export const setCookie = (
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
 
-  // TODO: move this to its own method and test.
   // If the value is not defined, set the value to undefined
   // so that the cookie will be deleted.
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
@@ -69,4 +68,13 @@ export const setCookie = (
     secure,
     signed,
   })
+}
+
+// Some options, like path and domain, must match those used when setting
+// the cookie.
+export const deleteCookie = (cookieName, reqResObj, options) => {
+  // "If the value is omitted, an outbound header with an expired
+  // date is used to delete the cookie."
+  // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
+  setCookie(cookieName, undefined, reqResObj, options)
 }
