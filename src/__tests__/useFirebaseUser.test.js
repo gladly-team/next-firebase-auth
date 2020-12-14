@@ -6,6 +6,11 @@ import { getMockFirebaseUserClientSDK } from 'src/testHelpers/authUserInputs'
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
 
+beforeEach(() => {
+  // `fetch` is polyfilled by Next.js.
+  global.fetch = jest.fn()
+})
+
 afterEach(() => {
   jest.clearAllMocks()
 })
