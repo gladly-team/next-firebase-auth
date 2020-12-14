@@ -30,15 +30,15 @@ const useFirebaseUser = () => {
   const [user, setUser] = useState()
   const [initialized, setInitialized] = useState(false)
 
-  function onChange(firebaseUser) {
+  function onIdTokenChange(firebaseUser) {
     setUser(firebaseUser)
     setInitialized(true)
     setAuthCookie(firebaseUser)
   }
 
-  // TODO: we also need onAuthStateChanged to update the Firebase user.
   useEffect(() => {
-    const unsubscribe = firebase.auth().onIdTokenChanged(onChange)
+    // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
+    const unsubscribe = firebase.auth().onIdTokenChanged(onIdTokenChange)
     return () => unsubscribe()
   }, [])
 
