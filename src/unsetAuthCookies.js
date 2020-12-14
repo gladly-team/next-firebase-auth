@@ -2,15 +2,30 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
-import { setCookie } from 'src/cookies'
+import { getConfig } from 'src/config'
+import { deleteCookie } from 'src/cookies'
 
 const unsetAuthCookies = async (req, res) => {
-  // Setting the value to undefined will unset the cookie.
-  setCookie(getAuthUserTokensCookieName(), undefined, { req, res })
-  setCookie(getAuthUserCookieName(), undefined, {
-    req,
-    res,
-  })
+  const { keys, cookieOptions } = getConfig().cookies
+  deleteCookie(
+    getAuthUserTokensCookieName(),
+    { req, res },
+    {
+      keys,
+      ...cookieOptions,
+    }
+  )
+  deleteCookie(
+    getAuthUserCookieName(),
+    {
+      req,
+      res,
+    },
+    {
+      keys,
+      ...cookieOptions,
+    }
+  )
 }
 
 export default unsetAuthCookies

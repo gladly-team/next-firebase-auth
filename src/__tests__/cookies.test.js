@@ -64,6 +64,8 @@ const createSetCookieOptions = () => ({
   signed: true,
 })
 
+const createDeleteCookieOptions = createSetCookieOptions
+
 describe('cookies.js: getCookie', () => {
   it('returns the expected cookie value [unsigned]', async () => {
     expect.assertions(1)
@@ -1028,6 +1030,106 @@ describe('cookies.js: setCookie', () => {
         expect(moment(expires).toISOString()).toEqual(
           moment(mockNow).add(368, 'days').toISOString()
         )
+      },
+    })
+  })
+})
+
+describe('cookies.js: deleteCookie', () => {
+  it('sets the expected expired date', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { deleteCookie } = require('src/cookies')
+        deleteCookie(
+          MOCK_COOKIE_NAME,
+          {
+            req,
+            res,
+          },
+          createDeleteCookieOptions()
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        const expiresAt = setCookiesParsed.find(
+          (cookie) => cookie.name === MOCK_COOKIE_NAME
+        ).expires
+        expect(moment(expiresAt).toISOString()).toEqual(
+          moment('1970-01-01T00:00:00.000Z').toISOString()
+        )
+      },
+    })
+  })
+
+  it('sets the expected empty value', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { deleteCookie } = require('src/cookies')
+        deleteCookie(
+          MOCK_COOKIE_NAME,
+          {
+            req,
+            res,
+          },
+          createDeleteCookieOptions()
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+            .value
+        ).toEqual('')
+      },
+    })
+  })
+
+  it('uses the provided options', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { deleteCookie } = require('src/cookies')
+        deleteCookie(
+          MOCK_COOKIE_NAME,
+          {
+            req,
+            res,
+          },
+          {
+            ...createDeleteCookieOptions(),
+            path: '/pizza',
+            sameSite: 'lax',
+            secure: true,
+          }
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        const response = await fetch()
+        const setCookiesParsed = parseCookies(
+          response.headers.get('set-cookie')
+        )
+        expect(
+          setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
+        ).toMatchObject({
+          httpOnly: true,
+          path: '/pizza',
+          sameSite: 'lax',
+          secure: true,
+        })
       },
     })
   })

@@ -2,15 +2,39 @@ import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
-import { setCookie } from 'src/cookies'
+import { deleteCookie } from 'src/cookies'
 import { testApiHandler } from 'next-test-api-route-handler'
+import { setConfig } from 'src/config'
+import getMockConfig from 'src/testHelpers/getMockConfig'
 
+jest.mock('src/config')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
 
 beforeEach(() => {
   getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
   getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+
+  const mockConfig = getMockConfig()
+  setConfig({
+    ...mockConfig,
+    cookies: {
+      ...mockConfig.cookies,
+      cookieName: 'SomeName',
+      keys: ['a-fake-key', 'another-fake-key'],
+      cookieOptions: {
+        ...mockConfig.cookies.cookieOptions,
+        domain: 'example.co.uk',
+        httpOnly: true,
+        maxAge: 12345678,
+        overwrite: true,
+        path: '/my-path',
+        sameSite: 'strict',
+        secure: true,
+        signed: true,
+      },
+    },
+  })
 })
 
 afterEach(() => {
@@ -18,7 +42,7 @@ afterEach(() => {
 })
 
 describe('unsetAuthCookies', () => {
-  it('calls setCookie with an undefined value for the AuthUser cookie', async () => {
+  it('calls deleteCookie for the AuthUser cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
     let mockReq
@@ -33,15 +57,30 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(setCookie).toHaveBeenCalledWith('SomeName.AuthUser', undefined, {
-          req: mockReq,
-          res: mockRes,
-        })
+        expect(deleteCookie).toHaveBeenCalledWith(
+          'SomeName.AuthUser',
+          {
+            req: mockReq,
+            res: mockRes,
+          },
+          // Options from the mock config.
+          {
+            keys: ['a-fake-key', 'another-fake-key'],
+            domain: 'example.co.uk',
+            httpOnly: true,
+            maxAge: 12345678,
+            overwrite: true,
+            path: '/my-path',
+            sameSite: 'strict',
+            secure: true,
+            signed: true,
+          }
+        )
       },
     })
   })
 
-  it('calls setCookie with an undefined value for the AuthUserTokens cookie', async () => {
+  it('calls deleteCookie for the AuthUserTokens cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
     let mockReq
@@ -56,12 +95,23 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(setCookie).toHaveBeenCalledWith(
+        expect(deleteCookie).toHaveBeenCalledWith(
           'SomeName.AuthUserTokens',
-          undefined,
           {
             req: mockReq,
             res: mockRes,
+          },
+          // Options from the mock config.
+          {
+            keys: ['a-fake-key', 'another-fake-key'],
+            domain: 'example.co.uk',
+            httpOnly: true,
+            maxAge: 12345678,
+            overwrite: true,
+            path: '/my-path',
+            sameSite: 'strict',
+            secure: true,
+            signed: true,
           }
         )
       },
