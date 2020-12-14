@@ -2,16 +2,6 @@
 import logDebug from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
 
-// Only import the Firebase JS SDK on the client side, which
-// we use to provide a convenience "signOut" method.
-let firebase
-if (isClientSide()) {
-  // eslint-disable-next-line global-require
-  require('firebase/auth')
-  // eslint-disable-next-line global-require
-  firebase = require('firebase/app').default
-}
-
 /**
  * Take a representation of a Firebase user from a maximum of one of:
  * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
@@ -93,6 +83,13 @@ const createAuthUser = ({
   let getIdTokenFunc = async () => null
 
   // When not on the client side, the "signOut" method is a noop.
+  let firebase
+  if (isClientSide()) {
+    // eslint-disable-next-line global-require
+    require('firebase/auth')
+    // eslint-disable-next-line global-require
+    firebase = require('firebase/app').default
+  }
   let signOut = async () => {}
 
   let tokenString = null // used for serialization
@@ -101,7 +98,7 @@ const createAuthUser = ({
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
     getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
-    signOut = firebase.auth().signOut
+    signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
     userId = firebaseUserAdminSDK.uid
