@@ -19,10 +19,20 @@ const Demo = () => {
         and load the authed user on the client side.
       </p>
       {AuthUser.id ? (
-        <p>
-          You're signed in. Email:
-          {AuthUser.email}
-        </p>
+        <div>
+          <p>
+            You're signed in. Email:
+            {AuthUser.email}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              AuthUser.signOut()
+            }}
+          >
+            Sign out
+          </button>
+        </div>
       ) : (
         <p>
           You are not signed in.{' '}
