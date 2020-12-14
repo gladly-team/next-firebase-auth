@@ -25,7 +25,7 @@ describe('useFirebaseUser', () => {
     })
   })
 
-  it('returns the Firebase user and initialized=true after the Firebase JS SDK has initialized', () => {
+  it('returns the Firebase user and initialized=true after the Firebase JS SDK calls `onIdTokenChanged`', () => {
     expect.assertions(1)
 
     // Capture the onIdTokenChanged callback.
@@ -47,7 +47,7 @@ describe('useFirebaseUser', () => {
     })
   })
 
-  it('unsubscribes from the Firebase event when it unmounts', () => {
+  it('unsubscribes from the Firebase `onIdTokenChanged` event when it unmounts', () => {
     expect.assertions(2)
     const onIdTokenChangedUnsubscribe = jest.fn()
     firebase
