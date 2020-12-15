@@ -6,7 +6,7 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { setConfig } from 'src/config'
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
 
 jest.mock('src/config')
@@ -24,7 +24,7 @@ beforeEach(() => {
     AuthUser: mockAuthUser,
   })
 
-  const mockConfig = getMockConfig()
+  const mockConfig = createMockConfig()
   setConfig({
     ...mockConfig,
     cookies: {

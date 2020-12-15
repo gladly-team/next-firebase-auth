@@ -1,8 +1,8 @@
 import firebase from 'firebase/app'
 import {
-  getMockFirebaseUserClientSDK,
-  getMockFirebaseUserAdminSDK,
-  getMockSerializedAuthUser,
+  createMockFirebaseUserClientSDK,
+  createMockFirebaseUserAdminSDK,
+  createMockSerializedAuthUser,
 } from 'src/testHelpers/authUserInputs'
 
 jest.mock('firebase/auth')
@@ -33,9 +33,9 @@ describe('createAuthUser: basic tests', () => {
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
       createAuthUser({
-        firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
-        firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
-        serializedAuthUser: getMockSerializedAuthUser(),
+        firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
+        firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        serializedAuthUser: createMockSerializedAuthUser(),
       })
     }).toThrow(
       'createAuthUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
@@ -47,8 +47,8 @@ describe('createAuthUser: basic tests', () => {
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
       createAuthUser({
-        firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
-        firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+        firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
+        firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         serializedAuthUser: undefined,
       })
     }).toThrow(
@@ -61,7 +61,7 @@ describe('createAuthUser: basic tests', () => {
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
       createAuthUser({
-        firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+        firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         clientInitialized: true,
       })
     }).toThrow(
@@ -74,7 +74,7 @@ describe('createAuthUser: basic tests', () => {
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
       createAuthUser({
-        serializedAuthUser: getMockSerializedAuthUser(),
+        serializedAuthUser: createMockSerializedAuthUser(),
         clientInitialized: true,
       })
     }).toThrow(
@@ -100,7 +100,7 @@ describe('createAuthUser: basic tests', () => {
     const createAuthUser = require('src/createAuthUser').default
     expect(() => {
       createAuthUser({
-        firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+        firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
         token: 'some-token-val',
       })
     }).toThrow(
@@ -113,7 +113,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
   it('returns the expected data', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
-    const firebaseUserJSSDK = getMockFirebaseUserClientSDK()
+    const firebaseUserJSSDK = createMockFirebaseUserClientSDK()
     expect(
       createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
     ).toEqual({
@@ -132,7 +132,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+      firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
     const token = await AuthUser.getIdToken()
     expect(token).toEqual('my-id-token-abc-123')
@@ -142,7 +142,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+      firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
     const AuthUserSerialized = AuthUser.serialize()
     expect(AuthUserSerialized).toEqual(
@@ -160,7 +160,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserClientSDK: getMockFirebaseUserClientSDK(),
+      firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
     await AuthUser.signOut()
     expect(firebase.auth().signOut).toHaveBeenCalled()
@@ -182,7 +182,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     expect(
-      createAuthUser({ firebaseUserAdminSDK: getMockFirebaseUserAdminSDK() })
+      createAuthUser({ firebaseUserAdminSDK: createMockFirebaseUserAdminSDK() })
     ).toEqual({
       id: 'def-456',
       email: 'def@example.com',
@@ -199,7 +199,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       // token: undefined, // no token
     })
     const token = await AuthUser.getIdToken()
@@ -210,7 +210,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
     const token = await AuthUser.getIdToken()
@@ -221,7 +221,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       // token: undefined, // no token
     })
     const AuthUserSerialized = AuthUser.serialize()
@@ -240,7 +240,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
     const AuthUserSerialized = AuthUser.serialize()
@@ -259,7 +259,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      firebaseUserAdminSDK: getMockFirebaseUserAdminSDK(),
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
     await AuthUser.signOut()
@@ -272,7 +272,7 @@ describe('createAuthUser: serializedAuthUser', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     expect(
-      createAuthUser({ serializedAuthUser: getMockSerializedAuthUser() })
+      createAuthUser({ serializedAuthUser: createMockSerializedAuthUser() })
     ).toEqual({
       id: 'ghi-789',
       email: 'ghi@example.com',
@@ -288,7 +288,7 @@ describe('createAuthUser: serializedAuthUser', () => {
   it('returns the original values from serialize and back', async () => {
     expect.assertions(2)
     const createAuthUser = require('src/createAuthUser').default
-    const mockSerializedAuthUser = getMockSerializedAuthUser()
+    const mockSerializedAuthUser = createMockSerializedAuthUser()
     const AuthUser = createAuthUser({
       serializedAuthUser: mockSerializedAuthUser,
     })
@@ -306,7 +306,7 @@ describe('createAuthUser: serializedAuthUser', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const AuthUser = createAuthUser({
-      serializedAuthUser: getMockSerializedAuthUser(),
+      serializedAuthUser: createMockSerializedAuthUser(),
     })
     await AuthUser.signOut()
     expect(firebase.auth().signOut).not.toHaveBeenCalled()

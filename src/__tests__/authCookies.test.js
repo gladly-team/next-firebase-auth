@@ -1,10 +1,10 @@
 import { setConfig } from 'src/config'
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('src/config')
 
 beforeEach(() => {
-  const mockConfig = getMockConfig()
+  const mockConfig = createMockConfig()
   setConfig({
     ...mockConfig,
     cookies: {

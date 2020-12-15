@@ -1,4 +1,4 @@
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('src/isClientSide')
 
@@ -18,7 +18,7 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfig = getMockConfig()
+    const mockConfig = createMockConfig()
     setConfig(mockConfig)
     expect(getConfig()).toEqual(mockConfig)
   })
@@ -29,7 +29,7 @@ describe('config', () => {
     isClientSide.mockReturnValue(true)
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
-      ...getMockConfig(),
+      ...createMockConfig(),
       firebaseAdminInitConfig: undefined,
       cookies: undefined,
     }
@@ -61,7 +61,7 @@ describe('config', () => {
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
     const mockConfig = {
-      ...getMockConfig(),
+      ...createMockConfig(),
       firebaseAdminInitConfig: { some: 'stuff' },
       cookies: undefined,
     }
@@ -77,7 +77,7 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       firebaseAdminInitConfig: undefined,
@@ -98,7 +98,7 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       cookies: {
@@ -118,7 +118,7 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       cookies: {
@@ -142,7 +142,7 @@ describe('config', () => {
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       cookies: {
@@ -163,7 +163,7 @@ describe('config', () => {
   it('throws if the loginAPIEndpoint is not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       firebaseAdminInitConfig: undefined, // for other config validation
@@ -180,7 +180,7 @@ describe('config', () => {
   it('throws if the logoutAPIEndpoint is not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
-    const mockConfigDefault = getMockConfig()
+    const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
       firebaseAdminInitConfig: undefined, // for other config validation
