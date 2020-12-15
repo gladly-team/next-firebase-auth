@@ -10,6 +10,8 @@ initAuth({
   // onAuthStateChanged: () => {},
   // authRequiredRedirectURL: '/auth',
   // appRedirectURL: '/demo',
+  loginAPIEndpoint: '/api/login',
+  logoutAPIEndpoint: '/api/logout',
   // Don't set the Firebase admin config on the client side.
   ...(isServerSide && {
     firebaseAdminInitConfig: {
