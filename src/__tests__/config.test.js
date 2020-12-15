@@ -68,7 +68,7 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'The "firebaseAdminInitConfig" setting should not be available on the client side.'
+      'Invalid next-firebase-auth options: The "firebaseAdminInitConfig" setting should not be available on the client side.'
     )
   })
 
@@ -89,7 +89,7 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'The "cookies.keys" setting should not be available on the client side.'
+      'Invalid next-firebase-auth options: The "cookies.keys" setting should not be available on the client side.'
     )
   })
 
@@ -109,7 +109,7 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'The "cookies.cookieName" setting is required on the server side.'
+      'Invalid next-firebase-auth options: The "cookies.cookieName" setting is required on the server side.'
     )
   })
 
@@ -133,7 +133,7 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
     )
   })
 
@@ -156,7 +156,41 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'The "cookies.maxAge" setting must be less than two weeks (1209600000 ms).'
+      'Invalid next-firebase-auth options: The "cookies.maxAge" setting must be less than two weeks (1209600000 ms).'
+    )
+  })
+
+  it('throws if the loginAPIEndpoint is not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAdminInitConfig: undefined, // for other config validation
+      cookies: undefined, // for other config validation
+      loginAPIEndpoint: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "loginAPIEndpoint" setting is required.'
+    )
+  })
+
+  it('throws if the logoutAPIEndpoint is not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAdminInitConfig: undefined, // for other config validation
+      cookies: undefined, // for other config validation
+      logoutAPIEndpoint: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "logoutAPIEndpoint" setting is required.'
     )
   })
 })
