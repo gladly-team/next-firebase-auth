@@ -6,36 +6,57 @@ import 'firebase/auth'
 const loginEndpoint = '/api/login-v2'
 const logoutEndpoint = '/api/logout-v2'
 
-const setAuthCookie = async (firebaseUser) => {
-  // TODO: test fetch error behavior
-
+const setAuthCookie = async (firebaseUser, setError) => {
+  let response
   // If the user is authed, call login to set a cookie.
   if (firebaseUser) {
     const userToken = await firebaseUser.getIdToken()
-    return fetch(loginEndpoint, {
+    response = await fetch(loginEndpoint, {
       method: 'POST',
       headers: {
         Authorization: userToken,
       },
       credentials: 'include',
     })
+    if (!response.ok) {
+      const responseJSON = await response.json()
+      throw new Error(
+        `Received ${
+          response.status
+        } response from login API endpoint: ${JSON.stringify(responseJSON)}`
+      )
+    }
+  } else {
+    // If the user is not authed, call logout to unset the cookie.
+    response = await fetch(logoutEndpoint, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    if (!response.ok) {
+      const responseJSON = await response.json()
+      throw new Error(
+        `Received ${
+          response.status
+        } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
+      )
+    }
   }
 
-  // If the user is not authed, call logout to unset the cookie.
-  return fetch(logoutEndpoint, {
-    method: 'POST',
-    credentials: 'include',
-  })
+  return response
 }
 
 const useFirebaseUser = () => {
   const [user, setUser] = useState()
   const [initialized, setInitialized] = useState(false)
 
-  function onIdTokenChange(firebaseUser) {
-    setUser(firebaseUser)
-    setInitialized(true)
-    setAuthCookie(firebaseUser)
+  async function onIdTokenChange(firebaseUser) {
+    try {
+      setUser(firebaseUser)
+      setInitialized(true)
+      await setAuthCookie(firebaseUser)
+    } catch (e) {
+      throw e
+    }
   }
 
   useEffect(() => {
