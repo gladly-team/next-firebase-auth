@@ -1,13 +1,13 @@
 import firebase from 'firebase/app'
 import { setConfig } from 'src/config'
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('firebase/app')
 jest.mock('firebase/auth')
 jest.mock('src/config')
 
 beforeEach(() => {
-  const mockConfig = getMockConfig()
+  const mockConfig = createMockConfig()
   setConfig(mockConfig)
 
   firebase.apps = []
@@ -40,7 +40,7 @@ describe('initFirebaseClientSDK', () => {
 
   it('throws if config.firebaseClientInitConfig is not set and no app is initialized', () => {
     expect.assertions(1)
-    const mockConfig = getMockConfig()
+    const mockConfig = createMockConfig()
     setConfig({
       ...mockConfig,
       firebaseClientInitConfig: undefined,
@@ -55,7 +55,7 @@ describe('initFirebaseClientSDK', () => {
 
   it('does not throw if config.firebaseClientInitConfig is not set but a Firebase app is already initialized', () => {
     expect.assertions(1)
-    const mockConfig = getMockConfig()
+    const mockConfig = createMockConfig()
     setConfig({
       ...mockConfig,
       firebaseClientInitConfig: undefined,

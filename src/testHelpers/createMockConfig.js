@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-const getMockConfig = () => ({
+const createMockConfig = () => ({
   debug: false,
   loginAPIEndpoint: 'https://example.com/api/login',
   logoutAPIEndpoint: 'https://example.com/api/logout',
@@ -36,4 +36,4 @@ const getMockConfig = () => ({
   },
 })
 
-export default getMockConfig
+export default createMockConfig

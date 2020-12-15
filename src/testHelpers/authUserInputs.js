@@ -1,4 +1,4 @@
-export const getMockFirebaseUserClientSDK = () => ({
+export const createMockFirebaseUserClientSDK = () => ({
   uid: 'abc-123',
   email: 'abc@example.com',
   emailVerified: true,
@@ -7,7 +7,7 @@ export const getMockFirebaseUserClientSDK = () => ({
 })
 
 // https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken#uid
-export const getMockFirebaseUserAdminSDK = () => ({
+export const createMockFirebaseUserAdminSDK = () => ({
   uid: 'def-456',
   email: 'def@example.com',
   email_verified: true,
@@ -22,7 +22,7 @@ export const getMockFirebaseUserAdminSDK = () => ({
   // ... other properties
 })
 
-export const getMockSerializedAuthUser = () =>
+export const createMockSerializedAuthUser = () =>
   JSON.stringify({
     id: 'ghi-789',
     email: 'ghi@example.com',

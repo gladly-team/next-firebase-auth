@@ -1,10 +1,10 @@
 import firebase from 'firebase/app'
 import { renderHook, act } from '@testing-library/react-hooks'
 import useFirebaseUser from 'src/useFirebaseUser'
-import { getMockFirebaseUserClientSDK } from 'src/testHelpers/authUserInputs'
+import { createMockFirebaseUserClientSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
@@ -15,7 +15,7 @@ beforeEach(() => {
   global.fetch = jest.fn(() => Promise.resolve(createMockFetchResponse()))
 
   setConfig({
-    ...getMockConfig(),
+    ...createMockConfig(),
     loginAPIEndpoint: 'https://example.com/api/my-login',
     logoutAPIEndpoint: 'https://example.com/api/my-logout',
   })
@@ -44,7 +44,7 @@ describe('useFirebaseUser', () => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
-    const mockFirebaseUser = getMockFirebaseUserClientSDK()
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
     const { result } = renderHook(() => useFirebaseUser())
 
     act(() => {
@@ -66,7 +66,7 @@ describe('useFirebaseUser', () => {
     })
     const mockToken = 'my-token-here'
     const mockFirebaseUser = {
-      ...getMockFirebaseUserClientSDK(),
+      ...createMockFirebaseUserClientSDK(),
       getIdToken: async () => mockToken,
     }
     renderHook(() => useFirebaseUser())
@@ -117,7 +117,7 @@ describe('useFirebaseUser', () => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
-    const mockFirebaseUser = getMockFirebaseUserClientSDK()
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
@@ -141,7 +141,7 @@ describe('useFirebaseUser', () => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
-    const mockFirebaseUser = getMockFirebaseUserClientSDK()
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.

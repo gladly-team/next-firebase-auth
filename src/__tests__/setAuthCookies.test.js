@@ -6,29 +6,16 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { setConfig } from 'src/config'
-import getMockConfig from 'src/testHelpers/getMockConfig'
+import createMockConfig from 'src/testHelpers/createMockConfig'
+import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
 
 jest.mock('src/config')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
 
-const mockAuthUser = {
-  id: 'abc-123',
-  email: 'fakeUser@example.com',
-  emailVerified: true,
-  getIdToken: async () => 'fake-custom-id-token-here',
-  clientInitialized: false,
-  serialize: () => ({
-    id: 'abc-123',
-    email: 'fakeUser@example.com',
-    emailVerified: true,
-    clientInitialized: false,
-    _token: 'fake-custom-id-token-here',
-  }),
-}
-
 beforeEach(() => {
+  const mockAuthUser = createMockAuthUser()
   getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
   getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
   getCustomIdAndRefreshTokens.mockResolvedValue({
@@ -37,7 +24,7 @@ beforeEach(() => {
     AuthUser: mockAuthUser,
   })
 
-  const mockConfig = getMockConfig()
+  const mockConfig = createMockConfig()
   setConfig({
     ...mockConfig,
     cookies: {
@@ -103,6 +90,7 @@ describe('setAuthCookies', () => {
 
   it('sets the AuthUser cookie as expected', async () => {
     expect.assertions(1)
+    const mockAuthUser = createMockAuthUser()
     const setAuthCookies = require('src/setAuthCookies').default
     let mockReq
     let mockRes
@@ -186,15 +174,18 @@ describe('setAuthCookies', () => {
 
   it('returns the expected values', async () => {
     expect.assertions(1)
+    const mockAuthUser = createMockAuthUser()
     const setAuthCookies = require('src/setAuthCookies').default
     await testApiHandler({
       handler: async (req, res) => {
         const response = await setAuthCookies(req, res)
-        expect(response).toEqual({
-          idToken: 'fake-custom-id-token-here',
-          refreshToken: 'fake-refresh-token-here',
-          AuthUser: mockAuthUser,
-        })
+        expect(JSON.stringify(response)).toEqual(
+          JSON.stringify({
+            idToken: 'fake-custom-id-token-here',
+            refreshToken: 'fake-refresh-token-here',
+            AuthUser: mockAuthUser,
+          })
+        )
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
