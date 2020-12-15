@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
 import firebase from 'firebase/app'
 import 'firebase/auth'
-
-// TODO: use config for correct endpoint or other customization
-const loginEndpoint = '/api/login-v2'
-const logoutEndpoint = '/api/logout-v2'
+import { getConfig } from 'src/config'
 
 const setAuthCookie = async (firebaseUser) => {
   let response
+  const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
+
   // If the user is authed, call login to set a cookie.
   if (firebaseUser) {
     const userToken = await firebaseUser.getIdToken()
-    response = await fetch(loginEndpoint, {
+    response = await fetch(loginAPIEndpoint, {
       method: 'POST',
       headers: {
         Authorization: userToken,
@@ -28,7 +27,7 @@ const setAuthCookie = async (firebaseUser) => {
     }
   } else {
     // If the user is not authed, call logout to unset the cookie.
-    response = await fetch(logoutEndpoint, {
+    response = await fetch(logoutAPIEndpoint, {
       method: 'POST',
       credentials: 'include',
     })
