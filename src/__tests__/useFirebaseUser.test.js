@@ -103,7 +103,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
     const mockFirebaseUser = getMockFirebaseUserClientSDK()
-    const { result, rerender } = renderHook(() => useFirebaseUser())
+    renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
     global.fetch.mockResolvedValue({
@@ -127,7 +127,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
     const mockFirebaseUser = getMockFirebaseUserClientSDK()
-    const { result, rerender } = renderHook(() => useFirebaseUser())
+    renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
     global.fetch.mockRejectedValue(new Error('Could not fetch.'))
@@ -147,7 +147,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
     const mockFirebaseUser = undefined
-    const { result, rerender } = renderHook(() => useFirebaseUser())
+    renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
     global.fetch.mockResolvedValue({
@@ -171,7 +171,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
     const mockFirebaseUser = undefined
-    const { result, rerender } = renderHook(() => useFirebaseUser())
+    renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
     global.fetch.mockRejectedValue(new Error('Could not fetch.'))

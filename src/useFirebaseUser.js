@@ -6,7 +6,7 @@ import 'firebase/auth'
 const loginEndpoint = '/api/login-v2'
 const logoutEndpoint = '/api/logout-v2'
 
-const setAuthCookie = async (firebaseUser, setError) => {
+const setAuthCookie = async (firebaseUser) => {
   let response
   // If the user is authed, call login to set a cookie.
   if (firebaseUser) {
@@ -50,13 +50,9 @@ const useFirebaseUser = () => {
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    try {
-      setUser(firebaseUser)
-      setInitialized(true)
-      await setAuthCookie(firebaseUser)
-    } catch (e) {
-      throw e
-    }
+    setUser(firebaseUser)
+    setInitialized(true)
+    await setAuthCookie(firebaseUser)
   }
 
   useEffect(() => {
