@@ -2,6 +2,8 @@
 
 const getMockConfig = () => ({
   debug: false,
+  loginAPIEndpoint: 'https://example.com/api/login',
+  logoutAPIEndpoint: 'https://example.com/api/logout',
   loginRedirectURL: undefined, // TODO
   appRedirectURL: undefined, // TODO
   firebaseAdminInitConfig: {

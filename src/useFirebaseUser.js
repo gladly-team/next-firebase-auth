@@ -7,6 +7,8 @@ const loginEndpoint = '/api/login-v2'
 const logoutEndpoint = '/api/logout-v2'
 
 const setAuthCookie = async (firebaseUser) => {
+  // TODO: test fetch error behavior
+
   // If the user is authed, call login to set a cookie.
   if (firebaseUser) {
     const userToken = await firebaseUser.getIdToken()

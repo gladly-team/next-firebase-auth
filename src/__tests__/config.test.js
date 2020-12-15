@@ -159,4 +159,38 @@ describe('config', () => {
       'Invalid next-firebase-auth options: The "cookies.maxAge" setting must be less than two weeks (1209600000 ms).'
     )
   })
+
+  it('throws if the loginAPIEndpoint is not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAdminInitConfig: undefined, // for other config validation
+      cookies: undefined, // for other config validation
+      loginAPIEndpoint: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "loginAPIEndpoint" setting is required.'
+    )
+  })
+
+  it('throws if the logoutAPIEndpoint is not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = getMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAdminInitConfig: undefined, // for other config validation
+      cookies: undefined, // for other config validation
+      logoutAPIEndpoint: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "logoutAPIEndpoint" setting is required.'
+    )
+  })
 })

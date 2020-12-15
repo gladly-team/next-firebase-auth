@@ -8,6 +8,12 @@ const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 
 const defaultConfig = {
   debug: false,
+  // Required string: the API endpoint to call on auth state
+  // change for an authenticated user.
+  loginAPIEndpoint: undefined,
+  // Required string: the API endpoint to call on auth state
+  // change for a signed-out user.
+  logoutAPIEndpoint: undefined,
   // Optional string: the URL to navigate to when the user
   // needs to log in.
   loginRedirectURL: undefined,
@@ -46,6 +52,13 @@ const defaultConfig = {
 
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
+
+  if (!mergedConfig.loginAPIEndpoint) {
+    errorMessages.push('The "loginAPIEndpoint" setting is required.')
+  }
+  if (!mergedConfig.logoutAPIEndpoint) {
+    errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+  }
 
   // Validate client-side config.
   if (isClientSide()) {
