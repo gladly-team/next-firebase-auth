@@ -44,7 +44,6 @@ const defaultConfig = {
   },
 }
 
-// TODO: add more validation
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
@@ -71,7 +70,7 @@ const validateConfig = (mergedConfig) => {
       mergedConfig.cookies.cookieOptions.signed &&
       !mergedConfig.cookies.keys
     ) {
-      throw new Error(
+      errorMessages.push(
         'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
       )
     }
@@ -82,7 +81,7 @@ const validateConfig = (mergedConfig) => {
     // By default, the cookie will be refreshed each time the user loads
     // the client-side app.
     if (mergedConfig.cookies.cookieOptions.maxAge > TWO_WEEKS_IN_MS) {
-      throw new Error(
+      errorMessages.push(
         `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
       )
     }
