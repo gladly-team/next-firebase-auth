@@ -13,10 +13,15 @@ import useFirebaseUser from 'src/useFirebaseUser'
 jest.mock('next/router')
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
+jest.mock('src/isClientSide')
 
 const MockComponent = ({ message }) => <div>Hello! {message}</div>
 
 beforeEach(() => {
+  // Default to client side context.
+  const isClientSide = require('src/isClientSide').default
+  isClientSide.mockReturnValue(true)
+
   const mockConfig = getMockConfig()
   setConfig({
     ...mockConfig,
