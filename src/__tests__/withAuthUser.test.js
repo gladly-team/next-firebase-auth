@@ -41,7 +41,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('withAuthUser', () => {
+describe('withAuthUser: rendering/redirecting', () => {
   it('renders the child component when there is no server-side or client-side user and rendering without a user is allowed', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
@@ -132,7 +132,9 @@ describe('withAuthUser', () => {
     )
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
+})
 
+describe('withAuthUser: AuthUser context', () => {
   it('sets the AuthUser context to an empty AuthUser when there is no server-side or client-side user', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
