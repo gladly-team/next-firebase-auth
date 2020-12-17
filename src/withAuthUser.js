@@ -43,6 +43,7 @@ const withAuthUser = ({
       AuthUser.clientInitialized && !AuthUser.id && authRequired
     const router = useRouter()
     useEffect(() => {
+      // TODO: we can probably use Next 10's redirect here.
       // Only redirect on the client side.
       if (typeof window === 'undefined') {
         return
