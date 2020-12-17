@@ -10,8 +10,11 @@ import useAuthUser from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 
-// We don't mock createAuthUser or useAuthUser.
-jest.mock('next/router')
+// Note that we don't mock createAuthUser or useAuthUser.
+const mockRouterPush = jest.fn()
+jest.mock('next/router', () => ({
+  useRouter: () => ({ push: mockRouterPush }),
+}))
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
 jest.mock('src/isClientSide')
@@ -131,6 +134,48 @@ describe('withAuthUser: rendering/redirecting', () => {
       />
     )
     expect(queryByText('Hello! How are you?')).toBeTruthy()
+  })
+
+  it('shows a loading component on the client side when there is no user (*before* Firebase initializes) and a redirect-to-app strategy is set', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
+    const MockCompWithUser = withAuthUser({
+      authRequired: false,
+      redirectIfAuthed: true,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Loading...')).toBeTruthy()
+  })
+
+  it('redirects to login on the client side when there is no user (*after* Firebase initializes) and a redirecting strategy is set', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+    })
+    const MockCompWithUser = withAuthUser({
+      authRequired: true,
+      redirectIfAuthed: false,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterPush).toHaveBeenCalledWith('/auth')
   })
 })
 
