@@ -77,6 +77,20 @@ describe('withAuthUserTokenSSR', () => {
     })
   })
 
+  it('passes empty props when the user is not authed and auth *is* required', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookie
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({ authRequired: true })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      props: {},
+    })
+  })
+
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
 
@@ -128,5 +142,43 @@ describe('withAuthUserTokenSSR', () => {
       'some-id-token-24680',
       'some-refresh-token-13579'
     )
+  })
+
+  it("includes the composed getServerSideProps's props, passing it the context with a defined AuthUser", async () => {
+    expect.assertions(1)
+
+    // Mock the auth tokens cookie value.
+    getCookie.mockReturnValue(
+      JSON.stringify({
+        idToken: 'some-id-token',
+        refreshToken: 'some-refresh-token',
+      })
+    )
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue({
+      token: 'a-user-identity-token-abc',
+      user: mockFirebaseAdminUser,
+    })
+
+    const expectedAuthUserProp = createAuthUser({
+      firebaseUserAdminSDK: mockFirebaseAdminUser,
+      token: 'a-user-identity-token-abc',
+    }).serialize()
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn((ctx) => ({
+      here: ['is', 'a', 'prop'],
+      userEmail: ctx.AuthUser.email,
+    }))
+    const func = withAuthUserTokenSSR({ authRequired: false })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      props: {
+        AuthUserSerialized: expectedAuthUserProp,
+        here: ['is', 'a', 'prop'],
+        userEmail: 'def@example.com', // from createMockFirebaseUserAdminSDK
+      },
+    })
   })
 })
