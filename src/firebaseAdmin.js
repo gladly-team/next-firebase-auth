@@ -93,7 +93,9 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   })
   const refreshTokenJSON = await refreshTokenResponse.json()
   if (!refreshTokenResponse.ok) {
-    throw new Error(`Problem getting a refresh token: ${refreshTokenJSON}`)
+    throw new Error(
+      `Problem getting a refresh token: ${JSON.stringify(refreshTokenJSON)}`
+    )
   }
   const { idToken, refreshToken } = refreshTokenJSON
 

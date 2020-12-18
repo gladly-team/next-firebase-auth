@@ -281,4 +281,26 @@ describe('getCustomIdAndRefreshTokens', () => {
       signOut: expect.any(Function),
     })
   })
+
+  it('throws if fetching a custom token fails', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Mock the behavior of getting a custom token.
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      ok: false,
+      status: 500,
+      json: () =>
+        Promise.resolve({
+          error: 'Oh no.',
+        }),
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toEqual(
+      new Error('Problem getting a refresh token: {"error":"Oh no."}')
+    )
+  })
 })
