@@ -11,6 +11,8 @@ beforeEach(() => {
 })
 
 const googleRefreshTokenEndpoint = 'https://securetoken.googleapis.com/v1/token'
+const googleCustomTokenEndpoint =
+  'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken'
 
 describe('verifyIdToken', () => {
   it('returns a Firebase admin user', async () => {
@@ -186,6 +188,31 @@ describe('verifyIdToken', () => {
   })
 })
 
-// Test:
-// * passes the Firebase user's ID (from verifyIdToken) to createCustomToken
-// TODO
+describe('getCustomIdAndRefreshTokens', () => {
+  it("passes the Firebase user's ID (from verifyIdToken) to createCustomToken", async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    admin
+      .auth()
+      .verifyIdToken.mockResolvedValue(mockFirebaseUser)
+      .mockResolvedValue(mockFirebaseUser)
+    await getCustomIdAndRefreshTokens('some-token')
+    expect(admin.auth().createCustomToken).toHaveBeenCalledWith(
+      mockFirebaseUser.uid
+    )
+  })
+
+  it('calls the expected endpoint to get a custom token, including the public Firebase API key as a URL parameter', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    admin
+      .auth()
+      .verifyIdToken.mockResolvedValue(mockFirebaseUser)
+      .mockResolvedValue(mockFirebaseUser)
+    await getCustomIdAndRefreshTokens('some-token')
+    const endpoint = global.fetch.mock.calls[0][0]
+    expect(endpoint).toEqual(
+      `${googleCustomTokenEndpoint}?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
+    )
+  })
+})
