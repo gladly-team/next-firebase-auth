@@ -76,4 +76,57 @@ describe('withAuthUserTokenSSR', () => {
       props: { AuthUserSerialized: expectedAuthUserProp },
     })
   })
+
+  it('passes the expected values to getCookie', async () => {
+    expect.assertions(1)
+
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      cookies: {
+        ...mockConfig.cookies,
+        cookieName: 'MyCookie',
+        keys: ['aaa', 'bbb'],
+        cookieOptions: {
+          secure: false,
+          signed: true,
+        },
+      },
+    })
+
+    const mockCtx = {
+      ...createMockNextContext(),
+      req: { some: 'req' },
+      res: { some: 'res' },
+    }
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({ authRequired: false })(mockGetSSPFunc)
+    await func(mockCtx)
+    expect(getCookie).toHaveBeenCalledWith(
+      'MyCookie.AuthUserTokens',
+      { req: mockCtx.req, res: mockCtx.res },
+      { keys: ['aaa', 'bbb'], signed: true, secure: false }
+    )
+  })
+
+  it('passes the idToken and refreshToken from the auth cookie to verifyIdToken', async () => {
+    expect.assertions(1)
+    getCookie.mockReturnValue(
+      JSON.stringify({
+        idToken: 'some-id-token-24680',
+        refreshToken: 'some-refresh-token-13579',
+      })
+    )
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({ authRequired: false })(mockGetSSPFunc)
+    await func(createMockNextContext())
+    expect(verifyIdToken).toHaveBeenCalledWith(
+      'some-id-token-24680',
+      'some-refresh-token-13579'
+    )
+  })
 })
