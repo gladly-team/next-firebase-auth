@@ -60,17 +60,17 @@ export const verifyIdToken = async (token, refreshToken = null) => {
   }
 }
 
-// TODO: update documentation
 /**
- * Given a Firebase ID token, create a custom token. This
- * provides us access to a refresh token that we can use to
- * refresh expired ID tokens during server-side rendering.
+ * Given a Firebase ID token, return an ID token, refresh token,
+ * and AuthUser. We can use the refresh token to refresh expired
+ * ID tokens during server-side rendering.
  * See:
- * https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
- * https://stackoverflow.com/a/38284384
- * @return {Object} tokenInfo
- * @return {String} tokenInfo.idToken - The user's ID token
- * @return {String} tokenInfo.refreshToken - The user's refresh token
+ *  https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
+ *  https://stackoverflow.com/a/38284384
+ * @return {Object} response
+ * @return {String} response.idToken - The user's ID token
+ * @return {String} response.refreshToken - The user's refresh token
+ * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
   const { user: firebaseUser } = await verifyIdToken(token)
