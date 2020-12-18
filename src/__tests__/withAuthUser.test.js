@@ -17,7 +17,6 @@ jest.mock('next/router', () => ({
 }))
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
-jest.mock('src/isClientSide')
 
 const MockComponent = ({ message }) => <div>Hello! {message}</div>
 
