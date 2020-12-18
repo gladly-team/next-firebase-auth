@@ -16,10 +16,10 @@ const defaultConfig = {
   logoutAPIEndpoint: undefined,
   // Optional string: the URL to navigate to when the user
   // needs to log in.
-  loginRedirectURL: undefined,
+  authPageURL: undefined,
   // Optional string: the URL to navigate to when the user
   // is alredy logged in but on an authentication page.
-  appRedirectURL: undefined,
+  appPageURL: undefined,
   // Optional object: the config passed to the Firebase
   // Node admin SDK's firebaseAdmin.initializeApp.
   // Not required if the app is initializing the admin SDK
