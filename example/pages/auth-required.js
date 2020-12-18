@@ -3,6 +3,7 @@ import {
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR,
+  AuthStrategy,
 } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
@@ -24,12 +25,8 @@ const Demo = () => {
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
           <p>
-            This page does not require authentication, so it won't redirect to
-            the login page if you are not signed in.
-          </p>
-          <p>
-            If you remove `getServerSideProps` from this page, it will be static
-            and load the authed user only on the client side.
+            This page requires authentication. It will do a server-side redirect
+            (307) to the login page if the auth cookies are not set.
           </p>
         </div>
         <DemoPageLinks />
@@ -38,6 +35,8 @@ const Demo = () => {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()()
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthStrategy.REDIRECT_TO_LOGIN,
+})()
 
-export default withAuthUser({ authRequired: false })(Demo)
+export default withAuthUser()(Demo)
