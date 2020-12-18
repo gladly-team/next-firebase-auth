@@ -5,6 +5,7 @@ import useAuthUserModule from 'src/useAuthUser'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import { setDebugEnabled } from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
+import AuthStrategy from 'src/AuthStrategy'
 
 const init = (config = {}) => {
   setDebugEnabled(config.debug === true)
@@ -35,16 +36,6 @@ const setAuthCookies = () => {
 
 const unsetAuthCookies = () => {
   throw new Error('"unsetAuthCookies" can only be called server-side.')
-}
-
-// Different behaviors when the user's auth status is pending
-// or mismatches the page requirements.
-const AuthStrategy = {
-  RENDER: 'render',
-  SHOW_LOADER: 'showLoader',
-  RETURN_NULL: 'returnNull',
-  REDIRECT_TO_LOGIN: 'redirectToLogin',
-  REDIRECT_TO_APP: 'redirectToApp',
 }
 
 export default {
