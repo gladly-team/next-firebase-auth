@@ -158,3 +158,17 @@ describe('index.js: unsetAuthCookies', () => {
     }).toThrow('"unsetAuthCookies" can only be called server-side.')
   })
 })
+
+describe('index.js: AuthStrategy', () => {
+  it('defines the expected constants', () => {
+    expect.assertions(1)
+    const index = require('src/index').default
+    expect(index.AuthStrategy).toEqual({
+      RENDER: 'render',
+      SHOW_LOADER: 'showLoader',
+      RETURN_NULL: 'returnNull',
+      REDIRECT_TO_LOGIN: 'redirectToLogin',
+      REDIRECT_TO_APP: 'redirectToApp',
+    })
+  })
+})

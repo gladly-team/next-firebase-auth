@@ -3,14 +3,28 @@ import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import { getAuthUserTokensCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
+import AuthStrategy from 'src/AuthStrategy'
 
-// An auth wrapper for a page's exported getServerSideProps.
-// See this discussion on how best to use getServerSideProps
-// with a higher-order component pattern:
-// https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
-const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
-  getServerSidePropsFunc
-) => async (ctx) => {
+/**
+ * An wrapper for a page's exported getServerSideProps that
+ * provides the authed user's info as a prop. Optionally,
+ * this handles redirects based on auth status.
+ * See this discussion on how best to use getServerSideProps
+ * with a higher-order component pattern:
+ * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
+ * @param {String} whenUnauthed - The behavior to take if the user
+ *   is not authenticated. One of AuthStrategy.RENDER or
+ *   AuthStrategy.REDIRECT_TO_LOGIN.
+ * @return {Object} response
+ * @return {Object} response.props - The server-side props
+ * @return {Object} response.props.AuthUser
+ */
+const withAuthUserTokenSSR = ({
+  whenAuthed = AuthStrategy.RENDER,
+  whenUnauthed = AuthStrategy.RENDER,
+  appPageURL = getConfig().appPageURL,
+  authPageURL = getConfig().authPageURL,
+} = {}) => (getServerSidePropsFunc) => async (ctx) => {
   const { req, res } = ctx
 
   const { keys, cookieOptions } = getConfig().cookies
@@ -43,14 +57,24 @@ const withAuthUserTokenSSR = ({ authRequired = false } = {}) => (
   })
   const AuthUserSerialized = AuthUser.serialize()
 
-  // FIXME: can probably use Next 10's new redirect feature.
-  // If auth is required but the user is not authed, don't return
-  // any props.
-  // Ideally, this should redirect on the server-side. See this
-  // RFC on supporting redirects from getServerSideProps:
-  // https://github.com/vercel/next.js/discussions/14890
-  if (!AuthUser.id && authRequired) {
-    return { props: {} }
+  // If specified, redirect to the login page if the user is unauthed.
+  if (!AuthUser.id && whenUnauthed === AuthStrategy.REDIRECT_TO_LOGIN) {
+    if (!authPageURL) {
+      throw new Error(
+        `When "whenUnauthed" is set to AuthStrategy.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
+      )
+    }
+    return { redirect: { destination: authPageURL, permanent: false } }
+  }
+
+  // If specified, redirec to the app page if the user is authed.
+  if (AuthUser.id && whenAuthed === AuthStrategy.REDIRECT_TO_APP) {
+    if (!appPageURL) {
+      throw new Error(
+        `When "whenAuthed" is set to AuthStrategy.REDIRECT_TO_APP, "appPageURL" must be set.`
+      )
+    }
+    return { redirect: { destination: appPageURL, permanent: false } }
   }
 
   // Evaluate the composed getServerSideProps().
