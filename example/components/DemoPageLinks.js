@@ -29,6 +29,9 @@ const DemoPageLinks = () => (
       <Link href="/auth">
         <a style={styles.linkAnchor}>Login page (static)</a>
       </Link>
+      <Link href="/auth">
+        <a style={styles.linkAnchor}>Login page (server-rendered)</a>
+      </Link>
     </div>
   </div>
 )
