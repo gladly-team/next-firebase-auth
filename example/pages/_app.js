@@ -7,9 +7,8 @@ const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
 const isServerSide = typeof window === 'undefined'
 initAuth({
   debug: false,
-  // onAuthStateChanged: () => {},
-  // authRequiredRedirectURL: '/auth',
-  // appRedirectURL: '/demo',
+  authPageURL: '/auth',
+  appPageURL: '/',
   loginAPIEndpoint: '/api/login',
   logoutAPIEndpoint: '/api/logout',
   // Don't set the Firebase admin config on the client side.
