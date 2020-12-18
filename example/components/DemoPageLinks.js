@@ -21,7 +21,7 @@ const DemoPageLinks = () => (
       <Link href="/">
         <a style={styles.linkAnchor}>Home (no auth required)</a>
       </Link>
-      <Link href="/auth-required">
+      <Link href="/ssr-auth-required">
         <a style={styles.linkAnchor}>
           Authentication required: server-side redirect
         </a>
