@@ -192,10 +192,8 @@ describe('getCustomIdAndRefreshTokens', () => {
   it("passes the Firebase user's ID (from verifyIdToken) to createCustomToken", async () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    admin
-      .auth()
-      .verifyIdToken.mockResolvedValue(mockFirebaseUser)
-      .mockResolvedValue(mockFirebaseUser)
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
     expect(admin.auth().createCustomToken).toHaveBeenCalledWith(
       mockFirebaseUser.uid
@@ -205,14 +203,28 @@ describe('getCustomIdAndRefreshTokens', () => {
   it('calls the expected endpoint to get a custom token, including the public Firebase API key as a URL parameter', async () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    admin
-      .auth()
-      .verifyIdToken.mockResolvedValue(mockFirebaseUser)
-      .mockResolvedValue(mockFirebaseUser)
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
     const endpoint = global.fetch.mock.calls[0][0]
     expect(endpoint).toEqual(
       `${googleCustomTokenEndpoint}?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
     )
+  })
+
+  it('uses the expected fetch options when calling to get a custom token', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await getCustomIdAndRefreshTokens('some-token')
+    const options = global.fetch.mock.calls[0][1]
+    expect(options).toEqual({
+      body: '{"token":"my-custom-token","returnSecureToken":true}',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    })
   })
 })
