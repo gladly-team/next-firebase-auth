@@ -181,4 +181,15 @@ describe('withAuthUserTokenSSR', () => {
       },
     })
   })
+
+  it('throws if verifyIdToken throws', async () => {
+    expect.assertions(1)
+    verifyIdToken.mockImplementationOnce(() => Promise.reject('Invalid thing.'))
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({ authRequired: false })(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(
+      'Invalid thing.'
+    )
+  })
 })
