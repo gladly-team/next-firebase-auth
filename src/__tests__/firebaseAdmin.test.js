@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
+import createAuthUser from 'src/createAuthUser'
 
 jest.mock('firebase-admin')
 
@@ -225,6 +226,59 @@ describe('getCustomIdAndRefreshTokens', () => {
         'Content-Type': 'application/json',
       },
       method: 'POST',
+    })
+  })
+
+  it('returns the expected token values', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Mock the behavior of getting a custom token.
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      json: () =>
+        Promise.resolve({
+          idToken: 'the-id-token',
+          refreshToken: 'the-refresh-token',
+        }),
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    const response = await getCustomIdAndRefreshTokens('some-token')
+
+    expect(response).toMatchObject({
+      idToken: 'the-id-token',
+      refreshToken: 'the-refresh-token',
+    })
+  })
+
+  it('returns the expected AuthUser value', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Mock the behavior of getting a custom token.
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      json: () =>
+        Promise.resolve({
+          idToken: 'the-id-token',
+          refreshToken: 'the-refresh-token',
+        }),
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const expectedAuthUser = createAuthUser({
+      firebaseUserAdminSDK: mockFirebaseUser,
+    })
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    const response = await getCustomIdAndRefreshTokens('some-token')
+
+    expect(response.AuthUser).toEqual({
+      ...expectedAuthUser,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
     })
   })
 })
