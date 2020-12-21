@@ -67,7 +67,7 @@ const withAuthUserTokenSSR = ({
     return { redirect: { destination: authPageURL, permanent: false } }
   }
 
-  // If specified, redirec to the app page if the user is authed.
+  // If specified, redirect to the app page if the user is authed.
   if (AuthUser.id && whenAuthed === AuthStrategy.REDIRECT_TO_APP) {
     if (!appPageURL) {
       throw new Error(
