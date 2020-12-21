@@ -73,7 +73,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
 
-  it('returns null if when there is no server-side or client-side user and "whenUnauthedBeforeInit" is set render null', () => {
+  it('returns null if when there is no server-side or client-side user and "whenUnauthedBeforeInit" is set to render null', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     useFirebaseUser.mockReturnValue({
@@ -88,8 +88,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const { container } = render(<MockCompWithUser message="How are you?" />)
     expect(container.firstChild).toBeNull()
   })
-
-  // TODO: test above with redirect
 
   it('renders the child component when there is a server-side user and rendering without a user is *not* allowed', () => {
     expect.assertions(1)
@@ -195,11 +193,13 @@ describe('withAuthUser: rendering/redirecting', () => {
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
       user: undefined, // no client-side user
-      initialized: true, // already initialized
+      initialized: false, // not yet initialized
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.REDIRECT_TO_LOGIN,
-      whenUnauthedAfterInit: AuthStrategy.REDIRECT_TO_LOGIN,
+      // A user would normally not set this to render when they're redirecting
+      // before initialization. We do this just for testing clarity.
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
       whenAuthed: AuthStrategy.RENDER,
     })(MockComponent)
     render(
