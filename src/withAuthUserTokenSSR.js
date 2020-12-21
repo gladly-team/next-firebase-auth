@@ -12,9 +12,16 @@ import AuthStrategy from 'src/AuthStrategy'
  * See this discussion on how best to use getServerSideProps
  * with a higher-order component pattern:
  * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
+ * @param {String} whenAuthed - The behavior to take if the user
+ *   *is* authenticated. One of AuthStrategy.RENDER or
+ *   AuthStrategy.REDIRECT_TO_APP.
  * @param {String} whenUnauthed - The behavior to take if the user
  *   is not authenticated. One of AuthStrategy.RENDER or
  *   AuthStrategy.REDIRECT_TO_LOGIN.
+ * @param {String} appPageURL - The redirect destination URL when
+ *   we redirect to the app.
+ * @param {String} authPageURL - The redirect destination URL when
+ *   we redirect to the login page.
  * @return {Object} response
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
