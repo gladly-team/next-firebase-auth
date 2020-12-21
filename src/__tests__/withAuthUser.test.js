@@ -247,6 +247,37 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(mockRouterPush).toHaveBeenCalledWith('/some-auth-page')
   })
 
+  it('does not redirect to login when server-side, even when a redirecting strategy is set (redirects here are client-side only)', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false) // server-side
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      authPageURL: '/my-auth', // custom auth page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.REDIRECT_TO_LOGIN,
+      // A user would normally not set this to render when they're redirecting
+      // before initialization. We do this just for testing clarity.
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
+      whenAuthed: AuthStrategy.RENDER,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterPush).not.toHaveBeenCalled()
+  })
+
   it('throws if needing to redirect to login and "authPageURL" is not set in the config', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
@@ -315,6 +346,35 @@ describe('withAuthUser: rendering/redirecting', () => {
       />
     )
     expect(mockRouterPush).toHaveBeenCalledWith('/my-app/here/')
+  })
+
+  it('does not redirect to the app on the server side, even when we will redirect to the app on the client side', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false) // server-side
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: '/my-app/here/', // custom app page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.RENDER,
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
+      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterPush).not.toHaveBeenCalled()
   })
 
   it('throws if needing to redirect to the app and "appPageURL" is not set in the config', () => {

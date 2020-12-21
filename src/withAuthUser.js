@@ -5,6 +5,7 @@ import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { getConfig } from 'src/config'
 import AuthStrategy from 'src/AuthStrategy'
+import isClientSide from 'src/isClientSide'
 
 // A higher-order component to provide pages with the
 // authenticated user. This must be used if using `useAuthUser`.
@@ -77,9 +78,9 @@ const withAuthUser = ({
     }, [router])
 
     useEffect(() => {
-      // TODO: we can probably use Next 10's redirect here.
-      // Only redirect on the client side.
-      if (typeof window === 'undefined') {
+      // Only redirect on the client side. To redirect server-side,
+      // use `withAuthUserSSR` or `withAuthUserTokenSSR`.
+      if (!isClientSide()) {
         return
       }
       if (shouldRedirectToApp) {
