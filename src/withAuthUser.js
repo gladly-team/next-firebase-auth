@@ -7,10 +7,31 @@ import { getConfig } from 'src/config'
 import AuthStrategy from 'src/AuthStrategy'
 import isClientSide from 'src/isClientSide'
 
-// A higher-order component to provide pages with the
-// authenticated user. This must be used if using `useAuthUser`.
-// To access the user during SSR, this should be paired with
-// `withAuthServerSideProps`.
+/**
+ * A higher-order component that provides pages with the
+ * AuthUser and, optionally, redirects or renders different
+ * children based on the user's current auth state.
+ * To access the user from SSR, this should be paired with
+ * `withAuthUserSSR` or `withAuthUserTokenSSR`.
+ * @param {String} whenAuthed - The behavior to take if the user
+ *   *is* authenticated. One of AuthStrategy.RENDER or
+ *   AuthStrategy.REDIRECT_TO_APP.
+ * @param {String} whenUnauthedBeforeInit - The behavior to take
+ *   if the user is not authenticated but the Firebase client JS
+ *   SDK has not initialized. One of: AuthStrategy.RENDER,
+ *   AuthStrategy.REDIRECT_TO_LOGIN, AuthStrategy.SHOW_LOADER,
+ *   AuthStrategy.RETURN_NULL. Defaults to AuthStrategy.RENDER.
+ * @param {String} whenUnauthedAfterInit - The behavior to take
+ *   if the user is not authenticated and the Firebase client JS
+ *   SDK has already initialized. One of: AuthStrategy.RENDER,
+ *   AuthStrategy.REDIRECT_TO_LOGIN. Defaults to
+ *   AuthStrategy.RENDER
+ * @param {String} appPageURL - The redirect destination URL when
+ *   we redirect to the app.
+ * @param {String} authPageURL - The redirect destination URL when
+ *   we redirect to the login page.
+ * @return {Function} A function that takes a child component
+ */
 const withAuthUser = ({
   whenAuthed = AuthStrategy.RENDER,
   whenUnauthedBeforeInit = AuthStrategy.RENDER,
