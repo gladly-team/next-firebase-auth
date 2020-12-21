@@ -30,6 +30,10 @@ const refreshExpiredIdToken = async (refreshToken) => {
   return idToken
 }
 
+// TODO: refactor to return AuthUser, then expose it as a method.
+//   This would provide an easy way to use token-based auth for
+//   API endpoints, rather than relying on cookies or requiring
+//   the user to interface with firebase-admin.
 /**
  * Verify the Firebase ID token and return the Firebase user.
  * If the ID token has expired, refresh it if a refreshToken
