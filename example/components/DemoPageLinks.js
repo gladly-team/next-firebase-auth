@@ -14,6 +14,8 @@ const styles = {
   },
 }
 
+// TODO: add client and server data-fetching examples that use
+//   the user's ID and token.
 const DemoPageLinks = () => (
   <div style={styles.content}>
     <h4>Examples</h4>
