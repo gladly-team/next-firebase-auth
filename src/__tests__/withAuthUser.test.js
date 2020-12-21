@@ -165,7 +165,31 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
 
-  it('shows a loading component on the client side when there is no user (*before* Firebase initializes) and a "show loader" strategy is set', () => {
+  it('shows the provided loading component on the client side when there is no user (*before* Firebase initializes) and a "show loader" strategy is set', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
+    const MyLoader = <div>Things are loading up!</div>
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.SHOW_LOADER,
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
+      redirectIfAuthed: true,
+      LoaderComponent: MyLoader,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Things are loading up!')).toBeTruthy()
+  })
+
+  it('returns null if no loading component is provided but we should show a loader', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -177,14 +201,15 @@ describe('withAuthUser: rendering/redirecting', () => {
       whenUnauthedBeforeInit: AuthStrategy.SHOW_LOADER,
       whenUnauthedAfterInit: AuthStrategy.RENDER,
       redirectIfAuthed: true,
+      LoaderComponent: undefined, // none defined
     })(MockComponent)
-    const { queryByText } = render(
+    const { container } = render(
       <MockCompWithUser
         serializedAuthUser={MockSerializedAuthUser}
         message="How are you?"
       />
     )
-    expect(queryByText('Loading...')).toBeTruthy()
+    expect(container.firstChild).toBeNull()
   })
 
   it('redirects to login on the client side when there is no user (*before* Firebase initializes) and a redirecting strategy is set', () => {

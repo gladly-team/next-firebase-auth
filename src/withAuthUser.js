@@ -38,6 +38,7 @@ const withAuthUser = ({
   whenUnauthedAfterInit = AuthStrategy.RENDER,
   appPageURL = getConfig().appPageURL,
   authPageURL = getConfig().authPageURL,
+  LoaderComponent = null,
 } = {}) => (ChildComponent) => {
   const WithAuthUserHOC = (props) => {
     const { AuthUserSerialized, ...otherProps } = props
@@ -128,8 +129,7 @@ const withAuthUser = ({
     // or return null rather than rendering.
     if (!isInitialized && !isAuthed) {
       if (whenUnauthedBeforeInit === AuthStrategy.SHOW_LOADER) {
-        // TODO: make customizable
-        return <div>Loading...</div>
+        return LoaderComponent
       }
       if (whenUnauthedBeforeInit === AuthStrategy.RETURN_NULL) {
         return null
