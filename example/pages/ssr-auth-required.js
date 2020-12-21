@@ -3,7 +3,7 @@ import {
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR,
-  AuthStrategy,
+  AuthAction,
 } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
@@ -36,7 +36,7 @@ const Demo = () => {
 }
 
 export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthStrategy.REDIRECT_TO_LOGIN,
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })()
 
 export default withAuthUser()(Demo)

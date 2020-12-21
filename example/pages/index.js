@@ -40,4 +40,4 @@ const Demo = () => {
 
 export const getServerSideProps = withAuthUserTokenSSR()()
 
-export default withAuthUser({ authRequired: false })(Demo)
+export default withAuthUser()(Demo)
