@@ -51,18 +51,18 @@ afterEach(() => {
 })
 
 describe('setAuthCookies', () => {
-  it('returns a 400 if req.headers.authorization is not set', async () => {
+  it('throws if req.headers.authorization is not set', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
     await testApiHandler({
       handler: async (req, res) => {
-        // TODO: expect setAuthCookies to throw
-        await setAuthCookies(req, res)
+        await expect(setAuthCookies(req, res)).rejects.toThrow(
+          'The request is missing an Authorization header value'
+        )
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
-        const response = await fetch() // no Authorization header
-        expect(response.status).toEqual(400)
+        await fetch() // no Authorization header
       },
     })
   })
