@@ -4,7 +4,7 @@ import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { getConfig } from 'src/config'
-import AuthStrategy from 'src/AuthStrategy'
+import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 
 /**
@@ -14,18 +14,17 @@ import isClientSide from 'src/isClientSide'
  * To access the user from SSR, this should be paired with
  * `withAuthUserSSR` or `withAuthUserTokenSSR`.
  * @param {String} whenAuthed - The behavior to take if the user
- *   *is* authenticated. One of AuthStrategy.RENDER or
- *   AuthStrategy.REDIRECT_TO_APP.
+ *   *is* authenticated. One of AuthAction.RENDER or
+ *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
  * @param {String} whenUnauthedBeforeInit - The behavior to take
  *   if the user is not authenticated but the Firebase client JS
- *   SDK has not initialized. One of: AuthStrategy.RENDER,
- *   AuthStrategy.REDIRECT_TO_LOGIN, AuthStrategy.SHOW_LOADER,
- *   AuthStrategy.RETURN_NULL. Defaults to AuthStrategy.RENDER.
+ *   SDK has not initialized. One of: AuthAction.RENDER,
+ *   AuthAction.REDIRECT_TO_LOGIN, AuthAction.SHOW_LOADER,
+ *   AuthAction.RETURN_NULL. Defaults to AuthAction.RENDER.
  * @param {String} whenUnauthedAfterInit - The behavior to take
  *   if the user is not authenticated and the Firebase client JS
- *   SDK has already initialized. One of: AuthStrategy.RENDER,
- *   AuthStrategy.REDIRECT_TO_LOGIN. Defaults to
- *   AuthStrategy.RENDER
+ *   SDK has already initialized. One of: AuthAction.RENDER,
+ *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
  * @param {String} appPageURL - The redirect destination URL when
  *   we redirect to the app.
  * @param {String} authPageURL - The redirect destination URL when
@@ -33,9 +32,9 @@ import isClientSide from 'src/isClientSide'
  * @return {Function} A function that takes a child component
  */
 const withAuthUser = ({
-  whenAuthed = AuthStrategy.RENDER,
-  whenUnauthedBeforeInit = AuthStrategy.RENDER,
-  whenUnauthedAfterInit = AuthStrategy.RENDER,
+  whenAuthed = AuthAction.RENDER,
+  whenUnauthedBeforeInit = AuthAction.RENDER,
+  whenUnauthedAfterInit = AuthAction.RENDER,
   appPageURL = getConfig().appPageURL,
   authPageURL = getConfig().authPageURL,
   LoaderComponent = null,
@@ -69,7 +68,7 @@ const withAuthUser = ({
     // Redirect to the app if the user is authed and the "whenAuthed"
     // argument is set to redirect to the app.
     const shouldRedirectToApp =
-      isAuthed && whenAuthed === AuthStrategy.REDIRECT_TO_APP
+      isAuthed && whenAuthed === AuthAction.REDIRECT_TO_APP
 
     // Redirect to the login page if the user is not authed and,
     // considering whether the Firebase JS SDK is initialized, the
@@ -77,9 +76,9 @@ const withAuthUser = ({
     const shouldRedirectToLogin =
       !isAuthed &&
       ((!isInitialized &&
-        whenUnauthedBeforeInit === AuthStrategy.REDIRECT_TO_LOGIN) ||
+        whenUnauthedBeforeInit === AuthAction.REDIRECT_TO_LOGIN) ||
         (isInitialized &&
-          whenUnauthedAfterInit === AuthStrategy.REDIRECT_TO_LOGIN))
+          whenUnauthedAfterInit === AuthAction.REDIRECT_TO_LOGIN))
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
@@ -128,10 +127,10 @@ const withAuthUser = ({
     // not yet initialized, optionally show a "loading" component
     // or return null rather than rendering.
     if (!isInitialized && !isAuthed) {
-      if (whenUnauthedBeforeInit === AuthStrategy.SHOW_LOADER) {
+      if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
         return LoaderComponent
       }
-      if (whenUnauthedBeforeInit === AuthStrategy.RETURN_NULL) {
+      if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
         return null
       }
     }

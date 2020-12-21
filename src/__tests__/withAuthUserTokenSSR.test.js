@@ -6,7 +6,7 @@ import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import { getAuthUserTokensCookieName } from 'src/authCookies'
 import createMockNextContext from 'src/testHelpers/createMockNextContext'
-import AuthStrategy from 'src/AuthStrategy'
+import AuthAction from 'src/AuthAction'
 
 // Note that we don't mock createAuthUser or "src/config".
 jest.mock('src/cookies')
@@ -86,7 +86,7 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenUnauthed: AuthStrategy.REDIRECT_TO_LOGIN,
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: '/my-login',
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -112,7 +112,7 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenUnauthed: AuthStrategy.REDIRECT_TO_LOGIN,
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       // no auth page URL defined
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -138,17 +138,17 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenUnauthed: AuthStrategy.REDIRECT_TO_LOGIN,
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       // no auth page URL defined
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'When "whenUnauthed" is set to AuthStrategy.REDIRECT_TO_LOGIN, "authPageURL" must be set.'
+        'When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.'
       )
     )
   })
 
-  it('redirects to the provided app URL when the user is authed and "whenAuthed" is set to AuthStrategy.REDIRECT_TO_APP', async () => {
+  it('redirects to the provided app URL when the user is authed and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
     expect.assertions(1)
 
     // Mock that the user is authed.
@@ -167,7 +167,7 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
       appPageURL: '/my-app',
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -179,7 +179,7 @@ describe('withAuthUserTokenSSR', () => {
     })
   })
 
-  it('redirects to the config\'s default app URL when no app URL is provided, the user is authed, and "whenAuthed" is set to AuthStrategy.REDIRECT_TO_APP', async () => {
+  it('redirects to the config\'s default app URL when no app URL is provided, the user is authed, and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
     expect.assertions(1)
 
     // Mock that the user is authed.
@@ -204,7 +204,7 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
       // no app page URL defined
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -241,12 +241,12 @@ describe('withAuthUserTokenSSR', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
-      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
       // no app page URL defined
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'When "whenAuthed" is set to AuthStrategy.REDIRECT_TO_APP, "appPageURL" must be set.'
+        'When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.'
       )
     )
   })

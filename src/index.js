@@ -5,7 +5,7 @@ import useAuthUserModule from 'src/useAuthUser'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import { setDebugEnabled } from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
-import AuthStrategy from 'src/AuthStrategy'
+import AuthAction from 'src/AuthAction'
 
 const init = (config = {}) => {
   setDebugEnabled(config.debug === true)
@@ -46,5 +46,5 @@ export default {
   withAuthUserTokenSSR,
   setAuthCookies,
   unsetAuthCookies,
-  AuthStrategy,
+  AuthAction,
 }

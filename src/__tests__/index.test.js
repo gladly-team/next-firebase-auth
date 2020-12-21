@@ -159,11 +159,11 @@ describe('index.js: unsetAuthCookies', () => {
   })
 })
 
-describe('index.js: AuthStrategy', () => {
+describe('index.js: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
     const index = require('src/index').default
-    expect(index.AuthStrategy).toEqual({
+    expect(index.AuthAction).toEqual({
       RENDER: 'render',
       SHOW_LOADER: 'showLoader',
       RETURN_NULL: 'returnNull',
