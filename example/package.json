@@ -8,10 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
-    "firebase": "^8.1.2",
-    "firebase-admin": "^9.4.1",
+    "firebase": "^8.2.1",
+    "firebase-admin": "^9.4.2",
     "next": "10.0.3",
-    "next-firebase-auth": "^0.5.0",
+    "next-firebase-auth": "^0.6.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-firebaseui": "^4.1.0"

@@ -23,6 +23,7 @@ const Demo = () => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
+          <h3>Home</h3>
           <p>
             This page does not require authentication, so it won't redirect to
             the login page if you are not signed in.
@@ -40,4 +41,4 @@ const Demo = () => {
 
 export const getServerSideProps = withAuthUserTokenSSR()()
 
-export default withAuthUser({ authRequired: false })(Demo)
+export default withAuthUser()(Demo)

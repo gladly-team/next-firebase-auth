@@ -1,5 +1,5 @@
 import React from 'react'
-import { withAuthUser } from 'next-firebase-auth'
+import { withAuthUser, AuthAction } from 'next-firebase-auth'
 import FirebaseAuth from '../components/FirebaseAuth'
 
 const styles = {
@@ -28,5 +28,8 @@ const Auth = () => (
   </div>
 )
 
-// TODO: improve withAuthUser API
-export default withAuthUser({ redirectIfAuthed: true })(Auth)
+export default withAuthUser({
+  whenAuthed: AuthAction.REDIRECT_TO_APP,
+  whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
+  whenUnauthedAfterInit: AuthAction.RENDER,
+})(Auth)

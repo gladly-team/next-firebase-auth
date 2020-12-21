@@ -14,23 +14,30 @@ const styles = {
   },
 }
 
+// TODO: add client and server data-fetching examples that use
+//   the user's ID and token.
 const DemoPageLinks = () => (
   <div style={styles.content}>
     <h4>Examples</h4>
     <div>
       <Link href="/">
-        <a style={styles.linkAnchor}>Home (no auth required)</a>
+        <a style={styles.linkAnchor}>Home: no auth required, static</a>
       </Link>
       <Link href="/ssr-auth-required">
         <a style={styles.linkAnchor}>
-          Authentication required: server-side redirect
+          Example: auth required, server-side redirect
+        </a>
+      </Link>
+      <Link href="/static-auth-required-loader">
+        <a style={styles.linkAnchor}>
+          Example: auth required, static page with loader
         </a>
       </Link>
       <Link href="/auth">
-        <a style={styles.linkAnchor}>Login page (static)</a>
+        <a style={styles.linkAnchor}>Login page: static</a>
       </Link>
-      <Link href="/auth">
-        <a style={styles.linkAnchor}>Login page (server-rendered)</a>
+      <Link href="/auth-ssr">
+        <a style={styles.linkAnchor}>Login page: server-rendered</a>
       </Link>
     </div>
   </div>

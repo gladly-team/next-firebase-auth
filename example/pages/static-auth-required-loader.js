@@ -1,12 +1,8 @@
 import React from 'react'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR,
-  AuthAction,
-} from 'next-firebase-auth'
+import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
+import FullPageLoader from '../components/FullPageLoader'
 
 const styles = {
   content: {
@@ -24,10 +20,12 @@ const Demo = () => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
-          <h3>Example: SSR</h3>
+          <h3>Example: static + loader</h3>
           <p>
-            This page requires authentication. It will do a server-side redirect
-            (307) to the login page if the auth cookies are not set.
+            This page requires is static but requires authentication. Before the
+            Firebase client SDK initializes, it shows a loader. After
+            initializing, if the user is not authenticated, it client-side
+            redirects to the login page.
           </p>
         </div>
         <DemoPageLinks />
@@ -36,11 +34,8 @@ const Demo = () => {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})()
-
 export default withAuthUser({
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  LoaderComponent: FullPageLoader,
 })(Demo)
