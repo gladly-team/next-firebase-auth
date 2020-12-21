@@ -128,7 +128,7 @@ const withAuthUser = ({
     // or return null rather than rendering.
     if (!isInitialized && !isAuthed) {
       if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
-        return LoaderComponent
+        return LoaderComponent ? <LoaderComponent /> : null
       }
       if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
         return null

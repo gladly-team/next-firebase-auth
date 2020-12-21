@@ -173,7 +173,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MyLoader = <div>Things are loading up!</div>
+    const MyLoader = () => <div>Things are loading up!</div>
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
