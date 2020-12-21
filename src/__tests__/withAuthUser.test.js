@@ -233,6 +233,28 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(mockRouterPush).toHaveBeenCalledWith('/auth')
   })
 
+  it('redirects to the app on the client side when there is a user and a redirect-to-app-when-authed strategy is set', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.RENDER,
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
+      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterPush).toHaveBeenCalledWith('/')
+  })
+
   it('renders null when redirecting to the login', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
