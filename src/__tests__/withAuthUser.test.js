@@ -48,6 +48,10 @@ describe('withAuthUser: rendering/redirecting', () => {
   it('renders the child component when there is no server-side or client-side user by default (rendering is the default setting)', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
     const MockCompWithUser = withAuthUser()(MockComponent)
     const { queryByText } = render(<MockCompWithUser message="How are you?" />)
     expect(queryByText('Hello! How are you?')).toBeTruthy()
@@ -56,6 +60,10 @@ describe('withAuthUser: rendering/redirecting', () => {
   it('renders the child component when there is no server-side or client-side user and rendering without a user is allowed', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.RENDER,
       whenUnauthedAfterInit: AuthStrategy.RENDER,
@@ -68,6 +76,10 @@ describe('withAuthUser: rendering/redirecting', () => {
   it('returns null if when there is no server-side or client-side user and "whenUnauthedBeforeInit" is set render null', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.RETURN_NULL,
       whenUnauthedAfterInit: AuthStrategy.RENDER,
@@ -82,6 +94,10 @@ describe('withAuthUser: rendering/redirecting', () => {
   it('renders the child component when there is a server-side user and rendering without a user is *not* allowed', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: false, // not yet initialized
+    })
     const MockSerializedAuthUser = createMockSerializedAuthUser()
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.RENDER,
