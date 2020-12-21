@@ -195,6 +195,13 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      cookies: undefined,
+      authPageURL: '/my-auth', // custom auth page
+    })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
@@ -208,7 +215,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/auth')
+    expect(mockRouterPush).toHaveBeenCalledWith('/my-auth')
   })
 
   it('redirects to login on the client side when there is no user (*after* Firebase initializes) and a redirecting strategy is set', () => {
@@ -218,6 +225,13 @@ describe('withAuthUser: rendering/redirecting', () => {
     useFirebaseUser.mockReturnValue({
       user: undefined, // no client-side user
       initialized: true, // already initialized
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      cookies: undefined,
+      authPageURL: '/some-auth-page', // custom auth page
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.RENDER,
@@ -230,7 +244,48 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/auth')
+    expect(mockRouterPush).toHaveBeenCalledWith('/some-auth-page')
+  })
+
+  it('throws if needing to redirect to login and "authPageURL" is not set in the config', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      cookies: undefined,
+      authPageURL: undefined, // needs to be set
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.RENDER,
+      whenUnauthedAfterInit: AuthStrategy.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthStrategy.RENDER,
+    })(MockComponent)
+
+    // Suppress two expected console errors from our intentional
+    // error during render.
+    // https://spectrum.chat/testing-library/help/testing-components-that-should-throw~5b290c2e-6f70-4420-bedf-976c68ba83da
+    jest
+      .spyOn(console, 'error')
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+
+    expect(() => {
+      render(
+        <MockCompWithUser
+          serializedAuthUser={MockSerializedAuthUser}
+          message="How are you?"
+        />
+      )
+    }).toThrow(
+      'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
+    )
   })
 
   it('redirects to the app on the client side when there is a user and a redirect-to-app-when-authed strategy is set', () => {
@@ -240,6 +295,13 @@ describe('withAuthUser: rendering/redirecting', () => {
     useFirebaseUser.mockReturnValue({
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      cookies: undefined,
+      appPageURL: '/my-app/here/', // custom app page
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthStrategy.RENDER,
@@ -252,7 +314,48 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/')
+    expect(mockRouterPush).toHaveBeenCalledWith('/my-app/here/')
+  })
+
+  it('throws if needing to redirect to the app and "appPageURL" is not set in the config', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      cookies: undefined,
+      appPageURL: undefined, // should be set
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthStrategy.RENDER,
+      whenUnauthedAfterInit: AuthStrategy.RENDER,
+      whenAuthed: AuthStrategy.REDIRECT_TO_APP,
+    })(MockComponent)
+
+    // Suppress two expected console errors from our intentional
+    // error during render.
+    // https://spectrum.chat/testing-library/help/testing-components-that-should-throw~5b290c2e-6f70-4420-bedf-976c68ba83da
+    jest
+      .spyOn(console, 'error')
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+
+    expect(() => {
+      render(
+        <MockCompWithUser
+          serializedAuthUser={MockSerializedAuthUser}
+          message="How are you?"
+        />
+      )
+    }).toThrow(
+      'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
+    )
   })
 
   it('renders null when redirecting to the login', () => {

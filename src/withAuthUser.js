@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-// import { getConfig } from 'src/config'
+import { getConfig } from 'src/config'
 import AuthStrategy from 'src/AuthStrategy'
 
 // A higher-order component to provide pages with the
@@ -14,8 +14,8 @@ const withAuthUser = ({
   whenAuthed = AuthStrategy.RENDER,
   whenUnauthedBeforeInit = AuthStrategy.RENDER,
   whenUnauthedAfterInit = AuthStrategy.RENDER,
-  // appPageURL = getConfig().appPageURL,
-  // authPageURL = getConfig().authPageURL,
+  appPageURL = getConfig().appPageURL,
+  authPageURL = getConfig().authPageURL,
 } = {}) => (ChildComponent) => {
   const WithAuthUserHOC = (props) => {
     const { AuthUserSerialized, ...otherProps } = props
@@ -60,14 +60,20 @@ const withAuthUser = ({
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
-      // TODO: use user settings
-      // TODO: throw if URL is not set
-      router.push('/')
+      if (!appPageURL) {
+        throw new Error(
+          'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
+        )
+      }
+      router.push(appPageURL)
     }, [router])
     const redirectToLogin = useCallback(() => {
-      // TODO: use user settings
-      // TODO: throw if URL is not set
-      router.push('/auth')
+      if (!authPageURL) {
+        throw new Error(
+          'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
+        )
+      }
+      router.push(authPageURL)
     }, [router])
 
     useEffect(() => {
