@@ -3,7 +3,7 @@ import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import { getAuthUserTokensCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
-import AuthStrategy from 'src/AuthStrategy'
+import AuthAction from 'src/AuthAction'
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -13,11 +13,11 @@ import AuthStrategy from 'src/AuthStrategy'
  * with a higher-order component pattern:
  * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
  * @param {String} whenAuthed - The behavior to take if the user
- *   *is* authenticated. One of AuthStrategy.RENDER or
- *   AuthStrategy.REDIRECT_TO_APP.
+ *   *is* authenticated. One of AuthAction.RENDER or
+ *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
  * @param {String} whenUnauthed - The behavior to take if the user
- *   is not authenticated. One of AuthStrategy.RENDER or
- *   AuthStrategy.REDIRECT_TO_LOGIN.
+ *   is not authenticated. One of AuthAction.RENDER or
+ *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
  * @param {String} appPageURL - The redirect destination URL when
  *   we redirect to the app.
  * @param {String} authPageURL - The redirect destination URL when
@@ -27,8 +27,8 @@ import AuthStrategy from 'src/AuthStrategy'
  * @return {Object} response.props.AuthUser
  */
 const withAuthUserTokenSSR = ({
-  whenAuthed = AuthStrategy.RENDER,
-  whenUnauthed = AuthStrategy.RENDER,
+  whenAuthed = AuthAction.RENDER,
+  whenUnauthed = AuthAction.RENDER,
   appPageURL = getConfig().appPageURL,
   authPageURL = getConfig().authPageURL,
 } = {}) => (getServerSidePropsFunc) => async (ctx) => {
@@ -65,20 +65,20 @@ const withAuthUserTokenSSR = ({
   const AuthUserSerialized = AuthUser.serialize()
 
   // If specified, redirect to the login page if the user is unauthed.
-  if (!AuthUser.id && whenUnauthed === AuthStrategy.REDIRECT_TO_LOGIN) {
+  if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
     if (!authPageURL) {
       throw new Error(
-        `When "whenUnauthed" is set to AuthStrategy.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
+        `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
       )
     }
     return { redirect: { destination: authPageURL, permanent: false } }
   }
 
   // If specified, redirect to the app page if the user is authed.
-  if (AuthUser.id && whenAuthed === AuthStrategy.REDIRECT_TO_APP) {
+  if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
     if (!appPageURL) {
       throw new Error(
-        `When "whenAuthed" is set to AuthStrategy.REDIRECT_TO_APP, "appPageURL" must be set.`
+        `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
       )
     }
     return { redirect: { destination: appPageURL, permanent: false } }

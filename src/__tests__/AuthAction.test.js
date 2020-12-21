@@ -1,8 +1,8 @@
-describe('index.js: AuthStrategy', () => {
+describe('index.js: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
-    const AuthStrategy = require('src/AuthStrategy').default
-    expect(AuthStrategy).toEqual({
+    const AuthAction = require('src/AuthAction').default
+    expect(AuthAction).toEqual({
       RENDER: 'render',
       SHOW_LOADER: 'showLoader',
       RETURN_NULL: 'returnNull',

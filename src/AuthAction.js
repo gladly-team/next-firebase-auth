@@ -1,6 +1,6 @@
 // Different behaviors when the user's auth status is pending
 // or mismatches the page requirements.
-const AuthStrategy = {
+const AuthAction = {
   RENDER: 'render',
   SHOW_LOADER: 'showLoader',
   RETURN_NULL: 'returnNull',
@@ -8,4 +8,4 @@ const AuthStrategy = {
   REDIRECT_TO_APP: 'redirectToApp',
 }
 
-export default AuthStrategy
+export default AuthAction
