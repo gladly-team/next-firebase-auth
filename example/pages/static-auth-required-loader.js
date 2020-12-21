@@ -20,6 +20,7 @@ const Demo = () => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
+          <h3>Example: static + loader</h3>
           <p>
             This page requires is static but requires authentication. Before the
             Firebase client SDK initializes, it shows a loader. After

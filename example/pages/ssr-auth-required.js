@@ -24,6 +24,7 @@ const Demo = () => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
+          <h3>Example: SSR</h3>
           <p>
             This page requires authentication. It will do a server-side redirect
             (307) to the login page if the auth cookies are not set.
