@@ -159,6 +159,24 @@ describe('index.js: unsetAuthCookies', () => {
   })
 })
 
+describe('index.js: verifyIdToken', () => {
+  it('exports verifyIdToken', () => {
+    expect.assertions(2)
+    const index = require('src/index').default
+    expect(index.verifyIdToken).toBeDefined()
+    expect(index.verifyIdToken).toEqual(expect.any(Function))
+  })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.verifyIdToken()
+    }).toThrow('"verifyIdToken" can only be called server-side.')
+  })
+})
+
 describe('index.js: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)

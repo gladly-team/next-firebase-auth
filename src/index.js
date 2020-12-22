@@ -38,6 +38,10 @@ const unsetAuthCookies = () => {
   throw new Error('"unsetAuthCookies" can only be called server-side.')
 }
 
+const verifyIdToken = () => {
+  throw new Error('"verifyIdToken" can only be called server-side.')
+}
+
 export default {
   init,
   withAuthUser,
@@ -46,5 +50,6 @@ export default {
   withAuthUserTokenSSR,
   setAuthCookies,
   unsetAuthCookies,
+  verifyIdToken,
   AuthAction,
 }
