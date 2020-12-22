@@ -62,9 +62,13 @@ const validateConfig = (mergedConfig) => {
 
   // Validate client-side config.
   if (isClientSide()) {
-    if (mergedConfig.firebaseAdminInitConfig) {
+    if (
+      mergedConfig.firebaseAdminInitConfig &&
+      mergedConfig.firebaseAdminInitConfig.credential &&
+      mergedConfig.firebaseAdminInitConfig.credential.privateKey
+    ) {
       errorMessages.push(
-        'The "firebaseAdminInitConfig" setting should not be available on the client side.'
+        'The "firebaseAdminInitConfig" private key setting should not be available on the client side.'
       )
     }
     if (mergedConfig.cookies.keys) {

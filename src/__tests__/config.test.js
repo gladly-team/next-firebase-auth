@@ -55,20 +55,49 @@ describe('config', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
-  it('[client-side] throws if the user provides firebaseAdminInitConfig on the client side', () => {
+  it('[client-side] does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
     const mockConfig = {
       ...createMockConfig(),
-      firebaseAdminInitConfig: { some: 'stuff' },
+      firebaseAdminInitConfig: {
+        credential: {
+          projectId: 'abc',
+          clientEmail: 'def',
+          privateKey: undefined,
+        },
+        databaseURL: 'ghi',
+      },
+      cookies: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[client-side] throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: {
+        credential: {
+          projectId: 'abc',
+          clientEmail: 'def',
+          privateKey: 'oops',
+        },
+        databaseURL: 'ghi',
+      },
       cookies: undefined,
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "firebaseAdminInitConfig" setting should not be available on the client side.'
+      'Invalid next-firebase-auth options: The "firebaseAdminInitConfig" private key setting should not be available on the client side.'
     )
   })
 
