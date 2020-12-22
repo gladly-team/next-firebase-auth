@@ -28,16 +28,14 @@ const createMockConfig = ({ clientSide } = {}) => {
     cookies: {
       name: 'someExample',
       keys: useClientSideConfig ? [] : ['abc', 'def'],
-      cookieOptions: {
-        domain: undefined,
-        httpOnly: true,
-        maxAge: 172800, // two days
-        overwrite: true,
-        path: '/',
-        sameSite: 'strict',
-        secure: true,
-        signed: true,
-      },
+      domain: undefined,
+      httpOnly: true,
+      maxAge: 172800, // two days
+      overwrite: true,
+      path: '/',
+      sameSite: 'strict',
+      secure: true,
+      signed: true,
     },
   }
 }

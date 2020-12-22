@@ -34,19 +34,17 @@ const defaultConfig = {
     name: undefined,
     // Required string or array.
     keys: undefined,
-    // Required object: options to pass to cookies.set.
+    // Options below are passed to cookies.set:
     // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
     // We'll default to stricter, more secure options.
-    cookieOptions: {
-      domain: undefined,
-      httpOnly: true,
-      maxAge: ONE_WEEK_IN_MS,
-      overwrite: true,
-      path: '/',
-      sameSite: 'strict',
-      secure: true,
-      signed: true,
-    },
+    domain: undefined,
+    httpOnly: true,
+    maxAge: ONE_WEEK_IN_MS,
+    overwrite: true,
+    path: '/',
+    sameSite: 'strict',
+    secure: true,
+    signed: true,
   },
 }
 
@@ -91,9 +89,9 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.name" setting is required on the server side.'
       )
     }
-    if (mergedConfig.cookies.cookieOptions.signed && !areCookieKeysDefined) {
+    if (mergedConfig.cookies.signed && !areCookieKeysDefined) {
       errorMessages.push(
-        'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+        'The "cookies.keys" setting must be set if "cookies.signed" is true.'
       )
     }
 
@@ -102,7 +100,7 @@ const validateConfig = (mergedConfig) => {
     // https://firebase.google.com/docs/auth/admin/manage-cookies
     // By default, the cookie will be refreshed each time the user loads
     // the client-side app.
-    if (mergedConfig.cookies.cookieOptions.maxAge > TWO_WEEKS_IN_MS) {
+    if (mergedConfig.cookies.maxAge > TWO_WEEKS_IN_MS) {
       errorMessages.push(
         `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
       )
@@ -116,10 +114,7 @@ const validateConfig = (mergedConfig) => {
 
 export const setConfig = (userConfig = {}) => {
   logDebug('Setting config with provided value:', userConfig)
-  const {
-    cookies: { cookieOptions = {}, ...otherUserCookieOptions } = {},
-    ...otherUserConfig
-  } = userConfig
+  const { cookies: cookieOptions = {}, ...otherUserConfig } = userConfig
 
   // Merge the user's config with the default config, validate it,
   // and set it.
@@ -128,11 +123,7 @@ export const setConfig = (userConfig = {}) => {
     ...otherUserConfig,
     cookies: {
       ...defaultConfig.cookies,
-      ...otherUserCookieOptions,
-      cookieOptions: {
-        ...defaultConfig.cookies.cookieOptions,
-        ...cookieOptions,
-      },
+      ...cookieOptions,
     },
   }
   const { isValid, errors } = validateConfig(mergedConfig)

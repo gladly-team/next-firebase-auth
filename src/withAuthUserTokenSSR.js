@@ -34,8 +34,7 @@ const withAuthUserTokenSSR = ({
 } = {}) => (getServerSidePropsFunc) => async (ctx) => {
   const { req, res } = ctx
 
-  const { keys, cookieOptions } = getConfig().cookies
-  const { secure, signed } = cookieOptions
+  const { keys, secure, signed } = getConfig().cookies
 
   // Get the user's ID token from their cookie, verify it (refreshing
   // as needed), and return the serialized AuthUser in props.

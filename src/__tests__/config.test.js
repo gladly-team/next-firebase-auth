@@ -38,16 +38,14 @@ describe('config', () => {
       cookies: {
         name: undefined,
         keys: undefined,
-        cookieOptions: {
-          domain: undefined,
-          httpOnly: true,
-          maxAge: 604800000, // week
-          overwrite: true,
-          path: '/',
-          sameSite: 'strict',
-          secure: true,
-          signed: true,
-        },
+        domain: undefined,
+        httpOnly: true,
+        maxAge: 604800000, // week
+        overwrite: true,
+        path: '/',
+        sameSite: 'strict',
+        secure: true,
+        signed: true,
       },
     }
     setConfig(mockConfig)
@@ -223,16 +221,13 @@ describe('config', () => {
       cookies: {
         ...mockConfigDefault.cookies,
         keys: undefined,
-        cookieOptions: {
-          ...mockConfigDefault.cookies.cookieOptions,
-          signed: true,
-        },
+        signed: true,
       },
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
     )
   })
 
@@ -247,16 +242,13 @@ describe('config', () => {
       cookies: {
         ...mockConfigDefault.cookies,
         keys: [],
-        cookieOptions: {
-          ...mockConfigDefault.cookies.cookieOptions,
-          signed: true,
-        },
+        signed: true,
       },
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
     )
   })
 
@@ -271,16 +263,13 @@ describe('config', () => {
       cookies: {
         ...mockConfigDefault.cookies,
         keys: [undefined, undefined],
-        cookieOptions: {
-          ...mockConfigDefault.cookies.cookieOptions,
-          signed: true,
-        },
+        signed: true,
       },
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
     )
   })
 
@@ -294,10 +283,7 @@ describe('config', () => {
       ...mockConfigDefault,
       cookies: {
         ...mockConfigDefault.cookies,
-        cookieOptions: {
-          ...mockConfigDefault.cookies.cookieOptions,
-          maxAge: 14 * 86400000 + 2, // two ms greater than 14 days
-        },
+        maxAge: 14 * 86400000 + 2, // two ms greater than 14 days
       },
     }
     expect(() => {
