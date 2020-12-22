@@ -138,7 +138,7 @@ describe('config', () => {
     )
   })
 
-  it('[client-side] does not throws if the user provides an undefined cookies.keys value', () => {
+  it('[client-side] does not throw if the user provides an undefined cookies.keys value', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
@@ -156,7 +156,7 @@ describe('config', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] does not throws if the user provides an empty cookies.keys array', () => {
+  it('[client-side] does not throw if the user provides an empty cookies.keys array', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
@@ -167,6 +167,24 @@ describe('config', () => {
       cookies: {
         ...mockConfigDefault.cookies,
         keys: [],
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[client-side] does not throw if the user provides a cookies.keys array with only undefined values', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [undefined, undefined],
       },
     }
     expect(() => {
@@ -229,6 +247,30 @@ describe('config', () => {
       cookies: {
         ...mockConfigDefault.cookies,
         keys: [],
+        cookieOptions: {
+          ...mockConfigDefault.cookies.cookieOptions,
+          signed: true,
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+    )
+  })
+
+  it('[server-side] throws if the user provides an cookies.keys array with only undefined values but is using signed cookies', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [undefined, undefined],
         cookieOptions: {
           ...mockConfigDefault.cookies.cookieOptions,
           signed: true,
