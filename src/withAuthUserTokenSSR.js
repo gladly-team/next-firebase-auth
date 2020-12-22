@@ -48,20 +48,12 @@ const withAuthUserTokenSSR = ({
     { keys, secure, signed }
   )
   const { idToken, refreshToken } = cookieValStr ? JSON.parse(cookieValStr) : {}
-  let firebaseAdminUser
-  let token
+  let AuthUser
   if (idToken) {
-    ;({ user: firebaseAdminUser, token } = await verifyIdToken(
-      idToken,
-      refreshToken
-    ))
+    AuthUser = await verifyIdToken(idToken, refreshToken)
+  } else {
+    AuthUser = createAuthUser() // unauthenticated AuthUser
   }
-  const AuthUser = createAuthUser({
-    ...(firebaseAdminUser && {
-      firebaseUserAdminSDK: firebaseAdminUser,
-      token,
-    }),
-  })
   const AuthUserSerialized = AuthUser.serialize()
 
   // If specified, redirect to the login page if the user is unauthed.
