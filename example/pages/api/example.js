@@ -1,10 +1,15 @@
+import { verifyIdToken } from 'next-firebase-auth'
+
 const handler = async (req, res) => {
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).json({ error: 'Missing Authorization header value' })
   }
-
-  // TODO: verify ID token
-  // const token = req.headers.authorization
+  const token = req.headers.authorization
+  try {
+    await verifyIdToken(token)
+  } catch (e) {
+    return res.status(403).json({ error: 'Not authorized' })
+  }
 
   const colors = [
     'sea foam green',

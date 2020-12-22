@@ -41,7 +41,7 @@ const Demo = ({ favoriteColor }) => {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
-  // optionally, get other props
+  // Optionally, get other props.
   const token = await AuthUser.getIdToken()
   const endpoint = getAbsoluteURL('/api/example', req)
   const response = await fetch(endpoint, {
@@ -51,6 +51,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
     },
   })
   const data = await response.json()
+  if (!response.ok) {
+    throw new Error(
+      `Data fetching failed with status ${response.status}: ${JSON.stringify(
+        data
+      )}`
+    )
+  }
   return {
     favoriteColor: data.favoriteColor,
   }

@@ -27,13 +27,23 @@ const Demo = () => {
         Authorization: token,
       },
     })
-    return response.json()
+    const data = await response.json()
+    if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Data fetching failed with status ${response.status}: ${JSON.stringify(
+          data
+        )}`
+      )
+      return null
+    }
+    return data
   }, [AuthUser])
 
   useEffect(() => {
     const fetchFavoriteColor = async () => {
       const data = await fetchData()
-      setFavoriteColor(data.favoriteColor)
+      setFavoriteColor(data ? data.favoriteColor : 'unknown :(')
     }
     fetchFavoriteColor()
   }, [fetchData])
