@@ -6,7 +6,13 @@ const handler = async (req, res) => {
   // TODO: verify ID token
   // const token = req.headers.authorization
 
-  const colors = ['sea foam green', 'light purple', 'teal']
+  const colors = [
+    'sea foam green',
+    'light purple',
+    'teal',
+    'taupe',
+    'dark grey',
+  ]
   const favoriteColor = colors[Math.floor(Math.random() * colors.length)]
 
   return res.status(200).json({ favoriteColor })
