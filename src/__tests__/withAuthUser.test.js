@@ -16,7 +16,7 @@ import AuthAction from 'src/AuthAction'
 const mockRouterPush = jest.fn()
 const mockRouterReplace = jest.fn()
 jest.mock('next/router', () => ({
-  useRouter: () => ({ push: mockRouterPush, replace: mockRouterPush }),
+  useRouter: () => ({ push: mockRouterPush, replace: mockRouterReplace }),
 }))
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
