@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import FullPageLoader from '../components/FullPageLoader'
+import getAbsoluteURL from '../utils/getAbsoluteURL'
 
 const styles = {
   content: {
@@ -14,7 +15,29 @@ const styles = {
 }
 
 const Demo = () => {
-  const AuthUser = useAuthUser()
+  const AuthUser = useAuthUser() // the user is guaranteed to be authenticated
+
+  const [favoriteColor, setFavoriteColor] = useState()
+  const fetchData = useCallback(async () => {
+    const token = await AuthUser.getIdToken()
+    const endpoint = getAbsoluteURL('/api/example')
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
+    })
+    return response.json()
+  }, [AuthUser])
+
+  useEffect(() => {
+    const fetchFavoriteColor = async () => {
+      const data = await fetchData()
+      setFavoriteColor(data.favoriteColor)
+    }
+    fetchFavoriteColor()
+  }, [fetchData])
+
   return (
     <div>
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
@@ -27,6 +50,7 @@ const Demo = () => {
             initializing, if the user is not authenticated, it client-side
             redirects to the login page.
           </p>
+          <p>Your favorite color is: {favoriteColor}</p>
         </div>
         <DemoPageLinks />
       </div>
