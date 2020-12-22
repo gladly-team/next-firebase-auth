@@ -71,7 +71,7 @@ const validateConfig = (mergedConfig) => {
         'The "firebaseAdminInitConfig" private key setting should not be available on the client side.'
       )
     }
-    if (mergedConfig.cookies.keys) {
+    if (mergedConfig.cookies.keys && mergedConfig.cookies.keys.length > 0) {
       errorMessages.push(
         'The "cookies.keys" setting should not be available on the client side.'
       )
@@ -85,7 +85,7 @@ const validateConfig = (mergedConfig) => {
     }
     if (
       mergedConfig.cookies.cookieOptions.signed &&
-      !mergedConfig.cookies.keys
+      !(mergedConfig.cookies.keys && mergedConfig.cookies.keys.length > 0)
     ) {
       errorMessages.push(
         'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
