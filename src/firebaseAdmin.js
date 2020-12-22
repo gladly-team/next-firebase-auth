@@ -30,18 +30,11 @@ const refreshExpiredIdToken = async (refreshToken) => {
   return idToken
 }
 
-// TODO: refactor to return AuthUser, then expose it as a method.
-//   This would provide an easy way to use token-based auth for
-//   API endpoints, rather than relying on cookies or requiring
-//   the user to interface with firebase-admin.
 /**
  * Verify the Firebase ID token and return the Firebase user.
  * If the ID token has expired, refresh it if a refreshToken
  * is provided.
- * @return {Object} result
- * @return {Object} result.user - The Firebase user
- * @return {Object} result.token - The token, which will change when
- *   it is refreshed.
+ * @return {Object} An AuthUser instance
  */
 export const verifyIdToken = async (token, refreshToken = null) => {
   let firebaseUser
@@ -58,10 +51,11 @@ export const verifyIdToken = async (token, refreshToken = null) => {
       throw e
     }
   }
-  return {
-    user: firebaseUser,
+  const AuthUser = createAuthUser({
+    firebaseUserAdminSDK: firebaseUser,
     token: newToken,
-  }
+  })
+  return AuthUser
 }
 
 /**
@@ -77,11 +71,11 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
-  const { user: firebaseUser } = await verifyIdToken(token)
+  const AuthUser = await verifyIdToken(token)
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
-  const customToken = await admin.auth().createCustomToken(firebaseUser.uid)
+  const customToken = await admin.auth().createCustomToken(AuthUser.id)
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const refreshTokenEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
@@ -102,9 +96,6 @@ export const getCustomIdAndRefreshTokens = async (token) => {
     )
   }
   const { idToken, refreshToken } = refreshTokenJSON
-
-  const AuthUser = createAuthUser({ firebaseUserAdminSDK: firebaseUser })
-
   return {
     idToken,
     refreshToken,

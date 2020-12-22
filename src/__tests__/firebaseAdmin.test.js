@@ -16,23 +16,33 @@ const googleCustomTokenEndpoint =
   'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken'
 
 describe('verifyIdToken', () => {
-  it('returns a Firebase admin user', async () => {
+  it('returns an AuthUser', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const expectedReturn = createAuthUser({
+      firebaseUserAdminSDK: mockFirebaseUser,
+      token: 'some-token',
+    })
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    const response = await verifyIdToken('some-token')
+    expect(response).toEqual({
+      ...expectedReturn,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+    })
+  })
+
+  it('returns an AuthUser with the same token when the token has not expired', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
-    const response = await verifyIdToken('some-token')
-    expect(response.user).toEqual(mockFirebaseUser)
+    const AuthUser = await verifyIdToken('some-token')
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual('some-token')
   })
 
-  it('returns the same token when it has not expired', async () => {
-    const { verifyIdToken } = require('src/firebaseAdmin')
-    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
-    const response = await verifyIdToken('some-token')
-    expect(response.token).toEqual('some-token')
-  })
-
-  it('returns a new token when it is refreshed', async () => {
+  it('returns an AuthUser with a new token when the token is refreshed', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -60,8 +70,9 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    const response = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(response.token).toEqual('a-new-token')
+    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual('a-new-token')
   })
 
   it('calls the Google token refresh endpoint with the public Firebase API key as a query parameter value', async () => {

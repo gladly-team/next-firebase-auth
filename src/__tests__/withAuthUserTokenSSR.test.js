@@ -45,10 +45,12 @@ describe('withAuthUserTokenSSR', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    verifyIdToken.mockResolvedValue({
-      token: 'a-user-identity-token-abc',
-      user: mockFirebaseAdminUser,
-    })
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
 
     const expectedAuthUserProp = createAuthUser({
       firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -159,10 +161,12 @@ describe('withAuthUserTokenSSR', () => {
       })
     )
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    verifyIdToken.mockResolvedValue({
-      token: 'a-user-identity-token-abc',
-      user: mockFirebaseAdminUser,
-    })
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -190,10 +194,12 @@ describe('withAuthUserTokenSSR', () => {
       })
     )
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    verifyIdToken.mockResolvedValue({
-      token: 'a-user-identity-token-abc',
-      user: mockFirebaseAdminUser,
-    })
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
 
     const mockConfig = getMockConfig()
     setConfig({
@@ -227,10 +233,12 @@ describe('withAuthUserTokenSSR', () => {
       })
     )
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    verifyIdToken.mockResolvedValue({
-      token: 'a-user-identity-token-abc',
-      user: mockFirebaseAdminUser,
-    })
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
 
     const mockConfig = getMockConfig()
     setConfig({
@@ -317,10 +325,12 @@ describe('withAuthUserTokenSSR', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    verifyIdToken.mockResolvedValue({
-      token: 'a-user-identity-token-abc',
-      user: mockFirebaseAdminUser,
-    })
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
 
     const expectedAuthUserProp = createAuthUser({
       firebaseUserAdminSDK: mockFirebaseAdminUser,
