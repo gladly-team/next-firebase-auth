@@ -87,7 +87,7 @@ const withAuthUser = ({
           'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
         )
       }
-      router.push(appPageURL)
+      router.replace(appPageURL)
     }, [router])
     const redirectToLogin = useCallback(() => {
       if (!authPageURL) {
@@ -95,7 +95,7 @@ const withAuthUser = ({
           'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
         )
       }
-      router.push(authPageURL)
+      router.replace(authPageURL)
     }, [router])
 
     useEffect(() => {

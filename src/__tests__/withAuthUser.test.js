@@ -14,8 +14,9 @@ import AuthAction from 'src/AuthAction'
 
 // Note that we don't mock createAuthUser or useAuthUser.
 const mockRouterPush = jest.fn()
+const mockRouterReplace = jest.fn()
 jest.mock('next/router', () => ({
-  useRouter: () => ({ push: mockRouterPush }),
+  useRouter: () => ({ push: mockRouterPush, replace: mockRouterReplace }),
 }))
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
@@ -233,7 +234,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/my-auth')
+    expect(mockRouterReplace).toHaveBeenCalledWith('/my-auth')
   })
 
   it('redirects to login on the client side when there is no user (*after* Firebase initializes) and a redirecting strategy is set', () => {
@@ -260,7 +261,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/some-auth-page')
+    expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
   })
 
   it('does not redirect to login when server-side, even when a redirecting strategy is set (redirects here are client-side only)', () => {
@@ -291,7 +292,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).not.toHaveBeenCalled()
+    expect(mockRouterReplace).not.toHaveBeenCalled()
   })
 
   it('throws if needing to redirect to login and "authPageURL" is not set in the config', () => {
@@ -357,7 +358,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).toHaveBeenCalledWith('/my-app/here/')
+    expect(mockRouterReplace).toHaveBeenCalledWith('/my-app/here/')
   })
 
   it('does not redirect to the app on the server side, even when we will redirect to the app on the client side', () => {
@@ -386,7 +387,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterPush).not.toHaveBeenCalled()
+    expect(mockRouterReplace).not.toHaveBeenCalled()
   })
 
   it('throws if needing to redirect to the app and "appPageURL" is not set in the config', () => {
