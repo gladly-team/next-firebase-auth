@@ -31,7 +31,7 @@ const defaultConfig = {
   firebaseClientInitConfig: undefined,
   cookies: {
     // Required string. The base name for the auth cookies.
-    cookieName: undefined,
+    name: undefined,
     // Required string or array.
     keys: undefined,
     // Required object: options to pass to cookies.set.
@@ -86,9 +86,9 @@ const validateConfig = (mergedConfig) => {
     }
     // Validate server-side config.
   } else {
-    if (!mergedConfig.cookies.cookieName) {
+    if (!mergedConfig.cookies.name) {
       errorMessages.push(
-        'The "cookies.cookieName" setting is required on the server side.'
+        'The "cookies.name" setting is required on the server side.'
       )
     }
     if (mergedConfig.cookies.cookieOptions.signed && !areCookieKeysDefined) {

@@ -20,7 +20,7 @@ beforeEach(() => {
     ...mockConfig,
     cookies: {
       ...mockConfig.cookies,
-      cookieName: 'SomeName',
+      name: 'SomeName',
       keys: ['a-fake-key', 'another-fake-key'],
       cookieOptions: {
         ...mockConfig.cookies.cookieOptions,

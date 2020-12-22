@@ -26,7 +26,7 @@ const createMockConfig = ({ clientSide } = {}) => {
       projectId: 'my-example-app-id',
     },
     cookies: {
-      cookieName: 'someExample',
+      name: 'someExample',
       keys: useClientSideConfig ? [] : ['abc', 'def'],
       cookieOptions: {
         domain: undefined,

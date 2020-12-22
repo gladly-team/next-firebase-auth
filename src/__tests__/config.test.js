@@ -36,7 +36,7 @@ describe('config', () => {
       ...mockConfig,
       // Default cookies values.
       cookies: {
-        cookieName: undefined,
+        name: undefined,
         keys: undefined,
         cookieOptions: {
           domain: undefined,
@@ -192,7 +192,7 @@ describe('config', () => {
     }).not.toThrow()
   })
 
-  it('[server-side] throws if the user does not provide cookies.cookieName', () => {
+  it('[server-side] throws if the user does not provide cookies.name', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
@@ -202,13 +202,13 @@ describe('config', () => {
       ...mockConfigDefault,
       cookies: {
         ...mockConfigDefault.cookies,
-        cookieName: undefined,
+        name: undefined,
       },
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.cookieName" setting is required on the server side.'
+      'Invalid next-firebase-auth options: The "cookies.name" setting is required on the server side.'
     )
   })
 

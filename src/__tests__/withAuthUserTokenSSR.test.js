@@ -268,7 +268,7 @@ describe('withAuthUserTokenSSR', () => {
       ...mockConfig,
       cookies: {
         ...mockConfig.cookies,
-        cookieName: 'MyCookie',
+        name: 'MyCookie',
         keys: ['aaa', 'bbb'],
         cookieOptions: {
           secure: false,
