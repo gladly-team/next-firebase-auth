@@ -9,7 +9,7 @@ beforeEach(() => {
     ...mockConfig,
     cookies: {
       ...mockConfig.cookies,
-      cookieName: 'myNeatApp',
+      name: 'myNeatApp',
     },
   })
 })

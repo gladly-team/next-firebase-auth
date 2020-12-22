@@ -29,19 +29,16 @@ beforeEach(() => {
     ...mockConfig,
     cookies: {
       ...mockConfig.cookies,
-      cookieName: 'SomeName',
+      name: 'SomeName',
       keys: ['a-fake-key', 'another-fake-key'],
-      cookieOptions: {
-        ...mockConfig.cookies.cookieOptions,
-        domain: 'example.co.uk',
-        httpOnly: true,
-        maxAge: 12345678,
-        overwrite: true,
-        path: '/my-path',
-        sameSite: 'strict',
-        secure: true,
-        signed: true,
-      },
+      domain: 'example.co.uk',
+      httpOnly: true,
+      maxAge: 12345678,
+      overwrite: true,
+      path: '/my-path',
+      sameSite: 'strict',
+      secure: true,
+      signed: true,
     },
   })
 })

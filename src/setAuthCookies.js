@@ -21,7 +21,29 @@ const setAuthCookies = async (req, res) => {
     token
   )
 
-  const { keys, cookieOptions } = getConfig().cookies
+  // Pick a subset of the config.cookies options to
+  // pass to setCookie.
+  const cookieOptions = (({
+    domain,
+    httpOnly,
+    keys,
+    maxAge,
+    overwrite,
+    path,
+    sameSite,
+    secure,
+    signed,
+  }) => ({
+    domain,
+    httpOnly,
+    keys,
+    maxAge,
+    overwrite,
+    path,
+    sameSite,
+    secure,
+    signed,
+  }))(getConfig().cookies)
 
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
@@ -36,10 +58,7 @@ const setAuthCookies = async (req, res) => {
       refreshToken,
     }),
     { req, res },
-    {
-      keys,
-      ...cookieOptions,
-    }
+    cookieOptions
   )
 
   // Store the AuthUser data. This cookie will be available
@@ -56,10 +75,7 @@ const setAuthCookies = async (req, res) => {
       req,
       res,
     },
-    {
-      keys,
-      ...cookieOptions,
-    }
+    cookieOptions
   )
 
   return {

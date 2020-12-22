@@ -12,7 +12,7 @@ const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
 }
 
 export const getCookie = (
-  cookieName,
+  name,
   { req, res },
   { keys, secure, signed } = {}
 ) => {
@@ -25,12 +25,12 @@ export const getCookie = (
   const cookies = createCookieMgr({ req, res }, { keys, secure })
 
   // https://github.com/pillarjs/cookies#cookiesget-name--options--
-  const cookieVal = cookies.get(cookieName, { signed })
+  const cookieVal = cookies.get(name, { signed })
   return cookieVal ? decodeBase64(cookieVal) : undefined
 }
 
 export const setCookie = (
-  cookieName,
+  name,
   cookieVal,
   { req, res },
   {
@@ -58,7 +58,7 @@ export const setCookie = (
   const valToSet = cookieVal == null ? undefined : encodeBase64(cookieVal)
 
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-  cookies.set(cookieName, valToSet, {
+  cookies.set(name, valToSet, {
     domain,
     httpOnly,
     maxAge,
@@ -72,9 +72,9 @@ export const setCookie = (
 
 // Some options, like path and domain, must match those used when setting
 // the cookie.
-export const deleteCookie = (cookieName, reqResObj, options) => {
+export const deleteCookie = (name, reqResObj, options) => {
   // "If the value is omitted, an outbound header with an expired
   // date is used to delete the cookie."
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-  setCookie(cookieName, undefined, reqResObj, options)
+  setCookie(name, undefined, reqResObj, options)
 }
