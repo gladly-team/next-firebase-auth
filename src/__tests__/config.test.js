@@ -30,7 +30,6 @@ describe('config', () => {
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
       ...createMockConfig(),
-      firebaseAdminInitConfig: undefined,
       cookies: undefined,
     }
     const expectedConfig = {
@@ -55,24 +54,51 @@ describe('config', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
-  it('[client-side] throws if the user provides firebaseAdminInitConfig on the client side', () => {
+  it('[client-side] does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
     const { setConfig } = require('src/config')
     const mockConfig = {
       ...createMockConfig(),
-      firebaseAdminInitConfig: { some: 'stuff' },
-      cookies: undefined,
+      firebaseAdminInitConfig: {
+        credential: {
+          projectId: 'abc',
+          clientEmail: 'def',
+          privateKey: undefined,
+        },
+        databaseURL: 'ghi',
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[client-side] throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: {
+        credential: {
+          projectId: 'abc',
+          clientEmail: 'def',
+          privateKey: 'oops',
+        },
+        databaseURL: 'ghi',
+      },
     }
     expect(() => {
       setConfig(mockConfig)
     }).toThrow(
-      'Invalid next-firebase-auth options: The "firebaseAdminInitConfig" setting should not be available on the client side.'
+      'Invalid next-firebase-auth options: The "firebaseAdminInitConfig" private key setting should not be available on the client side.'
     )
   })
 
-  it('[client-side] throws if the user provides cookies.keys', () => {
+  it('[client-side] throws if the user provides a cookies.keys value', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(true)
@@ -80,7 +106,26 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: 'thing',
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "cookies.keys" setting should not be available on the client side.'
+    )
+  })
+
+  it('[client-side] throws if the user provides a cookies.keys array', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
       cookies: {
         ...mockConfigDefault.cookies,
         keys: ['some', 'keys'],
@@ -91,6 +136,60 @@ describe('config', () => {
     }).toThrow(
       'Invalid next-firebase-auth options: The "cookies.keys" setting should not be available on the client side.'
     )
+  })
+
+  it('[client-side] does not throw if the user provides an undefined cookies.keys value', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: undefined,
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[client-side] does not throw if the user provides an empty cookies.keys array', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [],
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[client-side] does not throw if the user provides a cookies.keys array with only undefined values', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [undefined, undefined],
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
   })
 
   it('[server-side] throws if the user does not provide cookies.cookieName', () => {
@@ -137,6 +236,54 @@ describe('config', () => {
     )
   })
 
+  it('[server-side] throws if the user provides an empty cookies.keys array but is using signed cookies', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [],
+        cookieOptions: {
+          ...mockConfigDefault.cookies.cookieOptions,
+          signed: true,
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+    )
+  })
+
+  it('[server-side] throws if the user provides an cookies.keys array with only undefined values but is using signed cookies', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      cookies: {
+        ...mockConfigDefault.cookies,
+        keys: [undefined, undefined],
+        cookieOptions: {
+          ...mockConfigDefault.cookies.cookieOptions,
+          signed: true,
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
+    )
+  })
+
   it('[server-side] throws if the user sets a maxAge of greater than two weeks', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
@@ -166,8 +313,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined, // for other config validation
-      cookies: undefined, // for other config validation
       loginAPIEndpoint: undefined,
     }
     expect(() => {
@@ -183,8 +328,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined, // for other config validation
-      cookies: undefined, // for other config validation
       logoutAPIEndpoint: undefined,
     }
     expect(() => {

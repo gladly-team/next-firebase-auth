@@ -60,14 +60,26 @@ const validateConfig = (mergedConfig) => {
     errorMessages.push('The "logoutAPIEndpoint" setting is required.')
   }
 
+  // We consider cookie keys undefined if the keys are an empty string,
+  // empty array, or array of only undefined values.
+  const { keys } = mergedConfig.cookies
+  const areCookieKeysDefined =
+    keys &&
+    keys.length &&
+    (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+
   // Validate client-side config.
   if (isClientSide()) {
-    if (mergedConfig.firebaseAdminInitConfig) {
+    if (
+      mergedConfig.firebaseAdminInitConfig &&
+      mergedConfig.firebaseAdminInitConfig.credential &&
+      mergedConfig.firebaseAdminInitConfig.credential.privateKey
+    ) {
       errorMessages.push(
-        'The "firebaseAdminInitConfig" setting should not be available on the client side.'
+        'The "firebaseAdminInitConfig" private key setting should not be available on the client side.'
       )
     }
-    if (mergedConfig.cookies.keys) {
+    if (areCookieKeysDefined) {
       errorMessages.push(
         'The "cookies.keys" setting should not be available on the client side.'
       )
@@ -79,10 +91,7 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.cookieName" setting is required on the server side.'
       )
     }
-    if (
-      mergedConfig.cookies.cookieOptions.signed &&
-      !mergedConfig.cookies.keys
-    ) {
+    if (mergedConfig.cookies.cookieOptions.signed && !areCookieKeysDefined) {
       errorMessages.push(
         'The "cookies.keys" setting must be set if "cookies.cookieOptions.signed" is true.'
       )
