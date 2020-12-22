@@ -34,10 +34,7 @@ const refreshExpiredIdToken = async (refreshToken) => {
  * Verify the Firebase ID token and return the Firebase user.
  * If the ID token has expired, refresh it if a refreshToken
  * is provided.
- * @return {Object} result
- * @return {Object} result.user - The Firebase user
- * @return {Object} result.token - The token, which will change when
- *   it is refreshed.
+ * @return {Object} An AuthUser instance
  */
 export const verifyIdToken = async (token, refreshToken = null) => {
   let firebaseUser
