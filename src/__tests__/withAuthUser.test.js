@@ -27,12 +27,7 @@ beforeEach(() => {
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(true)
 
-  const mockConfig = getMockConfig()
-  setConfig({
-    ...mockConfig,
-    firebaseAdminInitConfig: undefined,
-    cookies: undefined,
-  })
+  setConfig(getMockConfig())
 
   useFirebaseUser.mockReturnValue({
     user: undefined,
@@ -223,8 +218,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAdminInitConfig: undefined,
-      cookies: undefined,
       authPageURL: '/my-auth', // custom auth page
     })
     const MockCompWithUser = withAuthUser({
@@ -254,8 +247,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAdminInitConfig: undefined,
-      cookies: undefined,
       authPageURL: '/some-auth-page', // custom auth page
     })
     const MockCompWithUser = withAuthUser({
@@ -314,8 +305,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAdminInitConfig: undefined,
-      cookies: undefined,
       authPageURL: undefined, // needs to be set
     })
     const MockCompWithUser = withAuthUser({
@@ -355,8 +344,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAdminInitConfig: undefined,
-      cookies: undefined,
       appPageURL: '/my-app/here/', // custom app page
     })
     const MockCompWithUser = withAuthUser({
@@ -413,8 +400,6 @@ describe('withAuthUser: rendering/redirecting', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAdminInitConfig: undefined,
-      cookies: undefined,
       appPageURL: undefined, // should be set
     })
     const MockCompWithUser = withAuthUser({

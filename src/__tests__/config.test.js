@@ -30,7 +30,6 @@ describe('config', () => {
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
       ...createMockConfig(),
-      firebaseAdminInitConfig: undefined,
       cookies: undefined,
     }
     const expectedConfig = {
@@ -70,7 +69,6 @@ describe('config', () => {
         },
         databaseURL: 'ghi',
       },
-      cookies: undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -92,7 +90,6 @@ describe('config', () => {
         },
         databaseURL: 'ghi',
       },
-      cookies: undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -109,7 +106,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined,
       cookies: {
         ...mockConfigDefault.cookies,
         keys: 'thing',
@@ -130,7 +126,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined,
       cookies: {
         ...mockConfigDefault.cookies,
         keys: ['some', 'keys'],
@@ -151,7 +146,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined,
       cookies: {
         ...mockConfigDefault.cookies,
         keys: undefined,
@@ -170,7 +164,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined,
       cookies: {
         ...mockConfigDefault.cookies,
         keys: [],
@@ -278,8 +271,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined, // for other config validation
-      cookies: undefined, // for other config validation
       loginAPIEndpoint: undefined,
     }
     expect(() => {
@@ -295,8 +286,6 @@ describe('config', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      firebaseAdminInitConfig: undefined, // for other config validation
-      cookies: undefined, // for other config validation
       logoutAPIEndpoint: undefined,
     }
     expect(() => {
