@@ -7,6 +7,7 @@ import {
 } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
+import getAbsoluteURL from '../utils/getAbsoluteURL'
 
 const styles = {
   content: {
@@ -17,7 +18,7 @@ const styles = {
   },
 }
 
-const Demo = () => {
+const Demo = ({ favoriteColor }) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -29,6 +30,7 @@ const Demo = () => {
             This page requires authentication. It will do a server-side redirect
             (307) to the login page if the auth cookies are not set.
           </p>
+          <p>Your favorite color is: {favoriteColor}</p>
         </div>
         <DemoPageLinks />
       </div>
@@ -38,7 +40,21 @@ const Demo = () => {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})()
+})(async ({ AuthUser, req }) => {
+  // optionally, get other props
+  const token = await AuthUser.getIdToken()
+  const endpoint = getAbsoluteURL('/api/example', req)
+  const response = await fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      Authorization: token,
+    },
+  })
+  const data = await response.json()
+  return {
+    favoriteColor: data.favoriteColor,
+  }
+})
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,

@@ -3,6 +3,7 @@ import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import FullPageLoader from '../components/FullPageLoader'
+import getAbsoluteURL from '../utils/getAbsoluteURL'
 
 const styles = {
   content: {
@@ -19,7 +20,8 @@ const Demo = () => {
   const [favoriteColor, setFavoriteColor] = useState()
   const fetchData = useCallback(async () => {
     const token = await AuthUser.getIdToken()
-    const response = await fetch('/api/example', {
+    const endpoint = getAbsoluteURL('/api/example')
+    const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
         Authorization: token,
