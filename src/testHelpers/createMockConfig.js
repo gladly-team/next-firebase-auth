@@ -1,6 +1,7 @@
 /* eslint-env jest */
+import isClientSide from 'src/isClientSide'
 
-const createMockConfig = () => ({
+const createMockConfig = ({ clientSide = isClientSide() } = {}) => ({
   debug: false,
   loginAPIEndpoint: 'https://example.com/api/login',
   logoutAPIEndpoint: 'https://example.com/api/logout',
@@ -10,7 +11,7 @@ const createMockConfig = () => ({
     credential: {
       projectId: 'my-example-app',
       clientEmail: 'my-example-app@example.com',
-      privateKey: 'fakePrivateKey123',
+      privateKey: clientSide ? undefined : 'fakePrivateKey123',
     },
     databaseURL: 'https://my-example-app.firebaseio.com',
   },
@@ -22,7 +23,7 @@ const createMockConfig = () => ({
   },
   cookies: {
     cookieName: 'someExample',
-    keys: ['abc', 'def'],
+    keys: clientSide ? [] : ['abc', 'def'],
     cookieOptions: {
       domain: undefined,
       httpOnly: true,

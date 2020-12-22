@@ -6,7 +6,7 @@ jest.mock('firebase-admin')
 jest.mock('src/config')
 
 beforeEach(() => {
-  const mockConfig = createMockConfig()
+  const mockConfig = createMockConfig({ clientSide: false })
   setConfig(mockConfig)
 
   admin.credential.cert.mockImplementation((obj) => ({
@@ -46,7 +46,7 @@ describe('initFirebaseAdminSDK', () => {
 
   it('throws if config.firebaseAdminInitConfig is not set and no app is initialized', () => {
     expect.assertions(1)
-    const mockConfig = createMockConfig()
+    const mockConfig = createMockConfig({ clientSide: false })
     setConfig({
       ...mockConfig,
       firebaseAdminInitConfig: undefined,
@@ -61,7 +61,7 @@ describe('initFirebaseAdminSDK', () => {
 
   it('does not throw if config.firebaseAdminInitConfig is not set but a Firebase app is already initialized', () => {
     expect.assertions(1)
-    const mockConfig = createMockConfig()
+    const mockConfig = createMockConfig({ clientSide: false })
     setConfig({
       ...mockConfig,
       firebaseAdminInitConfig: undefined,
