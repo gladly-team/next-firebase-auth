@@ -8,6 +8,8 @@ const handler = async (req, res) => {
   try {
     await verifyIdToken(token)
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e)
     return res.status(403).json({ error: 'Not authorized' })
   }
 
