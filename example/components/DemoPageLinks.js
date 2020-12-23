@@ -19,7 +19,7 @@ const DemoPageLinks = () => (
     <h4>Examples</h4>
     <div>
       <Link href="/">
-        <a style={styles.linkAnchor}>Home: static, no auth required</a>
+        <a style={styles.linkAnchor}>Home: SSR, no auth required</a>
       </Link>
       <Link href="/ssr-auth-required">
         <a style={styles.linkAnchor}>
