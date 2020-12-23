@@ -1,4 +1,7 @@
 import { verifyIdToken } from 'next-firebase-auth'
+import initAuth from '../../utils/initAuth'
+
+initAuth()
 
 const handler = async (req, res) => {
   if (!(req.headers && req.headers.authorization)) {
@@ -8,6 +11,8 @@ const handler = async (req, res) => {
   try {
     await verifyIdToken(token)
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e)
     return res.status(403).json({ error: 'Not authorized' })
   }
 
