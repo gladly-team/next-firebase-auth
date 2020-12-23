@@ -5,8 +5,10 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 const setAuthCookies = async (req, res) => {
+  initFirebaseAdminSDK()
   if (!(req.headers && req.headers.authorization)) {
     throw new Error('The request is missing an Authorization header value')
   }
