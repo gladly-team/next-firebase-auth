@@ -3325,10 +3325,10 @@ neo-async@^2.5.0, neo-async@^2.6.1, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-next-firebase-auth@^0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.8.2.tgz#ed334e722672ededf613790ad9ebeeaea109580c"
-  integrity sha512-CbqAFF7VO3qOTkTFN/SitU7jE5vQ6GAhKvBwYuC4oIBj4tOylTtgdvlFAJq5+pvybVca7/q0fa4uqeqKuhyHjw==
+next-firebase-auth@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.8.3.tgz#6abb44d0866acc8902f3384c434319bc5c703866"
+  integrity sha512-MhowCygg6AuUI9dBmKsk8A02SQ9cpgBm27n7voO7KELK7qBnGEnGz01w4c8I8dhrxLap8yjlTm0R53Ep8tYwOQ==
   dependencies:
     cookies "^0.8.0"
 
