@@ -29,8 +29,8 @@ import AuthAction from 'src/AuthAction'
 const withAuthUserTokenSSR = ({
   whenAuthed = AuthAction.RENDER,
   whenUnauthed = AuthAction.RENDER,
-  appPageURL = getConfig().appPageURL,
-  authPageURL = getConfig().authPageURL,
+  appPageURL = null,
+  authPageURL = null,
 } = {}) => (getServerSidePropsFunc) => async (ctx) => {
   const { req, res } = ctx
 
@@ -57,22 +57,28 @@ const withAuthUserTokenSSR = ({
 
   // If specified, redirect to the login page if the user is unauthed.
   if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
-    if (!authPageURL) {
+    const authRedirectDestination = authPageURL || getConfig().authPageURL
+    if (!authRedirectDestination) {
       throw new Error(
         `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
       )
     }
-    return { redirect: { destination: authPageURL, permanent: false } }
+    return {
+      redirect: { destination: authRedirectDestination, permanent: false },
+    }
   }
 
   // If specified, redirect to the app page if the user is authed.
   if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
-    if (!appPageURL) {
+    const appRedirectDestination = appPageURL || getConfig().appPageURL
+    if (!appRedirectDestination) {
       throw new Error(
         `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
       )
     }
-    return { redirect: { destination: appPageURL, permanent: false } }
+    return {
+      redirect: { destination: appRedirectDestination, permanent: false },
+    }
   }
 
   // Evaluate the composed getServerSideProps().
