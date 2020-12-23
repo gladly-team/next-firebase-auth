@@ -6,10 +6,12 @@ import { deleteCookie } from 'src/cookies'
 import { testApiHandler } from 'next-test-api-route-handler'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 jest.mock('src/config')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
+jest.mock('src/initFirebaseAdminSDK')
 
 beforeEach(() => {
   getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
@@ -39,6 +41,21 @@ afterEach(() => {
 })
 
 describe('unsetAuthCookies', () => {
+  it('calls initFirebaseAdminSDK', async () => {
+    expect.assertions(1)
+    const unsetAuthCookies = require('src/unsetAuthCookies').default
+    await testApiHandler({
+      handler: async (req, res) => {
+        unsetAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch()
+        expect(initFirebaseAdminSDK).toHaveBeenCalledTimes(1)
+      },
+    })
+  })
+
   it('calls deleteCookie for the AuthUser cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
