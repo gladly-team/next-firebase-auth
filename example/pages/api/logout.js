@@ -1,4 +1,7 @@
 import { unsetAuthCookies } from 'next-firebase-auth'
+import initAuth from '../../utils/initAuth'
+
+initAuth()
 
 const handler = async (req, res) => {
   try {
