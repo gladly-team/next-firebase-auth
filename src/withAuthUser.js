@@ -35,8 +35,8 @@ const withAuthUser = ({
   whenAuthed = AuthAction.RENDER,
   whenUnauthedBeforeInit = AuthAction.RENDER,
   whenUnauthedAfterInit = AuthAction.RENDER,
-  appPageURL = getConfig().appPageURL,
-  authPageURL = getConfig().authPageURL,
+  appPageURL = null,
+  authPageURL = null,
   LoaderComponent = null,
 } = {}) => (ChildComponent) => {
   const WithAuthUserHOC = (props) => {
@@ -82,20 +82,22 @@ const withAuthUser = ({
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
-      if (!appPageURL) {
+      const appRedirectDestination = appPageURL || getConfig().appPageURL
+      if (!appRedirectDestination) {
         throw new Error(
           'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
         )
       }
-      router.replace(appPageURL)
+      router.replace(appRedirectDestination)
     }, [router])
     const redirectToLogin = useCallback(() => {
-      if (!authPageURL) {
+      const authRedirectDestination = authPageURL || getConfig().authPageURL
+      if (!authRedirectDestination) {
         throw new Error(
           'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
         )
       }
-      router.replace(authPageURL)
+      router.replace(authRedirectDestination)
     }, [router])
 
     useEffect(() => {
