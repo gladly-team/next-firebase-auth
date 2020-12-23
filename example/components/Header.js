@@ -18,7 +18,7 @@ const Header = ({ email, signOut }) => (
   <div style={styles.container}>
     {email ? (
       <>
-        <div>Signed in as {email}</div>
+        <p>Signed in as {email}</p>
         <button
           type="button"
           onClick={() => {
@@ -30,8 +30,8 @@ const Header = ({ email, signOut }) => (
         </button>
       </>
     ) : (
-      <div>
-        You are not signed in.{' '}
+      <>
+        <p>You are not signed in.</p>
         <Link href="/auth">
           <a>
             <button type="button" style={styles.button}>
@@ -39,7 +39,7 @@ const Header = ({ email, signOut }) => (
             </button>
           </a>
         </Link>
-      </div>
+      </>
     )}
   </div>
 )
