@@ -8,13 +8,11 @@ import {
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
-import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 jest.mock('src/config')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
-jest.mock('src/initFirebaseAdminSDK')
 
 beforeEach(() => {
   const mockAuthUser = createMockAuthUser()
@@ -50,25 +48,6 @@ afterEach(() => {
 })
 
 describe('setAuthCookies', () => {
-  it('calls initFirebaseAdminSDK', async () => {
-    expect.assertions(1)
-    const setAuthCookies = require('src/setAuthCookies').default
-    await testApiHandler({
-      handler: async (req, res) => {
-        await setAuthCookies(req, res)
-        return res.status(200).end()
-      },
-      test: async ({ fetch }) => {
-        await fetch({
-          headers: {
-            authorization: 'some-token-here',
-          },
-        })
-        expect(initFirebaseAdminSDK).toHaveBeenCalledTimes(1)
-      },
-    })
-  })
-
   it('throws if req.headers.authorization is not set', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default

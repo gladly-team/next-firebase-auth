@@ -4,11 +4,8 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import { deleteCookie } from 'src/cookies'
-import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 const unsetAuthCookies = async (req, res) => {
-  initFirebaseAdminSDK()
-
   // Pick a subset of the config.cookies options to
   // pass to deleteCookie.
   const cookieOptions = (({
