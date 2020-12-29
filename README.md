@@ -5,5 +5,14 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies
 
+🌍 Support for all Next.js rendering strategies
+
+🔒 Signed, secure, http-only cookies by default
+
+🆔 Server-side access to the Firebase user ID token
+
+↩️ Built-in support for redirecting based on the user’s auth status
+
+
 ## Demo
 [See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
