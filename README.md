@@ -10,11 +10,19 @@ Simple Firebase authentication for all Next.js rendering strategies
 ###### 🆔 &nbsp; Server-side access to the Firebase user ID token
 ###### ↩️ &nbsp; Built-in support for redirecting based on the user’s auth status
 
+## What It Does
+This package makes the autheticated Firebase user's info and ID token easily available for both client-side and server-side rendering (SSR).
+
+We treat the Firebase JS SDK as the source of truth for auth status. When the user signs in, we call an endpoint to generate a refresh token and store the user info, ID token, and refresh token in cookies. Future requests to SSR pages receive the user info and ID token from cookies, refreshing the ID token as needed. When the user logs out, we unset the cookies.
+
+## Demo
+[See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
+
 ## When (Not) to Use this Package
 
 This package makes it easy to access the Firebase user and ID token regardless of the Next.js rendering strategy. However, depending on your app's needs, other approaches might work better for you.
 
-**If your app only uses static pages** or doesn't need the Firebase user for server-side rendering (SSR), use the Firebase JS SDK directly to load the user on the client side.
+**If your app only uses static pages** or doesn't need the Firebase user for SSR, use the Firebase JS SDK directly to load the user on the client side.
   * *Pros:* It's simpler and removes this package as a dependency.
   * *Cons:* You will not have access to the Firebase user when you use `getServerSideProps`.
 
@@ -26,6 +34,3 @@ This package makes it easy to access the Firebase user and ID token regardless o
       * *Pros:* You'll have server-side access to custom claims and the ability to check for token revocation, which are not currently supported by this package.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
 
-
-## Demo
-[See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
