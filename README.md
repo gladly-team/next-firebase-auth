@@ -184,7 +184,7 @@ Initializes `next-firebase-auth`. Must be called before calling any other method
 
 #### `withAuthUser({ ...options })(PageComponent)`
 
-A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the `useAuthUser` hook.
+A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the `useAuthUser` hook. Optionally, it can client-side redirect based on the user's auth status.
 
 It accepts the following options:
 
@@ -223,9 +223,47 @@ export default withAuthUser({
 })(LoginPage)
 ```
 
-#### `withAuthUserTokenSSR({ ...options })`
+#### `withAuthUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
-TODO
+A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an `AuthUser` property.
+
+It accepts the following options:
+
+Option | Description | Default
+------------ | ------------- | -------------
+`whenAuthed` | The behavior to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER` 
+`whenUnauthed` | The behavior to take if the user is *not* authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
+`appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
+`authPageURL` | The redirect destination URL when we should redirect to the login page. | `config.authPageURL`
+
+
+For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
+
+```jsx
+import { withAuthUser, AuthAction } from 'next-firebase-auth'
+
+const DemoPage = ({ thing }) => <div>The thing is: {thing}</div>
+
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  // Optionally, get other props.
+  const token = await AuthUser.getIdToken()
+  const response = await fetch('/api/my-endpoint', {
+    method: 'GET',
+    headers: {
+      Authorization: token,
+    },
+  })
+  const data = await response.json()
+  return {
+    thing: data.thing,
+  }
+})
+
+export default withAuthUser()(DemoPage)
+```
+
 
 #### `useAuthUser()`
 
