@@ -267,7 +267,24 @@ export default withAuthUser()(DemoPage)
 
 #### `useAuthUser()`
 
-TODO
+A hook that returns the current `AuthUser`. To use this, the Next.js page must be wrapped in `withAuthUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
+
+For example:
+
+```jsx
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+
+const Demo = () => {
+  const AuthUser = useAuthUser()
+  return (
+    <div>
+      <p>Your email is {AuthUser.email ? AuthUser.email : "unknown"}.</p>
+    </div>
+  )
+}
+
+export default withAuthUser()(DemoPage)
+```
 
 #### `setAuthCookies(req, res)`
 
