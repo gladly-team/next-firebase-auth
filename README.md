@@ -3,4 +3,5 @@
 [![npm](https://img.shields.io/npm/v/next-firebase-auth.svg)](https://www.npmjs.com/package/next-firebase-auth)
 
 # next-firebase-auth
-WIP
+Simple Firebase authentication for all Next.js rendering strategies
+
