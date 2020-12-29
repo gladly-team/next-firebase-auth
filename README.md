@@ -95,7 +95,7 @@ export default initAuth
 
 Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_CURRENT` in `.env.local`. See config documentation below for more info.
 
-Once in your app (most likely in `_app.js`), initialize `next-firebase-auth`:
+Initialize `next-firebase-auth`, most likely in `_app.js`:
 ```js
 // ./pages/_app.js
 import initAuth from '../initAuth'
