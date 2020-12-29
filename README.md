@@ -47,7 +47,7 @@ Make sure peer dependencies are also installed:
 Create a module to initialize `next-firebase-auth` with your options:
 
 ```js
-// initAuth.js
+// ./initAuth.js
 import { init } from 'next-firebase-auth'
 
 const initAuth = () => {
@@ -93,4 +93,91 @@ export default initAuth
 
 ```
 
-// TODO
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_CURRENT` in `.env.local`. See config documentation below for more info.
+
+Once in your app (most likely in `_app.js`), initialize `next-firebase-auth`:
+```js
+// ./pages/_app.js
+import initAuth from '../initAuth'
+
+initAuth()
+
+function MyApp({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+
+export default MyApp
+
+```
+
+Create login and logout API endpoints that set auth cookies:
+
+```js
+// ./pages/api/login
+import { setAuthCookies } from 'next-firebase-auth'
+import initAuth from '../../initAuth'
+
+initAuth()
+
+const handler = async (req, res) => {
+  try {
+    await setAuthCookies(req, res)
+  } catch (e) {
+    return res.status(500).json({ error: 'Unexpected error.' })
+  }
+  return res.status(200).json({ success: true })
+}
+
+export default handler
+```
+
+```js
+// ./pages/api/logout
+import { unsetAuthCookies } from 'next-firebase-auth'
+import initAuth from '../../initAuth'
+
+initAuth()
+
+const handler = async (req, res) => {
+  try {
+    await unsetAuthCookies(req, res)
+  } catch (e) {
+    return res.status(500).json({ error: 'Unexpected error.' })
+  }
+  return res.status(200).json({ success: true })
+}
+
+export default handler
+```
+
+Finally, use the authenticated user in a page:
+
+```js
+// ./pages/demo
+import React from 'react'
+import {
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from 'next-firebase-auth'
+
+const Demo = () => {
+  const AuthUser = useAuthUser()
+  return (
+    <div>
+      <p>Your email is {AuthUser.email ? AuthUser.email : "unknown"}.</p>
+    </div>
+  )
+}
+
+// Note that this is a higher-order function.
+export const getServerSideProps = withAuthUserTokenSSR()()
+
+export default withAuthUser()(Demo)
+```
+
+## Config
+
+TODO: note using JSON for the private key in Vercel
+
+TODO: link to this documentation from the "getting started" section above
