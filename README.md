@@ -11,7 +11,7 @@ Simple Firebase authentication for all Next.js rendering strategies
 ###### &nbsp;&nbsp;&nbsp;&nbsp; ↩️ &nbsp; Built-in support for redirecting based on the user’s auth status
 
 ## What It Does
-This package makes the autheticated Firebase user's info and ID token easily available for both client-side and server-side rendering (SSR).
+This package makes the authenticated Firebase user and ID token easily available for both client-side and server-side rendering (SSR).
 
 We treat the Firebase JS SDK as the source of truth for auth status. When the user signs in, we call an endpoint to generate a refresh token and store the user info, ID token, and refresh token in cookies. Future requests to SSR pages receive the user info and ID token from cookies, refreshing the ID token as needed. When the user logs out, we unset the cookies.
 
@@ -34,3 +34,63 @@ This package makes it easy to access the Firebase user and ID token regardless o
       * *Pros:* You'll have server-side access to custom claims and the ability to check for token revocation, which are not currently supported by this package.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
 
+## Get Started
+
+Install:
+
+`yarn add next-firebase-auth`
+
+Make sure peer dependencies are also installed:
+
+`yarn add firebase firebase-admin next react react-dom`
+
+Create a module to initialize `next-firebase-auth` with your options:
+
+```js
+// initAuth.js
+import { init } from 'next-firebase-auth'
+
+const initAuth = () => {
+  init({
+    authPageURL: '/auth',
+    appPageURL: '/',
+    loginAPIEndpoint: '/api/login',
+    logoutAPIEndpoint: '/api/logout',
+    firebaseAdminInitConfig: {
+      credential: {
+        projectId: 'my-example-app-id',
+        clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
+        // This must not be accesssible client side.
+        privateKey: process.env.FIREBASE_PRIVATE_KEY,
+      },
+      databaseURL: 'https://my-example-app.firebaseio.com',
+    },
+    firebaseClientInitConfig: {
+      apiKey: 'MyExampleAppAPIKey123',
+      authDomain: 'my-example-app.firebaseapp.com',
+      databaseURL: 'https://my-example-app.firebaseio.com',
+      projectId: 'my-example-app-id',
+    },
+    cookies: {
+      name: 'ExampleApp',
+      // Keys must not be accessible client side.
+      keys: [
+        process.env.COOKIE_SECRET_CURRENT,
+        process.env.COOKIE_SECRET_PREVIOUS,
+      ],
+      httpOnly: true,
+      maxAge: 12 * 60 * 60 * 24 * 1000, // twelve days
+      overwrite: true,
+      path: '/',
+      sameSite: 'strict',
+      secure: true, // set this to false in local (non-HTTPS) development
+      signed: true,
+    },
+  })
+}
+
+export default initAuth
+
+```
+
+// TODO
