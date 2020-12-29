@@ -182,7 +182,7 @@ export default withAuthUser()(Demo)
 
 Initializes `next-firebase-auth`. Must be called before calling any other method.
 
-#### `withAuthUser({ ...options })`
+#### `withAuthUser({ ...options })(Component)`
 
 A higher-order function that provides the `AuthUser` context to a component.
 
