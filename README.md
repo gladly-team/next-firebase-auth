@@ -192,15 +192,15 @@ TODO: link to this documentation from the "getting started" section above
 
 An object with various behaviors to take depending on on a user's auth status:
 
-##### `AuthAction.RENDER`: render the child component
+**`AuthAction.RENDER`**: render the child component
 
-##### `AuthAction.SHOW_LOADER`: show a loader component
+**`AuthAction.SHOW_LOADER`**: show a loader component
 
-##### `AuthAction.RETURN_NULL`: return null instead of any component
+**`AuthAction.RETURN_NULL`**: return null instead of any component
 
-##### `AuthAction.REDIRECT_TO_LOGIN`: redirect to the login page
+**`AuthAction.REDIRECT_TO_LOGIN`**: redirect to the login page
 
-##### `AuthAction.REDIRECT_TO_APP`: redirect to the app
+**`AuthAction.REDIRECT_TO_APP`**: redirect to the app
 
 ### AuthUser
 
