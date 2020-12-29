@@ -3,12 +3,15 @@
 [![npm](https://img.shields.io/npm/v/next-firebase-auth.svg)](https://www.npmjs.com/package/next-firebase-auth)
 
 # next-firebase-auth
-Simple Firebase authentication for all Next.js rendering strategies
+Simple Firebase authentication for all Next.js rendering strategies.
 
 ###### &nbsp;&nbsp;&nbsp;&nbsp; 🌍 &nbsp; Support for all Next.js rendering strategies
 ######  &nbsp;&nbsp;&nbsp;&nbsp; 🔒 &nbsp; Signed, secure, http-only cookies by default
 ###### &nbsp;&nbsp;&nbsp;&nbsp; 🆔 &nbsp; Server-side access to the Firebase user ID token
 ###### &nbsp;&nbsp;&nbsp;&nbsp; ↩️ &nbsp; Built-in support for redirecting based on the user’s auth status
+
+
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Get Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types)
 
 ## What It Does
 This package makes the authenticated Firebase user and ID token easily available for both client-side and server-side rendering (SSR).
