@@ -182,9 +182,11 @@ export default withAuthUser()(Demo)
 
 Initializes `next-firebase-auth`. Must be called before calling any other method.
 
-#### `withAuthUser({ ...options })(Component)`
+#### `withAuthUser({ ...options })(PageComponent)`
 
-A higher-order function that provides the `AuthUser` context to a component.
+A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the `useAuthUser` hook.
+
+It accepts the following options:
 
 Option | Description | Default
 ------------ | ------------- | -------------
@@ -199,24 +201,26 @@ For example, this page will redirect to the login page if the user is not authen
 ```jsx
 import { withAuthUser, AuthAction } from 'next-firebase-auth'
 
-const Demo = () => <div>My demo page</div>
+const DemoPage = () => <div>My demo page</div>
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-})(Demo)
+  authPageURL: '/my-login-page/'
+})(DemoPage)
 ```
 
 Here's an example of a login page that shows a loader until Firebase is initialized, then redirects to the app if the user is already logged in:
 ```jsx
 import { withAuthUser, AuthAction } from 'next-firebase-auth'
 
-const Auth = () => <div>My login page</div>
+const LoginPage = () => <div>My login page</div>
 
 export default withAuthUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
-  whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.RENDER,
-})(Auth)
+  Loader: <div>Loading...</div>,
+})(LoginPage)
 ```
 
 #### `withAuthUserTokenSSR({ ...options })`
