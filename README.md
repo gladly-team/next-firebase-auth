@@ -204,6 +204,37 @@ An object with various behaviors to take depending on on a user's auth status:
 
 ### AuthUser
 
-TODO
+The auth user object used across server- and client-side contexts. This is a normalized representation of a Firebase user.
 
+**id** - `String|null`
+
+The Firebase user's ID, or null if the user is not authenticated.
+
+**email** - `String|null`
+
+The Firebase user's email address, or null if the user has no email address.
+
+**emailVerified** - `Boolean`
+
+Whether the user's email address is verified.
+
+**getIdToken** - `Function => Promise<String|null>`
+
+An async function that resolves to a valid Firebase ID token string, or null if no valid token is available.
+
+**clientInitialized** - `Boolean`
+
+Whether the Firebase JS SDK has initialized. If `true`, we are no longer using any user info from server-side props.
+
+**firebaseUser** - [`FirebaseUser`](https://firebase.google.com/docs/reference/js/firebase.User)`|null`
+
+The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
+
+**signOut** - `Function => Promise<void>`
+
+A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
+
+**serialize** - `Function => String`
+
+A method that returns a JSON string version of `AuthUser`. See [the implementation](https://github.com/gladly-team/next-firebase-auth/blob/2a3474aa079b809418f50c338a991ffcb9cd7bbb/src/createAuthUser.js#L144) for more info.
 
