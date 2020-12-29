@@ -178,6 +178,36 @@ export default withAuthUser()(Demo)
 
 ## API
 
+#### `init(config)`
+
+Initializes `next-firebase-auth`. Must be called before calling any other method.
+
+#### `withAuthUser({ ...options })`
+
+TODO
+
+#### `withAuthUserTokenSSR({ ...options })`
+
+TODO
+
+#### `useAuthUser()`
+
+TODO
+
+#### `setAuthCookies(req, res)`
+
+TODO
+
+#### `unsetAuthCookies(req, res)`
+
+TODO
+
+#### `verifyIdToken(token)`
+
+TODO
+
+#### `AuthAction`
+
 TODO
 
 ## Config
