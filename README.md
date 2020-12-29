@@ -5,3 +5,5 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies
 
+## Demo
+[See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
