@@ -5,10 +5,10 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies
 
-###### 🌍 &nbsp; Support for all Next.js rendering strategies
-###### 🔒 &nbsp; Signed, secure, http-only cookies by default
-###### 🆔 &nbsp; Server-side access to the Firebase user ID token
-###### ↩️ &nbsp; Built-in support for redirecting based on the user’s auth status
+###### &nbsp;&nbsp;&nbsp;&nbsp; 🌍 &nbsp; Support for all Next.js rendering strategies
+######  &nbsp;&nbsp;&nbsp;&nbsp; 🔒 &nbsp; Signed, secure, http-only cookies by default
+###### &nbsp;&nbsp;&nbsp;&nbsp; 🆔 &nbsp; Server-side access to the Firebase user ID token
+###### &nbsp;&nbsp;&nbsp;&nbsp; ↩️ &nbsp; Built-in support for redirecting based on the user’s auth status
 
 ## What It Does
 This package makes the autheticated Firebase user's info and ID token easily available for both client-side and server-side rendering (SSR).
