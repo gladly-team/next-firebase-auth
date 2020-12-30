@@ -4,7 +4,7 @@ import index from 'src/index'
 // These are exclusively for server-side use.
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
-import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
+import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
 
@@ -15,6 +15,10 @@ const initServer = (config) => {
   initFirebaseAdminSDK()
 
   return clientInit
+}
+
+const withAuthUserTokenSSR = (options) => {
+  withAuthUserTokenSSRModule(options, { useToken: true })
 }
 
 export default {
