@@ -31,7 +31,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('withAuthUserTokenSSR', () => {
+describe('withAuthUserSSR', () => {
   it('passes an AuthUserSerialized prop when the user is authenticated', async () => {
     expect.assertions(1)
 
@@ -56,9 +56,9 @@ describe('withAuthUserTokenSSR', () => {
       firebaseUserAdminSDK: mockFirebaseAdminUser,
       token: 'a-user-identity-token-abc',
     }).serialize()
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: { AuthUserSerialized: expectedAuthUserProp },
@@ -71,9 +71,9 @@ describe('withAuthUserTokenSSR', () => {
     getCookie.mockReturnValue(undefined) // the user has no auth cookie
 
     const expectedAuthUserProp = createAuthUser().serialize() // empty auth
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: { AuthUserSerialized: expectedAuthUserProp },
@@ -85,9 +85,9 @@ describe('withAuthUserTokenSSR', () => {
 
     getCookie.mockReturnValue(undefined) // the user has no auth cookie
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: '/my-login',
     })(mockGetSSPFunc)
@@ -111,9 +111,9 @@ describe('withAuthUserTokenSSR', () => {
       authPageURL: '/log-in-here',
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       // no auth page URL defined
     })(mockGetSSPFunc)
@@ -137,9 +137,9 @@ describe('withAuthUserTokenSSR', () => {
       authPageURL: undefined, // no auth page default defined
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       // no auth page URL defined
     })(mockGetSSPFunc)
@@ -168,9 +168,9 @@ describe('withAuthUserTokenSSR', () => {
       })
     )
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       appPageURL: '/my-app',
     })(mockGetSSPFunc)
@@ -207,9 +207,9 @@ describe('withAuthUserTokenSSR', () => {
       appPageURL: '/default-app-homepage',
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       // no app page URL defined
     })(mockGetSSPFunc)
@@ -246,9 +246,9 @@ describe('withAuthUserTokenSSR', () => {
       appPageURL: undefined, // no default defined
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR({
+    const func = withAuthUserSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       // no app page URL defined
     })(mockGetSSPFunc)
@@ -281,9 +281,9 @@ describe('withAuthUserTokenSSR', () => {
       res: { some: 'res' },
     }
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     await func(mockCtx)
     expect(getCookie).toHaveBeenCalledWith(
       'MyCookie.AuthUserTokens',
@@ -300,9 +300,9 @@ describe('withAuthUserTokenSSR', () => {
         refreshToken: 'some-refresh-token-13579',
       })
     )
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     await func(createMockNextContext())
     expect(verifyIdToken).toHaveBeenCalledWith(
       'some-id-token-24680',
@@ -334,12 +334,12 @@ describe('withAuthUserTokenSSR', () => {
       firebaseUserAdminSDK: mockFirebaseAdminUser,
       token: 'a-user-identity-token-abc',
     }).serialize()
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn((ctx) => ({
       here: ['is', 'a', 'prop'],
       userEmail: ctx.AuthUser.email,
     }))
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: {
@@ -354,9 +354,9 @@ describe('withAuthUserTokenSSR', () => {
     expect.assertions(1)
     const mockErr = new Error('Invalid thing.')
     verifyIdToken.mockImplementationOnce(() => Promise.reject(mockErr))
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserSSR = require('src/withAuthUserSSR').default
     const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const func = withAuthUserSSR()(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(mockErr)
   })
 })

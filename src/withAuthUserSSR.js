@@ -26,7 +26,7 @@ import AuthAction from 'src/AuthAction'
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
  */
-const withAuthUserTokenSSR = ({
+const withAuthUserSSR = ({
   whenAuthed = AuthAction.RENDER,
   whenUnauthed = AuthAction.RENDER,
   appPageURL = null,
@@ -97,4 +97,4 @@ const withAuthUserTokenSSR = ({
   }
 }
 
-export default withAuthUserTokenSSR
+export default withAuthUserSSR
