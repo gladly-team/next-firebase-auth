@@ -329,6 +329,16 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 ## Config
 
+You should provide a config when you `init` `next-firebase-auth`.
+
+**authPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+
+**appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+
+**loginAPIEndpoint**: The API endpoint to call when the auth state changes for an authenticated Firebase user. **Required.**
+
+**logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. **Required.**
+
 TODO: note using JSON for the private key in Vercel
 
 TODO: link to this documentation from the "getting started" section above
