@@ -339,7 +339,25 @@ You should provide a config when you `init` `next-firebase-auth`.
 
 **logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. **Required.**
 
-**firebaseAdminInitConfig**: Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL`. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
+#### **firebaseAdminInitConfig**
+
+Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
+
+The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client-side and should live in an environment variable.
+
+> Note: if using environent variables in Vercel, add the private key *with double quotes* via the CLI:
+>
+>   `vercel secrets add firebase-private-key '"my-key-here"'`
+>
+> Then, use `JSON.parse` in the `firebaseAdminInitConfig.credential.privateKey` property:
+>
+>    ```
+>      privateKey: process.env.FIREBASE_PRIVATE_KEY
+>        ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
+>        : undefined
+>    ```
+>
+> See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
 
 **firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). **Required** unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
 
