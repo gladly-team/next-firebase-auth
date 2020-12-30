@@ -35,7 +35,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('withAuthUserTokenSSR', () => {
+describe('withAuthUserTokenSSR: with ID token', () => {
   it('passes an AuthUserSerialized prop when the user is authenticated', async () => {
     expect.assertions(1)
 
@@ -84,6 +84,69 @@ describe('withAuthUserTokenSSR', () => {
     })
   })
 
+  it('passes the expected values to getCookie', async () => {
+    expect.assertions(1)
+
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      cookies: {
+        ...mockConfig.cookies,
+        name: 'MyCookie',
+        keys: ['aaa', 'bbb'],
+        secure: false,
+        signed: true,
+      },
+    })
+
+    const mockCtx = {
+      ...createMockNextContext(),
+      req: { some: 'req' },
+      res: { some: 'res' },
+    }
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    await func(mockCtx)
+    expect(getCookie).toHaveBeenCalledWith(
+      'MyCookie.AuthUserTokens',
+      { req: mockCtx.req, res: mockCtx.res },
+      { keys: ['aaa', 'bbb'], signed: true, secure: false }
+    )
+  })
+
+  it('passes the idToken and refreshToken from the auth cookie to verifyIdToken', async () => {
+    expect.assertions(1)
+    getCookie.mockReturnValue(
+      JSON.stringify({
+        idToken: 'some-id-token-24680',
+        refreshToken: 'some-refresh-token-13579',
+      })
+    )
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    await func(createMockNextContext())
+    expect(verifyIdToken).toHaveBeenCalledWith(
+      'some-id-token-24680',
+      'some-refresh-token-13579'
+    )
+  })
+
+  it('throws if verifyIdToken throws', async () => {
+    expect.assertions(1)
+    const mockErr = new Error('Invalid thing.')
+    verifyIdToken.mockImplementationOnce(() => Promise.reject(mockErr))
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(mockErr)
+  })
+})
+
+describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
   it('redirects to the provided login URL when the user is not authed and auth *is* required', async () => {
     expect.assertions(1)
 
@@ -263,57 +326,6 @@ describe('withAuthUserTokenSSR', () => {
     )
   })
 
-  it('passes the expected values to getCookie', async () => {
-    expect.assertions(1)
-
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    const mockConfig = getMockConfig()
-    setConfig({
-      ...mockConfig,
-      cookies: {
-        ...mockConfig.cookies,
-        name: 'MyCookie',
-        keys: ['aaa', 'bbb'],
-        secure: false,
-        signed: true,
-      },
-    })
-
-    const mockCtx = {
-      ...createMockNextContext(),
-      req: { some: 'req' },
-      res: { some: 'res' },
-    }
-
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
-    const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
-    await func(mockCtx)
-    expect(getCookie).toHaveBeenCalledWith(
-      'MyCookie.AuthUserTokens',
-      { req: mockCtx.req, res: mockCtx.res },
-      { keys: ['aaa', 'bbb'], signed: true, secure: false }
-    )
-  })
-
-  it('passes the idToken and refreshToken from the auth cookie to verifyIdToken', async () => {
-    expect.assertions(1)
-    getCookie.mockReturnValue(
-      JSON.stringify({
-        idToken: 'some-id-token-24680',
-        refreshToken: 'some-refresh-token-13579',
-      })
-    )
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
-    const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
-    await func(createMockNextContext())
-    expect(verifyIdToken).toHaveBeenCalledWith(
-      'some-id-token-24680',
-      'some-refresh-token-13579'
-    )
-  })
-
   it("includes the composed getServerSideProps's props, passing it the context with a defined AuthUser", async () => {
     expect.assertions(1)
 
@@ -352,15 +364,5 @@ describe('withAuthUserTokenSSR', () => {
         userEmail: 'def@example.com', // from createMockFirebaseUserAdminSDK
       },
     })
-  })
-
-  it('throws if verifyIdToken throws', async () => {
-    expect.assertions(1)
-    const mockErr = new Error('Invalid thing.')
-    verifyIdToken.mockImplementationOnce(() => Promise.reject(mockErr))
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
-    const mockGetSSPFunc = jest.fn()
-    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
-    await expect(func(createMockNextContext())).rejects.toEqual(mockErr)
   })
 })
