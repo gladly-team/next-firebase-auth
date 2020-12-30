@@ -17,13 +17,11 @@ const initServer = (config) => {
   return clientInit
 }
 
-const withAuthUserTokenSSR = (options) => {
+const withAuthUserTokenSSR = (options) =>
   withAuthUserTokenSSRModule(options, { useToken: true })
-}
 
-const withAuthUserSSR = (options) => {
+const withAuthUserSSR = (options) =>
   withAuthUserTokenSSRModule(options, { useToken: false })
-}
 
 export default {
   ...index,
