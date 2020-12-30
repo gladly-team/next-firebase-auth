@@ -203,7 +203,7 @@ Initializes `next-firebase-auth`, taking a [config](#config) object. Must be cal
 
 #### `withAuthUser({ ...options })(PageComponent)`
 
-A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the `useAuthUser` hook. Optionally, it can client-side redirect based on the user's auth status.
+A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the [`useAuthUser`](#useauthuser) hook. Optionally, it can client-side redirect based on the user's auth status.
 
 It accepts the following options:
 
@@ -244,7 +244,7 @@ export default withAuthUser({
 
 #### `withAuthUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
-A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an `AuthUser` property.
+A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an [`AuthUser`](#authuser) property.
 
 It accepts the following options:
 
