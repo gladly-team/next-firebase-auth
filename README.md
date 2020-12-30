@@ -303,11 +303,21 @@ export default withAuthUser()(DemoPage)
 
 #### `setAuthCookies(req, res)`
 
-TODO
+Sets cookies to store the authenticated user's info. Call this from your "login" API endpoint.
+
+Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). The cookies will be named using the `config.cookies.name` value as a base: if `config.cookies.name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). See the config for additional cookie options.
+
+The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object. It requires that the `Authorization` request header be set to the Firebase user ID token, which this package handles automatically.
+
+This can only be called on the server side.
 
 #### `unsetAuthCookies(req, res)`
 
-TODO
+Unsets (expires) the auth cookies. Call this from your "logout" API endpoint.
+
+The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object.
+
+This can only be called on the server side.
 
 #### `verifyIdToken(token)`
 
