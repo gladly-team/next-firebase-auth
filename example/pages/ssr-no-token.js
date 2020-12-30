@@ -2,7 +2,7 @@ import React from 'react'
 import {
   useAuthUser,
   withAuthUser,
-  withAuthUserTokenSSR,
+  withAuthUserSSR,
   AuthAction,
 } from 'next-firebase-auth'
 import Header from '../components/Header'
@@ -25,10 +25,14 @@ const Demo = ({ favoriteColor }) => {
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
-          <h3>Example: SSR + data fetching with ID token</h3>
+          <h3>Example: SSR + no ID token</h3>
           <p>
             This page requires authentication. It will do a server-side redirect
             (307) to the login page if the auth cookies are not set.
+          </p>
+          <p>
+            This page uses `withAuthUserSSR` rather than `withAuthUserTokenSSR`,
+            so it does not have server-side access to the user ID token.
           </p>
           <p>Your favorite color is: {favoriteColor}</p>
         </div>
@@ -38,10 +42,12 @@ const Demo = ({ favoriteColor }) => {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
-  // Optionally, get other props.
+  // The ID token will be null, because `withAuthUserSSR` does not
+  // include one. If you need a server-side token, use
+  // `withAuthUserTokenSSR`.
   const token = await AuthUser.getIdToken()
   const endpoint = getAbsoluteURL('/api/example', req)
   const response = await fetch(endpoint, {
