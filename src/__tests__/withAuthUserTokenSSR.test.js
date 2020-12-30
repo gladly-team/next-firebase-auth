@@ -36,7 +36,6 @@ beforeEach(() => {
     if (cookieName === 'SomeName.AuthUser') {
       return createAuthUser({
         firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-        token: 'a-user-identity-token-abc',
       }).serialize()
     }
     return undefined
@@ -66,7 +65,6 @@ describe('withAuthUserTokenSSR: with ID token', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -110,7 +108,6 @@ describe('withAuthUserTokenSSR: with ID token', () => {
             ...createMockFirebaseUserAdminSDK(),
             email: 'some-different-email@example.com', // differs from token result
           },
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -201,7 +198,6 @@ describe('withAuthUserTokenSSR: with ID token', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -242,7 +238,6 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -259,7 +254,7 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
 
     const expectedAuthUserProp = createAuthUser({
       firebaseUserAdminSDK: mockFirebaseAdminUser,
-      token: 'a-user-identity-token-abc',
+      token: null, // The token should be null.
     }).serialize()
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -289,7 +284,6 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
             ...mockFirebaseAdminUser,
             email: 'some-different-email@example.com', // differs from token result
           },
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -309,7 +303,7 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
           ...mockFirebaseAdminUser,
           email: 'some-different-email@example.com',
         },
-        token: 'a-user-identity-token-abc',
+        token: null, // The token should be null.
       }),
     }.serialize()
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
@@ -388,7 +382,6 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -489,7 +482,6 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -531,7 +523,6 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -580,7 +571,6 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
@@ -627,7 +617,6 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-          token: 'a-user-identity-token-abc',
         }).serialize()
       }
       return undefined
