@@ -232,13 +232,15 @@ Here's an example of a login page that shows a loader until Firebase is initiali
 ```jsx
 import { withAuthUser, AuthAction } from 'next-firebase-auth'
 
+const MyLoader = () => <div>Loading...</div>
+
 const LoginPage = () => <div>My login page</div>
 
 export default withAuthUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.RENDER,
-  Loader: <div>Loading...</div>,
+  Loader: MyLoader,
 })(LoginPage)
 ```
 
