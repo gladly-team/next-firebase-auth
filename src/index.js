@@ -22,6 +22,10 @@ const withAuthUser = withAuthUserModule
 
 const useAuthUser = useAuthUserModule
 
+// TODO: when we implement this, note in the documentation
+//   that this will NOT check for token revocation. If the
+//   developer needs verification that the credentials haven't
+//   been revoked, they should always use `withAuthUserTokenSSR`.
 const withAuthUserSSR = () => {
   throw new Error('"withAuthUserSSR" can only be called server-side.')
 }
