@@ -333,7 +333,7 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 ## Config
 
-You should provide a config when you `init` `next-firebase-auth`.
+See an [example config here](#example-config). Provide the config when you call `init`.
 
 **authPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
