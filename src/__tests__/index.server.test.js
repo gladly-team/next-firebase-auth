@@ -87,6 +87,16 @@ describe('index.server.js: withAuthUserSSR', () => {
     expect(indexServer.withAuthUserSSR).toBeDefined()
     expect(indexServer.withAuthUserSSR).toEqual(expect.any(Function))
   })
+
+  it('calls the withAuthUserTokenSSR module with useToken=false', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.withAuthUserSSR({ some: 'options' })
+    expect(withAuthUserTokenSSR).toHaveBeenCalledWith(
+      { some: 'options' },
+      { useToken: false }
+    )
+  })
 })
 
 describe('index.server.js: withAuthUserTokenSSR', () => {

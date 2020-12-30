@@ -21,10 +21,14 @@ const withAuthUserTokenSSR = (options) => {
   withAuthUserTokenSSRModule(options, { useToken: true })
 }
 
+const withAuthUserSSR = (options) => {
+  withAuthUserTokenSSRModule(options, { useToken: false })
+}
+
 export default {
   ...index,
   init: initServer,
-  // withAuthUserSSR // TODO
+  withAuthUserSSR,
   withAuthUserTokenSSR,
   setAuthCookies,
   unsetAuthCookies,
