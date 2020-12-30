@@ -325,7 +325,7 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 
 #### `AuthAction`
 
-TODO
+An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
 
 ## Config
 
@@ -337,7 +337,7 @@ TODO: link to this documentation from the "getting started" section above
 
 ### AuthAction
 
-An object with various behaviors to take depending on on a user's auth status:
+Defines actions to take depending on on a user's auth status, using the following constants:
 
 **`AuthAction.RENDER`**: render the child component
 
