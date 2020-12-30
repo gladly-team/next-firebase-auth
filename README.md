@@ -49,8 +49,9 @@ Make sure peer dependencies are also installed:
 
 `yarn add firebase firebase-admin next react react-dom`
 
-Create a module to initialize `next-firebase-auth` with your options:
+Create a module to initialize `next-firebase-auth`.
 
+#### Example config:
 ```js
 // ./initAuth.js
 import { init } from 'next-firebase-auth'
@@ -59,17 +60,19 @@ const initAuth = () => {
   init({
     authPageURL: '/auth',
     appPageURL: '/',
-    loginAPIEndpoint: '/api/login',
-    logoutAPIEndpoint: '/api/logout',
+    loginAPIEndpoint: '/api/login', // required
+    logoutAPIEndpoint: '/api/logout', // required
+    // Required in most cases.
     firebaseAdminInitConfig: {
       credential: {
         projectId: 'my-example-app-id',
         clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
-        // This must not be accesssible client side.
+        // The private key must not be accesssible on the client side.
         privateKey: process.env.FIREBASE_PRIVATE_KEY,
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
+    // Required in most cases.
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123',
       authDomain: 'my-example-app.firebaseapp.com',
@@ -77,8 +80,9 @@ const initAuth = () => {
       projectId: 'my-example-app-id',
     },
     cookies: {
-      name: 'ExampleApp',
-      // Keys must not be accessible client side.
+      name: 'ExampleApp', // required
+      // Keys are required unless you set `signed` to `false`.
+      // The keys cannot be accessible on the client side.
       keys: [
         process.env.COOKIE_SECRET_CURRENT,
         process.env.COOKIE_SECRET_PREVIOUS,
