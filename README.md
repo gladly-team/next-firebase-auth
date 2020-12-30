@@ -36,7 +36,7 @@ Depending on your app's needs, other approaches might work better for you.
       * *Pros:* You'll have server-side access to custom claims, which are not currently supported by this package.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
       
-If you expect to use both static and SSR, or if you need access to Firebase ID tokens server-side, this package is probably a good fit. Please check out [current limitations](#limitations--feedback) before diving in.
+**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side. Please check out [current limitations](#limitations--feedback) before diving in.
 
 ## Get Started
 
