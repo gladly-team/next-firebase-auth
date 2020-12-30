@@ -20,7 +20,7 @@ import isClientSide from 'src/isClientSide'
  * @return {Boolean} AuthUser.clientInitialized - This will be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.
- * @return {Object|null} AuthUser - The authenticated user's info.
+ * @return {Object} AuthUser - The authenticated user's info.
  * @return {String|null} AuthUser.id - The user's ID
  * @return {String|null} AuthUser.email - The user's email
  * @return {Boolean} AuthUser.emailVerified - Whether the user has verified their email

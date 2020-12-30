@@ -29,6 +29,9 @@ import isClientSide from 'src/isClientSide'
  *   we redirect to the app.
  * @param {String} authPageURL - The redirect destination URL when
  *   we redirect to the login page.
+ * @param {Function} Loader - The React component to show when the
+ *   user is unauthed and `whenUnauthedBeforeInit` is set to
+ *   `AuthAction.SHOW_LOADER`.
  * @return {Function} A function that takes a child component
  */
 const withAuthUser = ({
