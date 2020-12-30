@@ -305,7 +305,7 @@ export default withAuthUser()(DemoPage)
 
 Sets cookies to store the authenticated user's info. Call this from your "login" API endpoint.
 
-Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). The cookies will be named using the `config.cookies.name` value as a base: if `config.cookies.name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). See the config for additional cookie options.
+Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). See the config for cookie options.
 
 The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object. It requires that the `Authorization` request header be set to the Firebase user ID token, which this package handles automatically.
 
@@ -343,7 +343,7 @@ You should provide a config when you `init` `next-firebase-auth`.
 
 Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
 
-The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client-side and should live in an environment variable.
+The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
 > Note: if using environent variables in Vercel, add the private key *with double quotes* via the CLI:
 >
@@ -361,9 +361,22 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 
 **firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). **Required** unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
 
-TODO: note using JSON for the private key in Vercel
+#### **cookies**
 
-TODO: link to this documentation from the "getting started" section above
+Settings used for auth cookies. We use [`cookies`](https://github.com/pillarjs/cookies) to manage cookies.
+
+Properties include:
+* `name`: Used as a base for cookie names: if `name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). **Required.**
+* `keys`: Used to sign cookies, as described in [`cookies`](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
+* [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--0).
+
+The `keys` value cannot be defined on the client side and should live in a secret environment variable.
+
+For security, the `maxAge` value must be two weeks or less.
+
+> **Note:** The cookies' expirations will be extended automatically when the user loads the Firebase JS SDK.
+>
+> The Firebase JS SDK is the source of truth for authentication, so if the cookies expire but the user is still authed with Firebase, the cookies will be automatically set again when the user loads the Firebase JS SDK—but the user will not be authed during SSR on that first request.
 
 ## Types
 
