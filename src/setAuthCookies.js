@@ -70,7 +70,11 @@ const setAuthCookies = async (req, res) => {
     getAuthUserCookieName(),
     // Note: any change to cookie data structure needs to be
     // backwards-compatible.
-    AuthUser.serialize(),
+    // Don't include the token in the "AuthUser" cookie, because
+    // the token should only be used from the "AuthUserTokens"
+    // cookie. Here, it is redundant information, and we don't
+    // want the token to be used if it's expired.
+    AuthUser.serialize({ includeToken: false }),
     {
       req,
       res,

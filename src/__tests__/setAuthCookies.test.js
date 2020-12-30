@@ -107,7 +107,7 @@ describe('setAuthCookies', () => {
         })
         expect(setCookie).toHaveBeenCalledWith(
           'SomeName.AuthUser',
-          mockAuthUser.serialize(),
+          mockAuthUser.serialize({ includeToken: false }),
           { req: mockReq, res: mockRes },
           // Options from the mock config.
           {

@@ -203,7 +203,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       // token: undefined, // no token
     })
     const token = await AuthUser.getIdToken()
-    expect(token).toEqual(null)
+    expect(token).toBeNull()
   })
 
   it('returns the expected value from getIdToken when a token is provided', async () => {
@@ -251,6 +251,25 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         emailVerified: true,
         clientInitialized: false,
         _token: 'my-id-token-def-456',
+      })
+    )
+  })
+
+  it('excludes the token when serializing and the "includeToken" option is false', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+      token: 'my-id-token-def-456',
+    })
+    const AuthUserSerialized = AuthUser.serialize({ includeToken: false })
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'def-456',
+        email: 'def@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: undefined,
       })
     )
   })
