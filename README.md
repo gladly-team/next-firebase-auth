@@ -441,10 +441,6 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
-**serialize** - `Function => String`
-
-A method that returns a JSON string version of `AuthUser`. See [the implementation](https://github.com/gladly-team/next-firebase-auth/blob/2a3474aa079b809418f50c338a991ffcb9cd7bbb/src/createAuthUser.js#L144) for more info.
-
 ## Limitations & Feedback
 
 We expect some apps will need some additional customization that's not currently available:
