@@ -8,7 +8,7 @@ Simple Firebase authentication for all Next.js rendering strategies.
 #### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Limitations](#limitations--feedback)
 
 ## What It Does
-This package makes it simple to access the authenticated Firebase user and ID token during both client-side and server-side rendering (SSR).
+This package makes it simple to get the authenticated Firebase user and ID token during both client-side and server-side rendering (SSR).
 
 ###### &nbsp;&nbsp;&nbsp;&nbsp; 🌍 &nbsp; Support for all Next.js rendering strategies
 ######  &nbsp;&nbsp;&nbsp;&nbsp; 🔒 &nbsp; Signed, secure, http-only cookies by default
@@ -22,7 +22,7 @@ We treat the Firebase JS SDK as the source of truth for auth status. When the us
 
 ## When (Not) to Use this Package
 
-This package makes it easy to access the Firebase user and ID token regardless of the Next.js rendering strategy. However, depending on your app's needs, other approaches might work better for you.
+Depending on your app's needs, other approaches might work better for you.
 
 **If your app only uses static pages** or doesn't need the Firebase user for SSR, use the Firebase JS SDK directly to load the user on the client side.
   * *Pros:* It's simpler and removes this package as a dependency.
@@ -33,8 +33,10 @@ This package makes it easy to access the Firebase user and ID token regardless o
       * *Pros:* You won't need login/logout API endpoints. You can include any auth data you'd like, so you can add custom claims, which are not currently supported by this package.
       * *Cons:* The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. (Note that you can set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.)
   2. Use [Firebase's session cookies](https://firebase.google.com/docs/auth/admin/manage-cookies).
-      * *Pros:* You'll have server-side access to custom claims and the ability to check for token revocation, which are not currently supported by this package.
+      * *Pros:* You'll have server-side access to custom claims, which are not currently supported by this package.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
+      
+If you expect to use both static and SSR, or if you need access to Firebase ID tokens server-side, this package is probably a good fit. Please check out [current limitations](#limitations--feedback) before diving in.
 
 ## Get Started
 
