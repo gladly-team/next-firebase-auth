@@ -141,13 +141,13 @@ const createAuthUser = ({
     // initialized. Otherwise, it is the SDK's "signOut" method:
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout
     signOut,
-    serialize: () =>
+    serialize: ({ includeToken = true } = {}) =>
       JSON.stringify({
         id: userId,
         email,
         emailVerified,
         clientInitialized,
-        _token: tokenString,
+        ...(includeToken && { _token: tokenString }),
       }),
   }
 }
