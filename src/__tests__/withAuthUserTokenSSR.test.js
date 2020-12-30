@@ -35,9 +35,9 @@ beforeEach(() => {
     }
     if (cookieName === 'SomeName.AuthUser') {
       return createAuthUser({
-        firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+        firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         token: 'a-user-identity-token-abc',
-      })
+      }).serialize()
     }
     return undefined
   })
@@ -65,9 +65,9 @@ describe('withAuthUserTokenSSR: with ID token', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })
@@ -88,6 +88,52 @@ describe('withAuthUserTokenSSR: with ID token', () => {
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      props: { AuthUserSerialized: expectedAuthUserProp },
+    })
+  })
+
+  it('uses the ID token, not the auth info cookie, in the case they are different and "useToken" is true', async () => {
+    expect.assertions(1)
+
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: {
+            ...createMockFirebaseUserAdminSDK(),
+            email: 'some-different-email@example.com', // differs from token result
+          },
+          token: 'a-user-identity-token-abc',
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const expectedAuthUserProp = createAuthUser({
+      firebaseUserAdminSDK: mockFirebaseAdminUser,
+      token: 'a-user-identity-token-abc',
+    }).serialize()
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR(undefined, { useToken: true })(
+      mockGetSSPFunc
+    )
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: { AuthUserSerialized: expectedAuthUserProp },
@@ -154,9 +200,9 @@ describe('withAuthUserTokenSSR: with ID token', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })
@@ -266,9 +312,9 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })
@@ -308,9 +354,9 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })
@@ -357,9 +403,9 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })
@@ -404,9 +450,9 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       }
       if (cookieName === 'SomeName.AuthUser') {
         return createAuthUser({
-          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK,
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
           token: 'a-user-identity-token-abc',
-        })
+        }).serialize()
       }
       return undefined
     })

@@ -80,11 +80,8 @@ const withAuthUserTokenSSR = (
       },
       { keys, secure, signed }
     )
-    const AuthUserSerializedFromCookie = cookieValStr
-      ? JSON.parse(cookieValStr)
-      : {}
     AuthUser = createAuthUser({
-      serializedAuthUser: AuthUserSerializedFromCookie,
+      serializedAuthUser: cookieValStr,
     })
   }
   const AuthUserSerialized = AuthUser.serialize()
