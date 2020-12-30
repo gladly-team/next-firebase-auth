@@ -1,7 +1,6 @@
 import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
-import { verifyIdToken } from 'src/firebaseAdmin'
-import { getAuthUserTokensCookieName } from 'src/authCookies'
+import { getAuthUserCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 
@@ -9,9 +8,8 @@ import AuthAction from 'src/AuthAction'
  * An wrapper for a page's exported getServerSideProps that
  * provides the authed user's info as a prop. Optionally,
  * this handles redirects based on auth status.
- * See this discussion on how best to use getServerSideProps
- * with a higher-order component pattern:
- * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
+ * Unlike `withAuthUserTokenSSR`, this will *not* refresh the
+ * user's token, so `AuthUser.getIdToken` will resolve to null.
  * @param {String} whenAuthed - The behavior to take if the user
  *   *is* authenticated. One of AuthAction.RENDER or
  *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
@@ -39,20 +37,19 @@ const withAuthUserSSR = ({
   // Get the user's ID token from their cookie, verify it (refreshing
   // as needed), and return the serialized AuthUser in props.
   const cookieValStr = getCookie(
-    getAuthUserTokensCookieName(),
+    getAuthUserCookieName(),
     {
       req,
       res,
     },
     { keys, secure, signed }
   )
-  const { idToken, refreshToken } = cookieValStr ? JSON.parse(cookieValStr) : {}
-  let AuthUser
-  if (idToken) {
-    AuthUser = await verifyIdToken(idToken, refreshToken)
-  } else {
-    AuthUser = createAuthUser() // unauthenticated AuthUser
-  }
+  const AuthUserSerializedFromCookie = cookieValStr
+    ? JSON.parse(cookieValStr)
+    : {}
+  const AuthUser = createAuthUser({
+    serializedAuthUser: AuthUserSerializedFromCookie,
+  })
   const AuthUserSerialized = AuthUser.serialize()
 
   // If specified, redirect to the login page if the user is unauthed.

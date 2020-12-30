@@ -4,7 +4,7 @@ import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
-import { getAuthUserTokensCookieName } from 'src/authCookies'
+import { getAuthUserCookieName } from 'src/authCookies'
 import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import AuthAction from 'src/AuthAction'
 
@@ -19,7 +19,7 @@ beforeEach(() => {
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
 
-  getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
 
   const mockConfig = getMockConfig()
   setConfig({
