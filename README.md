@@ -378,7 +378,7 @@ Properties include:
 
 The `keys` value cannot be defined on the client side and should live in a secret environment variable.
 
-For security, the `maxAge` value must be two weeks or less.
+For security, the `maxAge` value must be two weeks or less. Note that `maxAge` is defined in milliseconds.
 
 > **Note:** The cookies' expirations will be extended automatically when the user loads the Firebase JS SDK.
 >
