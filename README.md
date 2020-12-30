@@ -282,7 +282,7 @@ export default withAuthUser()(DemoPage)
 
 #### `useAuthUser()`
 
-A hook that returns the current `AuthUser`. To use this, the Next.js page must be wrapped in `withAuthUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
+A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withAuthUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
 
 For example:
 
