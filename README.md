@@ -190,6 +190,7 @@ export default withAuthUser()(Demo)
 * [init](#initconfig)
 * [withAuthUser](#withauthuser-options-pagecomponent)
 * [withAuthUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
+* [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
 * [useAuthUser](#useauthuser)
 * [setAuthCookies](#setauthcookiesreq-res)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
@@ -285,6 +286,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
 export default withAuthUser()(DemoPage)
 ```
 
+#### `withAuthUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
+
+Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: it does not validate an ID token. Instead, it simply uses the `AuthUser` data from a cookie. Consequently:
+* It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
+* It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
+* It does *not* check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withAuthUserTokenSSR`.
+
+This takes the same options as `withAuthUserTokenSSR`.
 
 #### `useAuthUser()`
 
