@@ -319,9 +319,9 @@ The `req` argument should be an `IncomingMessage` / Next.js request object. The 
 
 This can only be called on the server side.
 
-#### `verifyIdToken(token)`
+#### `verifyIdToken(token) => Promise<AuthUser>`
 
-TODO
+Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance. This serves a similar purpose as Firebase admin SDK's [verifyIdToken](https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_the_firebase_admin_sdk).
 
 #### `AuthAction`
 
