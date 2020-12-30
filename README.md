@@ -189,7 +189,7 @@ export default withAuthUser()(Demo)
 * [useAuthUser](#useauthuser)
 * [setAuthCookies](#setauthcookiesreq-res)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
-* [verifyIdToken](#verifyidtokentoken)
+* [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
 
 -----
