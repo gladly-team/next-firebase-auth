@@ -10,7 +10,7 @@
   "dependencies": {
     "firebase": "^8.2.1",
     "firebase-admin": "^9.4.2",
-    "next": "10.0.3",
+    "next": "10.0.4",
     "next-firebase-auth": "^0.8.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
