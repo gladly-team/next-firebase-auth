@@ -1,7 +1,10 @@
 import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
-import { getAuthUserTokensCookieName } from 'src/authCookies'
+import {
+  getAuthUserCookieName,
+  getAuthUserTokensCookieName,
+} from 'src/authCookies'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 
@@ -26,32 +29,63 @@ import AuthAction from 'src/AuthAction'
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
  */
-const withAuthUserTokenSSR = ({
-  whenAuthed = AuthAction.RENDER,
-  whenUnauthed = AuthAction.RENDER,
-  appPageURL = null,
-  authPageURL = null,
-} = {}) => (getServerSidePropsFunc) => async (ctx) => {
+const withAuthUserTokenSSR = (
+  {
+    whenAuthed = AuthAction.RENDER,
+    whenUnauthed = AuthAction.RENDER,
+    appPageURL = null,
+    authPageURL = null,
+  } = {},
+  { useToken = true } = {}
+) => (getServerSidePropsFunc) => async (ctx) => {
   const { req, res } = ctx
 
   const { keys, secure, signed } = getConfig().cookies
 
-  // Get the user's ID token from their cookie, verify it (refreshing
-  // as needed), and return the serialized AuthUser in props.
-  const cookieValStr = getCookie(
-    getAuthUserTokensCookieName(),
-    {
-      req,
-      res,
-    },
-    { keys, secure, signed }
-  )
-  const { idToken, refreshToken } = cookieValStr ? JSON.parse(cookieValStr) : {}
   let AuthUser
-  if (idToken) {
-    AuthUser = await verifyIdToken(idToken, refreshToken)
+
+  // Get the user either from:
+  // * the ID token, refreshing the token as needed (via a network
+  //   request), which will make `AuthUser.getIdToken` resolve to
+  //   a valid ID token value
+  // * the "AuthUser" cookie (no network request), which will make
+  //  `AuthUser.getIdToken` resolve to null
+  if (useToken) {
+    // Get the user's ID token from a cookie, verify it (refreshing
+    // as needed), and return the serialized AuthUser in props.
+    const cookieValStr = getCookie(
+      getAuthUserTokensCookieName(),
+      {
+        req,
+        res,
+      },
+      { keys, secure, signed }
+    )
+    const { idToken, refreshToken } = cookieValStr
+      ? JSON.parse(cookieValStr)
+      : {}
+    if (idToken) {
+      AuthUser = await verifyIdToken(idToken, refreshToken)
+    } else {
+      AuthUser = createAuthUser() // unauthenticated AuthUser
+    }
   } else {
-    AuthUser = createAuthUser() // unauthenticated AuthUser
+    // Get the user's info from a cookie, verify it (refreshing
+    // as needed), and return the serialized AuthUser in props.
+    const cookieValStr = getCookie(
+      getAuthUserCookieName(),
+      {
+        req,
+        res,
+      },
+      { keys, secure, signed }
+    )
+    const AuthUserSerializedFromCookie = cookieValStr
+      ? JSON.parse(cookieValStr)
+      : {}
+    AuthUser = createAuthUser({
+      serializedAuthUser: AuthUserSerializedFromCookie,
+    })
   }
   const AuthUserSerialized = AuthUser.serialize()
 
