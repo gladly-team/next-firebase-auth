@@ -107,7 +107,7 @@ Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CUR
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
 // ./pages/_app.js
-import initAuth from '../initAuth'
+import initAuth from '../initAuth' // the module you created above
 
 initAuth()
 
@@ -124,7 +124,7 @@ Create login and logout API endpoints that set auth cookies:
 ```js
 // ./pages/api/login
 import { setAuthCookies } from 'next-firebase-auth'
-import initAuth from '../../initAuth'
+import initAuth from '../../initAuth' // the module you created above
 
 initAuth()
 
@@ -143,7 +143,7 @@ export default handler
 ```js
 // ./pages/api/logout
 import { unsetAuthCookies } from 'next-firebase-auth'
-import initAuth from '../../initAuth'
+import initAuth from '../../initAuth' // the module you created above
 
 initAuth()
 
