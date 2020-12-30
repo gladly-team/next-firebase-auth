@@ -339,6 +339,10 @@ You should provide a config when you `init` `next-firebase-auth`.
 
 **logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. **Required.**
 
+**firebaseAdminInitConfig**: Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL`. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
+
+**firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). **Required** unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
+
 TODO: note using JSON for the private key in Vercel
 
 TODO: link to this documentation from the "getting started" section above
