@@ -98,7 +98,7 @@ export default initAuth
 
 ```
 
-Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_CURRENT` in `.env.local`. See config documentation below for more info.
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_CURRENT` in `.env.local`. See [the config](#config) documentation for details.
 
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
@@ -195,7 +195,7 @@ export default withAuthUser()(Demo)
 -----
 #### `init(config)`
 
-Initializes `next-firebase-auth`. Must be called before calling any other method.
+Initializes `next-firebase-auth`, taking a [config](#config) object. Must be called before calling any other method.
 
 #### `withAuthUser({ ...options })(PageComponent)`
 
@@ -305,7 +305,7 @@ export default withAuthUser()(DemoPage)
 
 Sets cookies to store the authenticated user's info. Call this from your "login" API endpoint.
 
-Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). See the config for cookie options.
+Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). See [the config for cookie options](#cookies).
 
 The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object. It requires that the `Authorization` request header be set to the Firebase user ID token, which this package handles automatically.
 
