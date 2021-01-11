@@ -52,6 +52,76 @@ describe('config', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
+  it('[client-side] throws if the user does not define the firebaseClientInitConfig', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseClientInitConfig: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "firebaseClientInitConfig.apiKey" value is required.'
+    )
+  })
+
+  it('[client-side] throws if the user provides firebaseClientInitConfig without an API key', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(true)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseClientInitConfig: {
+        apiKey: undefined,
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "firebaseClientInitConfig.apiKey" value is required.'
+    )
+  })
+
+  it('[server-side] throws if the user does not define the firebaseClientInitConfig', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseClientInitConfig: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "firebaseClientInitConfig.apiKey" value is required.'
+    )
+  })
+
+  it('[server-side] throws if the user provides firebaseClientInitConfig without an API key', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseClientInitConfig: {
+        firebaseClientInitConfig: {
+          apiKey: undefined,
+        },
+      },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "firebaseClientInitConfig.apiKey" value is required.'
+    )
+  })
+
   it('[client-side] does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default

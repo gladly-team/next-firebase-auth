@@ -63,9 +63,9 @@ const setAuthCookies = async (req, res) => {
 
   // Store the AuthUser data. This cookie will be available
   // to future requests to pages, providing the user data. It
-  // will not necessarily contain a valid Firebase ID token,
-  // because it may have expired, but provides the AuthUser
-  // data without any additional server-side requests.
+  // will *not* include a Firebase ID token, because it may have
+  // expired, but provides the AuthUser data without any
+  // additional server-side requests.
   setCookie(
     getAuthUserCookieName(),
     // Note: any change to cookie data structure needs to be
