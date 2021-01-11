@@ -1,8 +1,14 @@
 import * as admin from 'firebase-admin'
 import createAuthUser from 'src/createAuthUser'
+import { getConfig } from 'src/config'
 
 // https://firebase.google.com/docs/auth/admin/errors
 const FIREBASE_ERROR_TOKEN_EXPIRED = 'auth/id-token-expired'
+
+const getFirebasePublicAPIKey = () => {
+  const config = getConfig()
+  return config.firebaseClientInitConfig.apiKey
+}
 
 /**
  * Given a refresh token, get a new Firebase ID token. Call this when
@@ -13,8 +19,11 @@ const refreshExpiredIdToken = async (refreshToken) => {
   if (!refreshToken) {
     throw new Error('The "refreshToken" argument is required.')
   }
+
   // https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
-  const endpoint = `https://securetoken.googleapis.com/v1/token?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
+  const firebasePublicAPIKey = getFirebasePublicAPIKey()
+  const endpoint = `https://securetoken.googleapis.com/v1/token?key=${firebasePublicAPIKey}`
+
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -78,7 +87,9 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   const customToken = await admin.auth().createCustomToken(AuthUser.id)
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
-  const refreshTokenEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
+  const firebasePublicAPIKey = getFirebasePublicAPIKey()
+  const refreshTokenEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${firebasePublicAPIKey}`
+
   const refreshTokenResponse = await fetch(refreshTokenEndpoint, {
     method: 'POST',
     headers: {

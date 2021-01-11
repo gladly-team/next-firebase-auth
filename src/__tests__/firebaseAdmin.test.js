@@ -2,13 +2,23 @@ import * as admin from 'firebase-admin'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
+import { setConfig } from 'src/config'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('firebase-admin')
 
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
   global.fetch = jest.fn(() => Promise.resolve(createMockFetchResponse()))
-  process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY = 'myPublicFirebaseAPIKey'
+
+  const mockConfig = createMockConfig()
+  setConfig({
+    ...mockConfig,
+    firebaseClientInitConfig: {
+      ...mockConfig.firebaseClientInitConfig,
+      apiKey: 'some-key',
+    },
+  })
 })
 
 const googleRefreshTokenEndpoint = 'https://securetoken.googleapis.com/v1/token'
@@ -78,6 +88,16 @@ describe('verifyIdToken', () => {
   it('calls the Google token refresh endpoint with the public Firebase API key as a query parameter value', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
+    // Set the Firebase API key.
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        apiKey: 'the-expected-api-key',
+      },
+    })
+
     // Mock that the original token is expired but a new token works.
     const expiredTokenErr = new Error(
       'The provided Firebase ID token is expired.'
@@ -94,7 +114,7 @@ describe('verifyIdToken', () => {
     await verifyIdToken('some-token', 'my-refresh-token')
     const calledEndpoint = global.fetch.mock.calls[0][0]
     const keyParam = new URL(calledEndpoint).searchParams.get('key')
-    expect(keyParam).toEqual('myPublicFirebaseAPIKey')
+    expect(keyParam).toEqual('the-expected-api-key')
   })
 
   it('passes the expected fetch options when refreshing the token', async () => {
@@ -214,13 +234,26 @@ describe('getCustomIdAndRefreshTokens', () => {
 
   it('calls the expected endpoint to get a custom token, including the public Firebase API key as a URL parameter', async () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Set the Firebase API key.
+    const expectedAPIKey = 'my-api-key!'
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        apiKey: expectedAPIKey,
+      },
+    })
+
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
+
     const endpoint = global.fetch.mock.calls[0][0]
     expect(endpoint).toEqual(
-      `${googleCustomTokenEndpoint}?key=${process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY}`
+      `${googleCustomTokenEndpoint}?key=${expectedAPIKey}`
     )
   })
 
