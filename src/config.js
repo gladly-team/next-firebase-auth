@@ -25,9 +25,11 @@ const defaultConfig = {
   // Not required if the app is initializing the admin SDK
   // elsewhere.
   firebaseAdminInitConfig: undefined,
-  // Optional object: the config passed to the Firebase
-  // client JS SDK firebase.initializeApp. Not required if
-  // the app is initializing the JS SDK elsewhere.
+  // Required object: the config passed to the Firebase
+  // client JS SDK firebase.initializeApp.
+  // The "firebaseClientInitConfig.apiKey" value is always
+  // required, but other options are optional if the app
+  // initializes the admin SDK manually.
   firebaseClientInitConfig: undefined,
   cookies: {
     // Required string. The base name for the auth cookies.
@@ -56,6 +58,19 @@ const validateConfig = (mergedConfig) => {
   }
   if (!mergedConfig.logoutAPIEndpoint) {
     errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+  }
+
+  // Require the public API key, which we use on the backend when
+  // managing tokens.
+  if (
+    !(
+      mergedConfig.firebaseClientInitConfig &&
+      mergedConfig.firebaseClientInitConfig.apiKey
+    )
+  ) {
+    errorMessages.push(
+      `The "firebaseClientInitConfig.apiKey" value is required.`
+    )
   }
 
   // We consider cookie keys undefined if the keys are an empty string,
