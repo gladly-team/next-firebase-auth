@@ -72,9 +72,8 @@ const initAuth = () => {
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
-    // Required in most cases.
     firebaseClientInitConfig: {
-      apiKey: 'MyExampleAppAPIKey123',
+      apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
       databaseURL: 'https://my-example-app.firebaseio.com',
       projectId: 'my-example-app-id',
@@ -374,7 +373,7 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 >
 > See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
 
-**firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). **Required** unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
+**firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The "firebaseClientInitConfig.apiKey" value is always **required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
 
 #### **cookies**
 
