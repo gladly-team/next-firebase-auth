@@ -120,12 +120,20 @@ const withAuthUserTokenSSR = (
     ctx.AuthUser = AuthUser
     composedProps = await getServerSidePropsFunc(ctx)
   }
-  return {
-    props: {
-      AuthUserSerialized,
-      ...composedProps,
-    },
-  }
+
+  // If the composed getServerSideProps() returned a 'notFound' or 'redirect' key
+  // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
+  // it means it contains a custom dynamic routing logic that should not be overwritten, otherwise merge the 'props' to include AuthUser
+  return getServerSidePropsFunc &&
+    composedProps &&
+    (composedProps.notFound || composedProps.redirect)
+    ? composedProps
+    : {
+        props: {
+          AuthUserSerialized,
+          ...composedProps,
+        },
+      }
 }
 
 export default withAuthUserTokenSSR
