@@ -650,4 +650,84 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       },
     })
   })
+
+  it("includes only the composed getServerSideProps's custom 'redirect' logic", async () => {
+    expect.assertions(1)
+
+    // Mock the auth tokens cookie value.
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn(() => ({
+      redirect: {
+        destination: '/some-custom-redirect',
+        permanent: false,
+      },
+    }))
+    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/some-custom-redirect',
+        permanent: false,
+      },
+    })
+  })
+
+  it("includes only the composed getServerSideProps's custom 'notFound' logic", async () => {
+    expect.assertions(1)
+
+    // Mock the auth tokens cookie value.
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn(() => ({ notFound: true }))
+    const func = withAuthUserTokenSSR()(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({ notFound: true })
+  })
 })
