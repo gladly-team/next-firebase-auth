@@ -116,20 +116,22 @@ const withAuthUserTokenSSR = (
   let returnData = { props: { AuthUserSerialized } }
 
   // Evaluate the composed getServerSideProps().
-  let composedProps = {}
   if (getServerSidePropsFunc) {
     // Add the AuthUser to Next.js context so pages can use
     // it in `getServerSideProps`, if needed.
     ctx.AuthUser = AuthUser
-    composedProps = await getServerSidePropsFunc(ctx)
-    if (composedProps.props) {
-      // If composedProps does have a valid props object, we inject AuthUser in there
-      returnData = { ...composedProps, ...returnData }
-    } else if (composedProps.notFound || composedProps.redirect) {
-      // If composedProps returned a 'notFound' or 'redirect' key
-      // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
-      // it means it contains a custom dynamic routing logic that should not be overwritten
-      returnData = { ...composedProps }
+    const composedProps = (await getServerSidePropsFunc(ctx)) || {}
+    if (composedProps) {
+      if (composedProps.props) {
+        // If composedProps does have a valid props object, we inject AuthUser in there
+        returnData = { ...composedProps }
+        returnData.props.AuthUserSerialized = AuthUserSerialized
+      } else if (composedProps.notFound || composedProps.redirect) {
+        // If composedProps returned a 'notFound' or 'redirect' key
+        // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
+        // it means it contains a custom dynamic routing logic that should not be overwritten
+        returnData = { ...composedProps }
+      }
     }
   }
 

@@ -637,8 +637,10 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     }).serialize()
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn((ctx) => ({
-      here: ['is', 'a', 'prop'],
-      userEmail: ctx.AuthUser.email,
+      props: {
+        here: ['is', 'a', 'prop'],
+        userEmail: ctx.AuthUser.email,
+      },
     }))
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
