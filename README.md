@@ -214,7 +214,7 @@ Option | Description | Default
 `whenUnauthedAfterInit` | The action to take if the user is *not* authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
 `appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
 `authPageURL` | The redirect destination URL when we should redirect to the login page. | `config.authPageURL`
-`Loader` | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`. | null
+`LoaderComponent` | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`. | null
 
 For example, this page will redirect to the login page if the user is not authenticated:
 ```jsx
@@ -240,7 +240,7 @@ export default withAuthUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.RENDER,
-  Loader: MyLoader,
+  LoaderComponent: MyLoader,
 })(LoginPage)
 ```
 
