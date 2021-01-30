@@ -26,10 +26,19 @@ const Demo = ({ emailVerified }) => {
             server-side redirect (307) to the login page if the user is not
             authenticated.
           </p>
-          <p>If authenticated, but no email, it will generate a 404 page.</p>
           <p>
-            If authenticated, but email is not verified, it performs a custom
-            redirect to the login page and injects query parameters in the URL.
+            The custom logic also does the following (which does not actually
+            work, it's only for the purpose of illustrating what can be done):
+            <ul>
+              <li>
+                If authenticated, but no email, it will generate a 404 page.
+              </li>
+              <li>
+                If authenticated, but email is not verified, it performs a
+                custom redirect to the login page and injects query parameters
+                in the URL.
+              </li>
+            </ul>
           </p>
           <p>
             This page leverages the standard `redirect` and 'notFound' objects
@@ -46,10 +55,10 @@ const Demo = ({ emailVerified }) => {
 // Here we don't rely on the built-in REDIRECT_TO_LOGIN option of
 // withAuthUserSSR, we do custom checks on the AuthUser and dynamic routing accordingly.
 export const getServerSideProps = withAuthUserSSR()(async (ctx) => {
-  // Retrieve AuthUser (that was injected by withAuthUserSSR from the context.
+  // Retrieve AuthUser (that was injected by withAuthUserSSR) from the context.
   const { AuthUser } = ctx
   // If the user is not authenticated at all, do a simple custom redirect
-  // to login page (equivalent to REDIRECT_TO_LOGIN).
+  // to login page (equivalent to REDIRECT_TO_LOGIN parameter of withAuthUserSSR).
   if (!AuthUser || !AuthUser.id) {
     return {
       redirect: {
@@ -59,7 +68,7 @@ export const getServerSideProps = withAuthUserSSR()(async (ctx) => {
     }
   }
   // If the user is authenticated but has no email, let's assume that's a
-  // big crime for the app, so display a 404 page
+  // big crime for the app, so display a 404 page.
   if (!AuthUser.email) {
     return {
       notFound: true,
