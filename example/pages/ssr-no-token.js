@@ -65,7 +65,9 @@ export const getServerSideProps = withAuthUserSSR({
     )
   }
   return {
-    favoriteColor: data.favoriteColor,
+    props: {
+      favoriteColor: data.favoriteColor,
+    },
   }
 })
 
