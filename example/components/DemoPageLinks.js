@@ -29,6 +29,9 @@ const DemoPageLinks = () => (
       <Link href="/ssr-no-token">
         <a style={styles.linkAnchor}>Example: SSR + no ID token</a>
       </Link>
+      <Link href="/ssr-custom-routing">
+        <a style={styles.linkAnchor}>Example: SSR + custom routing</a>
+      </Link>
       <Link href="/static-auth-required-loader">
         <a style={styles.linkAnchor}>
           Example: static + loader + data fetching with ID token
