@@ -351,9 +351,18 @@ See an [example config here](#example-config). Provide the config when you call 
 
 **appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
-**loginAPIEndpoint**: The API endpoint to call when the auth state changes for an authenticated Firebase user. **Required.**
+**loginAPIEndpoint**: The API endpoint to call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
 
-**logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. **Required.**
+**logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+
+**tokenChangedHandler**: A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives an `AuthUser` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
+
+If this callback is specified, user is responsible for:
+1. Calling their login/logout endpoints depending on the user's auth state.
+2. Passing the user's ID token in the Authorization header
+3. Ensuring it allows the request to set cookies.
+
+Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
 
 #### **firebaseAdminInitConfig**
 

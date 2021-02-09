@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import { getConfig } from 'src/config'
+import createAuthUser from 'src/createAuthUser'
 
-const setAuthCookie = async (firebaseUser) => {
-  let response
+const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
-
+  let response
   // If the user is authed, call login to set a cookie.
-  if (firebaseUser) {
-    const userToken = await firebaseUser.getIdToken()
+  if (authUser.id) {
+    const userToken = await authUser.getIdToken()
     response = await fetch(loginAPIEndpoint, {
       method: 'POST',
       headers: {
@@ -40,8 +40,21 @@ const setAuthCookie = async (firebaseUser) => {
       )
     }
   }
-
   return response
+}
+
+const setAuthCookie = async (firebaseUser) => {
+  const { tokenChangedHandler } = getConfig()
+  const authUser = createAuthUser({
+    firebaseUserClientSDK: firebaseUser,
+    clientInitialized: true,
+  })
+
+  if (tokenChangedHandler) {
+    return tokenChangedHandler(authUser)
+  }
+
+  return defaultTokenChangedHandler(authUser)
 }
 
 const useFirebaseUser = () => {

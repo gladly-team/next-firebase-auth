@@ -5,6 +5,7 @@ import { createMockFirebaseUserClientSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import createAuthUser from 'src/createAuthUser'
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
@@ -208,5 +209,44 @@ describe('useFirebaseUser', () => {
     expect(onIdTokenChangedUnsubscribe).not.toHaveBeenCalled()
     unmount()
     expect(onIdTokenChangedUnsubscribe).toHaveBeenCalled()
+  })
+
+  it('calls "tokenChangedHandler" with AuthUser if it is configured', async () => {
+    expect.assertions(4)
+    const tokenChangedHandler = jest.fn()
+    setConfig({
+      ...createMockConfig(),
+      tokenChangedHandler,
+    })
+
+    let onIdTokenChangedCallback
+    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    const mockToken = 'my-token-here'
+    const mockFirebaseUser = {
+      ...createMockFirebaseUserClientSDK(),
+      getIdToken: async () => mockToken,
+    }
+    const mockAuthUser = createAuthUser({
+      firebaseUserClientSDK: mockFirebaseUser,
+      clientInitialized: true,
+    })
+    renderHook(() => useFirebaseUser())
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(tokenChangedHandler).not.toHaveBeenCalled()
+    await act(async () => {
+      await onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(fetch).not.toHaveBeenCalled()
+    expect(tokenChangedHandler).toHaveBeenCalledWith({
+      ...mockAuthUser,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+    })
   })
 })
