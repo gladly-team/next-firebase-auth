@@ -363,7 +363,7 @@ describe('config', () => {
     )
   })
 
-  it('throws if the loginAPIEndpoint is not defined', () => {
+  it('throws if the tokenChangedHandler and loginAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -378,7 +378,7 @@ describe('config', () => {
     )
   })
 
-  it('throws if the logoutAPIEndpoint is not defined', () => {
+  it('throws if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -390,6 +390,36 @@ describe('config', () => {
       setConfig(mockConfig)
     }).toThrow(
       'Invalid next-firebase-auth options: The "logoutAPIEndpoint" setting is required.'
+    )
+  })
+
+  it('throws if both the tokenChangedHandler and loginAPIEndpoint are defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      tokenChangedHandler: async (token) => token,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "loginAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
+    )
+  })
+
+  it('throws if both the tokenChangedHandler and logoutAPIEndpoint are defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      tokenChangedHandler: async (token) => token,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "logoutAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
     )
   })
 })

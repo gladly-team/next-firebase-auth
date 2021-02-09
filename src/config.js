@@ -14,6 +14,9 @@ const defaultConfig = {
   // Required string: the API endpoint to call on auth state
   // change for a signed-out user.
   logoutAPIEndpoint: undefined,
+  // Optional function: callback handler to call on auth state
+  // changes. Replaces need for loginAPIEndpoint and logoutAPIEndpoint
+  tokenChangedHandler: undefined,
   // Optional string: the URL to navigate to when the user
   // needs to log in.
   authPageURL: undefined,
@@ -53,11 +56,24 @@ const defaultConfig = {
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
-  if (!mergedConfig.loginAPIEndpoint) {
-    errorMessages.push('The "loginAPIEndpoint" setting is required.')
-  }
-  if (!mergedConfig.logoutAPIEndpoint) {
-    errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+  if (mergedConfig.tokenChangedHandler) {
+    if (mergedConfig.loginAPIEndpoint) {
+      errorMessages.push(
+        'The "loginAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
+      )
+    }
+    if (mergedConfig.logoutAPIEndpoint) {
+      errorMessages.push(
+        'The "logoutAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
+      )
+    }
+  } else {
+    if (!mergedConfig.loginAPIEndpoint) {
+      errorMessages.push('The "loginAPIEndpoint" setting is required.')
+    }
+    if (!mergedConfig.logoutAPIEndpoint) {
+      errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+    }
   }
 
   // Require the public API key, which we use on the backend when
