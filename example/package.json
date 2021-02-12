@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "firebase": "^8.2.5",
