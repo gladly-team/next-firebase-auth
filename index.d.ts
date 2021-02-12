@@ -94,10 +94,7 @@ export const withAuthUserTokenSSR: (
     whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
     appPageURL?: string;
     authPageURL?: string;
-  },
-  tokenOptions?: {
-    useToken?: boolean;
-  },
+  }
 ) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
 
 export const withAuthUserSSR: (options?: {
