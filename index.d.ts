@@ -9,7 +9,7 @@ import type {
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
 
-export type GetSSRProps<P extends { [key: string]: any } = { [key: string]: any },
+export type SSRPropGetter<P extends { [key: string]: any } = { [key: string]: any },
   Q extends ParsedUrlQuery = ParsedUrlQuery> = (
   context: GetServerSidePropsContext<Q> & { AuthUser: AuthUser },
 ) => Promise<GetServerSidePropsResult<P>>
@@ -94,11 +94,11 @@ export const withAuthUserTokenSSR: (
   tokenOptions?: {
     useToken?: boolean;
   }
-) => (propGetter?: GetSSRProps) => ReturnType<GetSSRProps>
+) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
 
 export const withAuthUserSSR: (options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
   appPageURL?: string;
   authPageURL?: string;
-}) => (propGetter?: GetSSRProps) => ReturnType<GetSSRProps>
+}) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
