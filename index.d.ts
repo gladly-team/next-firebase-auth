@@ -9,7 +9,7 @@ import type {
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
 
-type GetSSRProps<P extends { [key: string]: any } = { [key: string]: any },
+export type GetSSRProps<P extends { [key: string]: any } = { [key: string]: any },
   Q extends ParsedUrlQuery = ParsedUrlQuery> = (
   context: GetServerSidePropsContext<Q> & { AuthUser: AuthUser },
 ) => Promise<GetServerSidePropsResult<P>>
