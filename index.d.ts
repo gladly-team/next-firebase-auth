@@ -9,9 +9,13 @@ import type {
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
 
+export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
+  GetServerSidePropsContext<Q>
+  & { AuthUser: AuthUser };
+
 export type SSRPropGetter<P extends { [key: string]: any } = { [key: string]: any },
   Q extends ParsedUrlQuery = ParsedUrlQuery> = (
-  context: GetServerSidePropsContext<Q> & { AuthUser: AuthUser },
+  context: SSRPropsContext<Q>,
 ) => Promise<GetServerSidePropsResult<P>>
 
 export enum AuthAction {
@@ -93,7 +97,7 @@ export const withAuthUserTokenSSR: (
   },
   tokenOptions?: {
     useToken?: boolean;
-  }
+  },
 ) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
 
 export const withAuthUserSSR: (options?: {
