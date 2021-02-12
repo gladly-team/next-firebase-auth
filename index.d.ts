@@ -84,16 +84,21 @@ export const withAuthUser: <P = {}>(options?: {
   LoaderComponent?: ComponentType | null;
 }) => (component: ComponentType<P>) => ComponentType<P>
 
-export const withAuthUserTokenSSR: (options?: {
-  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
-  whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
-  appPageURL?: string;
-  authPageURL?: string;
-}) => (propGetter: GetSSRProps) => void
+export const withAuthUserTokenSSR: (
+  options?: {
+    whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
+    whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
+    appPageURL?: string;
+    authPageURL?: string;
+  },
+  tokenOptions?: {
+    useToken?: boolean;
+  }
+) => (propGetter?: GetSSRProps) => ReturnType<GetSSRProps>
 
 export const withAuthUserSSR: (options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
   appPageURL?: string;
   authPageURL?: string;
-}) => (propGetter: GetSSRProps) => void
+}) => (propGetter?: GetSSRProps) => ReturnType<GetSSRProps>
