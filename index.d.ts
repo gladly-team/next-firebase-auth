@@ -42,7 +42,7 @@ interface InitConfig {
   loginAPIEndpoint?: string;
   logoutAPIEndpoint?: string;
   tokenChangedHandler?: (user: AuthUser) => void;
-  firebaseAdminInitConfig: {
+  firebaseAdminInitConfig?: {
     credential: {
       projectId: string;
       clientEmail: string;
@@ -52,11 +52,13 @@ interface InitConfig {
   };
   firebaseClientInitConfig: {
     apiKey: string;
-    authDomain: string;
-    databaseURL: string;
-    projectId: string;
+    authDomain?: string;
+    databaseURL?: string;
+    projectId?: string;
   };
-  cookies: Cookies.Option & Cookies.SetOption;
+  cookies: Cookies.Option & Cookies.SetOption & {
+    name: string;
+  };
 }
 
 export const init: (config: InitConfig) => void
