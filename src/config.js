@@ -115,17 +115,6 @@ const validateConfig = (mergedConfig) => {
     }
     // Validate server-side config.
   } else {
-    if (!mergedConfig.cookies.name) {
-      errorMessages.push(
-        'The "cookies.name" setting is required on the server side.'
-      )
-    }
-    if (mergedConfig.cookies.signed && !areCookieKeysDefined) {
-      errorMessages.push(
-        'The "cookies.keys" setting must be set if "cookies.signed" is true.'
-      )
-    }
-
     // Limit the max cookie age to two weeks for security. This matches
     // Firebase's limit for user identity cookies:
     // https://firebase.google.com/docs/auth/admin/manage-cookies
