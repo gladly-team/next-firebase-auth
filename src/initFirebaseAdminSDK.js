@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin'
 import { getConfig } from 'src/config'
 
 const initFirebaseAdminSDK = () => {
-  if (!admin.apps.length && !process.env.build) {
+  if (!admin.apps.length && process.env.BUILD !== 'true') {
     const { firebaseAdminInitConfig } = getConfig()
     if (!firebaseAdminInitConfig) {
       throw new Error(
