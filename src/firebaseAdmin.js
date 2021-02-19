@@ -1,4 +1,4 @@
-import * as admin from 'firebase-admin'
+import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 
@@ -48,6 +48,7 @@ const refreshExpiredIdToken = async (refreshToken) => {
 export const verifyIdToken = async (token, refreshToken = null) => {
   let firebaseUser
   let newToken = token
+  const admin = getFirebaseAdminApp()
   try {
     firebaseUser = await admin.auth().verifyIdToken(token)
   } catch (e) {
@@ -81,6 +82,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
   const AuthUser = await verifyIdToken(token)
+  const admin = getFirebaseAdminApp()
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.

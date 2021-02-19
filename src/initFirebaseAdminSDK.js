@@ -16,6 +16,7 @@ const initFirebaseAdminSDK = () => {
       }),
     })
   }
+  return admin
 }
 
 export default initFirebaseAdminSDK

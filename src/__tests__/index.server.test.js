@@ -23,11 +23,13 @@ describe('index.server.js: init', () => {
     expect(indexServer.init).toEqual(expect.any(Function))
   })
 
-  it('calls initFirebaseAdminSDK', () => {
+  // We only initialize the Firebase admin SDK as it's needed. See:
+  // https://github.com/gladly-team/next-firebase-auth/issues/70
+  it('does not call initFirebaseAdminSDK', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server').default
     indexServer.init({ fake: 'config' })
-    expect(initFirebaseAdminSDK).toHaveBeenCalled()
+    expect(initFirebaseAdminSDK).not.toHaveBeenCalled()
   })
 
   it('calls index.js (client) init', () => {
