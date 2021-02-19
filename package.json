@@ -12,10 +12,10 @@
   ],
   "browser": "build/index.browser.js",
   "main": "build/index.node.js",
+  "types": "build/index.d.ts",
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
   "author": "Gladly Team",
   "license": "MIT",
-  "types": "./index.d.ts",
   "scripts": {
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
