@@ -85,7 +85,6 @@
     "cookies": "^0.8.0"
   },
   "files": [
-    "/build",
-    "./index.d.ts"
+    "/build"
   ]
 }
