@@ -36,6 +36,13 @@ describe('initFirebaseAdminSDK', () => {
     })
   })
 
+  it('returns the admin app', () => {
+    expect.assertions(1)
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    const response = initFirebaseAdminSDK()
+    expect(response).toEqual(admin)
+  })
+
   it('does not call admin.initializeApp if Firebase already has an initialized app', () => {
     expect.assertions(1)
     admin.apps = [{ some: 'app' }]

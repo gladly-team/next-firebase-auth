@@ -5,15 +5,12 @@ import index from 'src/index'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
-import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
 
 const initServer = (config) => {
   const clientInit = index.init(config)
-
-  // On the server only, initialize the Firebase admin SDK.
-  initFirebaseAdminSDK()
-
+  // We only initialize the Firebase admin SDK as it's needed. See:
+  // https://github.com/gladly-team/next-firebase-auth/issues/70
   return clientInit
 }
 
