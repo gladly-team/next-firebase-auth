@@ -451,6 +451,14 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
+## Troubleshooting
+
+#### Error: "[Some setting] should not be available on the client side."
+
+We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
+
+To fix this, ensure the config setting is `undefined` on the client side (e.g. if you log it to your browser console). You can use Next's `.env` logic to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
+
 ## Limitations & Feedback
 
 We expect some apps will need some additional customization that's not currently available:
