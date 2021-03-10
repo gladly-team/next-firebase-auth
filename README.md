@@ -471,7 +471,7 @@ If that doesn't help, try inspecting the custom token to manually validate the v
 
 #### Server-side auth is not working. The user and token are always null when using `withAuthUserTokenSSR`, but client-side auth works.
 
-If auth is working on the client side but _not_ on the server-side, the auth cookies are most likely not set.
+If auth is working on the client side but not on the server-side, the auth cookies are most likely not set.
 
 To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
 
