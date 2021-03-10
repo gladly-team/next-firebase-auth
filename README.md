@@ -453,6 +453,8 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ## Troubleshooting
 
+_Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/discussions) or open your own Q&A discussion describing what you've already tried._
+
 #### I get the error "[Some setting] should not be available on the client side."
 
 We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
@@ -463,9 +465,15 @@ To fix this, ensure the config setting is `undefined` on the client side (e.g. i
 
 The package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side, and you're seeting an error in that request.
 
-To fix this, confirm that your `FIREBASE_CLIENT_EMAIL` is correct. It should be the email paired with your Firebase private key.
+To fix this, confirm that your `firebaseAdminInitConfig.credential.clientEmail` is correct. It should be the email paired with your Firebase private key.
 
 If that doesn't help, try inspecting the custom token to manually validate the values and structure. Some people encounter this problem [when their server time is incorrect](https://github.com/firebase/php-jwt/issues/127#issuecomment-291862337).
+
+#### Server-side auth is not working. The user and token are always null when using `withAuthUserTokenSSR`, but client-side auth works.
+
+If auth is working on the client side but _not_ on the server-side, the auth cookies are most likely not set.
+
+To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
 
 #### I can't access the Firebase app.
 
