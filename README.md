@@ -453,11 +453,23 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ## Troubleshooting
 
-#### Error: "[Some setting] should not be available on the client side."
+#### I get the error "[Some setting] should not be available on the client side."
 
 We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
 
 To fix this, ensure the config setting is `undefined` on the client side (e.g. if you log it to your browser console). You can use Next's `.env` logic to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
+
+#### I get an "INVALID_CUSTOM_TOKEN" error when trying to get a refresh token.
+
+The package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side, and you're seeting an error in that request.
+
+To fix this, confirm that your `FIREBASE_CLIENT_EMAIL` is correct. It should be the email paired with your Firebase private key.
+
+If that doesn't help, try inspecting the custom token to manually validate the values and structure. Some people encounter this problem [when their server time is incorrect](https://github.com/firebase/php-jwt/issues/127#issuecomment-291862337).
+
+#### I can't access the Firebase app.
+
+You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
 ## Limitations & Feedback
 
