@@ -5,7 +5,7 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies.
 
-#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Limitations](#limitations--feedback)
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Troubleshooting](#troubleshooting) • [Limitations](#limitations--feedback)
 
 ## What It Does
 This package makes it simple to get the authenticated Firebase user and ID token during both client-side and server-side rendering (SSR).
@@ -450,6 +450,34 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 **signOut** - `Function => Promise<void>`
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
+
+## Troubleshooting
+
+_Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/discussions) or open your own Q&A discussion describing what you've already tried._
+
+#### I get the error "[Some setting] should not be available on the client side."
+
+We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
+
+To fix this, ensure the config setting is `undefined` on the client side by logging it to your browser console. You can use Next's `.env` support to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
+
+#### I get an "INVALID_CUSTOM_TOKEN" error when trying to get a refresh token.
+
+This package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side. You're seeting an error in that request.
+
+To fix this, confirm that your `firebaseAdminInitConfig.credential.clientEmail` is correct. It should be the email paired with your Firebase private key.
+
+If that doesn't help, try inspecting the custom token to manually validate the values and structure. Some people encounter this problem [when their server time is incorrect](https://github.com/firebase/php-jwt/issues/127#issuecomment-291862337).
+
+#### Server-side auth is not working. The user and token are always null when using `withAuthUserTokenSSR`, but client-side auth works.
+
+If auth is working on the client side but not on the server-side, the auth cookies are most likely not set.
+
+To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
+
+#### I can't access the Firebase app.
+
+You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
 ## Limitations & Feedback
 
