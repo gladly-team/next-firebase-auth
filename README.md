@@ -5,7 +5,7 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies.
 
-#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Limitations](#limitations--feedback)
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Troubleshooting](#troubleshooting) • [Limitations](#limitations--feedback)
 
 ## What It Does
 This package makes it simple to get the authenticated Firebase user and ID token during both client-side and server-side rendering (SSR).
