@@ -459,11 +459,11 @@ _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/d
 
 We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
 
-To fix this, ensure the config setting is `undefined` on the client side (e.g. if you log it to your browser console). You can use Next's `.env` logic to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
+To fix this, ensure the config setting is `undefined` on the client side by logging it to your browser console. You can use Next's `.env` support to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
 
 #### I get an "INVALID_CUSTOM_TOKEN" error when trying to get a refresh token.
 
-The package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side, and you're seeting an error in that request.
+This package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side. You're seeting an error in that request.
 
 To fix this, confirm that your `firebaseAdminInitConfig.credential.clientEmail` is correct. It should be the email paired with your Firebase private key.
 
