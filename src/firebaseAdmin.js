@@ -90,7 +90,11 @@ export const getCustomIdAndRefreshTokens = async (token) => {
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
-  const refreshTokenEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${firebasePublicAPIKey}`
+  
+  // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
+  const tokenPrefix = process.env.FIREBASE_AUTH_EMULATOR_HOST ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/` : 'https://'
+  
+  const refreshTokenEndpoint = `${tokenPrefix}identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${firebasePublicAPIKey}`
 
   const refreshTokenResponse = await fetch(refreshTokenEndpoint, {
     method: 'POST',
