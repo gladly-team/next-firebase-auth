@@ -15,6 +15,7 @@ const defaultConfig = {
   // change for a signed-out user.
   logoutAPIEndpoint: undefined,
   // Optional function: callback handler to call on auth state
+  // It is passed in a user token or null
   // changes. Replaces need for loginAPIEndpoint and logoutAPIEndpoint
   tokenChangedHandler: undefined,
   // Optional string: the URL to navigate to when the user

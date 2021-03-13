@@ -103,9 +103,7 @@ const createAuthUser = ({
   let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
     /**
-     * firebaseUserClientSDK is a firebase.User instance from the onIdTokenChange Callback
-     * https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
-     * https://firebase.google.com/docs/reference/js/firebase.User
+     * Claims are injected client side through the onTokenChange Callback
      */
     claims = firebaseUserClientSDK.claims
     userId = firebaseUserClientSDK.uid
@@ -116,11 +114,13 @@ const createAuthUser = ({
     tokenString = null
   } else if (firebaseUserAdminSDK) {
     /**
-     * firebaseUserAdminSDK is a DecodedIDToken from a call to admin.auth().verifyIdToken(token)
-     * https://firebase.google.com/docs/reference/admin/node/admin.auth.Auth-1#verifyidtoken
-     * https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken
+     * firebaseUserAdminSDK is a DecodedIDToken obtained from
+     * admin.auth().verifyIdToken which returns all the user's claims
+     * https://firebase.google.com/docs/auth/admin/custom-claims
+     * In order for the claims to be consistent, we need to pass the
+     * entire adminSDK object as claims
      */
-    claims = firebaseUserAdminSDK.claims
+    claims = { ...firebaseUserAdminSDK }
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
@@ -160,6 +160,7 @@ const createAuthUser = ({
     serialize: ({ includeToken = true } = {}) =>
       JSON.stringify({
         id: userId,
+        claims,
         email,
         emailVerified,
         clientInitialized,
