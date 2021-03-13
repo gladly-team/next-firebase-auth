@@ -24,6 +24,7 @@ import isClientSide from 'src/isClientSide'
  * @return {String|null} AuthUser.id - The user's ID
  * @return {String|null} AuthUser.email - The user's email
  * @return {Boolean} AuthUser.emailVerified - Whether the user has verified their email
+ * @return {Object} AuthUser.claims - All the claims for the current user
  * @return {Function} AuthUser.getIdToken - An asynchronous function that
  *   resolves to the Firebase user's ID token string, or null if the user is
  *   not authenticated or we do not have access to a token.
@@ -83,6 +84,7 @@ const createAuthUser = ({
     )
   }
 
+  let claims = null
   let userId = null
   let email = null
   let emailVerified = false
@@ -100,6 +102,12 @@ const createAuthUser = ({
 
   let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
+    /**
+     * firebaseUserClientSDK is a firebase.User instance from the onIdTokenChange Callback
+     * https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
+     * https://firebase.google.com/docs/reference/js/firebase.User
+     */
+    claims = firebaseUserClientSDK.claims
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
@@ -107,6 +115,12 @@ const createAuthUser = ({
     signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
+    /**
+     * firebaseUserAdminSDK is a DecodedIDToken from a call to admin.auth().verifyIdToken(token)
+     * https://firebase.google.com/docs/reference/admin/node/admin.auth.Auth-1#verifyidtoken
+     * https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken
+     */
+    claims = firebaseUserAdminSDK.claims
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
@@ -114,6 +128,7 @@ const createAuthUser = ({
     tokenString = token
   } else if (serializedAuthUser) {
     const deserializedUser = JSON.parse(serializedAuthUser)
+    claims = deserializedUser.claims
     userId = deserializedUser.id
     email = deserializedUser.email
     emailVerified = deserializedUser.emailVerified
@@ -124,6 +139,7 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
+    claims,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
     // value and return it from this method.
