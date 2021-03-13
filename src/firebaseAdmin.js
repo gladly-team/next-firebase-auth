@@ -22,7 +22,11 @@ const refreshExpiredIdToken = async (refreshToken) => {
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
-  const endpoint = `https://securetoken.googleapis.com/v1/token?key=${firebasePublicAPIKey}`
+  
+   // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
+  const tokenPrefix = process.env.FIREBASE_AUTH_EMULATOR_HOST ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/` : 'https://'
+
+  const endpoint = `${tokenPrefix}securetoken.googleapis.com/v1/token?key=${firebasePublicAPIKey}`
 
   const response = await fetch(endpoint, {
     method: 'POST',
