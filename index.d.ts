@@ -54,6 +54,7 @@ interface InitConfig {
     };
     databaseURL: string;
   };
+  firebaseAuthEmulatorHost?: string;
   firebaseClientInitConfig: {
     apiKey: string;
     authDomain?: string;
