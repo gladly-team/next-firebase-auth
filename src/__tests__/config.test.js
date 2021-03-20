@@ -424,6 +424,40 @@ describe('config', () => {
   })
 })
 
+it('should throw if the config.firebaseAuthEmulator has a http or https prefix', () => {
+  expect.assertions(1)
+  const { setConfig } = require('src/config')
+  const mockConfigDefault = createMockConfig()
+  const mockConfig = {
+    ...mockConfigDefault,
+    firebaseAuthEmulatorHost: 'http://localhost:9099',
+  }
+  expect(() => {
+    setConfig(mockConfig)
+  }).toThrow(
+    'Invalid next-firebase-auth options: The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+  )
+})
+it('should throw if the config.firebaseAuthEmulatorHost is set in production', () => {
+  const env = { ...process.env }
+  afterEach(() => {
+    process.env = env
+  })
+  expect.assertions(1)
+  process.env.NODE_ENV = 'production'
+  const { setConfig } = require('src/config')
+  const mockConfigDefault = createMockConfig()
+  const mockConfig = {
+    ...mockConfigDefault,
+    firebaseAuthEmulatorHost: 'localhost:9099',
+  }
+  expect(() => {
+    setConfig(mockConfig)
+  }).toThrow(
+    'The firebaseAuthEmulatorHost should only be used during testing and development'
+  )
+})
+
 it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the FIREBASE_AUTH_EMULATOR_HOST env var', () => {
   expect.assertions(1)
   const isClientSide = require('src/isClientSide').default
@@ -432,7 +466,7 @@ it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the 
   const mockConfigDefault = createMockConfig()
   const mockConfig = {
     ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'http://localhost:9099',
+    firebaseAuthEmulatorHost: 'localhost:9099',
   }
   expect(() => {
     setConfig(mockConfig)
@@ -455,9 +489,9 @@ it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from
   const mockConfigDefault = createMockConfig()
   const mockConfig = {
     ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'http://localhost:9099',
+    firebaseAuthEmulatorHost: 'localhost:9099',
   }
-  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'http://localhost:8088'
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:8088'
   expect(() => {
     setConfig(mockConfig)
   }).toThrow(
@@ -479,12 +513,10 @@ it('[server-side] should not throw if the FIREBASE_AUTH_EMULATOR_HOST env variab
   const mockConfigDefault = createMockConfig()
   const mockConfig = {
     ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'http://localhost:9099',
+    firebaseAuthEmulatorHost: 'localhost:9099',
   }
-  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'http://localhost:9099'
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
   expect(() => {
     setConfig(mockConfig)
-  }).not.toThrow(
-    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
-  )
+  }).not.toThrow()
 })

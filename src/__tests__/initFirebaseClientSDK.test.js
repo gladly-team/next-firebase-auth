@@ -72,7 +72,7 @@ describe('initFirebaseClientSDK', () => {
     const mockConfig = createMockConfig()
     setConfig({
       ...mockConfig,
-      firebaseAuthEmulatorHost: 'http://localhost:9099',
+      firebaseAuthEmulatorHost: 'localhost:9099',
     })
     firebase.apps = [{ some: 'app' }]
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default

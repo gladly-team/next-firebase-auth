@@ -14,6 +14,6 @@ export default function initFirebaseClientSDK() {
   }
   // If the user has provided the firebaseAuthEmulatorHost address, set the emulator
   if (firebaseAuthEmulatorHost) {
-    firebase.auth().useEmulator(firebaseAuthEmulatorHost)
+    firebase.auth().useEmulator(`http://${firebaseAuthEmulatorHost}`)
   }
 }

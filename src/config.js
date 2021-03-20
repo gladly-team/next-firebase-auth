@@ -95,6 +95,25 @@ const validateConfig = (mergedConfig) => {
     )
   }
 
+  // Make sure the emulator isn't set for a production environment
+  if (
+    mergedConfig.firebaseAuthEmulatorHost &&
+    process.env.NODE_ENV === 'production'
+  ) {
+    errorMessages.push(
+      'The firebaseAuthEmulatorHost should only be used during testing and development'
+    )
+  }
+  // make sure the host address is set correctly.
+  if (
+    mergedConfig.firebaseAuthEmulatorHost &&
+    mergedConfig.firebaseAuthEmulatorHost.startsWith('http')
+  ) {
+    errorMessages.push(
+      'The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+    )
+  }
+
   // We consider cookie keys undefined if the keys are an empty string,
   // empty array, or array of only undefined values.
   const { keys } = mergedConfig.cookies
