@@ -34,6 +34,12 @@ const defaultConfig = {
   // required, but other options are optional if the app
   // initializes the admin SDK manually.
   firebaseClientInitConfig: undefined,
+  // Optional object: the firebase auth emulator host address
+  // on the user's machine. Should default to 'http://localhost:9099'
+  // see https://firebase.google.com/docs/emulator-suite/connect_auth
+  // user will still have to set the FIREBASE_AUTH_EMULATOR_HOST variable
+  // for the server-side admin functions
+  firebaseAuthEmulatorHost: undefined,
   cookies: {
     // Required string. The base name for the auth cookies.
     name: undefined,
@@ -125,7 +131,22 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.keys" setting must be set if "cookies.signed" is true.'
       )
     }
-
+    // check if the AUTH_EMULATOR_HOST_VARIABLE is set if the user has
+    // set the config to use the authEmultor
+    if (mergedConfig.firebaseAuthEmulatorHost) {
+      if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+        errorMessages.push(
+          'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be set if you are using the "firebaseAuthEmulatorHost" option'
+        )
+      } else if (
+        process.env.FIREBASE_AUTH_EMULATOR_HOST !==
+        mergedConfig.firebaseAuthEmulatorHost
+      ) {
+        errorMessages.push(
+          'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
+        )
+      }
+    }
     // Limit the max cookie age to two weeks for security. This matches
     // Firebase's limit for user identity cookies:
     // https://firebase.google.com/docs/auth/admin/manage-cookies

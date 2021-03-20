@@ -423,3 +423,68 @@ describe('config', () => {
     )
   })
 })
+
+it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the FIREBASE_AUTH_EMULATOR_HOST env var', () => {
+  expect.assertions(1)
+  const isClientSide = require('src/isClientSide').default
+  isClientSide.mockReturnValue(false)
+  const { setConfig } = require('src/config')
+  const mockConfigDefault = createMockConfig()
+  const mockConfig = {
+    ...mockConfigDefault,
+    firebaseAuthEmulatorHost: 'http://localhost:9099',
+  }
+  expect(() => {
+    setConfig(mockConfig)
+  }).toThrow(
+    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be set if you are using the "firebaseAuthEmulatorHost" option'
+  )
+})
+
+it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from the one set in the config', () => {
+  // since we are adding to process.env, take a clone and reset after each test to prevent a memory leak
+  const env = { ...process.env }
+  afterEach(() => {
+    process.env = env
+  })
+
+  expect.assertions(1)
+  const isClientSide = require('src/isClientSide').default
+  isClientSide.mockReturnValue(false)
+  const { setConfig } = require('src/config')
+  const mockConfigDefault = createMockConfig()
+  const mockConfig = {
+    ...mockConfigDefault,
+    firebaseAuthEmulatorHost: 'http://localhost:9099',
+  }
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'http://localhost:8088'
+  expect(() => {
+    setConfig(mockConfig)
+  }).toThrow(
+    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
+  )
+})
+
+it('[server-side] should not throw if the FIREBASE_AUTH_EMULATOR_HOST env variable is set and matches the one set in the config', () => {
+  // since we are adding to process.env, take a clone and reset after each test to prevent a memory leak
+  const env = { ...process.env }
+  afterEach(() => {
+    process.env = env
+  })
+
+  expect.assertions(1)
+  const isClientSide = require('src/isClientSide').default
+  isClientSide.mockReturnValue(false)
+  const { setConfig } = require('src/config')
+  const mockConfigDefault = createMockConfig()
+  const mockConfig = {
+    ...mockConfigDefault,
+    firebaseAuthEmulatorHost: 'http://localhost:9099',
+  }
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'http://localhost:9099'
+  expect(() => {
+    setConfig(mockConfig)
+  }).not.toThrow(
+    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
+  )
+})

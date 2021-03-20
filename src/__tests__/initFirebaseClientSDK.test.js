@@ -66,4 +66,37 @@ describe('initFirebaseClientSDK', () => {
       initFirebaseClientSDK()
     }).not.toThrow()
   })
+
+  it('initializes the client-side auth emulator if config.firebaseAuthEmulatorHost is set', () => {
+    expect.assertions(1)
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseAuthEmulatorHost: 'http://localhost:9099',
+    })
+    firebase.apps = [{ some: 'app' }]
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+
+    const useEmulator = jest.fn()
+    firebase.auth.mockImplementation(() => ({
+      useEmulator,
+    }))
+
+    initFirebaseClientSDK()
+    expect(useEmulator).toHaveBeenCalledWith('http://localhost:9099')
+  })
+
+  it('does not initialize the client-side auth emulator if config.firebaseAuthEmulatorHost is not set', () => {
+    expect.assertions(1)
+    firebase.apps = [{ some: 'app' }]
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+
+    const useEmulator = jest.fn()
+    firebase.auth.mockImplementation(() => ({
+      useEmulator,
+    }))
+
+    initFirebaseClientSDK()
+    expect(useEmulator).not.toHaveBeenCalled()
+  })
 })
