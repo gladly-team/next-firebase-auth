@@ -35,10 +35,9 @@ const defaultConfig = {
   // initializes the admin SDK manually.
   firebaseClientInitConfig: undefined,
   // Optional object: the firebase auth emulator host address
-  // on the user's machine. Should default to 'http://localhost:9099'
+  // on the user's machine. Should be set to 'localhost:9099' in order
+  // to match the FIREBASE_AUTH_EMULATOR_HOST variable on the server
   // see https://firebase.google.com/docs/emulator-suite/connect_auth
-  // user will still have to set the FIREBASE_AUTH_EMULATOR_HOST variable
-  // for the server-side admin functions
   firebaseAuthEmulatorHost: undefined,
   cookies: {
     // Required string. The base name for the auth cookies.
