@@ -16,7 +16,6 @@ const defaultConfig = {
   logoutAPIEndpoint: undefined,
   // Optional function: callback handler to call on auth state
   // changes. Replaces need for loginAPIEndpoint and logoutAPIEndpoint
-  // function is passed both the authState and the idToken
   tokenChangedHandler: undefined,
   // Optional string: the URL to navigate to when the user
   // needs to log in.

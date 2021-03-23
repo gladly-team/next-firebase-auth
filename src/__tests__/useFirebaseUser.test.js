@@ -75,8 +75,11 @@ describe('useFirebaseUser', () => {
 
   it('calls the login endpoint as expected when the Firebase JS SDK calls `onIdTokenChanged` with an authed user value', async () => {
     expect.assertions(2)
-
-    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockToken = 'my-token-here'
+    const mockFirebaseUser = {
+      ...createMockFirebaseUserClientSDK(),
+      getIdToken: async () => mockToken,
+    }
 
     let onIdTokenChangedCallback
     // Capture the onIdTokenChanged callback
@@ -105,7 +108,7 @@ describe('useFirebaseUser', () => {
       {
         method: 'POST',
         headers: {
-          Authorization: idTokenResult.token,
+          Authorization: mockToken,
         },
         credentials: 'include',
       }
@@ -298,9 +301,6 @@ describe('useFirebaseUser', () => {
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
-    expect(tokenChangedHandler).toHaveBeenCalledWith(
-      authUser,
-      idTokenResult.token
-    )
+    expect(tokenChangedHandler).toHaveBeenCalledWith(authUser)
   })
 })

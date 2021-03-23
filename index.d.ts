@@ -46,7 +46,7 @@ interface InitConfig {
   appPageURL?: string
   loginAPIEndpoint?: string
   logoutAPIEndpoint?: string
-  tokenChangedHandler?: (user: AuthUser, token: string) => void
+  tokenChangedHandler?: (user: AuthUser) => void
   firebaseAdminInitConfig?: {
     credential: {
       projectId: string

@@ -5,11 +5,12 @@ import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
 
-const defaultTokenChangedHandler = async (authUser, userToken) => {
+const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
   if (authUser.id) {
+    const userToken = await authUser.getIdToken()
     response = await fetch(loginAPIEndpoint, {
       method: 'POST',
       headers: {
@@ -43,7 +44,7 @@ const defaultTokenChangedHandler = async (authUser, userToken) => {
   return response
 }
 
-const setAuthCookie = async (firebaseUser, userToken) => {
+const setAuthCookie = async (firebaseUser) => {
   const { tokenChangedHandler } = getConfig()
 
   const authUser = createAuthUser({
@@ -52,10 +53,10 @@ const setAuthCookie = async (firebaseUser, userToken) => {
   })
 
   if (tokenChangedHandler) {
-    return tokenChangedHandler(authUser, userToken)
+    return tokenChangedHandler(authUser)
   }
 
-  return defaultTokenChangedHandler(authUser, userToken)
+  return defaultTokenChangedHandler(authUser)
 }
 
 const useFirebaseUser = () => {
@@ -63,7 +64,7 @@ const useFirebaseUser = () => {
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    let idTokenResult = { claims: {}, token: undefined }
+    let idTokenResult = { claims: {} }
     if (firebaseUser) {
       // Fetch the currentusers idTokenResult which contains both the idToken and the claims
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
@@ -77,7 +78,7 @@ const useFirebaseUser = () => {
     setUser(firebaseUserWithClaims)
     setInitialized(true)
     // pass the idToken to the setAuthCookie function
-    await setAuthCookie(firebaseUserWithClaims, idTokenResult.token)
+    await setAuthCookie(firebaseUserWithClaims)
   }
 
   useEffect(() => {
