@@ -17,6 +17,7 @@ describe('createAuthUser: basic tests', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     expect(createAuthUser()).toEqual({
+      claims: {},
       clientInitialized: false,
       email: null,
       emailVerified: false,
@@ -125,6 +126,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       firebaseUser: firebaseUserJSSDK,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
     })
   })
 
@@ -148,6 +150,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'abc-123',
+        claims: {},
         email: 'abc@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -192,6 +195,31 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       firebaseUser: null,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
+    })
+  })
+
+  it('includes includes all custom claims if the user set the config.includeCustomClaims option to "all"', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserAdminSDK = {
+      ...createMockFirebaseUserAdminSDK(),
+      foo: 'bar',
+      haz: 'cheese',
+    }
+    expect(createAuthUser({ firebaseUserAdminSDK })).toEqual({
+      id: 'def-456',
+      email: 'def@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: {
+        foo: 'bar',
+        haz: 'cheese',
+      },
     })
   })
 
@@ -228,6 +256,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -247,6 +276,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -266,6 +296,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,

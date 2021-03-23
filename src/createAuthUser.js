@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: 0 */
 import logDebug from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
+import { filterStandardClaims } from 'src/claims'
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -84,7 +85,7 @@ const createAuthUser = ({
     )
   }
 
-  let claims = null
+  let claims = {}
   let userId = null
   let email = null
   let emailVerified = false
@@ -105,7 +106,7 @@ const createAuthUser = ({
     /**
      * Claims are injected client side through the onTokenChange Callback
      */
-    claims = firebaseUserClientSDK.claims
+    claims = filterStandardClaims(firebaseUserClientSDK.claims)
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
@@ -120,7 +121,7 @@ const createAuthUser = ({
      * In order for the claims to be consistent, we need to pass the
      * entire adminSDK object as claims
      */
-    claims = { ...firebaseUserAdminSDK }
+    claims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified

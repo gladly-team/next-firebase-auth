@@ -3,17 +3,18 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
-import logDebug from 'src/logDebug'
+import { filterStandardClaims } from 'src/claims'
 
-const defaultTokenChangedHandler = async (authUser, userToken) => {
+const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
   if (authUser.id) {
+    const authToken = await authUser.getIdToken()
     response = await fetch(loginAPIEndpoint, {
       method: 'POST',
       headers: {
-        Authorization: userToken,
+        Authorization: authToken,
       },
       credentials: 'include',
     })
@@ -43,21 +44,7 @@ const defaultTokenChangedHandler = async (authUser, userToken) => {
   return response
 }
 
-/**
- * Fetch the currentusers idTokenResult which contains both the idToken and the claims
- * https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
- */
-const fetchIdTokenResult = async () => {
-  try {
-    const idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
-    return idTokenResult
-  } catch (e) {
-    logDebug('Error Getting Id Token Result', e)
-    return null
-  }
-}
-
-const setAuthCookie = async (firebaseUser, token) => {
+const setAuthCookie = async (firebaseUser) => {
   const { tokenChangedHandler } = getConfig()
 
   const authUser = createAuthUser({
@@ -66,10 +53,10 @@ const setAuthCookie = async (firebaseUser, token) => {
   })
 
   if (tokenChangedHandler) {
-    return tokenChangedHandler(authUser, token)
+    return tokenChangedHandler(authUser)
   }
 
-  return defaultTokenChangedHandler(authUser, token)
+  return defaultTokenChangedHandler(authUser)
 }
 
 const useFirebaseUser = () => {
@@ -77,19 +64,21 @@ const useFirebaseUser = () => {
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    let idTokenResult = { claims: null, token: null }
+    let idTokenResult = { claims: {} }
     if (firebaseUser) {
-      idTokenResult = await fetchIdTokenResult()
+      // Fetch the currentusers idTokenResult which contains both the idToken and the claims
+      // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
+      idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
     }
     const firebaseUserWithClaims = {
       ...firebaseUser,
-      claims: idTokenResult.claims,
+      claims: idTokenResult ? filterStandardClaims(idTokenResult.claims) : {},
     }
 
     setUser(firebaseUserWithClaims)
     setInitialized(true)
     // pass the idToken to the setAuthCookie function
-    await setAuthCookie(firebaseUserWithClaims, idTokenResult.token)
+    await setAuthCookie(firebaseUserWithClaims)
   }
 
   useEffect(() => {

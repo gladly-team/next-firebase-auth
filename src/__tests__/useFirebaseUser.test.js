@@ -36,40 +36,68 @@ describe('useFirebaseUser', () => {
     })
   })
 
-  it('returns the Firebase user and initialized=true after the Firebase JS SDK calls `onIdTokenChanged`', () => {
+  it('returns the Firebase user and initialized=true after the Firebase JS SDK calls `onIdTokenChanged`', async () => {
     expect.assertions(1)
 
-    // Capture the onIdTokenChanged callback.
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockFirebaseUserWithClaims = { ...mockFirebaseUser, claims: {} }
+
     let onIdTokenChangedCallback
-    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
-    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
     const { result } = renderHook(() => useFirebaseUser())
 
-    act(() => {
+    await act(async () => {
       // Mock that Firebase calls onIdTokenChanged.
-      onIdTokenChangedCallback(mockFirebaseUser)
+      await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(result.current).toEqual({
-      user: mockFirebaseUser,
+      user: { ...mockFirebaseUser, claims: {} },
       initialized: true,
     })
   })
 
   it('calls the login endpoint as expected when the Firebase JS SDK calls `onIdTokenChanged` with an authed user value', async () => {
     expect.assertions(2)
-    let onIdTokenChangedCallback
-    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
-      onIdTokenChangedCallback = callback
-      return () => {} // "unsubscribe" function
-    })
+
     const mockToken = 'my-token-here'
     const mockFirebaseUser = {
       ...createMockFirebaseUserClientSDK(),
       getIdToken: async () => mockToken,
     }
+    const mockFirebaseUserWithClaims = {
+      ...mockFirebaseUser,
+      claims: {},
+    }
+
+    let onIdTokenChangedCallback
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
     renderHook(() => useFirebaseUser())
 
     expect(fetch).not.toHaveBeenCalled()
@@ -91,6 +119,18 @@ describe('useFirebaseUser', () => {
   it('calls the logout endpoint as expected when the Firebase JS SDK calls `onIdTokenChanged` without an authed user', async () => {
     expect.assertions(2)
     let onIdTokenChangedCallback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn()
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
     firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
@@ -219,17 +259,31 @@ describe('useFirebaseUser', () => {
       tokenChangedHandler,
     })
 
-    let onIdTokenChangedCallback
-    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
-      onIdTokenChangedCallback = callback
-      return () => {} // "unsubscribe" function
-    })
-
     const mockToken = 'my-token-here'
     const mockFirebaseUser = {
       ...createMockFirebaseUserClientSDK(),
       getIdToken: async () => mockToken,
     }
+    const mockFirebaseUserWithClaims = {
+      ...mockFirebaseUser,
+      claims: {},
+    }
+
+    let onIdTokenChangedCallback
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
     const mockAuthUser = createAuthUser({
       firebaseUserClientSDK: mockFirebaseUser,
       clientInitialized: true,
