@@ -44,6 +44,17 @@ export const createMockDecodedIdTokenWithClaims = (claims = {}) => ({
   // ... other properties
 })
 
+// https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
+export const createMockIdTokenResult = (claims = {}) => ({
+  authTime: 1540000000,
+  claims,
+  expirationTime: 1540000000,
+  issuedAtTime: 1540000000,
+  signInProvider: 'google',
+  signInSecondFactor: null,
+  token: 'my-id-token-ghb-231',
+})
+
 export const createMockSerializedAuthUser = () =>
   JSON.stringify({
     id: 'ghi-789',

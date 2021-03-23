@@ -1,7 +1,7 @@
 import firebase from 'firebase/app'
 import { renderHook, act } from '@testing-library/react-hooks'
 import useFirebaseUser from 'src/useFirebaseUser'
-import { createMockFirebaseUserClientSDK } from 'src/testHelpers/authUserInputs'
+import { createMockFirebaseUserClientSDK, createMockIdTokenResult } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
@@ -73,15 +73,7 @@ describe('useFirebaseUser', () => {
   it('calls the login endpoint as expected when the Firebase JS SDK calls `onIdTokenChanged` with an authed user value', async () => {
     expect.assertions(2)
 
-    const mockToken = 'my-token-here'
-    const mockFirebaseUser = {
-      ...createMockFirebaseUserClientSDK(),
-      getIdToken: async () => mockToken,
-    }
-    const mockFirebaseUserWithClaims = {
-      ...mockFirebaseUser,
-      claims: {},
-    }
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
 
     let onIdTokenChangedCallback
     // Capture the onIdTokenChanged callback
@@ -91,7 +83,8 @@ describe('useFirebaseUser', () => {
     })
 
     // Intercept the getIdToken call
-    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
 
     jest.spyOn(firebase, 'auth').mockImplementation(() => ({
       currentUser: { getIdTokenResult },
@@ -109,7 +102,7 @@ describe('useFirebaseUser', () => {
       {
         method: 'POST',
         headers: {
-          Authorization: mockToken,
+          Authorization: idTokenResult.token,
         },
         credentials: 'include',
       }
@@ -154,10 +147,18 @@ describe('useFirebaseUser', () => {
   it('throws if `fetch`ing the login endpoint does not return an OK response', async () => {
     expect.assertions(1)
     let onIdTokenChangedCallback
-    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
+    const onIdTokenChanged = jest.fn((callback) => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
+
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     renderHook(() => useFirebaseUser())
 
@@ -259,15 +260,11 @@ describe('useFirebaseUser', () => {
       tokenChangedHandler,
     })
 
-    const mockToken = 'my-token-here'
-    const mockFirebaseUser = {
-      ...createMockFirebaseUserClientSDK(),
-      getIdToken: async () => mockToken,
-    }
-    const mockFirebaseUserWithClaims = {
-      ...mockFirebaseUser,
-      claims: {},
-    }
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+
+    // Intercept the getIdToken call
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
 
     let onIdTokenChangedCallback
     // Capture the onIdTokenChanged callback
@@ -275,10 +272,6 @@ describe('useFirebaseUser', () => {
       onIdTokenChangedCallback = callback
       return () => {} // "unsubscribe" function
     })
-
-    // Intercept the getIdToken call
-    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
-
     jest.spyOn(firebase, 'auth').mockImplementation(() => ({
       currentUser: { getIdTokenResult },
       onIdTokenChanged,
@@ -296,11 +289,15 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(fetch).not.toHaveBeenCalled()
-    expect(tokenChangedHandler).toHaveBeenCalledWith({
+    const authUser = {
       ...mockAuthUser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
-    })
+    }
+    expect(tokenChangedHandler).toHaveBeenCalledWith(
+      authUser,
+      idTokenResult.token
+    )
   })
 })

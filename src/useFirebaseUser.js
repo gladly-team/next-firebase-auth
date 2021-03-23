@@ -5,16 +5,15 @@ import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
 
-const defaultTokenChangedHandler = async (authUser) => {
+const defaultTokenChangedHandler = async (authUser, userToken) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
   if (authUser.id) {
-    const authToken = await authUser.getIdToken()
     response = await fetch(loginAPIEndpoint, {
       method: 'POST',
       headers: {
-        Authorization: authToken,
+        Authorization: userToken,
       },
       credentials: 'include',
     })
@@ -44,7 +43,7 @@ const defaultTokenChangedHandler = async (authUser) => {
   return response
 }
 
-const setAuthCookie = async (firebaseUser) => {
+const setAuthCookie = async (firebaseUser, userToken) => {
   const { tokenChangedHandler } = getConfig()
 
   const authUser = createAuthUser({
@@ -53,10 +52,10 @@ const setAuthCookie = async (firebaseUser) => {
   })
 
   if (tokenChangedHandler) {
-    return tokenChangedHandler(authUser)
+    return tokenChangedHandler(authUser, userToken)
   }
 
-  return defaultTokenChangedHandler(authUser)
+  return defaultTokenChangedHandler(authUser, userToken)
 }
 
 const useFirebaseUser = () => {
@@ -64,7 +63,7 @@ const useFirebaseUser = () => {
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    let idTokenResult = { claims: {} }
+    let idTokenResult = { claims: {}, token: undefined }
     if (firebaseUser) {
       // Fetch the currentusers idTokenResult which contains both the idToken and the claims
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
@@ -72,13 +71,13 @@ const useFirebaseUser = () => {
     }
     const firebaseUserWithClaims = {
       ...firebaseUser,
-      claims: idTokenResult ? filterStandardClaims(idTokenResult.claims) : {},
+      claims: filterStandardClaims(idTokenResult.claims),
     }
 
     setUser(firebaseUserWithClaims)
     setInitialized(true)
     // pass the idToken to the setAuthCookie function
-    await setAuthCookie(firebaseUserWithClaims)
+    await setAuthCookie(firebaseUserWithClaims, idTokenResult.token)
   }
 
   useEffect(() => {
