@@ -199,7 +199,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     })
   })
 
-  it('includes includes all custom claims if the user set the config.includeCustomClaims option to "all"', () => {
+  it('includes includes all custom claims that are not standard claims', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     const firebaseUserAdminSDK = {
