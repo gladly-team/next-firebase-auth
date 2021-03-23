@@ -1,7 +1,10 @@
 import firebase from 'firebase/app'
 import { renderHook, act } from '@testing-library/react-hooks'
 import useFirebaseUser from 'src/useFirebaseUser'
-import { createMockFirebaseUserClientSDK, createMockIdTokenResult } from 'src/testHelpers/authUserInputs'
+import {
+  createMockFirebaseUserClientSDK,
+  createMockIdTokenResult,
+} from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
