@@ -9,6 +9,9 @@ import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 // the underyling Firebase admin app.
 jest.mock('firebase-admin')
 
+// stash and restore the system env vars
+let env = null
+
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
   global.fetch = jest.fn(() => Promise.resolve(createMockFetchResponse()))
@@ -21,6 +24,12 @@ beforeEach(() => {
       apiKey: 'some-key',
     },
   })
+  env = { ...process.env }
+})
+
+afterEach(() => {
+  process.env = env
+  env = null
 })
 
 const googleRefreshTokenEndpoint = 'https://securetoken.googleapis.com/v1/token'
@@ -270,10 +279,6 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('calls the auth emulator endpoint if the firebaseAuthEmulatorHost is set to get a custom token, including the public Firebase API key as a URL parameter', async () => {
-    const env = { ...process.env }
-    afterEach(() => {
-      process.env = env
-    })
     process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
