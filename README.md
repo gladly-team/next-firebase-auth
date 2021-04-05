@@ -490,7 +490,6 @@ We expect some apps will need some features that are not currently available:
 
 * **Dynamic redirect destinations:** Currently, built-in *dynamic* redirects aren't fully supported, because `authPageURL` and `appPageURL` are static. Check out [this proposed enhancement](https://github.com/gladly-team/next-firebase-auth/issues/57) for details. However, it is possible to perform custom routing at SSR by leveraging [the officially-supported](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) `notFound` and `redirect` objects that `getServerSideProps` may return.
 * **Supporting custom claims:** Currently, the `AuthUser` object does not include any Firebase custom claims.
-* **Firebase emulator support:** It's not simple to use the Firebase emulator with this package. We'd love to make this easier and welcome suggestions. See [this discussion](https://github.com/gladly-team/next-firebase-auth/discussions/63).
 * **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
