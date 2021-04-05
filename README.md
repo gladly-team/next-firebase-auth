@@ -62,6 +62,7 @@ const initAuth = () => {
     appPageURL: '/',
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
+    firebaseAuthEmulatorHost: 'localhost:9099',
     // Required in most cases.
     firebaseAdminInitConfig: {
       credential: {
@@ -101,7 +102,7 @@ export default initAuth
 
 ```
 
-Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details.
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
 
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
@@ -363,6 +364,10 @@ If this callback is specified, user is responsible for:
 3. Ensuring it allows the request to set cookies.
 
 Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
+
+**firebaseAuthEmulatorHost**: The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port. 
+
+Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`. 
 
 #### **firebaseAdminInitConfig**
 

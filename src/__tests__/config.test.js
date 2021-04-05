@@ -2,14 +2,20 @@ import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('src/isClientSide')
 
+// stash and restore the system env vars
+let env = null
+
 beforeEach(() => {
   // Default to client side context.
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(true)
+  env = { ...process.env }
 })
 
 afterEach(() => {
   jest.resetModules()
+  process.env = env
+  env = null
 })
 
 describe('config', () => {
@@ -457,12 +463,6 @@ it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the 
 })
 
 it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from the one set in the config', () => {
-  // since we are adding to process.env, take a clone and reset after each test to prevent a memory leak
-  const env = { ...process.env }
-  afterEach(() => {
-    process.env = env
-  })
-
   expect.assertions(1)
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
@@ -481,12 +481,6 @@ it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from
 })
 
 it('[server-side] should not throw if the FIREBASE_AUTH_EMULATOR_HOST env variable is set and matches the one set in the config', () => {
-  // since we are adding to process.env, take a clone and reset after each test to prevent a memory leak
-  const env = { ...process.env }
-  afterEach(() => {
-    process.env = env
-  })
-
   expect.assertions(1)
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
