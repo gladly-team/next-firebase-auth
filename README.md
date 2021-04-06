@@ -31,10 +31,10 @@ Depending on your app's needs, other approaches might work better for you.
 
 **If your app needs the Firebase user for SSR (but does not need the ID token server-side)**, you could consider one of these approaches: 
   1. On the client, set a JavaScript cookie with the Firebase user information once the Firebase JS SDK loads.
-      * *Pros:* You won't need login/logout API endpoints. You can include any auth data you'd like, so you can add custom claims, which are not currently supported by this package.
+      * *Pros:* You won't need login/logout API endpoints. You can structure the authed user data however you'd like.
       * *Cons:* The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. (Note that you can set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.)
   2. Use [Firebase's session cookies](https://firebase.google.com/docs/auth/admin/manage-cookies).
-      * *Pros:* You'll have server-side access to custom claims, which are not currently supported by this package.
+      * *Pros:* It removes this package as a dependency.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
       
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side. Please check out [current limitations](#limitations--feedback) before diving in.
@@ -440,6 +440,10 @@ The Firebase user's email address, or null if the user has no email address.
 
 Whether the user's email address is verified.
 
+**claims** - `Object` - _Added in v0.13.0-alpha.2_
+
+Any [custom Firebase claims](https://firebase.google.com/docs/auth/admin/custom-claims#set_and_validate_custom_user_claims_via_the_admin_sdk).
+
 **getIdToken** - `Function => Promise<String|null>`
 
 An async function that resolves to a valid Firebase ID token string, or null if no valid token is available.
@@ -489,7 +493,6 @@ You may want to access the Firebase JS SDK or admin app. To do so, you can initi
 We expect some apps will need some features that are not currently available:
 
 * **Dynamic redirect destinations:** Currently, built-in *dynamic* redirects aren't fully supported, because `authPageURL` and `appPageURL` are static. Check out [this proposed enhancement](https://github.com/gladly-team/next-firebase-auth/issues/57) for details. However, it is possible to perform custom routing at SSR by leveraging [the officially-supported](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) `notFound` and `redirect` objects that `getServerSideProps` may return.
-* **Supporting custom claims:** Currently, the `AuthUser` object does not include any Firebase custom claims.
 * **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
