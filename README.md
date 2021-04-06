@@ -62,6 +62,7 @@ const initAuth = () => {
     appPageURL: '/',
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
+    firebaseAuthEmulatorHost: 'localhost:9099',
     // Required in most cases.
     firebaseAdminInitConfig: {
       credential: {
@@ -101,7 +102,7 @@ export default initAuth
 
 ```
 
-Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details.
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
 
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
@@ -364,6 +365,10 @@ If this callback is specified, user is responsible for:
 
 Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
 
+**firebaseAuthEmulatorHost**: The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port. 
+
+Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`. 
+
 #### **firebaseAdminInitConfig**
 
 Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
@@ -485,7 +490,6 @@ We expect some apps will need some features that are not currently available:
 
 * **Dynamic redirect destinations:** Currently, built-in *dynamic* redirects aren't fully supported, because `authPageURL` and `appPageURL` are static. Check out [this proposed enhancement](https://github.com/gladly-team/next-firebase-auth/issues/57) for details. However, it is possible to perform custom routing at SSR by leveraging [the officially-supported](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) `notFound` and `redirect` objects that `getServerSideProps` may return.
 * **Supporting custom claims:** Currently, the `AuthUser` object does not include any Firebase custom claims.
-* **Firebase emulator support:** It's not simple to use the Firebase emulator with this package. We'd love to make this easier and welcome suggestions. See [this discussion](https://github.com/gladly-team/next-firebase-auth/discussions/63).
 * **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!

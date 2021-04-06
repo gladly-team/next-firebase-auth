@@ -34,6 +34,11 @@ const defaultConfig = {
   // required, but other options are optional if the app
   // initializes the admin SDK manually.
   firebaseClientInitConfig: undefined,
+  // Optional object: the firebase auth emulator host address
+  // on the user's machine. Should be set to 'localhost:9099' in order
+  // to match the FIREBASE_AUTH_EMULATOR_HOST variable on the server
+  // see https://firebase.google.com/docs/emulator-suite/connect_auth
+  firebaseAuthEmulatorHost: undefined,
   cookies: {
     // Required string. The base name for the auth cookies.
     name: undefined,
@@ -89,6 +94,16 @@ const validateConfig = (mergedConfig) => {
     )
   }
 
+  // make sure the host address is set correctly.
+  if (
+    mergedConfig.firebaseAuthEmulatorHost &&
+    mergedConfig.firebaseAuthEmulatorHost.startsWith('http')
+  ) {
+    errorMessages.push(
+      'The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+    )
+  }
+
   // We consider cookie keys undefined if the keys are an empty string,
   // empty array, or array of only undefined values.
   const { keys } = mergedConfig.cookies
@@ -125,7 +140,22 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.keys" setting must be set if "cookies.signed" is true.'
       )
     }
-
+    // check if the AUTH_EMULATOR_HOST_VARIABLE is set if the user has
+    // set the config to use the authEmultor
+    if (mergedConfig.firebaseAuthEmulatorHost) {
+      if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+        errorMessages.push(
+          'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be set if you are using the "firebaseAuthEmulatorHost" option'
+        )
+      } else if (
+        process.env.FIREBASE_AUTH_EMULATOR_HOST !==
+        mergedConfig.firebaseAuthEmulatorHost
+      ) {
+        errorMessages.push(
+          'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
+        )
+      }
+    }
     // Limit the max cookie age to two weeks for security. This matches
     // Firebase's limit for user identity cookies:
     // https://firebase.google.com/docs/auth/admin/manage-cookies

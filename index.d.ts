@@ -49,12 +49,13 @@ interface InitConfig {
   tokenChangedHandler?: (user: AuthUser) => void
   firebaseAdminInitConfig?: {
     credential: {
-      projectId: string
-      clientEmail: string
-      privateKey: string
-    }
-    databaseURL: string
-  }
+      projectId: string;
+      clientEmail: string;
+      privateKey: string;
+    };
+    databaseURL: string;
+  };
+  firebaseAuthEmulatorHost?: string;
   firebaseClientInitConfig: {
     apiKey: string
     authDomain?: string

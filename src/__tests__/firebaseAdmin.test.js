@@ -9,6 +9,9 @@ import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 // the underyling Firebase admin app.
 jest.mock('firebase-admin')
 
+// stash and restore the system env vars
+let env = null
+
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
   global.fetch = jest.fn(() => Promise.resolve(createMockFetchResponse()))
@@ -21,6 +24,12 @@ beforeEach(() => {
       apiKey: 'some-key',
     },
   })
+  env = { ...process.env }
+})
+
+afterEach(() => {
+  process.env = env
+  env = null
 })
 
 const googleRefreshTokenEndpoint = 'https://securetoken.googleapis.com/v1/token'
@@ -243,7 +252,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     )
   })
 
-  it('calls the expected endpoint to get a custom token, including the public Firebase API key as a URL parameter', async () => {
+  it('calls the public google endpoint if the firebaseAuthEmulatorHost is not set to get a custom token, including the public Firebase API key as a URL parameter', async () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Set the Firebase API key.
@@ -267,6 +276,34 @@ describe('getCustomIdAndRefreshTokens', () => {
     expect(endpoint).toEqual(
       `${googleCustomTokenEndpoint}?key=${expectedAPIKey}`
     )
+  })
+
+  it('calls the auth emulator endpoint if the firebaseAuthEmulatorHost is set to get a custom token, including the public Firebase API key as a URL parameter', async () => {
+    process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Set the Firebase API key.
+    const expectedAPIKey = 'my-api-key!'
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        apiKey: expectedAPIKey,
+      },
+      firebaseAuthEmulatorHost: 'localhost:9099',
+    })
+
+    const authEmulatorEndpoint =
+      'http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await getCustomIdAndRefreshTokens('some-token')
+
+    const endpoint = global.fetch.mock.calls[0][0]
+    expect(endpoint).toEqual(`${authEmulatorEndpoint}?key=${expectedAPIKey}`)
   })
 
   it('uses the expected fetch options when calling to get a custom token', async () => {
