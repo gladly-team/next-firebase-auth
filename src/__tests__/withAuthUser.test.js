@@ -400,7 +400,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(propsSpy.ctx).not.toBeTruthy()
+    expect(propsSpy.ctx).toBeUndefined()
     expect(propsSpy.AuthUser.id).toBeNull()
     expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
   })
@@ -567,7 +567,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(ctxSpy).not.toBeTruthy()
+    expect(ctxSpy).toBeUndefined()
     expect(mockRouterReplace).toHaveBeenCalledWith(
       '/my-app/here/?email=abc@example.com'
     )

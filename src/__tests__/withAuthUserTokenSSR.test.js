@@ -418,7 +418,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })
   })
 
-  it('redirects to the provided function login URL when the user is not auth and auth *is* required', async () => {
+  it('redirects to the provided function login URL when the user is not authed and auth *is* required', async () => {
     expect.assertions(1)
     getCookie.mockReturnValue(undefined) // the user has no auth cookies
 
