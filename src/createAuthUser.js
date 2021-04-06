@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: 0 */
 import logDebug from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
+import { filterStandardClaims } from 'src/claims'
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -24,6 +25,7 @@ import isClientSide from 'src/isClientSide'
  * @return {String|null} AuthUser.id - The user's ID
  * @return {String|null} AuthUser.email - The user's email
  * @return {Boolean} AuthUser.emailVerified - Whether the user has verified their email
+ * @return {Object} AuthUser.claims - All the claims for the current user
  * @return {Function} AuthUser.getIdToken - An asynchronous function that
  *   resolves to the Firebase user's ID token string, or null if the user is
  *   not authenticated or we do not have access to a token.
@@ -83,6 +85,7 @@ const createAuthUser = ({
     )
   }
 
+  let claims = {}
   let userId = null
   let email = null
   let emailVerified = false
@@ -100,6 +103,10 @@ const createAuthUser = ({
 
   let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
+    /**
+     * Claims are injected client side through the onTokenChange Callback
+     */
+    claims = filterStandardClaims(firebaseUserClientSDK.claims)
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
@@ -107,6 +114,14 @@ const createAuthUser = ({
     signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
+    /**
+     * firebaseUserAdminSDK is a DecodedIDToken obtained from
+     * admin.auth().verifyIdToken which returns all the user's claims
+     * https://firebase.google.com/docs/auth/admin/custom-claims
+     * In order for the claims to be consistent, we need to pass the
+     * entire adminSDK object as claims
+     */
+    claims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
@@ -114,6 +129,7 @@ const createAuthUser = ({
     tokenString = token
   } else if (serializedAuthUser) {
     const deserializedUser = JSON.parse(serializedAuthUser)
+    claims = deserializedUser.claims
     userId = deserializedUser.id
     email = deserializedUser.email
     emailVerified = deserializedUser.emailVerified
@@ -124,6 +140,7 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
+    claims,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
     // value and return it from this method.
@@ -144,6 +161,7 @@ const createAuthUser = ({
     serialize: ({ includeToken = true } = {}) =>
       JSON.stringify({
         id: userId,
+        claims,
         email,
         emailVerified,
         clientInitialized,

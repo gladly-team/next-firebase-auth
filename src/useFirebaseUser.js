@@ -3,6 +3,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
+import { filterStandardClaims } from 'src/claims'
 
 const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
@@ -45,6 +46,7 @@ const defaultTokenChangedHandler = async (authUser) => {
 
 const setAuthCookie = async (firebaseUser) => {
   const { tokenChangedHandler } = getConfig()
+
   const authUser = createAuthUser({
     firebaseUserClientSDK: firebaseUser,
     clientInitialized: true,
@@ -62,9 +64,20 @@ const useFirebaseUser = () => {
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    setUser(firebaseUser)
+    let idTokenResult = { claims: {} }
+    if (firebaseUser) {
+      // Fetch the currentusers idTokenResult which contains both the idToken and the claims
+      // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
+      idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
+    }
+    const firebaseUserWithClaims = {
+      ...firebaseUser,
+      claims: filterStandardClaims(idTokenResult.claims),
+    }
+
+    setUser(firebaseUserWithClaims)
     setInitialized(true)
-    await setAuthCookie(firebaseUser)
+    await setAuthCookie(firebaseUserWithClaims)
   }
 
   useEffect(() => {

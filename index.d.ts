@@ -30,6 +30,7 @@ export interface AuthUser {
   id: string | null;
   email: string | null;
   emailVerified: boolean;
+  claims: Record<string, string | boolean>;
   getIdToken: () => Promise<string | null>;
   clientInitialized: boolean;
   firebaseUser: Firebase.User | null;

@@ -17,6 +17,7 @@ describe('createAuthUser: basic tests', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
     expect(createAuthUser()).toEqual({
+      claims: {},
       clientInitialized: false,
       email: null,
       emailVerified: false,
@@ -125,6 +126,35 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       firebaseUser: firebaseUserJSSDK,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
+    })
+  })
+
+  it('returns the expected data when custom claims are included', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const firebaseUserJSSDK = {
+      ...createMockFirebaseUserClientSDK(),
+      claims: customClaims,
+    }
+    expect(
+      createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
+    ).toEqual({
+      id: 'abc-123',
+      email: 'abc@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: firebaseUserJSSDK,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: customClaims,
     })
   })
 
@@ -148,6 +178,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'abc-123',
+        claims: {},
         email: 'abc@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -192,6 +223,31 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       firebaseUser: null,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
+    })
+  })
+
+  it('includes includes all custom claims that are not standard claims', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserAdminSDK = {
+      ...createMockFirebaseUserAdminSDK(),
+      foo: 'bar',
+      haz: 'cheese',
+    }
+    expect(createAuthUser({ firebaseUserAdminSDK })).toEqual({
+      id: 'def-456',
+      email: 'def@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: {
+        foo: 'bar',
+        haz: 'cheese',
+      },
     })
   })
 
@@ -228,6 +284,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -247,6 +304,36 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
+        email: 'def@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: 'my-id-token-def-456',
+      })
+    )
+  })
+
+  it('returns custom claims in the expected value from serialize if provided', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: {
+        ...createMockFirebaseUserAdminSDK(),
+        ...customClaims,
+      },
+      token: 'my-id-token-def-456',
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'def-456',
+        claims: customClaims,
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -266,6 +353,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     expect(AuthUserSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
+        claims: {},
         email: 'def@example.com',
         emailVerified: true,
         clientInitialized: false,
@@ -301,6 +389,30 @@ describe('createAuthUser: serializedAuthUser', () => {
       firebaseUser: null,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
+    })
+  })
+
+  it('returns custom claims if they are provided', () => {
+    expect.assertions(1)
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const createAuthUser = require('src/createAuthUser').default
+    const serializedAuthUser = createMockSerializedAuthUser(customClaims)
+    expect(createAuthUser({ serializedAuthUser })).toEqual({
+      id: 'ghi-789',
+      email: 'ghi@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: customClaims,
     })
   })
 
