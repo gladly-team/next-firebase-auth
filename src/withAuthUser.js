@@ -25,10 +25,12 @@ import isClientSide from 'src/isClientSide'
  *   if the user is not authenticated and the Firebase client JS
  *   SDK has already initialized. One of: AuthAction.RENDER,
  *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
- * @param {String} appPageURL - The redirect destination URL when
- *   we redirect to the app.
- * @param {String} authPageURL - The redirect destination URL when
- *   we redirect to the login page.
+ * @param {String|Function} appPageURL - The redirect destination URL when
+ *   we redirect to the app. Can either be a string or a function
+ *   that accepts ({ctx, AuthUser}) as args and returns a string.
+ * @param {String|Function} authPageURL - The redirect destination URL when
+ *   we redirect to the login page. Can either be a string or a function
+ *   that accepts ({ctx, AuthUser}) as args and returns a string.
  * @param {Function} Loader - The React component to show when the
  *   user is unauthed and `whenUnauthedBeforeInit` is set to
  *   `AuthAction.SHOW_LOADER`.
@@ -91,8 +93,19 @@ const withAuthUser = ({
           'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
         )
       }
-      router.replace(appRedirectDestination)
-    }, [router])
+
+      const destination =
+        typeof appRedirectDestination === 'string'
+          ? appRedirectDestination
+          : appRedirectDestination({ ctx: undefined, AuthUser })
+
+      if (!destination || typeof destination !== 'string') {
+        throw new Error(
+          'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        )
+      }
+      router.replace(destination)
+    }, [router, AuthUser])
     const redirectToLogin = useCallback(() => {
       const authRedirectDestination = authPageURL || getConfig().authPageURL
       if (!authRedirectDestination) {
@@ -100,8 +113,19 @@ const withAuthUser = ({
           'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
         )
       }
-      router.replace(authRedirectDestination)
-    }, [router])
+
+      const destination =
+        typeof authRedirectDestination === 'string'
+          ? authRedirectDestination
+          : authRedirectDestination({ ctx: undefined, AuthUser })
+
+      if (!destination || typeof destination !== 'string') {
+        throw new Error(
+          'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        )
+      }
+      router.replace(destination)
+    }, [router, AuthUser])
 
     useEffect(() => {
       // Only redirect on the client side. To redirect server-side,

@@ -40,9 +40,13 @@ interface AuthUserContext extends AuthUser {
   serialize: (opts?: { includeToken?: boolean }) => string;
 }
 
+type URLResolveFunction = (obj: {ctx: GetServerSidePropsContext<ParsedUrlQuery>, AuthUser: AuthUser }) => string
+
+type PageURL = string | URLResolveFunction
+
 interface InitConfig {
-  authPageURL?: string;
-  appPageURL?: string;
+  authPageURL?: PageURL;
+  appPageURL?: PageURL;
   loginAPIEndpoint?: string;
   logoutAPIEndpoint?: string;
   tokenChangedHandler?: (user: AuthUser) => void;
@@ -84,8 +88,8 @@ export const withAuthUser: <P = {}>(options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
   whenUnauthedBeforeInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN | AuthAction.SHOW_LOADER | AuthAction.RETURN_NULL;
   whenUnauthedAfterInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
-  appPageURL?: string;
-  authPageURL?: string;
+  appPageURL?: PageURL;
+  authPageURL?: PageURL;
   LoaderComponent?: ComponentType | null;
 }) => (component: ComponentType<P>) => ComponentType<P>
 
@@ -93,14 +97,14 @@ export const withAuthUserTokenSSR: (
   options?: {
     whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
     whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
-    appPageURL?: string;
-    authPageURL?: string;
+    appPageURL?: PageURL;
+    authPageURL?: PageURL;
   }
 ) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
 
 export const withAuthUserSSR: (options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP;
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN;
-  appPageURL?: string;
-  authPageURL?: string;
+  appPageURL?: PageURL;
+  authPageURL?: PageURL;
 }) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
