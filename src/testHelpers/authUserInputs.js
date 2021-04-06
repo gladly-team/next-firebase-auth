@@ -23,27 +23,6 @@ export const createMockFirebaseUserAdminSDK = () => ({
   // ... other properties
 })
 
-/**
- * same as createMockFirebaseUserAdminSDK but you can add claims!
- * @param {*} claims {Obj} consisting of customClaims
- * @returns {Obj} a decodedIdToken with extra claim properties
- */
-export const createMockDecodedIdTokenWithClaims = (claims = {}) => ({
-  uid: 'def-456',
-  email: 'def@example.com',
-  email_verified: true,
-  iss: 'https://securetoken.google.com/my-cool-app',
-  aud: 'my-cool-app',
-  auth_time: 1540000000,
-  user_id: 'def-456',
-  sub: 'def-456',
-  iat: 1540000000,
-  exp: 1540000000,
-  firebase: {},
-  ...claims,
-  // ... other properties
-})
-
 // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
 export const createMockIdTokenResult = (claims = {}) => ({
   authTime: 1540000000,
@@ -55,9 +34,10 @@ export const createMockIdTokenResult = (claims = {}) => ({
   token: 'my-id-token-ghb-231',
 })
 
-export const createMockSerializedAuthUser = () =>
+export const createMockSerializedAuthUser = (claims = {}) =>
   JSON.stringify({
     id: 'ghi-789',
+    claims,
     email: 'ghi@example.com',
     emailVerified: true,
     clientInitialized: false,

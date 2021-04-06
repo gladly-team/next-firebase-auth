@@ -77,7 +77,6 @@ const useFirebaseUser = () => {
 
     setUser(firebaseUserWithClaims)
     setInitialized(true)
-    // pass the idToken to the setAuthCookie function
     await setAuthCookie(firebaseUserWithClaims)
   }
 

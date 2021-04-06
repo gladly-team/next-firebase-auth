@@ -1,7 +1,7 @@
 /**
  * Test of the claims filter function
  */
-import { createMockDecodedIdTokenWithClaims } from 'src/testHelpers/authUserInputs'
+import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 
 describe('filterStandardClaims', () => {
   it('should filter out standard claims from an object', () => {
@@ -12,7 +12,10 @@ describe('filterStandardClaims', () => {
       likes: 'cats',
     }
     const { filterStandardClaims } = require('src/claims')
-    const tokenWithClaims = createMockDecodedIdTokenWithClaims(customClaims)
+    const tokenWithClaims = {
+      ...createMockFirebaseUserAdminSDK(),
+      ...customClaims,
+    }
     expect(filterStandardClaims(tokenWithClaims)).toEqual(customClaims)
   })
 })

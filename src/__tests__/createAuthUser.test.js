@@ -130,6 +130,34 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     })
   })
 
+  it('returns the expected data when custom claims are included', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const firebaseUserJSSDK = {
+      ...createMockFirebaseUserClientSDK(),
+      claims: customClaims,
+    }
+    expect(
+      createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
+    ).toEqual({
+      id: 'abc-123',
+      email: 'abc@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: firebaseUserJSSDK,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: customClaims,
+    })
+  })
+
   it('returns the expected value from getIdToken', async () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
@@ -285,6 +313,35 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
     )
   })
 
+  it('returns custom claims in the expected value from serialize if provided', async () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const AuthUser = createAuthUser({
+      firebaseUserAdminSDK: {
+        ...createMockFirebaseUserAdminSDK(),
+        ...customClaims,
+      },
+      token: 'my-id-token-def-456',
+    })
+    const AuthUserSerialized = AuthUser.serialize()
+    expect(AuthUserSerialized).toEqual(
+      JSON.stringify({
+        id: 'def-456',
+        claims: customClaims,
+        email: 'def@example.com',
+        emailVerified: true,
+        clientInitialized: false,
+        _token: 'my-id-token-def-456',
+      })
+    )
+  })
+
   it('excludes the token when serializing and the "includeToken" option is false', async () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
@@ -332,6 +389,30 @@ describe('createAuthUser: serializedAuthUser', () => {
       firebaseUser: null,
       signOut: expect.any(Function),
       serialize: expect.any(Function),
+      claims: {},
+    })
+  })
+
+  it('returns custom claims if they are provided', () => {
+    expect.assertions(1)
+    const customClaims = {
+      foo: 'bar',
+      has: 'cheese',
+      likes: 'cats',
+      registered: true,
+    }
+    const createAuthUser = require('src/createAuthUser').default
+    const serializedAuthUser = createMockSerializedAuthUser(customClaims)
+    expect(createAuthUser({ serializedAuthUser })).toEqual({
+      id: 'ghi-789',
+      email: 'ghi@example.com',
+      emailVerified: true,
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: customClaims,
     })
   })
 
