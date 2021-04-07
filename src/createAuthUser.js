@@ -99,6 +99,7 @@ const createAuthUser = ({
   let userId = null
   let email = null
   let emailVerified = false
+  let tenantId = null
   let getIdTokenFunc = async () => null
 
   // When not on the client side, the "signOut" method is a noop.
@@ -120,6 +121,7 @@ const createAuthUser = ({
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
+    tenantId = firebaseUserClientSDK.tenantId
     getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
     signOut = async () => firebase.auth().signOut()
     tokenString = null
@@ -135,6 +137,7 @@ const createAuthUser = ({
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
+    tenantId = firebaseUserAdminSDK.firebase.tenant
     getIdTokenFunc = async () => token
     tokenString = token
   } else if (serializedAuthUser) {
@@ -143,6 +146,7 @@ const createAuthUser = ({
     userId = deserializedUser.id
     email = deserializedUser.email
     emailVerified = deserializedUser.emailVerified
+    tenantId = deserializedUser.tenantId
     getIdTokenFunc = async () => deserializedUser._token || null
     tokenString = deserializedUser._token
   }
@@ -150,6 +154,7 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
+    tenantId,
     claims: customClaims,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
@@ -174,6 +179,7 @@ const createAuthUser = ({
         claims: customClaims,
         email,
         emailVerified,
+        tenantId,
         clientInitialized,
         ...(includeToken && { _token: tokenString }),
       }),

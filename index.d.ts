@@ -30,6 +30,7 @@ export interface AuthUser {
   id: string | null;
   email: string | null;
   emailVerified: boolean;
+  tenantId: string | null;
   claims: Record<string, string | boolean>;
   getIdToken: () => Promise<string | null>;
   clientInitialized: boolean;
@@ -65,6 +66,7 @@ interface InitConfig {
     authDomain?: string;
     databaseURL?: string;
     projectId?: string;
+    tenantId?: string;
   };
   cookies: Cookies.Option & Cookies.SetOption & {
     name: string;

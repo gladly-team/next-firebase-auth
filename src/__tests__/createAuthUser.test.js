@@ -21,6 +21,7 @@ describe('createAuthUser: basic tests', () => {
       clientInitialized: false,
       email: null,
       emailVerified: false,
+      tenantId: null,
       getIdToken: expect.any(Function),
       id: null,
       firebaseUser: null,

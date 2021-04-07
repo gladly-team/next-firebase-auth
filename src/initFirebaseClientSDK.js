@@ -11,6 +11,9 @@ export default function initFirebaseClientSDK() {
       )
     }
     firebase.initializeApp(firebaseClientInitConfig)
+    if (firebaseClientInitConfig.tenantId) {
+      firebase.auth().tenantId = firebaseClientInitConfig.tenantId
+    }
   }
   // If the user has provided the firebaseAuthEmulatorHost address, set the emulator
   if (firebaseAuthEmulatorHost) {
