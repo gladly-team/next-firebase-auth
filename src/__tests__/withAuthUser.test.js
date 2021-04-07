@@ -334,6 +334,77 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
   })
 
+  it('throws if needing to redirect to login and "authPageURL" is a function that does not resolve to a non-empty string', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user exists
+      initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      authPageURL: () => undefined, // custom app page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+    })(MockComponent)
+    // Suppress two expected console errors from our intentional
+    // error during render.
+    // https://spectrum.chat/testing-library/help/testing-components-that-should-throw~5b290c2e-6f70-4420-bedf-976c68ba83da
+    jest
+      .spyOn(console, 'error')
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+
+    expect(() =>
+      render(
+        <MockCompWithUser
+          serializedAuthUser={MockSerializedAuthUser}
+          message="How are you?"
+        />
+      )
+    ).toThrow(
+      'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+    )
+  })
+
+  it('calls the "authPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login page on client', () => {
+    expect.assertions(3)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+    })
+    const mockConfig = getMockConfig()
+    let propsSpy
+    setConfig({
+      ...mockConfig,
+      authPageURL: (props) => {
+        propsSpy = props
+        return `/some-auth-page`
+      }, // custom auth page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(propsSpy.ctx).toBeUndefined()
+    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
+  })
+
   it('redirects to the app on the client side when there is a user and a redirect-to-app-when-authed strategy is set', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
@@ -426,6 +497,79 @@ describe('withAuthUser: rendering/redirecting', () => {
       )
     }).toThrow(
       'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
+    )
+  })
+
+  it('throws if needing to redirect to the app and "appPageURL" is a function that does not resolve to a non-empty string', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: () => undefined, // should be set
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+
+    // Suppress two expected console errors from our intentional
+    // error during render.
+    // https://spectrum.chat/testing-library/help/testing-components-that-should-throw~5b290c2e-6f70-4420-bedf-976c68ba83da
+    jest
+      .spyOn(console, 'error')
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+
+    expect(() => {
+      render(
+        <MockCompWithUser
+          serializedAuthUser={MockSerializedAuthUser}
+          message="How are you?"
+        />
+      )
+    }).toThrow(
+      'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+    )
+  })
+
+  it('calls "appPageURL" with an undefined context and valid AuthUser if redirecting to the app page and a function is provided', () => {
+    expect.assertions(2)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+    })
+    const mockConfig = getMockConfig()
+    let ctxSpy
+    setConfig({
+      ...mockConfig,
+      appPageURL: ({ ctx, AuthUser }) => {
+        ctxSpy = ctx
+        return `/my-app/here/?email=${AuthUser.email}` // custom app page
+      },
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(ctxSpy).toBeUndefined()
+    expect(mockRouterReplace).toHaveBeenCalledWith(
+      '/my-app/here/?email=abc@example.com'
     )
   })
 

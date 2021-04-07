@@ -398,7 +398,7 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
 })
 
 describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
-  it('redirects to the provided login URL when the user is not authed and auth *is* required', async () => {
+  it('redirects to the provided string login URL when the user is not authed and auth *is* required', async () => {
     expect.assertions(1)
 
     getCookie.mockReturnValue(undefined) // the user has no auth cookies
@@ -413,6 +413,25 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     expect(props).toEqual({
       redirect: {
         destination: '/my-login',
+        permanent: false,
+      },
+    })
+  })
+
+  it('redirects to the provided function login URL when the user is not authed and auth *is* required', async () => {
+    expect.assertions(1)
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+      authPageURL: ({ ctx }) => `/my-login?next=${ctx.pathname}`,
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/my-login?next=/my-path',
         permanent: false,
       },
     })
@@ -468,7 +487,31 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     )
   })
 
-  it('redirects to the provided app URL when the user is authed and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
+  it('throws if the login URL is a function and does not resolve to a non-empty string but we need to redirect to login', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      authPageURL: () => undefined, // no auth page default defined
+    })
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+      // no auth page URL defined
+    })(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(
+      new Error(
+        'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      )
+    )
+  })
+
+  it('redirects to the provided string app URL when the user is authed and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
     expect.assertions(1)
 
     // Mock that the user is authed.
@@ -505,6 +548,48 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     expect(props).toEqual({
       redirect: {
         destination: '/my-app',
+        permanent: false,
+      },
+    })
+  })
+
+  it('redirects to the provided function app URL when the user is authed and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
+    expect.assertions(1)
+
+    // Mock that the user is authed.
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+      appPageURL: ({ ctx }) => `/my-app?next=${ctx.pathname}`,
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/my-app?next=/my-path',
         permanent: false,
       },
     })
@@ -599,6 +684,53 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
         'When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.'
+      )
+    )
+  })
+
+  it('throws if the app URL is a function and does not resolve to a non empty-string but we need to redirect to login', async () => {
+    // stuff
+    expect.assertions(1)
+
+    // Mock that the user is authed.
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: () => undefined, // no default defined
+    })
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+      // no app page URL defined
+    })(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(
+      new Error(
+        'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
       )
     )
   })

@@ -21,10 +21,12 @@ import AuthAction from 'src/AuthAction'
  * @param {String} whenUnauthed - The behavior to take if the user
  *   is not authenticated. One of AuthAction.RENDER or
  *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
- * @param {String} appPageURL - The redirect destination URL when
- *   we redirect to the app.
- * @param {String} authPageURL - The redirect destination URL when
- *   we redirect to the login page.
+ * @param {String|Function} appPageURL - The redirect destination URL when
+ *   we redirect to the app. Can either be a string or a function
+ *   that accepts ({ctx, AuthUser}) as args and returns a string.
+ * @param {String|Function} authPageURL - The redirect destination URL when
+ *   we redirect to the login page. Can either be a string or a function
+ *   that accepts ({ctx, AuthUser}) as args and returns a string.
  * @return {Object} response
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
@@ -94,8 +96,22 @@ const withAuthUserTokenSSR = (
         `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
       )
     }
+    const destination =
+      typeof authRedirectDestination === 'string'
+        ? authRedirectDestination
+        : authRedirectDestination({ ctx, AuthUser })
+
+    if (!destination) {
+      throw new Error(
+        'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      )
+    }
+
     return {
-      redirect: { destination: authRedirectDestination, permanent: false },
+      redirect: {
+        destination,
+        permanent: false,
+      },
     }
   }
 
@@ -107,8 +123,21 @@ const withAuthUserTokenSSR = (
         `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
       )
     }
+    const destination =
+      typeof appRedirectDestination === 'string'
+        ? appRedirectDestination
+        : appRedirectDestination({ ctx, AuthUser })
+
+    if (!destination) {
+      throw new Error(
+        'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      )
+    }
     return {
-      redirect: { destination: appRedirectDestination, permanent: false },
+      redirect: {
+        destination,
+        permanent: false,
+      },
     }
   }
 
