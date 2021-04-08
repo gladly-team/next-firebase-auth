@@ -61,23 +61,20 @@ const setAuthCookie = async (firebaseUser) => {
 
 const useFirebaseUser = () => {
   const [user, setUser] = useState()
+  const [customClaims, setCustomClaims] = useState({})
   const [initialized, setInitialized] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
-    let idTokenResult = { claims: {} }
     if (firebaseUser) {
-      // Fetch the currentusers idTokenResult which contains both the idToken and the claims
+      // Get the user's claims:
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
-      idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
+      const idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
+      const claims = filterStandardClaims(idTokenResult.claims)
+      setCustomClaims(claims)
     }
-    const firebaseUserWithClaims = {
-      ...firebaseUser,
-      claims: filterStandardClaims(idTokenResult.claims),
-    }
-
-    setUser(firebaseUserWithClaims)
+    setUser(firebaseUser)
     setInitialized(true)
-    await setAuthCookie(firebaseUserWithClaims)
+    await setAuthCookie(firebaseUser)
   }
 
   useEffect(() => {
@@ -87,7 +84,8 @@ const useFirebaseUser = () => {
   }, [])
 
   return {
-    user,
+    user, // unmodified Firebase user, undefined if not authed
+    claims: customClaims,
     initialized,
   }
 }
