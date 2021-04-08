@@ -161,7 +161,6 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
   it('does not throw when custom claims are defined but the client user is not defined', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
-    const firebaseUserJSSDK = createMockFirebaseUserClientSDK()
     expect(() => {
       createAuthUser({
         firebaseUserClientSDK: undefined,
@@ -430,7 +429,9 @@ describe('createAuthUser: serializedAuthUser', () => {
       registered: true,
     }
     const createAuthUser = require('src/createAuthUser').default
-    const serializedAuthUser = createMockSerializedAuthUser(customClaims)
+    const serializedAuthUser = createMockSerializedAuthUser({
+      claims: customClaims,
+    })
     expect(createAuthUser({ serializedAuthUser })).toEqual({
       id: 'ghi-789',
       email: 'ghi@example.com',
@@ -447,7 +448,6 @@ describe('createAuthUser: serializedAuthUser', () => {
   it('throws if claims are provided as an input', () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
-    const firebaseUserAdminSDK = createMockFirebaseUserAdminSDK()
     expect(() => {
       createAuthUser({
         serializedAuthUser: createMockSerializedAuthUser(),
