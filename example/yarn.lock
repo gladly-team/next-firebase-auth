@@ -2090,7 +2090,7 @@ native-url@0.3.4:
   dependencies:
     querystring "^0.2.0"
 
-next-firebase-auth@^0.13.0-alpha.4:
+next-firebase-auth@0.13.0-alpha.4:
   version "0.13.0-alpha.4"
   resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.13.0-alpha.4.tgz#bf014230212abe51a5b14b3e52c262225d827a9e"
   integrity sha512-LkwBkTUJTxpWKxE34j4Ln7mOx/ihZJvrj2I0uIe36bA/Tvz/jeQHYRzFtUpn/rv2PpyxD3U8V3QNPIhu8fgsFw==
