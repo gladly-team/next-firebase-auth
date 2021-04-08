@@ -23,6 +23,12 @@ jest.mock('src/isClientSide')
 
 const MockComponent = ({ message }) => <div>Hello! {message}</div>
 
+const getUseFirebaseUserResponse = () => ({
+  user: undefined,
+  claims: {},
+  initialized: false,
+})
+
 beforeEach(() => {
   // Default to client side context.
   const isClientSide = require('src/isClientSide').default
@@ -30,10 +36,7 @@ beforeEach(() => {
 
   setConfig(getMockConfig())
 
-  useFirebaseUser.mockReturnValue({
-    user: undefined,
-    initialized: false,
-  })
+  useFirebaseUser.mockReturnValue(getUseFirebaseUserResponse())
 })
 
 afterEach(() => {
@@ -45,6 +48,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -57,6 +61,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -73,6 +78,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -89,6 +95,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -112,6 +119,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
     })
@@ -149,6 +157,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     // user is available.
     expect(queryByText('Hello! How are you?')).toBeNull()
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(),
       initialized: true,
     })
@@ -166,6 +175,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -190,6 +200,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -213,6 +224,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -242,6 +254,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
     })
@@ -271,6 +284,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     isClientSide.mockReturnValue(false) // server-side
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
     })
@@ -300,6 +314,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
     })
@@ -339,6 +354,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user exists
       initialized: true,
     })
@@ -377,6 +393,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
     })
@@ -410,7 +427,9 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
       initialized: true,
     })
     const mockConfig = getMockConfig()
@@ -439,7 +458,9 @@ describe('withAuthUser: rendering/redirecting', () => {
     isClientSide.mockReturnValue(false) // server-side
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
       initialized: true,
     })
     const mockConfig = getMockConfig()
@@ -466,6 +487,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
     })
@@ -505,6 +527,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
     })
@@ -544,6 +567,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
     })
@@ -578,6 +602,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
     })
@@ -600,6 +625,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
     })
@@ -624,6 +650,7 @@ describe('withAuthUser: AuthUser context', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user exists
       initialized: false,
     })
@@ -663,6 +690,7 @@ describe('withAuthUser: AuthUser context', () => {
       signOut: expect.any(Function),
     }
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user exists
       initialized: false,
     })
@@ -690,6 +718,7 @@ describe('withAuthUser: AuthUser context', () => {
 
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
     })
@@ -725,6 +754,7 @@ describe('withAuthUser: AuthUser context', () => {
     const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
     })
@@ -761,6 +791,7 @@ describe('withAuthUser: AuthUser context', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: false,
     })
@@ -797,6 +828,7 @@ describe('withAuthUser: AuthUser context', () => {
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
     useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: true,
     })
@@ -811,6 +843,90 @@ describe('withAuthUser: AuthUser context', () => {
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
+    }
+
+    let wrappedCompAuthUser
+    const AnotherMockComponent = () => {
+      // eslint-disable-next-line no-unused-vars
+      wrappedCompAuthUser = useAuthUser()
+      return <div>hi!</div>
+    }
+
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+  })
+
+  it('includes custom claims in the AuthUser context when using the server-side user', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = createMockSerializedAuthUser({
+      claims: { my: 'custom claims!' },
+    })
+    const expectedAuthUser = {
+      ...createAuthUser({
+        serializedAuthUser: MockSerializedAuthUser,
+      }),
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+      claims: {
+        my: 'custom claims!',
+      },
+    }
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user exists
+      initialized: false,
+    })
+
+    let wrappedCompAuthUser
+    const AnotherMockComponent = () => {
+      // eslint-disable-next-line no-unused-vars
+      wrappedCompAuthUser = useAuthUser()
+      return <div>hi!</div>
+    }
+
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+  })
+
+  it('includes custom claims in the AuthUser context when using the client-side user', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: mockFirebaseUser, // client-side user exists
+      claims: {
+        custom: 'data',
+        very: 'cool',
+      },
+      initialized: true,
+    })
+    const expectedAuthUser = {
+      ...createAuthUser({
+        firebaseUserClientSDK: mockFirebaseUser,
+      }),
+      clientInitialized: true,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+      claims: {
+        custom: 'data',
+        very: 'cool',
+      },
     }
 
     let wrappedCompAuthUser

@@ -35,6 +35,7 @@ describe('useFirebaseUser', () => {
     const { result } = renderHook(() => useFirebaseUser())
     expect(result.current).toEqual({
       user: undefined,
+      claims: {},
       initialized: false,
     })
   })
@@ -68,12 +69,47 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(result.current).toEqual({
-      user: { ...mockFirebaseUser, claims: {} },
+      user: mockFirebaseUser,
+      claims: {},
       initialized: true,
     })
   })
 
-  it('returns the Firebase user with custom claims if they are present after the Firebase JS SDK calls `onIdTokenChanged`', async () => {
+  it('return an undefined user and initialized=true if the Firebase JS SDK calls `onIdTokenChanged` with no Firebase user', async () => {
+    expect.assertions(1)
+
+    const mockFirebaseUser = undefined // not signed in
+
+    let onIdTokenChangedCallback
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => undefined)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { result } = renderHook(() => useFirebaseUser())
+
+    await act(async () => {
+      // Mock that Firebase calls onIdTokenChanged.
+      await onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(result.current).toEqual({
+      user: undefined,
+      claims: {},
+      initialized: true,
+    })
+  })
+
+  it('returns custom claims if they are present after the Firebase JS SDK calls `onIdTokenChanged`', async () => {
     expect.assertions(1)
 
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
@@ -109,13 +145,11 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(result.current).toEqual({
-      user: {
-        ...mockFirebaseUser,
-        claims: {
-          foo: 'bar',
-          has: 'cheese',
-          subscription: true,
-        },
+      user: mockFirebaseUser,
+      claims: {
+        foo: 'bar',
+        has: 'cheese',
+        subscription: true,
       },
       initialized: true,
     })

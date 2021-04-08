@@ -24,7 +24,7 @@ export const createMockFirebaseUserAdminSDK = () => ({
 })
 
 // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
-export const createMockIdTokenResult = (claims = {}) => ({
+export const createMockIdTokenResult = ({ claims = {} } = {}) => ({
   authTime: 1540000000,
   claims,
   expirationTime: 1540000000,
@@ -34,7 +34,7 @@ export const createMockIdTokenResult = (claims = {}) => ({
   token: 'my-id-token-ghb-231',
 })
 
-export const createMockSerializedAuthUser = (claims = {}) =>
+export const createMockSerializedAuthUser = ({ claims = {} } = {}) =>
   JSON.stringify({
     id: 'ghi-789',
     claims,
