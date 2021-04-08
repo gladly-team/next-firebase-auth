@@ -65,15 +65,15 @@ const useFirebaseUser = () => {
 
   async function onIdTokenChange(firebaseUser) {
     let idTokenResult = { claims: {} }
+    let firebaseUserWithClaims = {}
     if (firebaseUser) {
       // Fetch the currentusers idTokenResult which contains both the idToken and the claims
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
       idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
+      firebaseUserWithClaims = firebaseUser
     }
-    const firebaseUserWithClaims = {
-      ...firebaseUser,
-      claims: filterStandardClaims(idTokenResult.claims),
-    }
+
+    firebaseUserWithClaims.claims = filterStandardClaims(idTokenResult.claims)
 
     setUser(firebaseUserWithClaims)
     setInitialized(true)
