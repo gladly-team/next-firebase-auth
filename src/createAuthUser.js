@@ -46,6 +46,7 @@ const createAuthUser = ({
   serializedAuthUser,
   clientInitialized = false,
   token = null,
+  claims,
 } = {}) => {
   logDebug('Called createAuthUser with arguments:', {
     firebaseUserClientSDK,
@@ -53,6 +54,7 @@ const createAuthUser = ({
     serializedAuthUser,
     clientInitialized,
     token,
+    claims,
   })
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
@@ -78,6 +80,12 @@ const createAuthUser = ({
     )
   }
 
+  if (claims && !firebaseUserClientSDK) {
+    throw new Error(
+      'The "claims" value can only be set in conjunction with the "firebaseUserClientSDK" property.'
+    )
+  }
+
   // The token value should only be provided with the decoded admin value.
   if (token && !firebaseUserAdminSDK) {
     throw new Error(
@@ -85,7 +93,7 @@ const createAuthUser = ({
     )
   }
 
-  let claims = {}
+  let customClaims = {}
   let userId = null
   let email = null
   let emailVerified = false
@@ -106,7 +114,7 @@ const createAuthUser = ({
     /**
      * Claims are injected client side through the onTokenChange Callback
      */
-    claims = filterStandardClaims(firebaseUserClientSDK.claims)
+    customClaims = filterStandardClaims(claims)
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
@@ -121,7 +129,7 @@ const createAuthUser = ({
      * In order for the claims to be consistent, we need to pass the
      * entire adminSDK object as claims
      */
-    claims = filterStandardClaims(firebaseUserAdminSDK)
+    customClaims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
@@ -129,7 +137,7 @@ const createAuthUser = ({
     tokenString = token
   } else if (serializedAuthUser) {
     const deserializedUser = JSON.parse(serializedAuthUser)
-    claims = deserializedUser.claims
+    customClaims = deserializedUser.claims
     userId = deserializedUser.id
     email = deserializedUser.email
     emailVerified = deserializedUser.emailVerified
@@ -140,7 +148,7 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
-    claims,
+    claims: customClaims,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
     // value and return it from this method.
@@ -161,7 +169,7 @@ const createAuthUser = ({
     serialize: ({ includeToken = true } = {}) =>
       JSON.stringify({
         id: userId,
-        claims,
+        claims: customClaims,
         email,
         emailVerified,
         clientInitialized,

@@ -139,12 +139,12 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       likes: 'cats',
       registered: true,
     }
-    const firebaseUserJSSDK = {
-      ...createMockFirebaseUserClientSDK(),
-      claims: customClaims,
-    }
+    const firebaseUserJSSDK = createMockFirebaseUserClientSDK()
     expect(
-      createAuthUser({ firebaseUserClientSDK: firebaseUserJSSDK })
+      createAuthUser({
+        firebaseUserClientSDK: firebaseUserJSSDK,
+        claims: customClaims,
+      })
     ).toEqual({
       id: 'abc-123',
       email: 'abc@example.com',
@@ -249,6 +249,17 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         haz: 'cheese',
       },
     })
+  })
+
+  it('throws if claims are provided as an input', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserAdminSDK = createMockFirebaseUserAdminSDK()
+    expect(() => {
+      createAuthUser({ firebaseUserAdminSDK, claims: { some: 'stuff' } })
+    }).toThrow(
+      'The "claims" value can only be set in conjunction with the "firebaseUserClientSDK" property.'
+    )
   })
 
   it('returns the expected value from getIdToken when a token is not provided', async () => {
@@ -414,6 +425,20 @@ describe('createAuthUser: serializedAuthUser', () => {
       serialize: expect.any(Function),
       claims: customClaims,
     })
+  })
+
+  it('throws if claims are provided as an input', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserAdminSDK = createMockFirebaseUserAdminSDK()
+    expect(() => {
+      createAuthUser({
+        serializedAuthUser: createMockSerializedAuthUser(),
+        claims: { some: 'stuff' },
+      })
+    }).toThrow(
+      'The "claims" value can only be set in conjunction with the "firebaseUserClientSDK" property.'
+    )
   })
 
   it('returns the original values from serialize and back', async () => {
