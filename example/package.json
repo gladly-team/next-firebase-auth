@@ -12,7 +12,7 @@
     "firebase": "^8.2.5",
     "firebase-admin": "^9.4.2",
     "next": "10.0.6",
-    "next-firebase-auth": "^0.13.0-alpha.0",
+    "next-firebase-auth": "^0.13.0-alpha.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-firebaseui": "^4.1.0"
