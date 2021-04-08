@@ -52,11 +52,13 @@ const withAuthUser = ({
 
     const {
       user: firebaseUser,
+      claims,
       initialized: firebaseInitialized,
     } = useFirebaseUser()
     const AuthUserFromClient = createAuthUser({
       firebaseUserClientSDK: firebaseUser,
       clientInitialized: firebaseInitialized,
+      claims,
     })
 
     // Set the AuthUser to values from the Firebase JS SDK user

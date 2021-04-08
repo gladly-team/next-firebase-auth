@@ -80,7 +80,9 @@ const createAuthUser = ({
     )
   }
 
-  if (claims && !firebaseUserClientSDK) {
+  // The "claims" input should only be provided on the client side.
+  // On the server side, we will get the claims from the user object.
+  if (claims && (firebaseUserAdminSDK || serializedAuthUser)) {
     throw new Error(
       'The "claims" value can only be set in conjunction with the "firebaseUserClientSDK" property.'
     )

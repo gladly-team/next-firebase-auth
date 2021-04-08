@@ -158,6 +158,23 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
     })
   })
 
+  it('does not throw when custom claims are defined but the client user is not defined', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserJSSDK = createMockFirebaseUserClientSDK()
+    expect(() => {
+      createAuthUser({
+        firebaseUserClientSDK: undefined,
+        claims: {
+          foo: 'bar',
+          has: 'cheese',
+          likes: 'cats',
+          registered: true,
+        },
+      })
+    }).not.toThrow()
+  })
+
   it('returns the expected value from getIdToken', async () => {
     expect.assertions(1)
     const createAuthUser = require('src/createAuthUser').default
