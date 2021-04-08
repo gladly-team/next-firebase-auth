@@ -1,12 +1,21 @@
 import React from 'react'
 import Link from 'next/link'
 
+const nfaDependencyVersion = require('../package.json').dependencies[
+  'next-firebase-auth'
+]
+const nextDependencyVersion = require('../package.json').dependencies.next
+
 const styles = {
   container: {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
     padding: 16,
+  },
+  versionsContainer: {
+    marginLeft: 0,
+    marginRight: 'auto',
   },
   button: {
     marginLeft: 16,
@@ -16,6 +25,10 @@ const styles = {
 
 const Header = ({ email, signOut }) => (
   <div style={styles.container}>
+    <div style={styles.versionsContainer}>
+      <div>v{nfaDependencyVersion}</div>
+      <div>Next.js v{nextDependencyVersion}</div>
+    </div>
     {email ? (
       <>
         <p>Signed in as {email}</p>
