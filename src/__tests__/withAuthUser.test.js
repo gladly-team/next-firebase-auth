@@ -860,4 +860,88 @@ describe('withAuthUser: AuthUser context', () => {
     render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
     expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
   })
+
+  it('includes custom claims in the AuthUser context when using the server-side user', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = createMockSerializedAuthUser({
+      claims: { my: 'custom claims!' },
+    })
+    const expectedAuthUser = {
+      ...createAuthUser({
+        serializedAuthUser: MockSerializedAuthUser,
+      }),
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+      claims: {
+        my: 'custom claims!',
+      },
+    }
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user exists
+      initialized: false,
+    })
+
+    let wrappedCompAuthUser
+    const AnotherMockComponent = () => {
+      // eslint-disable-next-line no-unused-vars
+      wrappedCompAuthUser = useAuthUser()
+      return <div>hi!</div>
+    }
+
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+  })
+
+  it('includes custom claims in the AuthUser context when using the client-side user', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: mockFirebaseUser, // client-side user exists
+      claims: {
+        custom: 'data',
+        very: 'cool',
+      },
+      initialized: true,
+    })
+    const expectedAuthUser = {
+      ...createAuthUser({
+        firebaseUserClientSDK: mockFirebaseUser,
+      }),
+      clientInitialized: true,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+      claims: {
+        custom: 'data',
+        very: 'cool',
+      },
+    }
+
+    let wrappedCompAuthUser
+    const AnotherMockComponent = () => {
+      // eslint-disable-next-line no-unused-vars
+      wrappedCompAuthUser = useAuthUser()
+      return <div>hi!</div>
+    }
+
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+  })
 })
