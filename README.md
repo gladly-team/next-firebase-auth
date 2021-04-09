@@ -29,14 +29,14 @@ Depending on your app's needs, other approaches might work better for you.
   * *Pros:* It's simpler and removes this package as a dependency.
   * *Cons:* You will not have access to the Firebase user when you use `getServerSideProps`.
 
-**If your app needs the Firebase user for SSR (but does not need the ID token server-side)**, you could consider one of these approaches: 
+**If your app needs the Firebase user for SSR (but does not need the ID token server-side)**, you could consider one of these approaches:
   1. On the client, set a JavaScript cookie with the Firebase user information once the Firebase JS SDK loads.
       * *Pros:* You won't need login/logout API endpoints. You can structure the authed user data however you'd like.
       * *Cons:* The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. (Note that you can set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.)
   2. Use [Firebase's session cookies](https://firebase.google.com/docs/auth/admin/manage-cookies).
       * *Pros:* It removes this package as a dependency.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
-      
+
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side. Please check out [current limitations](#limitations--feedback) before diving in.
 
 ## Get Started
@@ -210,7 +210,7 @@ It accepts the following options:
 
 Option | Description | Default
 ------------ | ------------- | -------------
-`whenAuthed` | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER` 
+`whenAuthed` | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER`
 `whenUnauthedBeforeInit` | The action to take if the user is *not* authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`. | `AuthAction.RENDER`
 `whenUnauthedAfterInit` | The action to take if the user is *not* authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
 `appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
@@ -253,7 +253,7 @@ It accepts the following options:
 
 Option | Description | Default
 ------------ | ------------- | -------------
-`whenAuthed` | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER` 
+`whenAuthed` | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER`
 `whenUnauthed` | The action to take if the user is *not* authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
 `appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
 `authPageURL` | The redirect destination URL when we should redirect to the login page. | `config.authPageURL`
@@ -365,9 +365,9 @@ If this callback is specified, user is responsible for:
 
 Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
 
-**firebaseAuthEmulatorHost**: The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port. 
+**firebaseAuthEmulatorHost**: The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
 
-Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`. 
+Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`.
 
 #### **firebaseAdminInitConfig**
 
@@ -495,6 +495,204 @@ We expect some apps will need some features that are not currently available:
 * **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
+
+## Test examples
+
+### Jest
+
+In order to test components wrapped with functions from `next-firebase-auth`, you will need to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks).
+
+To start you need to stub out the entire module in a `__mocks__` folder next to `node_modules` in your application, eg.
+
+```
+├── __mocks__
+│   └── next-firebase-auth
+│       ├── index.js
+│       ├── useAuthUser.js
+│       ├── verifyIdToken.js
+│       ├── withAuthUser.js
+│       ├── withAuthUserSSR.js
+│       └── withAuthUserTokenSSR.js
+├── node_modules
+│   └── ... all your deps
+├── src
+│   └── ... all your source code
+```
+
+The most important part of this mock is `index.js`, which will export an object with all the keys of the `next-firebase-auth` library, most of which can be calls to `jest.fn()`. Eg.
+
+```javascript
+import { AuthAction } from 'next-firebase-auth'
+
+module.exports = {
+  init: jest.fn(),
+  withAuthUser: jest.fn(),
+  useAuthUser: jest.fn(),
+  withAuthUserSSR: jest.fn(),
+  withAuthUserTokenSSR: jest.fn(),
+  setAuthCookies: jest.fn(),
+  unsetAuthCookies: jest.fn(),
+  verifyIdToken: jest.fn(),
+  AuthAction,
+}
+```
+
+See our implementation of this in our [tab-web repository](https://github.com/gladly-team/tab-web/tree/master/__mocks__/next-firebase-auth) for a more robust example.
+
+You will also likely want to have a utility to mock the `AuthUser` object that is passed around via the hooks and HOFs of `next-firebase-auth`. Given that this is not a direct mock of the library itself, it might make sense to put inside a `utils` folder or anywhere else that makes sense for your team.
+
+```javascript
+// Create a mock FirebaseUser instance with the fields that you use.
+const mockFirebaseUser = {
+	displayName: 'Banana Manana',
+  // ... other fields from firebaseUser that you may use
+};
+
+/**
+ * Build and return a dummy AuthUser instance to use in tests.
+ *
+ * @arg {boolean} isLoggedIn - Pass `false` to mimic a logged out user.
+ * @returns {AuthUserContext} - A mocked AuthUser instance, with 'serialize' added.
+ */
+const getMockAuthUser = (isLoggedIn = true) => ({
+  id: isLoggedIn ? 'abcd1234' : null,
+  email: isLoggedIn ? 'banana@banana.com' : null,
+  emailVerified: isLoggedIn,
+  getIdToken: jest.fn(async () => (isLoggedIn ? 'i_am_a_token' : null)),
+  clientInitialized: isLoggedIn,
+  firebaseUser: isLoggedIn ? mockFirebaseUser : null,
+  signOut: jest.fn(),
+  serialize: jest.fn(() => 'serialized_auth_user'),
+});
+
+export default getMockAuthUser;
+```
+
+Once the mocks are included, then each test suite will need to import the functions that the component calls. Additionally, the component that is being tested needs to be `require`d inside a `beforeEach` function or inside each test case -- this is because the mocking of all the auth methods for `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (eg. `export default withAuthUser()(MyComponent)`). Here is a full-fledged example of a working test suite.
+
+Given the following component:
+
+```javascript
+import React from 'react';
+import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+
+function UserDisplayName() {
+  const AuthUser = useAuthUser();
+  const { displayName = 'anonymous' } = AuthUser.firebaseUser;
+  return (
+    <span>{displayName}</span>
+  );
+}
+
+export default withAuthUser()(UserDisplayName);
+```
+
+you can write a test suite like this:
+
+```javascript
+import { render, screen } from '@testing-library/react';
+
+// Import the functions that the component module calls, which allows jest to mock them
+// in the context of this test run. This allows you to manipulate the return value of each
+// function within this test suite.
+import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+
+// Import your mock AuthUser generator
+import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user';
+
+// Tell jest to mock the whole library, which will basically replace it with the default export
+// from `__mocks__/next-firebase-auth/`.
+jest.mock('next-firebase-auth');
+
+describe('UserDisplayName', () => {
+
+  // Create a placeholder for your component that you want to test
+  let UserDisplayName;
+
+  beforeEach(() => {
+    // Mock the functions that your component uses, and import your component before each test.
+    useAuthUser.mockReturnValue(getMockAuthUser());
+    withAuthUser.mockImplementation(() => (wrappedComponent) => wrappedComponent));
+    UserDisplayName = require('./').default;
+  });
+
+  afterAll(() => {
+    // Reset the mocks so that they don't bleed into the next test suite.
+    jest.resetAllMocks();
+  });
+
+  it('renders the logged in user\'s display name', () => {
+    // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
+    // user. Rendering your component directly with the setup above will result in a "logged in" user being
+    // passed to your component.
+    render(<UserDisplayName />);
+    expect(screen.queryByTest(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument();
+  });
+
+  it('renders "anonymous" when user is not logged in', () => {
+    // If you want to test a "logged out" state, then you can mock the function again inside any test,
+    // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
+    useAuthUser.mockReturnValue(getMockAuthUser(false));
+    render(<Header />);
+    expect(screen.getByText('anonymous')).toBeInTheDocument();
+  });
+});
+```
+
+#### Mocks and Typescript
+
+When using typescript for your test files, you will have to cast the mocked functions to get access to the `mockImplementation` and `mockReturnValue` methods. If we were to rewrite the above example in TS, it might look something like this:
+
+```typescript
+import type { ComponentType } from 'react';
+import { render, screen } from '@testing-library/react';
+
+// Import the functions that the component module calls, which allows jest to mock them
+// in the context of this test run. This allows you to manipulate the return value of each
+// function within this test suite.
+import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+
+// Import your mock AuthUser generator
+import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user';
+
+// Tell jest to mock the whole library, which will basically replace it with the default export
+// from `__mocks__/next-firebase-auth/`.
+jest.mock('next-firebase-auth');
+
+describe('UserDisplayName', () => {
+
+  // Create a placeholder for your component that you want to test
+  let UserDisplayName: ComponentType;
+
+  beforeEach(() => {
+    // Mock the functions that your component uses, and import your component before each test.
+    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser());
+    (withAuthUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType));
+    UserDisplayName = require('./').default as ComponentType;
+  });
+
+  afterAll(() => {
+    // Reset the mocks so that they don't bleed into the next test suite.
+    jest.resetAllMocks();
+  });
+
+  it('renders the logged in user\'s display name', () => {
+    // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
+    // user. Rendering your component directly with the setup above will result in a "logged in" user being
+    // passed to your component.
+    render(<UserDisplayName />);
+    expect(screen.getByText(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument();
+  });
+
+  it('renders "anonymous" when user is not logged in', () => {
+    // If you want to test a "logged out" state, then you can mock the function again inside any test,
+    // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
+    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser(false));
+    render(<Header />);
+    expect(screen.getByText('anonymous')).toBeInTheDocument();
+  });
+});
+```
 
 ## Developing / Contributing
 
