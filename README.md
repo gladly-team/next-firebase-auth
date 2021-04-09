@@ -687,6 +687,8 @@ If auth is working on the client side but not on the server-side, the auth cooki
 
 To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
 
+In addition, please double-check your server logs for any errors to ensure the Firebase admin app is initializing properly.
+
 ## Limitations & Feedback
 
 We expect some apps will need some features that are not currently available:
