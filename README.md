@@ -496,57 +496,54 @@ We expect some apps will need some features that are not currently available:
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
 
-## Test examples
+## Examples
 
-### Jest
+### Testing and Mocking with Jest
 
-In order to test components wrapped with functions from `next-firebase-auth`, you will need to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks).
+In order to test components wrapped with functions from `next-firebase-auth`, you will likely want to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks#mocking-node-modules).
 
-To start you need to stub out the entire module in a `__mocks__` folder next to `node_modules` in your application, eg.
+It can be helpful to define default mock behavior of `next-firebase-auth` across your tests. To do so, stub out the module in a top-level `__mocks__` folder (alongside the `node_modules` in your application):
 
 ```
 ├── __mocks__
 │   └── next-firebase-auth
-│       ├── index.js
-│       ├── useAuthUser.js
-│       ├── verifyIdToken.js
-│       ├── withAuthUser.js
-│       ├── withAuthUserSSR.js
-│       └── withAuthUserTokenSSR.js
+│       └── index.js
 ├── node_modules
 │   └── ... all your deps
 ├── src
 │   └── ... all your source code
 ```
 
-The most important part of this mock is `index.js`, which will export an object with all the keys of the `next-firebase-auth` library, most of which can be calls to `jest.fn()`. Eg.
+In `index.js`, export a mock of `next-firebase-auth`:
 
 ```javascript
-import { AuthAction } from 'next-firebase-auth'
+const { AuthAction } = require('next-firebase-auth')
+const NFAMock = jest.createMockFromModule('next-firebase-auth')
 
 module.exports = {
+  ...NFAMock,
+  // Customize any mocks as needed.
   init: jest.fn(),
-  withAuthUser: jest.fn(),
-  useAuthUser: jest.fn(),
-  withAuthUserSSR: jest.fn(),
-  withAuthUserTokenSSR: jest.fn(),
-  setAuthCookies: jest.fn(),
-  unsetAuthCookies: jest.fn(),
-  verifyIdToken: jest.fn(),
+  // For example, in tests, this will automatically render the child component of
+  // `withAuthUser`.
+  withAuthUser: jest.fn(() => (wrappedComponent) => wrappedComponent),
+  useAuthUser: jest.fn(() => ({
+    // ... you could return a default AuthUser here
+  }),
   AuthAction,
 }
 ```
 
 See our implementation of this in our [tab-web repository](https://github.com/gladly-team/tab-web/tree/master/__mocks__/next-firebase-auth) for a more robust example.
 
-You will also likely want to have a utility to mock the `AuthUser` object that is passed around via the hooks and HOFs of `next-firebase-auth`. Given that this is not a direct mock of the library itself, it might make sense to put inside a `utils` folder or anywhere else that makes sense for your team.
+You will also likely want to have a utility to mock the `AuthUser` object that is passed around via the hooks and higher-order functions in `next-firebase-auth`. You might put this in a `utils` folder in your app.
 
 ```javascript
 // Create a mock FirebaseUser instance with the fields that you use.
 const mockFirebaseUser = {
-	displayName: 'Banana Manana',
+  displayName: 'Banana Manana',
   // ... other fields from firebaseUser that you may use
-};
+}
 
 /**
  * Build and return a dummy AuthUser instance to use in tests.
@@ -563,135 +560,137 @@ const getMockAuthUser = (isLoggedIn = true) => ({
   firebaseUser: isLoggedIn ? mockFirebaseUser : null,
   signOut: jest.fn(),
   serialize: jest.fn(() => 'serialized_auth_user'),
-});
+})
 
-export default getMockAuthUser;
+export default getMockAuthUser
 ```
 
-Once the mocks are included, then each test suite will need to import the functions that the component calls. Additionally, the component that is being tested needs to be `require`d inside a `beforeEach` function or inside each test case -- this is because the mocking of all the auth methods for `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (eg. `export default withAuthUser()(MyComponent)`). Here is a full-fledged example of a working test suite.
+Now, you can use and customize the mock behavior in your tests.
+
+If you're modifying higher-order functions, component being tested needs to be `require`d inside a `beforeEach` function or inside each test case. This is because mocking `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (e.g., `export default withAuthUser()(MyComponent)`).
 
 Given the following component:
 
 ```javascript
-import React from 'react';
-import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+import React from 'react'
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 
 function UserDisplayName() {
-  const AuthUser = useAuthUser();
-  const { displayName = 'anonymous' } = AuthUser.firebaseUser;
+  const AuthUser = useAuthUser()
+  const { displayName = 'anonymous' } = AuthUser.firebaseUser
   return (
     <span>{displayName}</span>
-  );
+  )
 }
 
-export default withAuthUser()(UserDisplayName);
+export default withAuthUser()(UserDisplayName)
 ```
 
 you can write a test suite like this:
 
 ```javascript
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react'
 
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
-import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user';
+import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
 
-// Tell jest to mock the whole library, which will basically replace it with the default export
-// from `__mocks__/next-firebase-auth/`.
-jest.mock('next-firebase-auth');
+// Mock all of `next-firebase-auth`. This is *not* necessary if you set up manual mocks,
+// because Jest will automatically mock the module in every test.
+jest.mock('next-firebase-auth')
 
-describe('UserDisplayName', () => {
+describe('UserDisplayName', () => { 
 
   // Create a placeholder for your component that you want to test
-  let UserDisplayName;
+  let UserDisplayName
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    useAuthUser.mockReturnValue(getMockAuthUser());
-    withAuthUser.mockImplementation(() => (wrappedComponent) => wrappedComponent));
-    UserDisplayName = require('./').default;
-  });
+    useAuthUser.mockReturnValue(getMockAuthUser())
+    withAuthUser.mockImplementation(() => (wrappedComponent) => wrappedComponent))
+    UserDisplayName = require('./').default
+  })
 
   afterAll(() => {
     // Reset the mocks so that they don't bleed into the next test suite.
-    jest.resetAllMocks();
-  });
+    jest.resetAllMocks()
+  })
 
   it('renders the logged in user\'s display name', () => {
     // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
-    render(<UserDisplayName />);
-    expect(screen.queryByTest(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument();
-  });
+    render(<UserDisplayName />)
+    expect(screen.queryByTest(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument()
+  })
 
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
     // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    useAuthUser.mockReturnValue(getMockAuthUser(false));
-    render(<Header />);
-    expect(screen.getByText('anonymous')).toBeInTheDocument();
-  });
-});
+    useAuthUser.mockReturnValue(getMockAuthUser(false))
+    render(<Header />)
+    expect(screen.getByText('anonymous')).toBeInTheDocument()
+  })
+})
 ```
 
 #### Mocks and Typescript
 
-When using typescript for your test files, you will have to cast the mocked functions to get access to the `mockImplementation` and `mockReturnValue` methods. If we were to rewrite the above example in TS, it might look something like this:
+When using TypeScript for your test files, you will have to cast the mocked functions to get access to the `mockImplementation` and `mockReturnValue` methods. If we were to rewrite the above example in TS, it might look something like this:
 
 ```typescript
-import type { ComponentType } from 'react';
-import { render, screen } from '@testing-library/react';
+import type { ComponentType } from 'react'
+import { render, screen } from '@testing-library/react'
 
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withAuthUser } from 'next-firebase-auth';
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
-import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user';
+import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
 
-// Tell jest to mock the whole library, which will basically replace it with the default export
-// from `__mocks__/next-firebase-auth/`.
-jest.mock('next-firebase-auth');
+// Mock all of `next-firebase-auth`. This is *not* necessary if you set up manual mocks,
+// because Jest will automatically mock the module 
+jest.mock('next-firebase-auth')
 
 describe('UserDisplayName', () => {
 
   // Create a placeholder for your component that you want to test
-  let UserDisplayName: ComponentType;
+  let UserDisplayName: ComponentType
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser());
-    (withAuthUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType));
-    UserDisplayName = require('./').default as ComponentType;
-  });
+    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser())
+    (withAuthUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType))
+    UserDisplayName = require('./').default as ComponentType
+  })
 
   afterAll(() => {
     // Reset the mocks so that they don't bleed into the next test suite.
-    jest.resetAllMocks();
-  });
+    jest.resetAllMocks()
+  })
 
   it('renders the logged in user\'s display name', () => {
     // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
-    render(<UserDisplayName />);
-    expect(screen.getByText(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument();
-  });
+    render(<UserDisplayName />)
+    expect(screen.getByText(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument()
+  })
 
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
     // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser(false));
-    render(<Header />);
-    expect(screen.getByText('anonymous')).toBeInTheDocument();
-  });
-});
+    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser(false))
+    render(<Header />)
+    expect(screen.getByText('anonymous')).toBeInTheDocument()
+  })
+})
 ```
 
 ## Developing / Contributing
