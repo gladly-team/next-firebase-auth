@@ -466,6 +466,8 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
+_Have a suggestion on how this can be more intuitive? Please contribute it here: [#135](https://github.com/gladly-team/next-firebase-auth/issues/135)_
+
 ### Testing and Mocking with Jest
 
 In order to test components wrapped with functions from `next-firebase-auth`, you will likely want to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks#mocking-node-modules).
