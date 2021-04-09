@@ -462,6 +462,10 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ## Examples
 
+### Using the Firebase App
+
+You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
+
 ### Testing and Mocking with Jest
 
 In order to test components wrapped with functions from `next-firebase-auth`, you will likely want to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks#mocking-node-modules).
@@ -680,10 +684,6 @@ If that doesn't help, try inspecting the custom token to manually validate the v
 If auth is working on the client side but not on the server-side, the auth cookies are most likely not set.
 
 To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
-
-#### I can't access the Firebase app.
-
-You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
 ## Limitations & Feedback
 
