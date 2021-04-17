@@ -7,6 +7,8 @@ import unsetAuthCookies from 'src/unsetAuthCookies'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 import { verifyIdToken } from 'src/firebaseAdmin'
 
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
+
 const initServer = (config) => {
   const clientInit = index.init(config)
   // We only initialize the Firebase admin SDK as it's needed. See:
@@ -20,6 +22,8 @@ const withAuthUserTokenSSR = (options) =>
 const withAuthUserSSR = (options) =>
   withAuthUserTokenSSRModule(options, { useToken: false })
 
+const getFirebaseAdmin = () => initFirebaseAdminSDK()
+
 export default {
   ...index,
   init: initServer,
@@ -28,4 +32,5 @@ export default {
   setAuthCookies,
   unsetAuthCookies,
   verifyIdToken,
+  getFirebaseAdmin,
 }
