@@ -196,6 +196,7 @@ export default withAuthUser()(Demo)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
 * [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
+* [getFirebaseAdmin](#getFirebaseAdmin)
 
 -----
 #### `init(config)`
@@ -343,6 +344,43 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 #### `AuthAction`
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
+
+#### `getFirebaseAdmin() => app.App`
+
+A function that returns the configured Firebase Admin application.
+
+This can only be called from the server side; will throw an error is called from client side.
+
+For example:
+````jsx
+...
+import { getFirebaseAdmin } from 'next-firebase-auth'
+...
+
+const Artist = ({artists}) => {
+  return (
+    <ul>
+      {artists.map((artist) => <li>{artist.name}</li>)} 
+    </ul>
+  )
+}
+export async function getServerSideProps({ params: { id } }) {
+     const db = getFirebaseAdmin().firestore()
+     const doc = await db.collection('artists').get()
+
+     return {
+       props: {
+         artists: artists.docs.map((a) => {
+           return { ...a.data(), key: a.id }
+         }),
+       }
+     }
+}
+
+export default withAuthUser({
+     whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+})(Artist)
+````
 
 ## Config
 
