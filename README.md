@@ -345,7 +345,9 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
 
-#### `getFirebaseAdmin() => app.App` - _Added in v0.13.1-alpha.0_
+#### `getFirebaseAdmin() => app.App`
+
+_Added in v0.13.1-alpha.0_
 
 A function that returns the configured Firebase Admin application.
 
