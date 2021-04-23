@@ -349,15 +349,14 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 _Added in v0.13.1-alpha.0_
 
-A function that returns the configured Firebase Admin application.
+A convenience function that returns the configured Firebase Admin application.
 
 This can only be called from the server side. It will throw an error if called from the client side.
 
 For example:
 ````jsx
-...
 import { getFirebaseAdmin } from 'next-firebase-auth'
-...
+// ...other imports
 
 const Artist = ({artists}) => {
   return (
@@ -383,6 +382,8 @@ export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Artist)
 ````
+
+_Have a suggestion on how this can be more intuitive? Please contribute it here: [#135](https://github.com/gladly-team/next-firebase-auth/issues/135)_
 
 ## Config
 
@@ -504,7 +505,11 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ### Using the Firebase App
 
-You may want to access the Firebase JS SDK or admin app. To do so, you can initialize the Firebase apps yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
+You may want to access the Firebase JS SDK or admin apps. 
+
+To access the admin app, you can use [`getFirebaseAdmin`](#getfirebaseadmin--appapp), added in v0.13.1-alpha.0.
+
+To access the Firebase JS SDK, you can initialize the Firebase JS SDK yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
 _Have a suggestion on how this can be more intuitive? Please contribute it here: [#135](https://github.com/gladly-team/next-firebase-auth/issues/135)_
 
