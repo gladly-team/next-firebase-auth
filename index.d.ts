@@ -8,6 +8,8 @@ import type {
 } from 'next'
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
+import firebase from "firebase";
+import app = firebase.app;
 
 export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
   GetServerSidePropsContext<Q>
@@ -72,6 +74,8 @@ interface InitConfig {
 }
 
 export const init: (config: InitConfig) => void
+
+export const getFirebaseAdmin: () => app.App
 
 export const setAuthCookies: (req: NextApiRequest, res: NextApiResponse) => Promise<{
   idToken: string;
