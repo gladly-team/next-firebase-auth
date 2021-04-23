@@ -370,11 +370,11 @@ export async function getServerSideProps({ params: { id } }) {
   const db = getFirebaseAdmin().firestore()
   const doc = await db.collection('artists').get()
   return {
-   props: {
+    props: {
      artists: artists.docs.map((a) => {
        return { ...a.data(), key: a.id }
      }),
-   }
+    }
   }
 }
 
