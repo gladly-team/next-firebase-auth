@@ -371,9 +371,9 @@ export async function getServerSideProps({ params: { id } }) {
   const doc = await db.collection('artists').get()
   return {
     props: {
-     artists: artists.docs.map((a) => {
+      artists: artists.docs.map((a) => {
        return { ...a.data(), key: a.id }
-     }),
+      }),
     }
   }
 }
