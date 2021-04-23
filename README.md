@@ -345,11 +345,11 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
 
-#### `getFirebaseAdmin() => app.App`
+#### `getFirebaseAdmin() => app.App` - _Added in v0.13.1-alpha.0_
 
 A function that returns the configured Firebase Admin application.
 
-This can only be called from the server side; will throw an error is called from client side.
+This can only be called from the server side. It will throw an error if called from the client side.
 
 For example:
 ````jsx
@@ -364,21 +364,21 @@ const Artist = ({artists}) => {
     </ul>
   )
 }
-export async function getServerSideProps({ params: { id } }) {
-     const db = getFirebaseAdmin().firestore()
-     const doc = await db.collection('artists').get()
 
-     return {
-       props: {
-         artists: artists.docs.map((a) => {
-           return { ...a.data(), key: a.id }
-         }),
-       }
-     }
+export async function getServerSideProps({ params: { id } }) {
+  const db = getFirebaseAdmin().firestore()
+  const doc = await db.collection('artists').get()
+  return {
+   props: {
+     artists: artists.docs.map((a) => {
+       return { ...a.data(), key: a.id }
+     }),
+   }
+  }
 }
 
 export default withAuthUser({
-     whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Artist)
 ````
 
