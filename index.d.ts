@@ -64,19 +64,18 @@ interface InitConfig {
   firebaseAuthEmulatorHost?: string;
   firebaseClientInitConfig: {
     apiKey: string,
-    projectId: string,
-    appId: string,
+    projectId?: string,
+    appId?: string,
     // "PROJECT_ID.firebaseapp.com"
     authDomain: string,
     // "https://PROJECT_ID.firebaseio.com"
-    databaseURL: string,
+    databaseURL?: string,
     // "PROJECT_ID.appspot.com"
-    storageBucket: string,
+    storageBucket?: string,
     // "SENDER_ID"
-    messagingSenderId: string,
+    messagingSenderId?: string,
     // "G-MEASUREMENT_ID"
-    measurementId: string,
-
+    measurementId?: string,
   };
   cookies: Cookies.Option & Cookies.SetOption & {
     name: string;
