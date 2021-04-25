@@ -6,6 +6,7 @@ import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import { setDebugEnabled } from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
 import AuthAction from 'src/AuthAction'
+import firebase from 'firebase/app'
 
 const init = (config = {}) => {
   setDebugEnabled(config.debug === true)
@@ -46,6 +47,14 @@ const getFirebaseAdmin = () => {
   throw new Error('"getFirebaseAdmin" can only be called server-side.')
 }
 
+const getFirebaseClient = () => {
+  if (firebase.apps.length === 0) {
+    throw new Error('"getFirebaseClient": Please initialise before calling')
+  }
+
+  return firebase
+}
+
 export default {
   init,
   withAuthUser,
@@ -57,4 +66,5 @@ export default {
   verifyIdToken,
   AuthAction,
   getFirebaseAdmin,
+  getFirebaseClient,
 }
