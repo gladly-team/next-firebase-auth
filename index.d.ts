@@ -67,7 +67,7 @@ interface InitConfig {
     projectId?: string,
     appId?: string,
     // "PROJECT_ID.firebaseapp.com"
-    authDomain: string,
+    authDomain?: string,
     // "https://PROJECT_ID.firebaseio.com"
     databaseURL?: string,
     // "PROJECT_ID.appspot.com"
