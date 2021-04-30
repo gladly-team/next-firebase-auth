@@ -386,7 +386,7 @@ const Artists = ({ artists: ssrArtists }) => {
 }
 
 export async function getServerSideProps() {
-  // Do Server Side Wrok to get `artists` collection
+  // Do server-side work to get `artists` collection
 }
 ````
 
