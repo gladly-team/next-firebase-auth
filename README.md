@@ -196,8 +196,8 @@ export default withAuthUser()(Demo)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
 * [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
-* [getFirebaseClient](#getfirebaseclient--appapp)
-* [getFirebaseAdmin](#getfirebaseadmin--appapp)
+* [getFirebaseClient](#getfirebaseclient--firebaseapp)
+* [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
 
 -----
 #### `init(config)`
