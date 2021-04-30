@@ -1,5 +1,6 @@
 import * as Cookies from 'cookies'
 import type Firebase from 'firebase'
+import type FirebaseAdmin from 'firebase-admin'
 import type {
   GetServerSidePropsContext,
   GetServerSidePropsResult,
@@ -8,10 +9,6 @@ import type {
 } from 'next'
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
-import firebase from 'firebase'
-
-import { app as firebaseAdminApp } from 'firebase-admin'
-import firebaseClientApp = firebase.app
 
 export enum AuthAction {
   RENDER = 'render',
@@ -91,7 +88,7 @@ interface InitConfig {
 
 export const init: (config: InitConfig) => void
 
-export const getFirebaseAdmin: () => firebaseAdminApp.App
+export const getFirebaseAdmin: () => FirebaseAdmin.App
 
 /**
  * Get the Firebase Client API. Use this when developing on the Client (Browser).
@@ -110,7 +107,7 @@ export const getFirebaseAdmin: () => firebaseAdminApp.App
  * ```
  *
  */
-export const getFirebaseClient: () => firebaseClientApp.App
+export const getFirebaseClient: () => Firebase.App
 
 export const setAuthCookies: (
   req: NextApiRequest,
