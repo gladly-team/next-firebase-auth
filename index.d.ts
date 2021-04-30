@@ -9,7 +9,9 @@ import type {
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
 import firebase from "firebase";
-import app = firebase.app;
+import firebaseClientApp = firebase.app;
+
+import {app as firebaseAdminApp} from "firebase-admin";
 
 export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
   GetServerSidePropsContext<Q>
@@ -84,7 +86,7 @@ interface InitConfig {
 
 export const init: (config: InitConfig) => void
 
-export const getFirebaseAdmin: () => app.App
+export const getFirebaseAdmin: () => firebaseAdminApp.App
 
 /**
  * Get the Firebase Client API. Use this when developing on the Client (Browser).
@@ -103,7 +105,7 @@ export const getFirebaseAdmin: () => app.App
  * ```
  *
  */
-export const getFirebaseClient: () => app.App
+export const getFirebaseClient: () => firebaseClientApp.App
 
 export const setAuthCookies: (req: NextApiRequest, res: NextApiResponse) => Promise<{
   idToken: string;
