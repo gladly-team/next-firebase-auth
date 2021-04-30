@@ -346,7 +346,7 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
 
-#### `getFirebaseClient() => app.App`
+#### `getFirebaseClient() => Firebase.App`
 
 _Added in v0.13.1-alpha.1_
 
@@ -391,7 +391,7 @@ export async function getServerSideProps() {
 }
 ````
 
-#### `getFirebaseAdmin() => app.App`
+#### `getFirebaseAdmin() => FirebaseAdmin`
 
 _Added in v0.13.1-alpha.0_
 
