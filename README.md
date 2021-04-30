@@ -429,8 +429,6 @@ export default withAuthUser({
 })(Artist)
 ````
 
-_Have a suggestion on how this can be more intuitive? Please contribute it here: [#135](https://github.com/gladly-team/next-firebase-auth/issues/135)_
-
 ## Config
 
 See an [example config here](#example-config). Provide the config when you call `init`.
@@ -551,13 +549,9 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ### Using the Firebase App
 
-You may want to access the Firebase JS SDK or admin apps. 
+You may want to access the Firebase JS SDK or admin apps. To do so, you can use [`getFirebaseClient`](#getfirebaseclient--appapp) and [`getFirebaseAdmin`](#getfirebaseadmin--appapp).
 
-To access the admin app, you can use [`getFirebaseAdmin`](#getfirebaseadmin--appapp), added in v0.13.1-alpha.0.
-
-To access the Firebase JS SDK, you can initialize the Firebase JS SDK yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
-
-_Have a suggestion on how this can be more intuitive? Please contribute it here: [#135](https://github.com/gladly-team/next-firebase-auth/issues/135)_
+If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
 
 ### Testing and Mocking with Jest
 
