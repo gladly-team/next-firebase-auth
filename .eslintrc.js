@@ -35,6 +35,13 @@ module.exports = {
         'react/jsx-props-no-spreading': 0,
       },
     },
+    // Handle TypeScript separately.
+    {
+      files: ['**/*.ts'],
+      extends: ['plugin:@typescript-eslint/recommended'],
+      plugins: ['@typescript-eslint'],
+      parser: '@typescript-eslint/parser',
+    },
   ],
   parserOptions: {
     ecmaVersion: 2018,
