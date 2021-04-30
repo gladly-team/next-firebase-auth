@@ -35,6 +35,18 @@ module.exports = {
         'react/jsx-props-no-spreading': 0,
       },
     },
+    // Handle TypeScript separately.
+    {
+      files: ['**/*.ts'],
+      extends: ['plugin:@typescript-eslint/recommended'],
+      plugins: ['@typescript-eslint'],
+      parser: '@typescript-eslint/parser',
+      rules: {
+        // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
+        'no-shadow': 0,
+        '@typescript-eslint/no-shadow': 'error',
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: 2018,
