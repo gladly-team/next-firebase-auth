@@ -88,7 +88,7 @@ interface InitConfig {
 
 export const init: (config: InitConfig) => void
 
-export const getFirebaseAdmin: () => FirebaseAdmin.App
+export const getFirebaseAdmin: () => FirebaseAdmin
 
 /**
  * Get the Firebase Client API. Use this when developing on the Client (Browser).
