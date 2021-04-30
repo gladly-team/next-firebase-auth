@@ -348,13 +348,14 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 #### `getFirebaseClient() => app.App`
 
+_Added in v0.13.1-alpha.1_
+
 A convenience function that returns the configured Firebase Client application.
 
 This can only be called from the client side.
 
->**Note**: It is important that the developer import each Firebase Modules that they require to use. For instance if a developer
-needs to use the Firebase Storage module then they are required to `import "firebase/storage"` to their project.
-> See [https://firebase.google.com/docs/web/setup#expandable-9](https://firebase.google.com/docs/web/setup#expandable-9) here for details.
+>**Note**: It is important that to import the Firebase modules that you'll use. For instance, if using Firebase storage, add `import "firebase/storage"` to their project.
+> See [Firebase setup docs](https://firebase.google.com/docs/web/setup#expandable-9) for details.
 
 For example:
 ````jsx
