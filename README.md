@@ -196,6 +196,7 @@ export default withAuthUser()(Demo)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
 * [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
+* [getFirebaseClient](#getfirebaseclient--appapp)
 * [getFirebaseAdmin](#getfirebaseadmin--appapp)
 
 -----
@@ -344,6 +345,50 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 #### `AuthAction`
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
+
+#### `getFirebaseClient() => app.App`
+
+A convenience function that returns the configured Firebase Client application.
+
+This can only be called from the client side.
+
+>**Note**: It is important that the developer import each Firebase Modules that they require to use. For instance if a developer
+needs to use the Firebase Storage module then they are required to `import "firebase/storage"` to their project.
+> See [https://firebase.google.com/docs/web/setup#expandable-9](https://firebase.google.com/docs/web/setup#expandable-9) here for details.
+
+For example:
+````jsx
+import { getFirebaseClient } from 'next-firebase-auth'
+import 'firebase/firestore';  // This is very important
+import { useEffect } from "react";
+
+const Artists = ({ artists: ssrArtists }) => {
+  const [artists, setArtists] = useState(artists);
+  
+  useEffect(() => {
+    return getFirebaseClient().firestore()
+      .collection('artists')
+      .onSnapshot( (snap) => {
+        if (!snap) {
+          return
+        }
+        setArtists(snap.docs.map(doc => ({...doc.data(), key: doc.id})))
+        
+      })
+  }, []);
+  
+  return (
+    <div>
+      {artists.map((artist) => <div>{artist.name}</div>)}
+    </div>
+  )
+  
+}
+
+export async function getServerSideProps() {
+  // Do server-side work to get `artists` collection
+}
+````
 
 #### `getFirebaseAdmin() => app.App`
 

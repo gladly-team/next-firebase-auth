@@ -9,7 +9,9 @@ import type {
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
 import firebase from "firebase";
-import app = firebase.app;
+import firebaseClientApp = firebase.app;
+
+import {app as firebaseAdminApp} from "firebase-admin";
 
 export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
   GetServerSidePropsContext<Q>
@@ -63,10 +65,19 @@ interface InitConfig {
   };
   firebaseAuthEmulatorHost?: string;
   firebaseClientInitConfig: {
-    apiKey: string;
-    authDomain?: string;
-    databaseURL?: string;
-    projectId?: string;
+    apiKey: string,
+    projectId?: string,
+    appId?: string,
+    // "PROJECT_ID.firebaseapp.com"
+    authDomain?: string,
+    // "https://PROJECT_ID.firebaseio.com"
+    databaseURL?: string,
+    // "PROJECT_ID.appspot.com"
+    storageBucket?: string,
+    // "SENDER_ID"
+    messagingSenderId?: string,
+    // "G-MEASUREMENT_ID"
+    measurementId?: string,
   };
   cookies: Cookies.Option & Cookies.SetOption & {
     name: string;
@@ -75,7 +86,26 @@ interface InitConfig {
 
 export const init: (config: InitConfig) => void
 
-export const getFirebaseAdmin: () => app.App
+export const getFirebaseAdmin: () => firebaseAdminApp.App
+
+/**
+ * Get the Firebase Client API. Use this when developing on the Client (Browser).
+ * Before usage ensure that each of the Firebase Modules required are imported into
+ * the project (See https://firebase.google.com/docs/web/setup#available-libraries); for example add:
+ *
+ * @example
+ * ```
+ * // Add the Firebase products that you want to use (note that this module imports `firebase/auth` already.
+ * import "firebase/firestore";
+ * import "firebase/functions";
+ * import "firebase/messaging";
+ * import "firebase/analytics";
+ * import "firebase/storage";
+ * import "firebase/database";
+ * ```
+ *
+ */
+export const getFirebaseClient: () => firebaseClientApp.App
 
 export const setAuthCookies: (req: NextApiRequest, res: NextApiResponse) => Promise<{
   idToken: string;
