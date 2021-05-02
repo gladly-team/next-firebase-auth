@@ -525,6 +525,18 @@ The Firebase user's email address, or null if the user has no email address.
 
 Whether the user's email address is verified.
 
+**phoneNumber** - `String|null`
+
+The Firebase user's phone number, or null if the user has no phone number.
+
+**displayName** - `String|null`
+
+The Firebase user's display name, or null if the user has no display name.
+
+**photoURL** - `String|null`
+
+The Firebase user's photo URL, or null if the user has no photo URL.
+
 **claims** - `Object` - _Added in v0.13.0-alpha.2_
 
 Any [custom Firebase claims](https://firebase.google.com/docs/auth/admin/custom-claims#set_and_validate_custom_user_claims_via_the_admin_sdk).

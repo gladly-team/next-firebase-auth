@@ -99,6 +99,9 @@ const createAuthUser = ({
   let userId = null
   let email = null
   let emailVerified = false
+  let phoneNumber = null
+  let displayName = null
+  let photoURL = null
   let getIdTokenFunc = async () => null
 
   // When not on the client side, the "signOut" method is a noop.
@@ -120,6 +123,9 @@ const createAuthUser = ({
     userId = firebaseUserClientSDK.uid
     email = firebaseUserClientSDK.email
     emailVerified = firebaseUserClientSDK.emailVerified
+    phoneNumber = firebaseUserClientSDK.phoneNumber
+    displayName = firebaseUserClientSDK.displayName
+    photoURL = firebaseUserClientSDK.photoURL
     getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
     signOut = async () => firebase.auth().signOut()
     tokenString = null
@@ -135,6 +141,9 @@ const createAuthUser = ({
     userId = firebaseUserAdminSDK.uid
     email = firebaseUserAdminSDK.email
     emailVerified = firebaseUserAdminSDK.email_verified
+    phoneNumber = firebaseUserAdminSDK.phone_number
+    displayName = firebaseUserAdminSDK.name
+    photoURL = firebaseUserAdminSDK.picture
     getIdTokenFunc = async () => token
     tokenString = token
   } else if (serializedAuthUser) {
@@ -143,6 +152,9 @@ const createAuthUser = ({
     userId = deserializedUser.id
     email = deserializedUser.email
     emailVerified = deserializedUser.emailVerified
+    phoneNumber = deserializedUser.phoneNumber
+    displayName = deserializedUser.displayName
+    photoURL = deserializedUser.photoURL
     getIdTokenFunc = async () => deserializedUser._token || null
     tokenString = deserializedUser._token
   }
@@ -150,6 +162,9 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
+    phoneNumber,
+    displayName,
+    photoURL,
     claims: customClaims,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
@@ -174,6 +189,9 @@ const createAuthUser = ({
         claims: customClaims,
         email,
         emailVerified,
+        phoneNumber,
+        displayName,
+        photoURL,
         clientInitialized,
         ...(includeToken && { _token: tokenString }),
       }),

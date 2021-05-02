@@ -11,6 +11,9 @@ export const STANDARD_CLAIMS = [
   'firebase',
   'iat',
   'iss',
+  'name',
+  'phone_number',
+  'picture',
   'sub',
   'uid',
   'user_id', // not listed in the decodedIDtoken reference but it appears in tokens
