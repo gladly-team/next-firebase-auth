@@ -84,7 +84,7 @@ interface InitConfig {
     Cookies.SetOption & {
       name: string
     }
-  debug: boolean
+  debug?: boolean
 }
 
 export const init: (config: InitConfig) => void
