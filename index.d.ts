@@ -104,25 +104,6 @@ interface FirebaseAdminType extends firebaseAdmin.app.App {
 
 export const getFirebaseAdmin: () => FirebaseAdminType
 
-/**
- * Get the Firebase Client API. Use this when developing on the Client (Browser).
- * Before usage ensure that each of the Firebase Modules required are imported into
- * the project (See https://firebase.google.com/docs/web/setup#available-libraries); for example add:
- *
- * @example
- * ```
- * // Add the Firebase products that you want to use (note that this module imports `firebase/auth` already.
- * import "firebase/firestore";
- * import "firebase/functions";
- * import "firebase/messaging";
- * import "firebase/analytics";
- * import "firebase/storage";
- * import "firebase/database";
- * ```
- *
- */
-export const getFirebaseClient: () => Firebase.App
-
 export const setAuthCookies: (
   req: NextApiRequest,
   res: NextApiResponse
