@@ -196,7 +196,6 @@ export default withAuthUser()(Demo)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
 * [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
-* [getFirebaseClient](#getfirebaseclient--firebaseapp)
 * [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
 
 -----
@@ -346,56 +345,11 @@ Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
 
-#### `getFirebaseClient() => Firebase.App`
-
-_Added in v0.13.1-alpha.1_
-
-A convenience function that returns the configured Firebase Client application.
-
-This can only be called from the client side.
-
->**Note**: It is important that to import the Firebase modules that you'll use. For instance, if using Firebase storage, add `import "firebase/storage"` to their project.
-> See [Firebase setup docs](https://firebase.google.com/docs/web/setup#expandable-9) for details.
-
-For example:
-````jsx
-import { getFirebaseClient } from 'next-firebase-auth'
-import 'firebase/firestore';  // This is very important
-import { useEffect } from "react";
-
-const Artists = ({ artists: ssrArtists }) => {
-  const [artists, setArtists] = useState(artists);
-  
-  useEffect(() => {
-    return getFirebaseClient().firestore()
-      .collection('artists')
-      .onSnapshot( (snap) => {
-        if (!snap) {
-          return
-        }
-        setArtists(snap.docs.map(doc => ({...doc.data(), key: doc.id})))
-        
-      })
-  }, []);
-  
-  return (
-    <div>
-      {artists.map((artist) => <div>{artist.name}</div>)}
-    </div>
-  )
-  
-}
-
-export async function getServerSideProps() {
-  // Do server-side work to get `artists` collection
-}
-````
-
 #### `getFirebaseAdmin() => FirebaseAdmin`
 
 _Added in v0.13.1-alpha.0_
 
-A convenience function that returns the configured Firebase Admin application.
+A convenience function that returns the configured Firebase admin module.
 
 This can only be called from the server side. It will throw an error if called from the client side.
 
@@ -547,11 +501,42 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ## Examples
 
-### Using the Firebase App
+### Using the Firebase Apps
 
-You may want to access the Firebase JS SDK or admin apps. To do so, you can use [`getFirebaseClient`](#getfirebaseclient--appapp) and [`getFirebaseAdmin`](#getfirebaseadmin--appapp).
+You may want to access the Firebase admin module or Firebase JS SDK.
 
-If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.
+To use the Firebase admin module, you can use [`getFirebaseAdmin`](#getfirebaseadmin--firebaseadmin). (If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.)
+
+To use the Firebase JS SDK, simply import Firebase as you normally would. For example:
+
+```jsx
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+import { useEffect } from "react"
+
+const Artists = () => {
+  const [artists, setArtists] = useState(artists)
+  
+  useEffect(() => {
+    return firebase.firestore()
+      .collection('artists')
+      .onSnapshot( (snap) => {
+        if (!snap) {
+          return
+        }
+        setArtists(snap.docs.map(doc => ({ ...doc.data(), key: doc.id })))
+        
+      })
+  }, []);
+  
+  return (
+    <div>
+      {artists.map((artist) => <div>{artist.name}</div>)}
+    </div>
+  )
+  
+}
+```
 
 ### Testing and Mocking with Jest
 

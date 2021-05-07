@@ -2,7 +2,6 @@ import { setConfig } from 'src/config'
 import { setDebugEnabled } from 'src/logDebug'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import isClientSide from 'src/isClientSide'
-import firebase from 'firebase/app'
 
 jest.mock('src/config')
 jest.mock('src/logDebug')
@@ -67,39 +66,6 @@ describe('index.js: init', () => {
     const index = require('src/index').default
     index.init()
     expect(initFirebaseClientSDK).not.toHaveBeenCalled()
-  })
-})
-
-describe('index.js: getFirebaseClient', () => {
-  it('exports getFirebaseClient', () => {
-    expect.assertions(2)
-    isClientSide.mockReturnValue(true)
-    const index = require('src/index').default
-    expect(index.getFirebaseClient).toBeDefined()
-    expect(index.getFirebaseClient).toEqual(expect.any(Function))
-  })
-
-  it('throws if init has not been called', () => {
-    expect.assertions(1)
-    isClientSide.mockReturnValue(true)
-    const index = require('src/index').default
-
-    expect(() => index.getFirebaseClient()).toThrow(
-      '"getFirebaseClient": Please initialise before calling'
-    )
-  })
-
-  it('Provides a Firebase Client App', () => {
-    expect.assertions(3)
-    firebase.apps = [{ name: 'app' }]
-    const index = require('src/index').default
-    expect(() => index.getFirebaseClient()).not.toThrow()
-    expect(index.getFirebaseClient()).toHaveProperty('firestore')
-    expect(index.getFirebaseClient()).toHaveProperty('functions')
-  })
-
-  afterAll(() => {
-    firebase.apps = []
   })
 })
 

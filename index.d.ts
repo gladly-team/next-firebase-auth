@@ -100,29 +100,10 @@ export const init: (config: InitConfig) => void
 interface FirebaseAdminType extends firebaseAdmin.app.App {
   app: firebaseAdmin.app.App
   delete: undefined
-  credential: Firebase.credential.Credential
+  credential: firebaseAdmin.credential.Credential
 }
 
 export const getFirebaseAdmin: () => FirebaseAdminType
-
-/**
- * Get the Firebase Client API. Use this when developing on the Client (Browser).
- * Before usage ensure that each of the Firebase Modules required are imported into
- * the project (See https://firebase.google.com/docs/web/setup#available-libraries); for example add:
- *
- * @example
- * ```
- * // Add the Firebase products that you want to use (note that this module imports `firebase/auth` already.
- * import "firebase/firestore";
- * import "firebase/functions";
- * import "firebase/messaging";
- * import "firebase/analytics";
- * import "firebase/storage";
- * import "firebase/database";
- * ```
- *
- */
-export const getFirebaseClient: () => Firebase.App
 
 export const setAuthCookies: (
   req: NextApiRequest,
