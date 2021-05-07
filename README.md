@@ -501,11 +501,11 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 ## Examples
 
-### Using the Firebase admin or JS App
+### Using the Firebase Apps
 
 You may want to access the Firebase admin module or Firebase JS SDK.
 
-To use the Firebase admin module, you can use [`getFirebaseAdmin`](#getfirebaseadmin--appapp). (If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.)
+To use the Firebase admin module, you can use [`getFirebaseAdmin`](#getfirebaseadmin--firebaseadmin). (If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.)
 
 To use the Firebase JS SDK, simply import Firebase as you normally would. For example:
 
@@ -514,8 +514,8 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { useEffect } from "react"
 
-const Artists = ({ artists: ssrArtists }) => {
-  const [artists, setArtists] = useState(artists);
+const Artists = () => {
+  const [artists, setArtists] = useState(artists)
   
   useEffect(() => {
     return firebase.firestore()
@@ -524,7 +524,7 @@ const Artists = ({ artists: ssrArtists }) => {
         if (!snap) {
           return
         }
-        setArtists(snap.docs.map(doc => ({...doc.data(), key: doc.id})))
+        setArtists(snap.docs.map(doc => ({ ...doc.data(), key: doc.id })))
         
       })
   }, []);
