@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 const styles = {
   content: {
-    padding: `4px 32px 32px 32px`,
+    padding: '4px 32px 32px 32px',
     background: '#eeeeee',
     display: 'inline-block',
   },

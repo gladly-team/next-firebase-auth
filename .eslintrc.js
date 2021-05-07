@@ -37,7 +37,7 @@ module.exports = {
     },
     // Handle TypeScript separately.
     {
-      files: ['**/*.ts'],
+      files: ['**/*.ts', '**/*.tsx'],
       extends: ['plugin:@typescript-eslint/recommended'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
@@ -45,6 +45,9 @@ module.exports = {
         // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
         'no-shadow': 0,
         '@typescript-eslint/no-shadow': 'error',
+        // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': ['error'],
       },
     },
   ],
