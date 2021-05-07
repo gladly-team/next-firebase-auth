@@ -2,7 +2,6 @@ import { setConfig } from 'src/config'
 import { setDebugEnabled } from 'src/logDebug'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import isClientSide from 'src/isClientSide'
-import firebase from 'firebase/app'
 
 jest.mock('src/config')
 jest.mock('src/logDebug')
