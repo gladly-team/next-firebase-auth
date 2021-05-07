@@ -20,7 +20,7 @@
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
     "build:src": "NODE_ENV=production webpack",
-    "lint": "eslint ./src/ index.d.ts",
+    "lint": "eslint ./",
     "test": "npm-run-all -s lint test:coverage",
     "test:run": "jest --env=jsdom",
     "test:coverage": "yarn run test:run --coverage",
