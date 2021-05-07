@@ -21,10 +21,11 @@
     "build:clean": "rm -rf ./build",
     "build:src": "NODE_ENV=production webpack",
     "lint": "eslint ./",
-    "test": "npm-run-all -s lint test:coverage",
+    "test": "npm-run-all -s install-example-deps lint test:coverage",
     "test:run": "jest --env=jsdom",
     "test:coverage": "yarn run test:run --coverage",
     "test:watch": "yarn run test:run --watch",
+    "install-example-deps": "cd example && yarn",
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
     "dev:yalc-publish-push": "yalc publish --push",
     "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build"
