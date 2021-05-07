@@ -349,7 +349,7 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 _Added in v0.13.1-alpha.0_
 
-A convenience function that returns the configured Firebase Admin application.
+A convenience function that returns the configured Firebase admin module.
 
 This can only be called from the server side. It will throw an error if called from the client side.
 
