@@ -99,7 +99,7 @@ export const init: (config: InitConfig) => void
 interface FirebaseAdminType extends firebaseAdmin.app.App {
   app: firebaseAdmin.app.App
   delete: undefined
-  credential: Firebase.credential.Credential
+  credential: firebaseAdmin.credential.Credential
 }
 
 export const getFirebaseAdmin: () => FirebaseAdminType
