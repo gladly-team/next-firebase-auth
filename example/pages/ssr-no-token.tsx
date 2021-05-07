@@ -18,7 +18,15 @@ const styles = {
   },
 }
 
-const Demo = ({ favoriteColor }) => {
+type Props = {
+  favoriteColor?: string
+}
+
+const defaultProps = {
+  favoriteColor: undefined,
+}
+
+const Demo = ({ favoriteColor }: Props) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -42,6 +50,8 @@ const Demo = ({ favoriteColor }) => {
   )
 }
 
+Demo.defaultProps = defaultProps
+
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
@@ -56,7 +66,7 @@ export const getServerSideProps = withAuthUserSSR({
       Authorization: token || 'unauthenticated',
     },
   })
-  const data = await response.json()
+  const data: { favoriteColor?: string } = await response.json()
   if (!response.ok) {
     throw new Error(
       `Data fetching failed with status ${response.status}: ${JSON.stringify(
