@@ -83,6 +83,11 @@ export const getServerSideProps = withAuthUserSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-  // FIXME: TypeScript warning when using a functional component
-  //   rather than React.FC or React.ComponentType
+  // FIXME: Fix this TypeScript warning when using a functional component
+  //   rather than using React.FC or React.ComponentType, which are
+  //   discouraged:
+  //   https://github.com/typescript-cheatsheets/react#function-components
+  //   This may require changing the type definition for `withAuthUser`.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
 })(Demo)
