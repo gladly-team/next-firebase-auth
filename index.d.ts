@@ -22,6 +22,9 @@ export interface AuthUser {
   id: string | null
   email: string | null
   emailVerified: boolean
+  phoneNumber: string | null
+  displayName: string | null
+  photoURL: string | null
   claims: Record<string, string | boolean>
   getIdToken: () => Promise<string | null>
   clientInitialized: boolean
