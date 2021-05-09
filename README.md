@@ -481,13 +481,19 @@ Whether the user's email address is verified.
 
 **phoneNumber** - `String|null`
 
+_Added in v0.13.1-alpha.3_
+
 The Firebase user's phone number, or null if the user has no phone number.
 
 **displayName** - `String|null`
 
+_Added in v0.13.1-alpha.3_
+
 The Firebase user's display name, or null if the user has no display name.
 
 **photoURL** - `String|null`
+
+_Added in v0.13.1-alpha.3_
 
 The Firebase user's photo URL, or null if the user has no photo URL.
 
