@@ -378,9 +378,7 @@ export async function getServerSideProps({ params: { id } }) {
   }
 }
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-})(Artist)
+export default withAuthUser()(Artist)
 ````
 
 ## Config
