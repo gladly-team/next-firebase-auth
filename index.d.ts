@@ -82,6 +82,7 @@ interface InitConfig {
     messagingSenderId?: string
     // "G-MEASUREMENT_ID"
     measurementId?: string
+    tenantId?: string
   }
   cookies: Cookies.Option &
     Cookies.SetOption & {

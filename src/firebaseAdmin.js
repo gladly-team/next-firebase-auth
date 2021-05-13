@@ -47,6 +47,17 @@ const refreshExpiredIdToken = async (refreshToken) => {
 }
 
 /**
+ * Get the firebase admin TenantAwareAuth or the BasicAuth object needed for the user
+ */
+const getAuth = (AuthUser) => {
+  const admin = getFirebaseAdminApp()
+  if (AuthUser.tenantId) {
+    return admin.auth().tenantManager().authForTenant(AuthUser.tenantId)
+  }
+  return admin.auth()
+}
+
+/**
  * Verify the Firebase ID token and return the Firebase user.
  * If the ID token has expired, refresh it if a refreshToken
  * is provided.
@@ -90,11 +101,10 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
   const AuthUser = await verifyIdToken(token)
-  const admin = getFirebaseAdminApp()
-
+  const auth = getAuth(AuthUser)
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
-  const customToken = await admin.auth().createCustomToken(AuthUser.id)
+  const customToken = await auth.createCustomToken(AuthUser.id)
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
