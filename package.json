@@ -13,8 +13,11 @@
   "browser": "build/index.browser.js",
   "main": "build/index.node.js",
   "types": "build/index.d.ts",
-  "repository": "git@github.com:@3-shake/next-firebase-auth.git",
-  "author": "3-shake.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3-shake/next-firebase-auth.git"
+  }, 
+   "author": "3-shake.com",
   "scripts": {
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
