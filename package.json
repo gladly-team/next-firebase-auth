@@ -1,6 +1,6 @@
 {
   "name": "next-firebase-auth",
-  "version": "0.13.1-alpha.3",
+  "version": "0.13.1-alpha.3@3-shake",
   "description": "Simple Firebase authentication for all Next.js rendering strategies",
   "keywords": [
     "Next",
@@ -88,6 +88,9 @@
   },
   "dependencies": {
     "cookies": "^0.8.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "files": [
     "/build"
