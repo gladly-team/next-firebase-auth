@@ -103,7 +103,7 @@ const createAuthUser = ({
   let displayName = null
   let photoURL = null
   let getIdTokenFunc = async () => null
-
+  let tenantId = null
   // When not on the client side, the "signOut" method is a noop.
   let firebase
   if (isClientSide()) {
@@ -129,6 +129,7 @@ const createAuthUser = ({
     getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
     signOut = async () => firebase.auth().signOut()
     tokenString = null
+    tenantId = firebaseUserClientSDK.tenantId
   } else if (firebaseUserAdminSDK) {
     /**
      * firebaseUserAdminSDK is a DecodedIDToken obtained from
@@ -146,6 +147,7 @@ const createAuthUser = ({
     photoURL = firebaseUserAdminSDK.picture
     getIdTokenFunc = async () => token
     tokenString = token
+    tenantId = firebaseUserAdminSDK.firebase.tenant
   } else if (serializedAuthUser) {
     const deserializedUser = JSON.parse(serializedAuthUser)
     customClaims = deserializedUser.claims
@@ -157,6 +159,7 @@ const createAuthUser = ({
     photoURL = deserializedUser.photoURL
     getIdTokenFunc = async () => deserializedUser._token || null
     tokenString = deserializedUser._token
+    tenantId = deserializedUser.tenantId
   }
   return {
     id: userId,
@@ -166,6 +169,7 @@ const createAuthUser = ({
     displayName,
     photoURL,
     claims: customClaims,
+    tenantId,
     // We want the "getIdToken" method to be isomorphic.
     // When `user` is an AuthUserSerializable object, we take the token
     // value and return it from this method.
@@ -193,6 +197,7 @@ const createAuthUser = ({
         displayName,
         photoURL,
         clientInitialized,
+        tenantId,
         ...(includeToken && { _token: tokenString }),
       }),
   }
