@@ -435,7 +435,7 @@ Settings used for auth cookies. We use [`cookies`](https://github.com/pillarjs/c
 Properties include:
 * `name`: Used as a base for cookie names: if `name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). **Required.**
 * `keys`: Used to sign cookies, as described in [`cookies`](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
-* [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--0).
+* [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--).
 
 The `keys` value cannot be defined on the client side and should live in a secret environment variable.
 
