@@ -37,7 +37,11 @@ Depending on your app's needs, other approaches might work better for you.
       * *Pros:* It removes this package as a dependency.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
 
-**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side. Please check out [current limitations](#limitations--feedback) before diving in.
+**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side.
+
+> A quick note on what this package does _not_ do:
+> * It does not provide authentication UI. Consider [firebasesui-web](https://github.com/firebase/firebaseui-web) or build your own.
+> * It does not extend Firebase functionality beyond providing universal access to the authed user. Use the Firebase admin SDK and Firebase JS SDK for any other needs.
 
 ## Get Started
 
