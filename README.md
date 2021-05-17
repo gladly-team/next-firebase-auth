@@ -56,6 +56,9 @@ Make sure peer dependencies are also installed:
 Create a module to initialize `next-firebase-auth`.
 
 #### Example config:
+
+_See [config documentation](#config) for details_
+
 ```js
 // ./initAuth.js
 import { init } from 'next-firebase-auth'
@@ -106,7 +109,7 @@ export default initAuth
 
 ```
 
-Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
 
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
