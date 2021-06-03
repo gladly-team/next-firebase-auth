@@ -303,6 +303,8 @@ Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: i
 * It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
 * It does *not* check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withAuthUserTokenSSR`.
 
+⚠️ Do not use this when `cookies.signed` is set to `false`. Doing so is a potential security risk, because the authed user cookie values could be modified by the client.
+
 This takes the same options as `withAuthUserTokenSSR`.
 
 #### `useAuthUser()`
