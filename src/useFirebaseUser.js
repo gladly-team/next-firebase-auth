@@ -72,9 +72,9 @@ const useFirebaseUser = () => {
       const claims = filterStandardClaims(idTokenResult.claims)
       setCustomClaims(claims)
     }
+    await setAuthCookie(firebaseUser)
     setUser(firebaseUser)
     setInitialized(true)
-    await setAuthCookie(firebaseUser)
   }
 
   useEffect(() => {
