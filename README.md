@@ -443,7 +443,7 @@ Settings used for auth cookies. We use [`cookies`](https://github.com/pillarjs/c
 
 Properties include:
 * `name`: Used as a base for cookie names: if `name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). **Required.**
-* `keys`: Used to sign cookies, as described in [`cookies`](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
+* `keys`: An array of strings that will be used to sign cookies; for instance `['xD$WVv3qrP3ywY', '2x6#msoUeNhVHr']` - as these strings are secrets provide them via environment variables (`[ process.env.COOKIE_SECRET_CURRENT, process.env.COOKIE_SECRET_PREVIOUS ]`). The `keys` array is passed to the [Keygrip](https://www.npmjs.com/package/keygrip) constructor as described in [the `cookies` package](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--)). **Required** unless `signed` is set to `false`.
 * [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--).
 
 The `keys` value cannot be defined on the client side and should live in a secret environment variable.
