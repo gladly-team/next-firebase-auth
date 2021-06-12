@@ -63,6 +63,7 @@ const useFirebaseUser = () => {
   const [user, setUser] = useState()
   const [customClaims, setCustomClaims] = useState({})
   const [initialized, setInitialized] = useState(false)
+  const [authCookieComplete, setAuthCookieComplete] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
     if (firebaseUser) {
@@ -72,9 +73,9 @@ const useFirebaseUser = () => {
       const claims = filterStandardClaims(idTokenResult.claims)
       setCustomClaims(claims)
     }
-    await setAuthCookie(firebaseUser)
     setUser(firebaseUser)
     setInitialized(true)
+    await setAuthCookie(firebaseUser).then(() => setAuthCookieComplete(true))
   }
 
   useEffect(() => {
@@ -87,6 +88,7 @@ const useFirebaseUser = () => {
     user, // unmodified Firebase user, undefined if not authed
     claims: customClaims,
     initialized,
+    authCookieComplete,
   }
 }
 
