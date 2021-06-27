@@ -208,7 +208,7 @@ export default withAuthUser()(Demo)
 -----
 #### `init(config)`
 
-Initializes `next-firebase-auth`, taking a [config](#config) object. Must be called before calling any other method.
+Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be called** before calling any other method.
 
 #### `withAuthUser({ ...options })(PageComponent)`
 
