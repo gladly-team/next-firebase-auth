@@ -37,7 +37,11 @@ Depending on your app's needs, other approaches might work better for you.
       * *Pros:* It removes this package as a dependency.
       * *Cons:* You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
 
-**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side. Please check out [current limitations](#limitations--feedback) before diving in.
+**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side.
+
+> A quick note on what this package does _not_ do:
+> * It does not provide authentication UI. Consider [firebasesui-web](https://github.com/firebase/firebaseui-web) or build your own.
+> * It does not extend Firebase functionality beyond providing universal access to the authed user. Use the Firebase admin SDK and Firebase JS SDK for any other needs.
 
 ## Get Started
 
@@ -52,6 +56,9 @@ Make sure peer dependencies are also installed:
 Create a module to initialize `next-firebase-auth`.
 
 #### Example config:
+
+_See [config documentation](#config) for details_
+
 ```js
 // ./initAuth.js
 import { init } from 'next-firebase-auth'
@@ -102,7 +109,7 @@ export default initAuth
 
 ```
 
-Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. See [the config](#config) documentation for details. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
+Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
 
 Initialize `next-firebase-auth` in `_app.js`:
 ```js
@@ -201,7 +208,7 @@ export default withAuthUser()(Demo)
 -----
 #### `init(config)`
 
-Initializes `next-firebase-auth`, taking a [config](#config) object. Must be called before calling any other method.
+Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be called** before calling any other method.
 
 #### `withAuthUser({ ...options })(PageComponent)`
 
@@ -296,6 +303,8 @@ Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: i
 * It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
 * It does *not* check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withAuthUserTokenSSR`.
 
+⚠️ Do not use this when `cookies.signed` is set to `false`. Doing so is a potential security risk, because the authed user cookie values could be modified by the client.
+
 This takes the same options as `withAuthUserTokenSSR`.
 
 #### `useAuthUser()`
@@ -347,7 +356,7 @@ An object that defines rendering/redirecting options for `withAuthUser` and `wit
 
 #### `getFirebaseAdmin() => FirebaseAdmin`
 
-_Added in v0.13.1-alpha.0_
+_Added in v0.13.1_
 
 A convenience function that returns the configured Firebase admin module.
 
@@ -389,9 +398,9 @@ See an [example config here](#example-config). Provide the config when you call 
 
 **appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
-**loginAPIEndpoint**: The API endpoint to call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+**loginAPIEndpoint**: The API endpoint this module will call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
 
-**logoutAPIEndpoint**: The API endpoint to call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+**logoutAPIEndpoint**: The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
 
 **tokenChangedHandler**: A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives an `AuthUser` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
 
@@ -434,8 +443,8 @@ Settings used for auth cookies. We use [`cookies`](https://github.com/pillarjs/c
 
 Properties include:
 * `name`: Used as a base for cookie names: if `name` is set to "MyExample", cookies will be named `MyExample.AuthUser` and `MyExample.AuthUserTokens` (plus `MyExample.AuthUser.sig` and `MyExample.AuthUserTokens.sig` if cookies are signed). **Required.**
-* `keys`: Used to sign cookies, as described in [`cookies`](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
-* [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--0).
+* `keys`: An array of strings that will be used to sign cookies; for instance, `['xD$WVv3qrP3ywY', '2x6#msoUeNhVHr']`. As these strings are secrets, provide them via secret environment variables, such as `[ process.env.COOKIE_SECRET_CURRENT, process.env.COOKIE_SECRET_PREVIOUS ]`. The `keys` array is passed to the [Keygrip](https://www.npmjs.com/package/keygrip) constructor as described in [the `cookies` package](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
+* [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--).
 
 The `keys` value cannot be defined on the client side and should live in a secret environment variable.
 
@@ -479,23 +488,25 @@ Whether the user's email address is verified.
 
 **phoneNumber** - `String|null`
 
-_Added in v0.13.1-alpha.3_
+_Added in v0.13.1_
 
 The Firebase user's phone number, or null if the user has no phone number.
 
 **displayName** - `String|null`
 
-_Added in v0.13.1-alpha.3_
+_Added in v0.13.1_
 
 The Firebase user's display name, or null if the user has no display name.
 
 **photoURL** - `String|null`
 
-_Added in v0.13.1-alpha.3_
+_Added in v0.13.1_
 
 The Firebase user's photo URL, or null if the user has no photo URL.
 
-**claims** - `Object` - _Added in v0.13.0-alpha.2_
+**claims** - `Object`
+
+_Added in v0.13.0_
 
 Any [custom Firebase claims](https://firebase.google.com/docs/auth/admin/custom-claims#set_and_validate_custom_user_claims_via_the_admin_sdk).
 
@@ -780,6 +791,7 @@ In addition, please double-check your server logs for any errors to ensure the F
 We expect some apps will need some features that are not currently available:
 
 * **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
+* **Setting a single auth cookie:** This package currently sets more than one cookie to store authentication state. It's not currently possible to use a single cookie with a customized name: [#190](https://github.com/gladly-team/next-firebase-auth/issues/190)
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
 
