@@ -26,15 +26,15 @@ export interface AuthUser {
   displayName: string | null
   photoURL: string | null
   claims: Record<string, string | boolean>
+  tenantId: string
   getIdToken: () => Promise<string | null>
   clientInitialized: boolean
   firebaseUser: Firebase.User | null
   signOut: () => Promise<void>
 }
 
-export type SSRPropsContext<
-  Q extends ParsedUrlQuery = ParsedUrlQuery
-> = GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
+export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
+  GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
 
 export type SSRPropGetter<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
