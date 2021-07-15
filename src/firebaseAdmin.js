@@ -69,7 +69,6 @@ export const verifyIdToken = async (token, refreshToken = null) => {
   const admin = getFirebaseAdminApp()
   try {
     firebaseUser = await admin.auth().verifyIdToken(token)
-    console.log(JSON.stringify(firebaseUser,null,2))
   } catch (e) {
     // If the user's ID token has expired, refresh it if possible.
     if (refreshToken && e.code === FIREBASE_ERROR_TOKEN_EXPIRED) {
@@ -119,6 +118,7 @@ export const getCustomIdAndRefreshTokens = async (token) => {
     body: JSON.stringify({
       token: customToken,
       returnSecureToken: true,
+      tenantId: AuthUser.tenantId,
     }),
   })
   const refreshTokenJSON = await refreshTokenResponse.json()
