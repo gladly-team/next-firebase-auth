@@ -6,6 +6,7 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
+import hoistNonReactStatics from 'hoist-non-react-statics'
 
 /**
  * A higher-order component that provides pages with the
@@ -175,6 +176,8 @@ const withAuthUser = ({
   }
 
   WithAuthUserHOC.displayName = 'WithAuthUserHOC'
+
+  hoistNonReactStatics(WithAuthUserHOC, ChildComponent);
 
   return WithAuthUserHOC
 }
