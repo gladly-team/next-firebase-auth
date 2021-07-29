@@ -54,6 +54,7 @@ const withAuthUser = ({
       user: firebaseUser,
       claims,
       initialized: firebaseInitialized,
+      loginRequestCompleted,
     } = useFirebaseUser()
     const AuthUserFromClient = createAuthUser({
       firebaseUserClientSDK: firebaseUser,
@@ -72,20 +73,28 @@ const withAuthUser = ({
     const isAuthed = !!AuthUser.id
     const isInitialized = AuthUser.clientInitialized
 
-    // Redirect to the app if the user is authed and the "whenAuthed"
-    // argument is set to redirect to the app.
+    // Redirect to the app if all are true:
+    // * the user is authed
+    // * the "whenAuthed" argument is set to redirect to the app
+    // * if on the client side, the call to set cookies has completed
     const shouldRedirectToApp =
-      isAuthed && whenAuthed === AuthAction.REDIRECT_TO_APP
+      isAuthed &&
+      whenAuthed === AuthAction.REDIRECT_TO_APP &&
+      (isClientSide ? loginRequestCompleted : true)
 
-    // Redirect to the login page if the user is not authed and,
-    // considering whether the Firebase JS SDK is initialized, the
-    // "when unauthed" settings inform us to redirect.
+    // Redirect to the login page if the user is not authed and one of these
+    // is true:
+    // * the "when unauthed" settings tell us to redirect to login BEFORE
+    //   Firebase has initialized
+    // * the "when unauthed" settings tell us to redirect to login AFTER
+    //   Firebase has initialized, and the call to set cookies has completed
     const shouldRedirectToLogin =
       !isAuthed &&
       ((!isInitialized &&
         whenUnauthedBeforeInit === AuthAction.REDIRECT_TO_LOGIN) ||
         (isInitialized &&
-          whenUnauthedAfterInit === AuthAction.REDIRECT_TO_LOGIN))
+          whenUnauthedAfterInit === AuthAction.REDIRECT_TO_LOGIN &&
+          loginRequestCompleted))
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
