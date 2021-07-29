@@ -54,7 +54,7 @@ const withAuthUser = ({
       user: firebaseUser,
       claims,
       initialized: firebaseInitialized,
-      loginRequestCompleted,
+      authRequestCompleted,
     } = useFirebaseUser()
     const AuthUserFromClient = createAuthUser({
       firebaseUserClientSDK: firebaseUser,
@@ -81,7 +81,7 @@ const withAuthUser = ({
     const willRedirectToApp =
       isAuthed && whenAuthed === AuthAction.REDIRECT_TO_APP
     const shouldRedirectToApp =
-      willRedirectToApp && isClientSide && loginRequestCompleted
+      willRedirectToApp && isClientSide && authRequestCompleted
 
     // Redirect to the login page if the user is not authed and one of these
     // is true:
@@ -102,7 +102,7 @@ const withAuthUser = ({
       // We don't have to wait for an auth request if we should redirect
       // before Firebase initializes.
       (whenUnauthedBeforeInit !== AuthAction.REDIRECT_TO_LOGIN
-        ? loginRequestCompleted
+        ? authRequestCompleted
         : true)
 
     const router = useRouter()
@@ -184,7 +184,7 @@ const withAuthUser = ({
       } else {
         returnVal = comps
       }
-    } else if (!isAuthed && !loginRequestCompleted) {
+    } else if (!isAuthed && !authRequestCompleted) {
       if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
         returnVal = loaderComp
       } else if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {

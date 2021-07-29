@@ -27,7 +27,7 @@ const getUseFirebaseUserResponse = () => ({
   user: undefined,
   claims: {},
   initialized: false,
-  loginRequestCompleted: false,
+  authRequestCompleted: false,
 })
 
 beforeEach(() => {
@@ -123,7 +123,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -162,7 +162,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(),
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     rerender(
       <MockCompWithUser
@@ -181,7 +181,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     const MyLoader = () => <div>Things are loading up!</div>
     const MockCompWithUser = withAuthUser({
@@ -231,7 +231,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -262,7 +262,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not initialized
-      loginRequestCompleted: false, // login request not completed
+      authRequestCompleted: false, // login request not completed
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -285,7 +285,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: true, // changed
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     rerender(
       <MockCompWithUser
@@ -298,7 +298,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: true,
-      loginRequestCompleted: true, // changed
+      authRequestCompleted: true, // changed
     })
     rerender(
       <MockCompWithUser
@@ -319,7 +319,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -350,7 +350,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -391,7 +391,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -431,7 +431,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     let propsSpy
@@ -467,7 +467,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       claims: undefined,
       initialized: false,
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -491,7 +491,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(),
       claims: undefined,
       initialized: true, // changed
-      loginRequestCompleted: false,
+      authRequestCompleted: false,
     })
     rerender(
       <MockCompWithUser
@@ -505,7 +505,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(),
       claims: undefined,
       initialized: true,
-      loginRequestCompleted: true, // changed
+      authRequestCompleted: true, // changed
     })
     rerender(
       <MockCompWithUser
@@ -527,7 +527,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       claims: undefined,
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -556,7 +556,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -597,7 +597,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -638,7 +638,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     let ctxSpy
@@ -674,7 +674,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
@@ -698,7 +698,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -722,7 +722,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -738,7 +738,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders null when redirecting to the app, even while waiting for loginRequestCompleted', () => {
+  it('renders null when redirecting to the app, even while waiting for authRequestCompleted', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -746,7 +746,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
-      loginRequestCompleted: false, // waiting
+      authRequestCompleted: false, // waiting
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -840,7 +840,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const expectedAuthUser = {
       ...createAuthUser({
@@ -877,7 +877,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
 
     // Will use the client-side user when both exist.
@@ -952,7 +952,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
 
     // Will use the (unauthenticated) user when the Firebase JS SDK
@@ -1036,7 +1036,7 @@ describe('withAuthUser: AuthUser context', () => {
         very: 'cool',
       },
       initialized: true,
-      loginRequestCompleted: true,
+      authRequestCompleted: true,
     })
     const expectedAuthUser = {
       ...createAuthUser({

@@ -92,7 +92,7 @@ const useFirebaseUser = () => {
     user, // unmodified Firebase user, undefined if not authed
     claims: customClaims,
     initialized,
-    loginRequestCompleted: isAuthCookieRequestComplete,
+    authRequestCompleted: isAuthCookieRequestComplete,
   }
 }
 
