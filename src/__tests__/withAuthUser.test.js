@@ -666,7 +666,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
   })
 
-  it('renders null when redirecting to login and whenUnauthedBeforeInit is AuthAction.RETURN_NULL', () => {
+  it('renders null when redirecting to login and whenUnauthedBeforeInit === AuthAction.RETURN_NULL', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -690,7 +690,33 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders the child component when redirecting to login and whenUnauthedBeforeInit is *not* AuthAction.RETURN_NULL', () => {
+  it('renders the loader when redirecting to login and whenUnauthedBeforeInit === AuthAction.SHOW_LOADER', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+      authRequestCompleted: true,
+    })
+    const MyLoader = () => <div>Things are loading up!</div>
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+      LoaderComponent: MyLoader,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Things are loading up!')).toBeTruthy()
+  })
+
+  it('renders the child component when redirecting to login and whenUnauthedBeforeInit === AuthAction.RENDER', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
