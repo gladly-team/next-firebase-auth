@@ -37,7 +37,7 @@ describe('useFirebaseUser', () => {
       user: undefined,
       claims: {},
       initialized: false,
-      setAuthCookieComplete: false,
+      loginRequestCompleted: false,
     })
   })
 
@@ -73,7 +73,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: true,
+      loginRequestCompleted: true,
     })
   })
 
@@ -108,7 +108,7 @@ describe('useFirebaseUser', () => {
       user: undefined,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: true,
+      loginRequestCompleted: true,
     })
   })
 
@@ -155,7 +155,7 @@ describe('useFirebaseUser', () => {
         subscription: true,
       },
       initialized: true,
-      setAuthCookieComplete: true,
+      loginRequestCompleted: true,
     })
   })
 
@@ -433,7 +433,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: false,
+      loginRequestCompleted: false,
     })
 
     await act(async () => {
@@ -445,7 +445,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: true,
+      loginRequestCompleted: true,
     })
   })
 
@@ -494,7 +494,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: false,
+      loginRequestCompleted: false,
     })
 
     await act(async () => {
@@ -506,7 +506,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
-      setAuthCookieComplete: true,
+      loginRequestCompleted: true,
     })
   })
 })
