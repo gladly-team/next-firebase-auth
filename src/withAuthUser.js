@@ -77,6 +77,7 @@ const withAuthUser = ({
     // * the user is authed
     // * the "whenAuthed" argument is set to redirect to the app
     // * if on the client side, the call to set cookies has completed
+    //   (see: https://github.com/gladly-team/next-firebase-auth/issues/189)
     const shouldRedirectToApp =
       isAuthed &&
       whenAuthed === AuthAction.REDIRECT_TO_APP &&
@@ -88,6 +89,7 @@ const withAuthUser = ({
     //   Firebase has initialized
     // * the "when unauthed" settings tell us to redirect to login AFTER
     //   Firebase has initialized, and the call to set cookies has completed
+    //   (see: https://github.com/gladly-team/next-firebase-auth/issues/189)
     const shouldRedirectToLogin =
       !isAuthed &&
       ((!isInitialized &&
