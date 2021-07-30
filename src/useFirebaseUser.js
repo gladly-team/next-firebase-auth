@@ -72,8 +72,7 @@ const useFirebaseUser = () => {
   async function onIdTokenChange(firebaseUser) {
     logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
 
-    // TODO: write tests and enable this:
-    // setIsAuthCookieRequestComplete(false)
+    setIsAuthCookieRequestComplete(false)
     if (firebaseUser) {
       // Get the user's claims:
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
