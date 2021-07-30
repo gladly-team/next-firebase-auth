@@ -9,8 +9,8 @@ import {
 import useAuthUser from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-
 import AuthAction from 'src/AuthAction'
+import logDebug from 'src/logDebug'
 
 // Note that we don't mock createAuthUser or useAuthUser.
 const mockRouterPush = jest.fn()
@@ -20,6 +20,7 @@ jest.mock('next/router', () => ({
 }))
 jest.mock('src/useFirebaseUser')
 jest.mock('src/isClientSide')
+jest.mock('src/logDebug')
 
 const MockComponent = ({ message }) => <div>Hello! {message}</div>
 
@@ -27,6 +28,7 @@ const getUseFirebaseUserResponse = () => ({
   user: undefined,
   claims: {},
   initialized: false,
+  authRequestCompleted: false,
 })
 
 beforeEach(() => {
@@ -122,6 +124,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -160,6 +163,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(),
       initialized: true,
+      authRequestCompleted: true,
     })
     rerender(
       <MockCompWithUser
@@ -178,6 +182,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
+      authRequestCompleted: false,
     })
     const MyLoader = () => <div>Things are loading up!</div>
     const MockCompWithUser = withAuthUser({
@@ -227,6 +232,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
+      authRequestCompleted: false,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -249,14 +255,46 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(mockRouterReplace).toHaveBeenCalledWith('/my-auth')
   })
 
-  it('redirects to login on the client side when there is no user (*after* Firebase initializes) and a redirecting strategy is set', () => {
+  it('logs a debugging message when redirecting to login', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
     useFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
-      initialized: true, // already initialized
+      initialized: false, // not yet initialized
+      authRequestCompleted: false,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      authPageURL: '/my-auth', // custom auth page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
+      // A user would normally not set this to render when they're redirecting
+      // before initialization. We do this just for testing clarity.
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(logDebug).toHaveBeenCalledWith('Redirecting to login.')
+  })
+
+  it('redirects to login on the client side when there is no user and a redirecting strategy is set, but only *after* Firebase initializes and the auth cookie request is complete', () => {
+    expect.assertions(3)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user
+      initialized: false, // not initialized
+      authRequestCompleted: false, // login request not completed
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -268,7 +306,33 @@ describe('withAuthUser: rendering/redirecting', () => {
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
-    render(
+    const { rerender } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).not.toHaveBeenCalled()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined,
+      initialized: true, // changed
+      authRequestCompleted: false,
+    })
+    rerender(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).not.toHaveBeenCalled()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined,
+      initialized: true,
+      authRequestCompleted: true, // changed
+    })
+    rerender(
       <MockCompWithUser
         serializedAuthUser={MockSerializedAuthUser}
         message="How are you?"
@@ -287,6 +351,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: false, // not yet initialized
+      authRequestCompleted: false,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -317,6 +382,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -357,6 +423,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -396,6 +463,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     let propsSpy
@@ -422,7 +490,65 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
   })
 
-  it('redirects to the app on the client side when there is a user and a redirect-to-app-when-authed strategy is set', () => {
+  it('redirects to the app on the client side only when there is a user, a redirect-to-app-when-authed strategy is set, and the request to set cookies has completed', () => {
+    expect.assertions(3)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
+      initialized: false,
+      authRequestCompleted: false,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: '/my-app/here/', // custom app page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    const { rerender } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).not.toHaveBeenCalled()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(),
+      claims: undefined,
+      initialized: true, // changed
+      authRequestCompleted: false,
+    })
+    rerender(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).not.toHaveBeenCalled()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(),
+      claims: undefined,
+      initialized: true,
+      authRequestCompleted: true, // changed
+    })
+    rerender(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).toHaveBeenCalledWith('/my-app/here/')
+  })
+
+  it('logs a debugging message when redirecting to the app', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -431,6 +557,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       claims: undefined,
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -448,7 +575,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(mockRouterReplace).toHaveBeenCalledWith('/my-app/here/')
+    expect(logDebug).toHaveBeenCalledWith('Redirecting to app.')
   })
 
   it('does not redirect to the app on the server side, even when we will redirect to the app on the client side', () => {
@@ -462,6 +589,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       claims: undefined,
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -490,6 +618,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -530,6 +659,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     setConfig({
@@ -570,6 +700,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const mockConfig = getMockConfig()
     let ctxSpy
@@ -597,7 +728,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
   })
 
-  it('renders null when redirecting to the login', () => {
+  it('renders null when redirecting to login and whenUnauthedBeforeInit === AuthAction.RETURN_NULL', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -605,9 +736,10 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined, // no client-side user
       initialized: true, // already initialized
+      authRequestCompleted: true,
     })
     const MockCompWithUser = withAuthUser({
-      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
@@ -620,6 +752,56 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
+  it('renders the loader when redirecting to login and whenUnauthedBeforeInit === AuthAction.SHOW_LOADER', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+      authRequestCompleted: true,
+    })
+    const MyLoader = () => <div>Things are loading up!</div>
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+      LoaderComponent: MyLoader,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Things are loading up!')).toBeTruthy()
+  })
+
+  it('renders the child component when redirecting to login and whenUnauthedBeforeInit === AuthAction.RENDER', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+      authRequestCompleted: true,
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Hello! How are you?')).toBeTruthy()
+  })
+
   it('renders null when redirecting to the app', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
@@ -628,6 +810,31 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    const { container } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('renders null when redirecting to the app, even while waiting for authRequestCompleted', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+      authRequestCompleted: false, // waiting
     })
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.RENDER,
@@ -721,6 +928,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
     const expectedAuthUser = {
       ...createAuthUser({
@@ -757,6 +965,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: mockFirebaseUser, // client-side user exists
       initialized: true,
+      authRequestCompleted: true,
     })
 
     // Will use the client-side user when both exist.
@@ -831,6 +1040,7 @@ describe('withAuthUser: AuthUser context', () => {
       ...getUseFirebaseUserResponse(),
       user: undefined,
       initialized: true,
+      authRequestCompleted: true,
     })
 
     // Will use the (unauthenticated) user when the Firebase JS SDK
@@ -914,6 +1124,7 @@ describe('withAuthUser: AuthUser context', () => {
         very: 'cool',
       },
       initialized: true,
+      authRequestCompleted: true,
     })
     const expectedAuthUser = {
       ...createAuthUser({
@@ -943,5 +1154,37 @@ describe('withAuthUser: AuthUser context', () => {
     })(AnotherMockComponent)
     render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
     expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+  })
+
+  it('logs a debugging message when it renders the AuthUser', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = createMockSerializedAuthUser()
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: mockFirebaseUser,
+      initialized: true,
+      authRequestCompleted: true,
+    })
+
+    const expectedAuthUser = {
+      ...createAuthUser({
+        firebaseUserClientSDK: mockFirebaseUser,
+      }),
+      clientInitialized: true,
+      getIdToken: expect.any(Function),
+      serialize: expect.any(Function),
+      signOut: expect.any(Function),
+    }
+
+    const AnotherMockComponent = () => <div>hi!</div>
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(logDebug).toHaveBeenCalledWith('AuthUser set to:', expectedAuthUser)
   })
 })
