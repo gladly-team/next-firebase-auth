@@ -9,8 +9,8 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "^8.6.8",
-    "firebase-admin": "^9.10.0",
+    "firebase": "^8.8.1",
+    "firebase-admin": "^9.11.0",
     "next": "11.0.1",
     "next-firebase-auth": "^0.13.2",
     "react": "17.0.2",
@@ -18,8 +18,8 @@
     "react-firebaseui": "^5.0.2"
   },
   "devDependencies": {
-    "@types/node": "^15.12.5",
-    "@types/react": "^17.0.11",
-    "typescript": "^4.3.4"
+    "@types/node": "^16.4.8",
+    "@types/react": "^17.0.15",
+    "typescript": "^4.3.5"
   }
 }
