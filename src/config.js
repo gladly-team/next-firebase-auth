@@ -175,17 +175,17 @@ const validateConfig = (mergedConfig) => {
 
 // Replace private values with "hidden" for safer logging during
 // debugging.
-const replacePrivateValues = (config) => {
+const replacePrivateValues = (unredactedConfig) => {
   const redactedConfig = {
-    ...config,
+    ...unredactedConfig,
     cookies: {
-      ...config.cookies,
+      ...unredactedConfig.cookies,
       keys: ['hidden'],
     },
     firebaseAdminInitConfig: {
-      ...config.firebaseAdminInitConfig,
+      ...unredactedConfig.firebaseAdminInitConfig,
       credential: {
-        ...config.firebaseAdminInitConfig.credential,
+        ...unredactedConfig.firebaseAdminInitConfig.credential,
         privateKey: 'hidden',
         clientEmail: 'hidden',
       },
