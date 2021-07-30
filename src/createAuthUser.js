@@ -1,5 +1,4 @@
 /* eslint no-underscore-dangle: 0 */
-import logDebug from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
 import { filterStandardClaims } from 'src/claims'
 

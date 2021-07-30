@@ -1,4 +1,3 @@
-import React from 'react'
 import firebase from 'firebase/app'
 import { renderHook, act } from '@testing-library/react-hooks'
 import useFirebaseUser from 'src/useFirebaseUser'
