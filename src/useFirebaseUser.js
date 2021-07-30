@@ -61,9 +61,11 @@ const setAuthCookie = async (firebaseUser) => {
 }
 
 const useFirebaseUser = () => {
-  const [user, setUser] = useState()
-  const [customClaims, setCustomClaims] = useState({})
-  const [initialized, setInitialized] = useState(false)
+  const [userInfo, setUserInfo] = useState({
+    user: undefined, // unmodified Firebase user, undefined if not authed
+    claims: {},
+    initialized: false,
+  })
   const [isAuthCookieRequestComplete, setIsAuthCookieRequestComplete] =
     useState(false)
 
@@ -74,19 +76,21 @@ const useFirebaseUser = () => {
       logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
 
       setIsAuthCookieRequestComplete(false)
+      let customClaims = {}
       if (firebaseUser) {
         // Get the user's claims:
         // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
         const idTokenResult = await firebase
           .auth()
           .currentUser.getIdTokenResult()
-        const claims = filterStandardClaims(idTokenResult.claims)
-        setCustomClaims(claims)
+        customClaims = filterStandardClaims(idTokenResult.claims)
       }
 
-      // TODO: combine state updates
-      setUser(firebaseUser)
-      setInitialized(true)
+      setUserInfo({
+        user: firebaseUser,
+        claims: customClaims,
+        initialized: true,
+      })
 
       logDebug('Starting auth API request via tokenChangedHandler.')
 
@@ -117,9 +121,7 @@ const useFirebaseUser = () => {
   }, [])
 
   return {
-    user, // unmodified Firebase user, undefined if not authed
-    claims: customClaims,
-    initialized,
+    ...userInfo,
     authRequestCompleted: isAuthCookieRequestComplete,
   }
 }
