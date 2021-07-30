@@ -1,3 +1,4 @@
+import React from 'react'
 import firebase from 'firebase/app'
 import { renderHook, act } from '@testing-library/react-hooks'
 import useFirebaseUser from 'src/useFirebaseUser'
@@ -344,6 +345,57 @@ describe('useFirebaseUser', () => {
     expect(onIdTokenChangedUnsubscribe).not.toHaveBeenCalled()
     unmount()
     expect(onIdTokenChangedUnsubscribe).toHaveBeenCalled()
+  })
+
+  it('does not modify state after it unmounts', async () => {
+    expect.assertions(1)
+
+    // If this test fails, we expect a console error from React:
+    // "Warning: Can't perform a React state update on an unmounted component".
+    const consoleErrorSpy = jest.spyOn(console, 'error')
+
+    // Control when the auth fetch resolves.
+    let fetchPromiseResolver
+    const fetchPromise = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          fetchPromiseResolver = resolve
+        })
+    )
+    global.fetch = fetchPromise
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockFirebaseUserWithClaims = { ...mockFirebaseUser, claims: {} }
+
+    let onIdTokenChangedCallback
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { unmount } = renderHook(() => useFirebaseUser())
+    await act(async () => {
+      // Not awaiting.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+
+    // Resolve the fetch after unmount.
+    unmount()
+
+    await act(async () => {
+      fetchPromiseResolver(createMockFetchResponse())
+    })
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 
   it('calls "tokenChangedHandler" with AuthUser if it is configured', async () => {
