@@ -208,9 +208,7 @@ const withAuthUser =
     }
 
     WithAuthUserHOC.displayName = 'WithAuthUserHOC'
-    
     hoistNonReactStatics(WithAuthUserHOC, ChildComponent)
-
     return WithAuthUserHOC
   }
 
