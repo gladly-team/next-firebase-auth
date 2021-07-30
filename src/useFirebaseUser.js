@@ -71,6 +71,9 @@ const useFirebaseUser = () => {
 
   async function onIdTokenChange(firebaseUser) {
     logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
+
+    // TODO: write tests and enable this:
+    // setIsAuthCookieRequestComplete(false)
     if (firebaseUser) {
       // Get the user's claims:
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
@@ -79,11 +82,13 @@ const useFirebaseUser = () => {
       setCustomClaims(claims)
     }
 
+    // TODO: combine state updates
     setUser(firebaseUser)
     setInitialized(true)
 
     logDebug('Starting auth API request via tokenChangedHandler.')
 
+    // FIXME: cancel on unmount.
     await setAuthCookie(firebaseUser)
 
     setIsAuthCookieRequestComplete(true)
