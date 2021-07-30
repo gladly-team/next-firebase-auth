@@ -38,9 +38,24 @@ describe('config', () => {
     const { setConfig } = require('src/config')
     const mockConfig = createMockConfig()
     setConfig(mockConfig)
+    const expectedConfig = {
+      ...mockConfig,
+      cookies: {
+        ...mockConfig.cookies,
+        keys: ['hidden'],
+      },
+      firebaseAdminInitConfig: {
+        ...mockConfig.firebaseAdminInitConfig,
+        credential: {
+          ...mockConfig.firebaseAdminInitConfig.credential,
+          privateKey: 'hidden',
+          clientEmail: 'hidden',
+        },
+      },
+    }
     expect(logDebug).toHaveBeenCalledWith(
       'Setting config with provided value:',
-      mockConfig
+      expectedConfig
     )
   })
 

@@ -173,9 +173,32 @@ const validateConfig = (mergedConfig) => {
   }
 }
 
+// Replace private values with "hidden" for safer logging during
+// debugging.
+const replacePrivateValues = (config) => {
+  const redactedConfig = {
+    ...config,
+    cookies: {
+      ...config.cookies,
+      keys: ['hidden'],
+    },
+    firebaseAdminInitConfig: {
+      ...config.firebaseAdminInitConfig,
+      credential: {
+        ...config.firebaseAdminInitConfig.credential,
+        privateKey: 'hidden',
+        clientEmail: 'hidden',
+      },
+    },
+  }
+  return redactedConfig
+}
+
 export const setConfig = (userConfig = {}) => {
-  // TODO: strip private values from log.
-  logDebug('Setting config with provided value:', userConfig)
+  logDebug(
+    'Setting config with provided value:',
+    replacePrivateValues(userConfig)
+  )
 
   const { cookies: cookieOptions = {}, ...otherUserConfig } = userConfig
 
