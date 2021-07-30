@@ -1,6 +1,8 @@
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import logDebug from 'src/logDebug'
 
 jest.mock('src/isClientSide')
+jest.mock('src/logDebug')
 
 // stash and restore the system env vars
 let env = null
@@ -27,6 +29,19 @@ describe('config', () => {
     const mockConfig = createMockConfig()
     setConfig(mockConfig)
     expect(getConfig()).toEqual(mockConfig)
+  })
+
+  it('[server-side] logs the config for debugging', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = createMockConfig()
+    setConfig(mockConfig)
+    expect(logDebug).toHaveBeenCalledWith(
+      'Setting config with provided value:',
+      mockConfig
+    )
   })
 
   it('[client-side] returns the set config with defaults', () => {
