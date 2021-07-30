@@ -4,7 +4,7 @@ const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
 
 const initAuth = () => {
   init({
-    debug: false,
+    debug: true,
     authPageURL: '/auth',
     appPageURL: '/',
     loginAPIEndpoint: '/api/login',
