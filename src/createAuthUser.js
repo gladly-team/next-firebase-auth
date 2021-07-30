@@ -1,5 +1,4 @@
 /* eslint no-underscore-dangle: 0 */
-import logDebug from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
 import { filterStandardClaims } from 'src/claims'
 
@@ -48,14 +47,6 @@ const createAuthUser = ({
   token = null,
   claims,
 } = {}) => {
-  logDebug('Called createAuthUser with arguments:', {
-    firebaseUserClientSDK,
-    firebaseUserAdminSDK,
-    serializedAuthUser,
-    clientInitialized,
-    token,
-    claims,
-  })
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,

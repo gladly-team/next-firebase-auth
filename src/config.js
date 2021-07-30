@@ -174,7 +174,9 @@ const validateConfig = (mergedConfig) => {
 }
 
 export const setConfig = (userConfig = {}) => {
+  // TODO: strip private values from log.
   logDebug('Setting config with provided value:', userConfig)
+
   const { cookies: cookieOptions = {}, ...otherUserConfig } = userConfig
 
   // Merge the user's config with the default config, validate it,

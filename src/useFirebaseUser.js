@@ -4,6 +4,7 @@ import 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
+import logDebug from 'src/logDebug'
 
 const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
@@ -63,30 +64,65 @@ const useFirebaseUser = () => {
   const [user, setUser] = useState()
   const [customClaims, setCustomClaims] = useState({})
   const [initialized, setInitialized] = useState(false)
-
-  async function onIdTokenChange(firebaseUser) {
-    if (firebaseUser) {
-      // Get the user's claims:
-      // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
-      const idTokenResult = await firebase.auth().currentUser.getIdTokenResult()
-      const claims = filterStandardClaims(idTokenResult.claims)
-      setCustomClaims(claims)
-    }
-    setUser(firebaseUser)
-    setInitialized(true)
-    await setAuthCookie(firebaseUser)
-  }
+  const [
+    isAuthCookieRequestComplete,
+    setIsAuthCookieRequestComplete,
+  ] = useState(false)
 
   useEffect(() => {
+    let isCancelled = false
+
+    const onIdTokenChange = async (firebaseUser) => {
+      logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
+
+      setIsAuthCookieRequestComplete(false)
+      if (firebaseUser) {
+        // Get the user's claims:
+        // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
+        const idTokenResult = await firebase
+          .auth()
+          .currentUser.getIdTokenResult()
+        const claims = filterStandardClaims(idTokenResult.claims)
+        setCustomClaims(claims)
+      }
+
+      // TODO: combine state updates
+      setUser(firebaseUser)
+      setInitialized(true)
+
+      logDebug('Starting auth API request via tokenChangedHandler.')
+
+      await setAuthCookie(firebaseUser)
+
+      // Cancel state updates if the component has unmounted. We could abort
+      // fetches, but that would not currently support any async logic in the
+      // user-defined "tokenChangedHandler" option.
+      // https://developers.google.com/web/updates/2017/09/abortable-fetch
+      // If we were to do the above, we might optionally have
+      // "tokenChangedHandler" return an unsubscribe function.
+      if (!isCancelled) {
+        setIsAuthCookieRequestComplete(true)
+        logDebug('Completed auth API request via tokenChangedHandler.')
+      } else {
+        logDebug(
+          'Component unmounted before completing auth API request via tokenChangedHandler.'
+        )
+      }
+    }
+
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
     const unsubscribe = firebase.auth().onIdTokenChanged(onIdTokenChange)
-    return () => unsubscribe()
+    return () => {
+      unsubscribe()
+      isCancelled = true
+    }
   }, [])
 
   return {
     user, // unmodified Firebase user, undefined if not authed
     claims: customClaims,
     initialized,
+    authRequestCompleted: isAuthCookieRequestComplete,
   }
 }
 

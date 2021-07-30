@@ -6,6 +6,7 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
+import logDebug from 'src/logDebug'
 
 /**
  * A higher-order component that provides pages with the
@@ -54,6 +55,7 @@ const withAuthUser = ({
       user: firebaseUser,
       claims,
       initialized: firebaseInitialized,
+      authRequestCompleted,
     } = useFirebaseUser()
     const AuthUserFromClient = createAuthUser({
       firebaseUserClientSDK: firebaseUser,
@@ -72,23 +74,41 @@ const withAuthUser = ({
     const isAuthed = !!AuthUser.id
     const isInitialized = AuthUser.clientInitialized
 
-    // Redirect to the app if the user is authed and the "whenAuthed"
-    // argument is set to redirect to the app.
-    const shouldRedirectToApp =
+    // Redirect to the app if all are true:
+    // * the user is authed
+    // * the "whenAuthed" argument is set to redirect to the app
+    // * if on the client side, the call to set cookies has completed
+    //   (see: https://github.com/gladly-team/next-firebase-auth/issues/189)
+    const willRedirectToApp =
       isAuthed && whenAuthed === AuthAction.REDIRECT_TO_APP
+    const shouldRedirectToApp =
+      willRedirectToApp && isClientSide && authRequestCompleted
 
-    // Redirect to the login page if the user is not authed and,
-    // considering whether the Firebase JS SDK is initialized, the
-    // "when unauthed" settings inform us to redirect.
-    const shouldRedirectToLogin =
+    // Redirect to the login page if the user is not authed and one of these
+    // is true:
+    // * the "when unauthed" settings tell us to redirect to login BEFORE
+    //   Firebase has initialized
+    // * the "when unauthed" settings tell us to redirect to login AFTER
+    //   Firebase has initialized, and the call to set cookies has completed
+    //   (see: https://github.com/gladly-team/next-firebase-auth/issues/189)
+    const willRedirectToLogin =
       !isAuthed &&
       ((!isInitialized &&
         whenUnauthedBeforeInit === AuthAction.REDIRECT_TO_LOGIN) ||
         (isInitialized &&
           whenUnauthedAfterInit === AuthAction.REDIRECT_TO_LOGIN))
+    const shouldRedirectToLogin =
+      willRedirectToLogin &&
+      isClientSide &&
+      // We don't have to wait for an auth request if we should redirect
+      // before Firebase initializes.
+      (whenUnauthedBeforeInit !== AuthAction.REDIRECT_TO_LOGIN
+        ? authRequestCompleted
+        : true)
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
+      logDebug('Redirecting to app.')
       const appRedirectDestination = appPageURL || getConfig().appPageURL
       if (!appRedirectDestination) {
         throw new Error(
@@ -109,6 +129,7 @@ const withAuthUser = ({
       router.replace(destination)
     }, [router, AuthUser])
     const redirectToLogin = useCallback(() => {
+      logDebug('Redirecting to login.')
       const authRedirectDestination = authPageURL || getConfig().authPageURL
       if (!authRedirectDestination) {
         throw new Error(
@@ -147,31 +168,40 @@ const withAuthUser = ({
       redirectToLogin,
     ])
 
-    // If we are in the process of redirecting, don't render
-    // anything.
-    const isRedirecting = shouldRedirectToApp || shouldRedirectToLogin
-    if (isRedirecting) {
-      return null
-    }
-
-    // If the user is not authed and the Firebase JS SDK has
-    // not yet initialized, optionally show a "loading" component
-    // or return null rather than rendering.
-    if (!isInitialized && !isAuthed) {
-      if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
-        return LoaderComponent ? <LoaderComponent /> : null
-      }
-      if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
-        return null
-      }
-    }
-
-    return (
+    // Decide what to render.
+    let returnVal = null
+    const loaderComp = LoaderComponent ? <LoaderComponent /> : null
+    const comps = (
       <AuthUserContext.Provider value={AuthUser}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <ChildComponent {...otherProps} />
       </AuthUserContext.Provider>
     )
+    if (willRedirectToApp) {
+      returnVal = null
+    } else if (willRedirectToLogin) {
+      if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
+        returnVal = null
+      } else if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
+        returnVal = loaderComp
+      } else {
+        returnVal = comps
+      }
+    } else if (!isAuthed && !authRequestCompleted) {
+      if (whenUnauthedBeforeInit === AuthAction.SHOW_LOADER) {
+        returnVal = loaderComp
+      } else if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
+        returnVal = null
+      } else {
+        returnVal = comps
+      }
+    } else {
+      returnVal = comps
+    }
+
+    logDebug('AuthUser set to:', AuthUser)
+
+    return returnVal
   }
 
   WithAuthUserHOC.displayName = 'WithAuthUserHOC'

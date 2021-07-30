@@ -9,10 +9,12 @@ import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createAuthUser from 'src/createAuthUser'
+import logDebug from 'src/logDebug'
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
 jest.mock('src/config')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
@@ -37,6 +39,7 @@ describe('useFirebaseUser', () => {
       user: undefined,
       claims: {},
       initialized: false,
+      authRequestCompleted: false,
     })
   })
 
@@ -72,6 +75,7 @@ describe('useFirebaseUser', () => {
       user: mockFirebaseUser,
       claims: {},
       initialized: true,
+      authRequestCompleted: true,
     })
   })
 
@@ -106,6 +110,7 @@ describe('useFirebaseUser', () => {
       user: undefined,
       claims: {},
       initialized: true,
+      authRequestCompleted: true,
     })
   })
 
@@ -152,6 +157,7 @@ describe('useFirebaseUser', () => {
         subscription: true,
       },
       initialized: true,
+      authRequestCompleted: true,
     })
   })
 
@@ -340,6 +346,57 @@ describe('useFirebaseUser', () => {
     expect(onIdTokenChangedUnsubscribe).toHaveBeenCalled()
   })
 
+  it('does not modify state after it unmounts', async () => {
+    expect.assertions(1)
+
+    // If this test fails, we expect a console error from React:
+    // "Warning: Can't perform a React state update on an unmounted component".
+    const consoleErrorSpy = jest.spyOn(console, 'error')
+
+    // Control when the auth fetch resolves.
+    let fetchPromiseResolver
+    const fetchPromise = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          fetchPromiseResolver = resolve
+        })
+    )
+    global.fetch = fetchPromise
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockFirebaseUserWithClaims = { ...mockFirebaseUser, claims: {} }
+
+    let onIdTokenChangedCallback
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { unmount } = renderHook(() => useFirebaseUser())
+    await act(async () => {
+      // Not awaiting.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+
+    // Resolve the fetch after unmount.
+    unmount()
+
+    await act(async () => {
+      fetchPromiseResolver(createMockFetchResponse())
+    })
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+  })
+
   it('calls "tokenChangedHandler" with AuthUser if it is configured', async () => {
     expect.assertions(4)
     const tokenChangedHandler = jest.fn()
@@ -384,5 +441,250 @@ describe('useFirebaseUser', () => {
       signOut: expect.any(Function),
     }
     expect(tokenChangedHandler).toHaveBeenCalledWith(authUser)
+  })
+
+  it('returns "setAuthCookieComplete=false" until the fetch in the default token changed handler resolves', async () => {
+    expect.assertions(2)
+
+    // Control when the auth fetch resolves.
+    let fetchPromiseResolver
+    const fetchPromise = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          fetchPromiseResolver = resolve
+        })
+    )
+    global.fetch = fetchPromise
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockFirebaseUserWithClaims = { ...mockFirebaseUser, claims: {} }
+
+    let onIdTokenChangedCallback
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { result } = renderHook(() => useFirebaseUser())
+
+    await act(async () => {
+      // Not awaited. The login `fetch` call has not resolved; that is,
+      // auth cookies have not been set.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: false,
+    })
+
+    await act(async () => {
+      // Resolve the login `fetch` call; that is, cookies have (most likely)
+      // been set.
+      fetchPromiseResolver(createMockFetchResponse())
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: true,
+    })
+  })
+
+  it('returns "setAuthCookieComplete=false" until the fetch in the custom "tokenChangedHandler" resolves', async () => {
+    expect.assertions(2)
+
+    // Control when the tokenChangedHanlder resolves.
+    let tokenChangedPromiseResolver
+    const tokenChangedHandler = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          tokenChangedPromiseResolver = resolve
+        })
+    )
+
+    setConfig({
+      ...createMockConfig(),
+      tokenChangedHandler,
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+
+    // Intercept the getIdToken call
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
+
+    let onIdTokenChangedCallback
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { result } = renderHook(() => useFirebaseUser())
+
+    await act(async () => {
+      // Not awaited. The `tokenChangedHandler` call has not resolved; that is,
+      // auth cookies have not been set.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: false,
+    })
+
+    await act(async () => {
+      // Resolve the `tokenChangedHandler` call; that is, cookies have (most
+      // likely) been set.
+      tokenChangedPromiseResolver(createMockFetchResponse())
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: true,
+    })
+  })
+
+  it('resets "setAuthCookieComplete" to false when the token changes again', async () => {
+    expect.assertions(3)
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const mockFirebaseUserWithClaims = { ...mockFirebaseUser, claims: {} }
+
+    let onIdTokenChangedCallback
+
+    // Capture the onIdTokenChanged callback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    // Intercept the getIdToken call
+    const getIdTokenResult = jest.fn(async () => mockFirebaseUserWithClaims)
+
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { result } = renderHook(() => useFirebaseUser())
+
+    await act(async () => {
+      await onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: true,
+    })
+
+    // Control when the auth fetch resolves.
+    let fetchPromiseResolver
+    const fetchPromise = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          fetchPromiseResolver = resolve
+        })
+    )
+    global.fetch = fetchPromise
+
+    await act(async () => {
+      // Not awaited. The `tokenChangedHandler` call has not resolved.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: false,
+    })
+
+    await act(async () => {
+      fetchPromiseResolver(createMockFetchResponse())
+    })
+    expect(result.current).toEqual({
+      user: mockFirebaseUser,
+      claims: {},
+      initialized: true,
+      authRequestCompleted: true,
+    })
+  })
+
+  it('logs the expected debugging messages', async () => {
+    expect.assertions(5)
+
+    let tokenChangedPromiseResolver
+    const tokenChangedHandler = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          tokenChangedPromiseResolver = resolve
+        })
+    )
+    setConfig({
+      ...createMockConfig(),
+      tokenChangedHandler,
+    })
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
+    let onIdTokenChangedCallback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {}
+    })
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    renderHook(() => useFirebaseUser())
+
+    expect(logDebug).not.toHaveBeenCalled()
+
+    await act(async () => {
+      // Not awaited. The `tokenChangedHandler` call has not resolved; that is,
+      // auth cookies have not been set.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'Firebase ID token changed. Firebase user:',
+      expect.any(Object)
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      'Starting auth API request via tokenChangedHandler.'
+    )
+    expect(logDebug).not.toHaveBeenCalledWith(
+      'Completed auth API request via tokenChangedHandler.'
+    )
+
+    await act(async () => {
+      // Resolve the `tokenChangedHandler` call; that is, cookies have (most
+      // likely) been set.
+      tokenChangedPromiseResolver(createMockFetchResponse())
+    })
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'Completed auth API request via tokenChangedHandler.'
+    )
   })
 })
