@@ -31,140 +31,143 @@ import AuthAction from 'src/AuthAction'
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
  */
-const withAuthUserTokenSSR = (
-  {
-    whenAuthed = AuthAction.RENDER,
-    whenUnauthed = AuthAction.RENDER,
-    appPageURL = null,
-    authPageURL = null,
-  } = {},
-  { useToken = true } = {}
-) => (getServerSidePropsFunc) => async (ctx) => {
-  const { req, res } = ctx
+const withAuthUserTokenSSR =
+  (
+    {
+      whenAuthed = AuthAction.RENDER,
+      whenUnauthed = AuthAction.RENDER,
+      appPageURL = null,
+      authPageURL = null,
+    } = {},
+    { useToken = true } = {}
+  ) =>
+  (getServerSidePropsFunc) =>
+  async (ctx) => {
+    const { req, res } = ctx
 
-  const { keys, secure, signed } = getConfig().cookies
+    const { keys, secure, signed } = getConfig().cookies
 
-  let AuthUser
+    let AuthUser
 
-  // Get the user either from:
-  // * the ID token, refreshing the token as needed (via a network
-  //   request), which will make `AuthUser.getIdToken` resolve to
-  //   a valid ID token value
-  // * the "AuthUser" cookie (no network request), which will make
-  //  `AuthUser.getIdToken` resolve to null
-  if (useToken) {
-    // Get the user's ID token from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
-    const cookieValStr = getCookie(
-      getAuthUserTokensCookieName(),
-      {
-        req,
-        res,
-      },
-      { keys, secure, signed }
-    )
-    const { idToken, refreshToken } = cookieValStr
-      ? JSON.parse(cookieValStr)
-      : {}
-    if (idToken) {
-      AuthUser = await verifyIdToken(idToken, refreshToken)
+    // Get the user either from:
+    // * the ID token, refreshing the token as needed (via a network
+    //   request), which will make `AuthUser.getIdToken` resolve to
+    //   a valid ID token value
+    // * the "AuthUser" cookie (no network request), which will make
+    //  `AuthUser.getIdToken` resolve to null
+    if (useToken) {
+      // Get the user's ID token from a cookie, verify it (refreshing
+      // as needed), and return the serialized AuthUser in props.
+      const cookieValStr = getCookie(
+        getAuthUserTokensCookieName(),
+        {
+          req,
+          res,
+        },
+        { keys, secure, signed }
+      )
+      const { idToken, refreshToken } = cookieValStr
+        ? JSON.parse(cookieValStr)
+        : {}
+      if (idToken) {
+        AuthUser = await verifyIdToken(idToken, refreshToken)
+      } else {
+        AuthUser = createAuthUser() // unauthenticated AuthUser
+      }
     } else {
-      AuthUser = createAuthUser() // unauthenticated AuthUser
-    }
-  } else {
-    // Get the user's info from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
-    const cookieValStr = getCookie(
-      getAuthUserCookieName(),
-      {
-        req,
-        res,
-      },
-      { keys, secure, signed }
-    )
-    AuthUser = createAuthUser({
-      serializedAuthUser: cookieValStr,
-    })
-  }
-  const AuthUserSerialized = AuthUser.serialize()
-
-  // If specified, redirect to the login page if the user is unauthed.
-  if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
-    const authRedirectDestination = authPageURL || getConfig().authPageURL
-    if (!authRedirectDestination) {
-      throw new Error(
-        `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
+      // Get the user's info from a cookie, verify it (refreshing
+      // as needed), and return the serialized AuthUser in props.
+      const cookieValStr = getCookie(
+        getAuthUserCookieName(),
+        {
+          req,
+          res,
+        },
+        { keys, secure, signed }
       )
+      AuthUser = createAuthUser({
+        serializedAuthUser: cookieValStr,
+      })
     }
-    const destination =
-      typeof authRedirectDestination === 'string'
-        ? authRedirectDestination
-        : authRedirectDestination({ ctx, AuthUser })
+    const AuthUserSerialized = AuthUser.serialize()
 
-    if (!destination) {
-      throw new Error(
-        'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
-      )
-    }
+    // If specified, redirect to the login page if the user is unauthed.
+    if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
+      const authRedirectDestination = authPageURL || getConfig().authPageURL
+      if (!authRedirectDestination) {
+        throw new Error(
+          `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
+        )
+      }
+      const destination =
+        typeof authRedirectDestination === 'string'
+          ? authRedirectDestination
+          : authRedirectDestination({ ctx, AuthUser })
 
-    return {
-      redirect: {
-        destination,
-        permanent: false,
-      },
-    }
-  }
+      if (!destination) {
+        throw new Error(
+          'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        )
+      }
 
-  // If specified, redirect to the app page if the user is authed.
-  if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
-    const appRedirectDestination = appPageURL || getConfig().appPageURL
-    if (!appRedirectDestination) {
-      throw new Error(
-        `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
-      )
-    }
-    const destination =
-      typeof appRedirectDestination === 'string'
-        ? appRedirectDestination
-        : appRedirectDestination({ ctx, AuthUser })
-
-    if (!destination) {
-      throw new Error(
-        'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
-      )
-    }
-    return {
-      redirect: {
-        destination,
-        permanent: false,
-      },
-    }
-  }
-
-  // Prepare return data
-  let returnData = { props: { AuthUserSerialized } }
-
-  // Evaluate the composed getServerSideProps().
-  if (getServerSidePropsFunc) {
-    // Add the AuthUser to Next.js context so pages can use
-    // it in `getServerSideProps`, if needed.
-    ctx.AuthUser = AuthUser
-    const composedProps = (await getServerSidePropsFunc(ctx)) || {}
-    if (composedProps) {
-      if (composedProps.props) {
-        // If composedProps does have a valid props object, we inject AuthUser in there
-        returnData = { ...composedProps }
-        returnData.props.AuthUserSerialized = AuthUserSerialized
-      } else if (composedProps.notFound || composedProps.redirect) {
-        // If composedProps returned a 'notFound' or 'redirect' key
-        // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
-        // it means it contains a custom dynamic routing logic that should not be overwritten
-        returnData = { ...composedProps }
+      return {
+        redirect: {
+          destination,
+          permanent: false,
+        },
       }
     }
-  }
 
-  return returnData
-}
+    // If specified, redirect to the app page if the user is authed.
+    if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
+      const appRedirectDestination = appPageURL || getConfig().appPageURL
+      if (!appRedirectDestination) {
+        throw new Error(
+          `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
+        )
+      }
+      const destination =
+        typeof appRedirectDestination === 'string'
+          ? appRedirectDestination
+          : appRedirectDestination({ ctx, AuthUser })
+
+      if (!destination) {
+        throw new Error(
+          'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        )
+      }
+      return {
+        redirect: {
+          destination,
+          permanent: false,
+        },
+      }
+    }
+
+    // Prepare return data
+    let returnData = { props: { AuthUserSerialized } }
+
+    // Evaluate the composed getServerSideProps().
+    if (getServerSidePropsFunc) {
+      // Add the AuthUser to Next.js context so pages can use
+      // it in `getServerSideProps`, if needed.
+      ctx.AuthUser = AuthUser
+      const composedProps = (await getServerSidePropsFunc(ctx)) || {}
+      if (composedProps) {
+        if (composedProps.props) {
+          // If composedProps does have a valid props object, we inject AuthUser in there
+          returnData = { ...composedProps }
+          returnData.props.AuthUserSerialized = AuthUserSerialized
+        } else if (composedProps.notFound || composedProps.redirect) {
+          // If composedProps returned a 'notFound' or 'redirect' key
+          // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
+          // it means it contains a custom dynamic routing logic that should not be overwritten
+          returnData = { ...composedProps }
+        }
+      }
+    }
+
+    return returnData
+  }
 
 export default withAuthUserTokenSSR

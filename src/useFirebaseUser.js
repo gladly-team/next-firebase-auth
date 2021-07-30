@@ -64,10 +64,8 @@ const useFirebaseUser = () => {
   const [user, setUser] = useState()
   const [customClaims, setCustomClaims] = useState({})
   const [initialized, setInitialized] = useState(false)
-  const [
-    isAuthCookieRequestComplete,
-    setIsAuthCookieRequestComplete,
-  ] = useState(false)
+  const [isAuthCookieRequestComplete, setIsAuthCookieRequestComplete] =
+    useState(false)
 
   useEffect(() => {
     let isCancelled = false
