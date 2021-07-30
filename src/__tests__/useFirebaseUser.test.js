@@ -9,10 +9,12 @@ import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createAuthUser from 'src/createAuthUser'
+import logDebug from 'src/logDebug'
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
 jest.mock('src/config')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
@@ -508,5 +510,64 @@ describe('useFirebaseUser', () => {
       initialized: true,
       authRequestCompleted: true,
     })
+  })
+
+  it('logs the expected debugging messages', async () => {
+    expect.assertions(5)
+
+    let tokenChangedPromiseResolver
+    const tokenChangedHandler = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          tokenChangedPromiseResolver = resolve
+        })
+    )
+    setConfig({
+      ...createMockConfig(),
+      tokenChangedHandler,
+    })
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
+    let onIdTokenChangedCallback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {}
+    })
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const { result } = renderHook(() => useFirebaseUser())
+
+    expect(logDebug).not.toHaveBeenCalled()
+
+    await act(async () => {
+      // Not awaited. The `tokenChangedHandler` call has not resolved; that is,
+      // auth cookies have not been set.
+      onIdTokenChangedCallback(mockFirebaseUser)
+    })
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'Firebase ID token changed. Firebase user:',
+      expect.any(Object)
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      'Starting auth API request via tokenChangedHandler.'
+    )
+    expect(logDebug).not.toHaveBeenCalledWith(
+      'Completed auth API request via tokenChangedHandler.'
+    )
+
+    await act(async () => {
+      // Resolve the `tokenChangedHandler` call; that is, cookies have (most
+      // likely) been set.
+      tokenChangedPromiseResolver(createMockFetchResponse())
+    })
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'Completed auth API request via tokenChangedHandler.'
+    )
   })
 })

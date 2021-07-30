@@ -48,14 +48,6 @@ const createAuthUser = ({
   token = null,
   claims,
 } = {}) => {
-  logDebug('Called createAuthUser with arguments:', {
-    firebaseUserClientSDK,
-    firebaseUserAdminSDK,
-    serializedAuthUser,
-    clientInitialized,
-    token,
-    claims,
-  })
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,

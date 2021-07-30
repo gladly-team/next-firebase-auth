@@ -6,6 +6,7 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
+import logDebug from 'src/logDebug'
 
 /**
  * A higher-order component that provides pages with the
@@ -107,6 +108,7 @@ const withAuthUser = ({
 
     const router = useRouter()
     const redirectToApp = useCallback(() => {
+      logDebug('Redirecting to app.')
       const appRedirectDestination = appPageURL || getConfig().appPageURL
       if (!appRedirectDestination) {
         throw new Error(
@@ -127,6 +129,7 @@ const withAuthUser = ({
       router.replace(destination)
     }, [router, AuthUser])
     const redirectToLogin = useCallback(() => {
+      logDebug('Redirecting to login.')
       const authRedirectDestination = authPageURL || getConfig().authPageURL
       if (!authRedirectDestination) {
         throw new Error(
@@ -190,11 +193,13 @@ const withAuthUser = ({
       } else if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
         returnVal = null
       } else {
-        return comps
+        returnVal = comps
       }
     } else {
-      return comps
+      returnVal = comps
     }
+
+    logDebug('AuthUser set to:', AuthUser)
 
     return returnVal
   }

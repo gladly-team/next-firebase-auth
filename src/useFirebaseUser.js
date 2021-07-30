@@ -4,6 +4,7 @@ import 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
+import logDebug from 'src/logDebug'
 
 const defaultTokenChangedHandler = async (authUser) => {
   const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
@@ -69,6 +70,7 @@ const useFirebaseUser = () => {
   ] = useState(false)
 
   async function onIdTokenChange(firebaseUser) {
+    logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
     if (firebaseUser) {
       // Get the user's claims:
       // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
@@ -76,10 +78,16 @@ const useFirebaseUser = () => {
       const claims = filterStandardClaims(idTokenResult.claims)
       setCustomClaims(claims)
     }
+
     setUser(firebaseUser)
     setInitialized(true)
+
+    logDebug('Starting auth API request via tokenChangedHandler.')
+
     await setAuthCookie(firebaseUser)
+
     setIsAuthCookieRequestComplete(true)
+    logDebug('Completed auth API request via tokenChangedHandler.')
   }
 
   useEffect(() => {
