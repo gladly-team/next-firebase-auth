@@ -41,11 +41,20 @@ const Demo = () => {
   }, [AuthUser])
 
   useEffect(() => {
+    let isCancelled = false
     const fetchFavoriteColor = async () => {
       const data = await fetchData()
-      setFavoriteColor(data ? data.favoriteColor : 'unknown :(')
+      if (!isCancelled) {
+        setFavoriteColor(data ? data.favoriteColor : 'unknown :(')
+      }
     }
     fetchFavoriteColor()
+    return () => {
+      // A quick but not ideal way to avoid state updates after unmount.
+      // In your app, prefer aborting fetches:
+      // https://developers.google.com/web/updates/2017/09/abortable-fetch
+      isCancelled = true
+    }
   }, [fetchData])
 
   return (
