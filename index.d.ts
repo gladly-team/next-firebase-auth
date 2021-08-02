@@ -32,9 +32,8 @@ export interface AuthUser {
   signOut: () => Promise<void>
 }
 
-export type SSRPropsContext<
-  Q extends ParsedUrlQuery = ParsedUrlQuery
-> = GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
+export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
+  GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
 
 export type SSRPropGetter<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
