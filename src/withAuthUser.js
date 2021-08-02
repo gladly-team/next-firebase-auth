@@ -1,5 +1,6 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
+import hoistNonReactStatics from 'hoist-non-react-statics'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
@@ -49,9 +50,13 @@ const withAuthUser =
   (ChildComponent) => {
     const WithAuthUserHOC = (props) => {
       const { AuthUserSerialized, ...otherProps } = props
-      const AuthUserFromServer = createAuthUser({
-        serializedAuthUser: AuthUserSerialized,
-      })
+      const AuthUserFromServer = useMemo(
+        () =>
+          createAuthUser({
+            serializedAuthUser: AuthUserSerialized,
+          }),
+        [AuthUserSerialized]
+      )
 
       const {
         user: firebaseUser,
@@ -59,11 +64,15 @@ const withAuthUser =
         initialized: firebaseInitialized,
         authRequestCompleted,
       } = useFirebaseUser()
-      const AuthUserFromClient = createAuthUser({
-        firebaseUserClientSDK: firebaseUser,
-        clientInitialized: firebaseInitialized,
-        claims,
-      })
+      const AuthUserFromClient = useMemo(
+        () =>
+          createAuthUser({
+            firebaseUserClientSDK: firebaseUser,
+            clientInitialized: firebaseInitialized,
+            claims,
+          }),
+        [firebaseUser, firebaseInitialized, claims]
+      )
 
       // Set the AuthUser to values from the Firebase JS SDK user
       // once it has initialized. On the server side and before the
@@ -207,7 +216,7 @@ const withAuthUser =
     }
 
     WithAuthUserHOC.displayName = 'WithAuthUserHOC'
-
+    hoistNonReactStatics(WithAuthUserHOC, ChildComponent)
     return WithAuthUserHOC
   }
 
