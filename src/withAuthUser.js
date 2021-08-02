@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
+import hoistNonReactStatics from 'hoist-non-react-statics'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
@@ -215,7 +216,7 @@ const withAuthUser =
     }
 
     WithAuthUserHOC.displayName = 'WithAuthUserHOC'
-
+    hoistNonReactStatics(WithAuthUserHOC, ChildComponent)
     return WithAuthUserHOC
   }
 
