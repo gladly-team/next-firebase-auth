@@ -1187,4 +1187,39 @@ describe('withAuthUser: AuthUser context', () => {
     render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
     expect(logDebug).toHaveBeenCalledWith('AuthUser set to:', expectedAuthUser)
   })
+
+  it('provides the same AuthUser object reference after "authRequestCompleted" changes (that is, it does not cause a re-render)', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    const initialFirebaseUserResponse = {
+      ...getUseFirebaseUserResponse(),
+      user: mockFirebaseUser,
+      initialized: true,
+      authRequestCompleted: false,
+    }
+    useFirebaseUser.mockReturnValue(initialFirebaseUserResponse)
+
+    const authUsers = []
+    const AnotherMockComponent = () => {
+      const authUser = useAuthUser()
+      authUsers.push(authUser)
+      return <div>hi!</div>
+    }
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.RENDER,
+    })(AnotherMockComponent)
+    const { rerender } = render(
+      <MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />
+    )
+    useFirebaseUser.mockReturnValue({
+      ...initialFirebaseUserResponse,
+      authRequestCompleted: true,
+    })
+    rerender(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    expect(authUsers[0]).toEqual(authUsers[authUsers.length - 1])
+  })
 })
