@@ -42,6 +42,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
   // Optionally, get other props.
+  // You can return anything you'd normally return from
+  // `getServerSideProps`, including redirects.
+  // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
   const token = await AuthUser.getIdToken()
   const endpoint = getAbsoluteURL('/api/example', req)
   const response = await fetch(endpoint, {
