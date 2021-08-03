@@ -1,12 +1,64 @@
+/* globals window */
 import { init } from 'next-firebase-auth'
+import absoluteUrl from 'next-absolute-url'
 
 const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
 
 const initAuth = () => {
   init({
     debug: true,
-    authPageURL: '/auth',
-    appPageURL: '/',
+
+    // This demonstrates setting a dynamic destination URL when
+    // redirecting from app pages. Alternatively, you can simply
+    // specify `authPageURL: '/auth-ssr'`.
+    authPageURL: ({ ctx }) => {
+      const isServerSide = typeof window === 'undefined'
+      const origin = isServerSide
+        ? absoluteUrl(ctx.req).origin
+        : window.location.origin
+      const destPath =
+        typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
+      const destURL = new URL(destPath, origin)
+      return `auth-ssr?destination=${encodeURIComponent(destURL)}`
+    },
+
+    // This demonstrates setting a dynamic destination URL when
+    // redirecting from auth pages. Alternatively, you can simply
+    // specify `appPageURL: '/'`.
+    appPageURL: ({ ctx }) => {
+      const isServerSide = typeof window === 'undefined'
+      const origin = isServerSide
+        ? absoluteUrl(ctx.req).origin
+        : window.location.origin
+      const params = isServerSide
+        ? new URL(ctx.req.url, origin).searchParams
+        : new URLSearchParams(window.location.search)
+      const destinationParamVal = params.get('destination')
+        ? decodeURIComponent(params.get('destination'))
+        : undefined
+
+      // By default, go to the index page if the destination URL
+      // is invalid or unspecified.
+      let destURL = '/'
+      if (destinationParamVal) {
+        // Verify the redirect URL host is allowed.
+        // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
+        const allowedHosts = ['localhost:3000', 'nfa-example.vercel.app']
+        const allowed =
+          allowedHosts.indexOf(new URL(destinationParamVal).host) > -1
+        if (allowed) {
+          destURL = destinationParamVal
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Redirect destination host must be one of ${allowedHosts.join(
+              ', '
+            )}.`
+          )
+        }
+      }
+      return destURL
+    },
     loginAPIEndpoint: '/api/login',
     logoutAPIEndpoint: '/api/logout',
     firebaseAdminInitConfig: {

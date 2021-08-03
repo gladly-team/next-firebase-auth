@@ -221,8 +221,8 @@ Option | Description | Default
 `whenAuthed` | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER`
 `whenUnauthedBeforeInit` | The action to take if the user is *not* authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`. | `AuthAction.RENDER`
 `whenUnauthedAfterInit` | The action to take if the user is *not* authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
-`appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
-`authPageURL` | The redirect destination URL when we should redirect to the login page. | `config.authPageURL`
+`appPageURL` | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. | `config.appPageURL`
+`authPageURL` | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL. | `config.authPageURL`
 `LoaderComponent` | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`. | null
 
 For example, this page will redirect to the login page if the user is not authenticated:
@@ -263,8 +263,8 @@ Option | Description | Default
 ------------ | ------------- | -------------
 `whenAuthed` | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`. | `AuthAction.RENDER`
 `whenUnauthed` | The action to take if the user is *not* authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`
-`appPageURL` | The redirect destination URL when we should redirect to the app. | `config.appPageURL`
-`authPageURL` | The redirect destination URL when we should redirect to the login page. | `config.authPageURL`
+`appPageURL` | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. | `config.appPageURL`
+`authPageURL` | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL. | `config.authPageURL`
 
 
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
@@ -394,9 +394,9 @@ export default withAuthUser()(Artist)
 
 See an [example config here](#example-config). Provide the config when you call `init`.
 
-**authPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+**authPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
-**appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+**appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 **loginAPIEndpoint**: The API endpoint this module will call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
 
@@ -527,6 +527,9 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
 ## Examples
+* [Using the Firebase Apps](#using-the-firebase-apps)
+* [Dynamic Redirects](#dynamic-redirects)
+* [Testing and Mocking with Jest](#testing-and-mocking-with-jest)
 
 ### Using the Firebase Apps
 
@@ -563,6 +566,76 @@ const Artists = () => {
   )
   
 }
+```
+
+### Dynamic Redirects
+
+This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic: the `authPageURL` and `appPageURL` properties, used in the config and higher-order components, can be functions that receive `{ ctx }` and return a URL.
+
+The [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) uses this to set a post-login destination URL:
+
+```js
+// ./utils/initAuth.js
+import { init } from 'next-firebase-auth'
+import absoluteUrl from 'next-absolute-url'
+
+const initAuth = () => init({
+  // This demonstrates setting a dynamic destination URL when
+  // redirecting from app pages. Alternatively, you can simply
+  // specify `authPageURL: '/auth-ssr'`.
+  authPageURL: ({ ctx }) => {
+    const isServerSide = typeof window === 'undefined'
+    const origin = isServerSide
+      ? absoluteUrl(ctx.req).origin
+      : window.location.origin
+    const destPath =
+      typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
+    const destURL = new URL(destPath, origin)
+    return `auth-ssr?destination=${encodeURIComponent(destURL)}`
+  },
+
+  // This demonstrates setting a dynamic destination URL when
+  // redirecting from auth pages. Alternatively, you can simply
+  // specify `appPageURL: '/'`.
+  appPageURL: ({ ctx }) => {
+    const isServerSide = typeof window === 'undefined'
+    const origin = isServerSide
+      ? absoluteUrl(ctx.req).origin
+      : window.location.origin
+    const params = isServerSide
+      ? new URL(ctx.req.url, origin).searchParams
+      : new URLSearchParams(window.location.search)
+    const destinationParamVal = params.get('destination')
+      ? decodeURIComponent(params.get('destination'))
+      : undefined
+
+    // By default, go to the index page if the destination URL
+    // is invalid or unspecified.
+    let destURL = '/'
+    if (destinationParamVal) {
+      // Verify the redirect URL host is allowed.
+      // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
+      const allowedHosts = ['localhost:3000', 'nfa-example.vercel.app']
+      const allowed =
+        allowedHosts.indexOf(new URL(destinationParamVal).host) > -1
+      if (allowed) {
+        destURL = destinationParamVal
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Redirect destination host must be one of ${allowedHosts.join(
+            ', '
+          )}.`
+        )
+      }
+    }
+    return destURL
+  },
+
+  // ... other config
+}
+
+export default initAuth
 ```
 
 ### Testing and Mocking with Jest

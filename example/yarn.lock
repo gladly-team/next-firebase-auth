@@ -2792,6 +2792,11 @@ native-url@0.3.4:
   dependencies:
     querystring "^0.2.0"
 
+next-absolute-url@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/next-absolute-url/-/next-absolute-url-1.2.2.tgz#9aba5adcee8effcffd63271d99e13213ad04c23b"
+  integrity sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==
+
 next-firebase-auth@0.13.3-alpha.1:
   version "0.13.3-alpha.1"
   resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.13.3-alpha.1.tgz#8eb06a25228f84d37ab3815bfe59741d717ab259"
