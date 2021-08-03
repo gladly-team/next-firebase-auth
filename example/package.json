@@ -13,14 +13,16 @@
     "firebase-admin": "^9.11.0",
     "next": "11.0.1",
     "next-absolute-url": "^1.2.2",
-    "next-firebase-auth": "0.13.3-alpha.0",
+    "next-firebase-auth": "0.13.3-alpha.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-firebaseui": "^5.0.2"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^11.0.1",
     "@types/node": "^16.4.8",
     "@types/react": "^17.0.15",
+    "eslint-config-next": "^11.0.1",
     "typescript": "^4.3.5"
   }
 }
