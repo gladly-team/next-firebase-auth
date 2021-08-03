@@ -12,8 +12,13 @@ const initAuth = () => {
     // redirecting from app pages. Alternatively, you can simply
     // specify `authPageURL: '/auth-ssr'`.
     authPageURL: ({ ctx }) => {
-      const destURL =
-        typeof window === 'undefined' ? ctx.req.url : window.location.href
+      const isServerSide = typeof window === 'undefined'
+      const origin = isServerSide
+        ? absoluteUrl(ctx.req).origin
+        : window.location.origin
+      const destPath =
+        typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
+      const destURL = new URL(destPath, origin)
       return `auth-ssr?destination=${encodeURIComponent(destURL)}`
     },
 
@@ -43,6 +48,13 @@ const initAuth = () => {
           allowedHosts.indexOf(new URL(destinationParamVal).host) > -1
         if (allowed) {
           destURL = destinationParamVal
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Redirect destination host must be one of ${allowedHosts.join(
+              ', '
+            )}.`
+          )
         }
       }
       return destURL
