@@ -2792,10 +2792,10 @@ native-url@0.3.4:
   dependencies:
     querystring "^0.2.0"
 
-next-firebase-auth@0.13.3-alpha.0:
-  version "0.13.3-alpha.0"
-  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.13.3-alpha.0.tgz#67f3dbdd2729ee84640c3fafb9561423a1deae8f"
-  integrity sha512-gRUdUlzqsQ0Hp5vmpN9HayDOjIpePkATo1KWgJihtXkl9szidmSTK9QnFkePfHHTQo/G/AWOs4Knk6QJOCqo3Q==
+next-firebase-auth@0.13.3-alpha.1:
+  version "0.13.3-alpha.1"
+  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.13.3-alpha.1.tgz#8eb06a25228f84d37ab3815bfe59741d717ab259"
+  integrity sha512-FENpm4k3Veeikq9PDQkNO7x4cTNsEITRXiC61ASw9wXSTGHi/BzosQQLkzikjH/qJbVtaML4axwBohtLV3kYSA==
   dependencies:
     cookies "^0.8.0"
     hoist-non-react-statics "^3.3.2"
