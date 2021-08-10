@@ -151,3 +151,11 @@ export const withAuthUserSSR: (options?: {
   appPageURL?: PageURL
   authPageURL?: PageURL
 }) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
+
+interface AuthenticatedNextApiRequest extends NextApiRequest {
+  AuthUser?: AuthUser
+}
+
+export const withAuthUserTokenAPI: <T extends unknown>(
+  handler: (req: AuthenticatedNextApiRequest, res: NextApiResponse<T>) => void
+) => (req: NextApiRequest, res: NextApiResponse) => void

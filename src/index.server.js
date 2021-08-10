@@ -6,6 +6,7 @@ import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
 import withAuthUserTokenSSRModule from 'src/withAuthUserTokenSSR'
 import { verifyIdToken } from 'src/firebaseAdmin'
+import withAuthUserTokenAPI from 'src/withAuthUserTokenAPI'
 
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
@@ -33,4 +34,5 @@ export default {
   unsetAuthCookies,
   verifyIdToken,
   getFirebaseAdmin,
+  withAuthUserTokenAPI,
 }

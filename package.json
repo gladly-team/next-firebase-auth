@@ -60,6 +60,7 @@
     "firebase": "^8.8.1",
     "firebase-admin": "^9.11.0",
     "jest": "^27.0.6",
+    "@jest/globals": "^27.0.6",
     "jsdom": "^16.7.0",
     "mockdate": "^3.0.2",
     "moment": "^2.29.1",

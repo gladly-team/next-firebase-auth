@@ -198,12 +198,14 @@ export default withAuthUser()(Demo)
 * [withAuthUser](#withauthuser-options-pagecomponent)
 * [withAuthUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
 * [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
+* [withAuthUserTokenAPI](#withAuthUserTokenAPI)
 * [useAuthUser](#useauthuser)
 * [setAuthCookies](#setauthcookiesreq-res)
 * [unsetAuthCookies](#unsetauthcookiesreq-res)
 * [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 * [AuthAction](#authaction)
 * [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
+
 
 -----
 #### `init(config)`
@@ -306,6 +308,72 @@ Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: i
 ⚠️ Do not use this when `cookies.signed` is set to `false`. Doing so is a potential security risk, because the authed user cookie values could be modified by the client.
 
 This takes the same options as `withAuthUserTokenSSR`.
+
+#### `withAuthUserTokenAPI(handler)`
+
+API Middleware that can be used to ensure Authorization to NextJS API requests.
+
+If the ID Token is rejected, then a **HTTP *401 Unauthorized*** status response is sent; the `handler` method will not be invoked in this instance.
+
+When the ID Token is valid and verified, the `handler` method is invoked. The `request` parameter will have a new Property `AuthUser` that you can make use of within the `handler` method.
+
+For example (javascript):
+
+```JavaScript
+// file: /pages/api/hello.js
+import { withAuthUserTokenAPI } from 'next-firebase-auth';
+
+const handler = async (req, res: ) => {
+  console.log(req.AuthUser)
+
+  res.send(`Hello ${req.AuthUser.displayName}!`)
+}
+
+export default withAuthUserTokenAPI(handler)
+```
+
+For example (TypeScript):
+
+```TypeScript
+// file: /pages/api/hello.ts
+import type { NextApiResponse } from 'next';
+import { withAuthUserTokenAPI, AuthenticatedNextApiRequest } from 'next-firebase-auth';
+
+const handler = async (req: AuthenticatedNextApiRequest, res: NextApiResponse) => {
+  console.log(req.AuthUser)
+
+  res.send(`Hello ${req.AuthUser.displayName}!`)
+}
+
+export default withAuthUserTokenAPI(handler)
+```
+
+To call these API's you will need to have the Authenticate Users ID Token, on the server side this can be done by using the [withAuthUserTokenAPI](#withAuthUserTokenAPI) wrapper, and utilizing the `AuthUser.getIdToken()`.
+
+For Example:
+
+```JavaScript
+export const getServerSideProps = withAuthUserTokenSSR({
+  authPageURL: '/login',
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+})(async ({ params, req, res, AuthUser }) => {
+
+  const response = await fetch('/api/hello', {
+    headers: {
+      Authorization: `bearer ${await AuthUser.getIdToken()}`,
+    },
+  });
+
+  const data = await response.json();
+
+  return {
+    props: {
+      data,
+    },
+  };
+});
+```
 
 #### `useAuthUser()`
 
