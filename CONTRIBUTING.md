@@ -1,6 +1,6 @@
 # Contributing
 
-Welcome! Thanks for considering contributing to `next-firebase-auth`. Nearly every issue we have is open for contributions. We—all of us who use this package—really appreciate your help! 
+Welcome, and thanks for considering contributing to `next-firebase-auth`! We really appreciate your support.
 
 Here are some quick guidelines on how to contribute productively.
 
@@ -24,7 +24,7 @@ If you find a security vulnerability, do **not** open an issue. Please email the
 
 ### Making code contributions
 
-1. Before working, please open a related issue (or comment on an existing issue that you're working on it)
+1. Before coding, please open a related issue (or comment on an existing issue to let us know you're working on it)
 2. Fork this repository
 3. Make code changes in your fork
     * Add comments where it's potentially unclear what your code is doing
