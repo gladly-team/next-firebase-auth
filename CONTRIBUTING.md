@@ -35,6 +35,15 @@ If you find a security vulnerability, do **not** open an issue. Please email the
     * Add a clear title
     * In the description, link to the related issue, such as: `Closes #123.`
 
+### Using a local version of the package
+
+It can be helpful to use an in-development version of `next-firebase-auth` in another app:
+
+1. Install [yalc](https://www.npmjs.com/package/yalc): `yarn global add yalc`
+2. In `next-firebase-auth`, publish a local version: `yarn run dev:publish` -- this builds your local package code, then publishes it with Yalc
+3. In another local Next.js app, such as the example app in this repository: `yalc add next-firebase-auth`
+4. After you make changes to your local `next-firebase-auth`, use `yarn run dev:publish` again to use the latest local code in your app
+
 ### We may be slow to respond
 
 At the moment, this repository is maintained by ~1 person in their spare time. We will be as responsive as possible, but we may be slow to respond to issues and PRs. Thanks for your patience!
