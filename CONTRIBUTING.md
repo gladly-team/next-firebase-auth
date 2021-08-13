@@ -35,9 +35,9 @@ If you find a security vulnerability, do **not** open an issue. Please email the
     * Add a clear title
     * In the description, link to the related issue, such as: `Closes #123.`
 
-### Using a local version of the package
+### Developing with a local version of the package
 
-It can be helpful to use an in-development version of `next-firebase-auth` in another app:
+While developing, it can be helpful to use a local version of `next-firebase-auth` in another app. To do so:
 
 1. Install [yalc](https://www.npmjs.com/package/yalc): `yarn global add yalc`
 2. In `next-firebase-auth`, publish a local version: `yarn run dev:publish` -- this builds your local package code, then publishes it with Yalc
