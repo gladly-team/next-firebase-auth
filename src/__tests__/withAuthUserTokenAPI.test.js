@@ -29,7 +29,48 @@ const mockResponse = {
 
 let env = null
 
-describe('Invalid token testing', () => {
+describe('Invalid (no ID) user returned', () => {
+  beforeEach(() => {
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        apiKey: 'some-key',
+      },
+    })
+
+    const mockVerifyIdToken = jest.fn().mockResolvedValue(null)
+    // const { verifyIdToken } = require('src/firebaseAdmin')
+
+    // eslint-disable-next-line no-unused-vars
+    const { verifyIdToken } = require('src/firebaseAdmin')
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockResolvedValue({})
+
+    jest.mock('src/firebaseAdmin', () => ({
+      verifyIdToken: mockVerifyIdToken,
+    }))
+    env = { ...process.env }
+  })
+
+  afterEach(() => {
+    process.env = env
+    env = null
+  })
+
+  it('Should require a User ID to complete Authorization', async () => {
+    const mock = jest.fn().mockImplementation((req, res) => {
+      res.send('Success')
+    })
+
+    await withAuthUserTokenAPI(mock)({ headers }, mockResponse)
+
+    expect(mockSend).toHaveBeenCalledWith({ code: 2, message: 'Unauthorized' })
+  })
+})
+
+describe('Invalid token testing (null user returned)', () => {
   beforeEach(() => {
     const mockConfig = createMockConfig()
     setConfig({
