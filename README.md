@@ -6,7 +6,7 @@
 # next-firebase-auth
 Simple Firebase authentication for all Next.js rendering strategies.
 
-#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [TypesScript](#typescript) • [Types](#types) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
 
 ## What It Does
 This package makes it simple to get the authenticated Firebase user and ID token during both client-side and server-side rendering (SSR).
@@ -254,6 +254,8 @@ export default withAuthUser({
 })(LoginPage)
 ```
 
+For TypeScript usage take a look [here](#typescript).
+
 #### `withAuthUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
 A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an [`AuthUser`](#authuser) property.
@@ -454,6 +456,51 @@ For security, the `maxAge` value must be two weeks or less. Note that `maxAge` i
 > **Note:** The cookies' expirations will be extended automatically when the user loads the Firebase JS SDK.
 >
 > The Firebase JS SDK is the source of truth for authentication, so if the cookies expire but the user is still authed with Firebase, the cookies will be automatically set again when the user loads the Firebase JS SDK—but the user will not be authed during SSR on that first request.
+
+## TypeScript
+
+An important point when using this library with TypeScript is the use of [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html) on the `withAuthUser` method.
+
+The definition of the method is as such (take note of `P` as that is the expected Type of the `Component` that this method is able to wrap):
+
+```TypeScript
+export const withAuthUser: <P = unknown>(options?: {
+  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
+  whenUnauthedBeforeInit?:
+    | AuthAction.RENDER
+    | AuthAction.REDIRECT_TO_LOGIN
+    | AuthAction.SHOW_LOADER
+    | AuthAction.RETURN_NULL
+  whenUnauthedAfterInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
+  appPageURL?: PageURL
+  authPageURL?: PageURL
+  LoaderComponent?: ComponentType | null
+}) => (component: ComponentType<P>) => ComponentType<P>
+```
+
+An example of how to utilise this method while maintaining Type safety could be:
+
+```TypeScript
+//// /pages/demo.tsx
+import {VFC} from 'react';
+import { Loading } from 'components/Loading/Loading';
+import {AuthAction, withAuthUser} from 'next-firebase-auth';
+
+type DemoType = {
+  name: string;
+}
+
+const Demo: VFC<DemoType> = ({ name }) => {
+  return <div>Hello {name}!</div>;
+};
+
+export default withAuthUser<DemoType>({ // <--- Ensure that the Type Variable is provided
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  LoaderComponent: Loading,
+})(Demo);
+
+```
 
 ## Types
 
