@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { VFC } from 'react'
 import {
   useAuthUser,
   withAuthUser,
@@ -18,7 +18,7 @@ const styles = {
   },
 }
 
-type Props = {
+type DemoType = {
   favoriteColor?: string
 }
 
@@ -26,7 +26,7 @@ const defaultProps = {
   favoriteColor: undefined,
 }
 
-const Demo = ({ favoriteColor }: Props) => {
+const Demo: VFC<DemoType> = ({ favoriteColor }) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -81,13 +81,6 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
-export default withAuthUser({
+export default withAuthUser<DemoType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-  // FIXME: Fix this TypeScript warning when using a functional component
-  //   rather than using React.FC or React.ComponentType, which are
-  //   discouraged:
-  //   https://github.com/typescript-cheatsheets/react#function-components
-  //   This may require changing the type definition for `withAuthUser`.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
 })(Demo)
