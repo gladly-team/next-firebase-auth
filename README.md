@@ -254,7 +254,7 @@ export default withAuthUser({
 })(LoginPage)
 ```
 
-For TypeScript usage take a look [here](#typescript).
+For TypeScript usage, take a look [here](#typescript).
 
 #### `withAuthUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
@@ -583,22 +583,22 @@ import { VFC } from 'react'
 import { Loading } from 'components/Loading/Loading'
 import { AuthAction, withAuthUser } from 'next-firebase-auth'
 
-type DemoType = {
+type DemoDataType = {
   name: string
 }
 
-const Demo: VFC<DemoType> = ({ name }) => {
+const Demo: VFC<DemoDataType> = ({ name }) => {
   return <div>Hello {name}!</div>
 }
 
-export default withAuthUser<DemoType>({ // <--- Ensure that the type is provided
+export default withAuthUser<DemoDataType>({ // <--- Ensure that the type is provided
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   LoaderComponent: Loading,
 })(Demo)
 ```
 
-The example app includes [a TypeScript demo page](https://github.com/gladly-team/next-firebase-auth/blob/main/example/pages/ssr-no-token.tsx), which also includes a demo of `getServerSideProps`.
+For a full example with server-side data fetching, see the [TypeScript demo page](https://github.com/gladly-team/next-firebase-auth/blob/main/example/pages/ssr-no-token.tsx) in the example app.
 
 ### Dynamic Redirects
 
