@@ -18,7 +18,7 @@ const styles = {
   },
 }
 
-type DemoType = {
+type DataType = {
   favoriteColor?: string
 }
 
@@ -26,7 +26,7 @@ const defaultProps = {
   favoriteColor: undefined,
 }
 
-const Demo: VFC<DemoType> = ({ favoriteColor }) => {
+const Demo: VFC<DataType> = ({ favoriteColor }) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -66,7 +66,7 @@ export const getServerSideProps = withAuthUserSSR({
       Authorization: token || 'unauthenticated',
     },
   })
-  const data: { favoriteColor?: string } = await response.json()
+  const data: DataType = await response.json()
   if (!response.ok) {
     throw new Error(
       `Data fetching failed with status ${response.status}: ${JSON.stringify(
@@ -81,6 +81,6 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
-export default withAuthUser<DemoType>({
+export default withAuthUser<DataType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)
