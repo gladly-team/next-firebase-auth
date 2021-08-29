@@ -1,13 +1,5 @@
-const firebaseAppMock = jest.createMockFromModule('firebase')
-firebaseAppMock.apps = []
+const firebaseAppMock = jest.createMockFromModule('firebase/app')
 
-const mockOnIdTokenChangedUnsubscribe = jest.fn()
-const mockOnIdTokenChanged = jest.fn(() => mockOnIdTokenChangedUnsubscribe)
-const mockSignOut = jest.fn(() => Promise.resolve())
-
-firebaseAppMock.auth = jest.fn(() => ({
-  onIdTokenChanged: mockOnIdTokenChanged,
-  signOut: mockSignOut,
-}))
+firebaseAppMock.getApps = jest.fn(() => [])
 
 module.exports = firebaseAppMock

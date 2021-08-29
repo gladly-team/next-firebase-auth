@@ -1,5 +1,5 @@
 import * as Cookies from 'cookies'
-import type Firebase from 'firebase'
+import type { User } from 'firebase/auth'
 import * as firebaseAdmin from 'firebase-admin'
 import type {
   GetServerSidePropsContext,
@@ -28,7 +28,7 @@ export interface AuthUser {
   claims: Record<string, string | boolean>
   getIdToken: () => Promise<string | null>
   clientInitialized: boolean
-  firebaseUser: Firebase.User | null
+  firebaseUser: User | null
   signOut: () => Promise<void>
 }
 
