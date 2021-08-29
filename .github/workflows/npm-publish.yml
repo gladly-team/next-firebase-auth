@@ -16,6 +16,13 @@ jobs:
       - run: yarn install
       - run: yarn test
       - run: yarn run build
-      - run: npm publish
+      - name: Release canary version
+        if: github.ref == 'refs/heads/v1.x'
+        run: npm publish --tag canary
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Release latest version
+        if: github.ref == 'refs/heads/main'
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
