@@ -16,6 +16,17 @@ jobs:
       - run: yarn install
       - run: yarn test
       - run: yarn run build
-      - run: npm publish
+      - run: echo ${{github.ref}}
+      - name: Release canary version
+        # The ref will be the tag name. Match against tags like
+        # "v1.0.0-canary.0".
+        if: ${{ contains(github.ref, '-canary.') }}
+        run: npm publish --tag canary --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Release latest version
+        # Assume non-canary is latest.
+        if: ${{ !contains(github.ref, '-canary.') }}
+        run: npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
