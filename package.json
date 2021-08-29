@@ -1,6 +1,6 @@
 {
   "name": "next-firebase-auth",
-  "version": "0.13.3",
+  "version": "1.0.0-canary.0",
   "description": "Simple Firebase authentication for all Next.js rendering strategies",
   "keywords": [
     "Next",
