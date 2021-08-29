@@ -16,6 +16,7 @@ jobs:
       - run: yarn install
       - run: yarn test
       - run: yarn run build
+      - run: echo ${{github.ref}}
       - name: Release canary version
         if: github.ref == 'refs/heads/v1.x'
         run: npm publish --tag canary
