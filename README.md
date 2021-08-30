@@ -20,7 +20,7 @@ This package makes it simple to get the authenticated Firebase user and ID token
 We treat the Firebase JS SDK as the source of truth for auth status. When the user signs in, we call an endpoint to generate a refresh token and store the user info, ID token, and refresh token in cookies. Future requests to SSR pages receive the user info and ID token from cookies, refreshing the ID token as needed. When the user logs out, we unset the cookies.
 
 ## Demo
-[See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
+[See a live demo](https://nfa-example-git-v1.x-gladly-team.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
 
 ## When (Not) to Use this Package
 
