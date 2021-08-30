@@ -46,7 +46,7 @@ const initAuth = () => {
         const allowedHosts = [
           'localhost:3000',
           'nfa-example.vercel.app',
-          'nfa-example-git-v1.x-gladly-team.vercel.app',
+          'nfa-example-git-v1x-gladly-team.vercel.app',
         ]
         const allowed =
           allowedHosts.indexOf(new URL(destinationParamVal).host) > -1
