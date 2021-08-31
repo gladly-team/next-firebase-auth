@@ -9,7 +9,7 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "^8.9.1",
+    "firebase": "^9.0.0",
     "firebase-admin": "^9.11.0",
     "next": "11.1.0",
     "next-absolute-url": "^1.2.2",

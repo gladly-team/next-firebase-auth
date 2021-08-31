@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import firebase from 'firebase/app'
-import 'firebase/auth'
+import { getApp } from 'firebase/app'
+import { getAuth, getIdTokenResult, onIdTokenChanged } from 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
@@ -80,9 +80,7 @@ const useFirebaseUser = () => {
       if (firebaseUser) {
         // Get the user's claims:
         // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
-        const idTokenResult = await firebase
-          .auth()
-          .currentUser.getIdTokenResult()
+        const idTokenResult = await getIdTokenResult(firebaseUser)
         customClaims = filterStandardClaims(idTokenResult.claims)
       }
 
@@ -113,7 +111,7 @@ const useFirebaseUser = () => {
     }
 
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
-    const unsubscribe = firebase.auth().onIdTokenChanged(onIdTokenChange)
+    const unsubscribe = onIdTokenChanged(getAuth(getApp()), onIdTokenChange)
     return () => {
       unsubscribe()
       isCancelled = true
