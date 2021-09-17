@@ -128,7 +128,8 @@ const createAuthUser = ({
      * @param forceRefresh Force refresh regardless of token
      *     expiration.
      */
-    getIdTokenFunc = async (forceRefresh) => firebaseUserClientSDK.getIdToken(forceRefresh)
+    getIdTokenFunc = async (forceRefresh) =>
+      firebaseUserClientSDK.getIdToken(forceRefresh)
     signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
