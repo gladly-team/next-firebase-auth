@@ -2,6 +2,8 @@
 import isClientSide from 'src/isClientSide'
 import { filterStandardClaims } from 'src/claims'
 
+// TODO: pull in getIdToken forceRefresh code from main branch
+
 /**
  * Take a representation of a Firebase user from a maximum of one of:
  * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
