@@ -117,7 +117,7 @@ const createAuthUser = ({
     phoneNumber = firebaseUserClientSDK.phoneNumber
     displayName = firebaseUserClientSDK.displayName
     photoURL = firebaseUserClientSDK.photoURL
-    getIdTokenFunc = async () => firebaseUserClientSDK.getIdToken()
+    getIdTokenFunc = async (forceRefresh) => firebaseUserClientSDK.getIdToken(forceRefresh)
     signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
