@@ -26,7 +26,7 @@ export interface AuthUser {
   displayName: string | null
   photoURL: string | null
   claims: Record<string, string | boolean>
-  getIdToken: () => Promise<string | null>
+  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
   clientInitialized: boolean
   firebaseUser: Firebase.User | null
   signOut: () => Promise<void>
