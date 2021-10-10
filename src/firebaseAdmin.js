@@ -65,8 +65,11 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           newToken = await refreshExpiredIdToken(refreshToken)
           firebaseUser = await admin.auth().verifyIdToken(newToken)
         } else {
-          // Otherwise, throw.
-          throw e
+          throw new Error(
+            `Could not refresh to id token because the refresh token is missing: ${JSON.stringify(
+              e
+            )}`
+          )
         }
         break
       case 'auth/invalid-user-token':
