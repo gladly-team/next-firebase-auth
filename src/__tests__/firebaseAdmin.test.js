@@ -65,7 +65,7 @@ describe('verifyIdToken', () => {
     expect(token).toEqual('some-token')
   })
 
-  it('returns an AuthUser with a new token when the token is refreshed 1/2', async () => {
+  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/id-token-expired error', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -99,7 +99,7 @@ describe('verifyIdToken', () => {
     expect(token).toEqual('a-new-token')
   })
 
-  it('returns an AuthUser with a new token when the token is refreshed 2/2', async () => {
+  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/argument-error error', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -254,12 +254,10 @@ describe('verifyIdToken', () => {
     expect(token).toEqual(null)
   })
 
-  it('throws if there is no refresh token and the id token has expired', async () => {
+  it('returns an unauthenticated AuthUser if there is no refresh token and the id token has expired', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
-    const expiredTokenErr = new Error(
-      'The provided Firebase ID token is expired.'
-    )
+    const expiredTokenErr = new Error('Mock error message.')
     expiredTokenErr.code = 'auth/id-token-expired'
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
@@ -270,11 +268,10 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    await expect(verifyIdToken('some-token')).rejects.toEqual(
-      new Error(
-        'Could not refresh to id token because the refresh token is missing: {"code":"auth/id-token-expired"}'
-      )
-    )
+    const AuthUser = await verifyIdToken('some-token')
+    expect(AuthUser.id).toEqual(null)
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual(null)
   })
 
   it('throws if there is an error refreshing the token', async () => {

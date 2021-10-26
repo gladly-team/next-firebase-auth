@@ -19,10 +19,6 @@ const getFirebasePublicAPIKey = () => {
  * @return {String} The new ID token
  */
 const refreshExpiredIdToken = async (refreshToken) => {
-  if (!refreshToken) {
-    throw new Error('The "refreshToken" argument is required.')
-  }
-
   // https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
 
@@ -65,11 +61,9 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           newToken = await refreshExpiredIdToken(refreshToken)
           firebaseUser = await admin.auth().verifyIdToken(newToken)
         } else {
-          throw new Error(
-            `Could not refresh to id token because the refresh token is missing: ${JSON.stringify(
-              e
-            )}`
-          )
+          // Return an unauthenticated user
+          newToken = null
+          firebaseUser = null
         }
         break
       case 'auth/invalid-user-token':
