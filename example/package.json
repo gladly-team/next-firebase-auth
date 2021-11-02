@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "firebase": "^8.9.1",
-    "firebase-admin": "^9.11.0",
+    "firebase-admin": "^10.0.0",
     "next": "11.1.0",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "0.13.3",
