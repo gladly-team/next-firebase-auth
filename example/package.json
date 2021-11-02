@@ -11,7 +11,7 @@
   "dependencies": {
     "firebase": "^8.9.1",
     "firebase-admin": "^10.0.0",
-    "next": "11.1.0",
+    "next": "12.0.2",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "0.13.4",
     "react": "17.0.2",
@@ -19,10 +19,10 @@
     "react-firebaseui": "^5.0.2"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^11.1.0",
+    "@next/bundle-analyzer": "^12.0.2",
     "@types/node": "^16.6.1",
     "@types/react": "^17.0.18",
-    "eslint-config-next": "^11.1.0",
+    "eslint-config-next": "^12.0.2",
     "typescript": "4.3.5"
   }
 }
