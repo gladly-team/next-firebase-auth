@@ -48,7 +48,7 @@
     "codecov": "^3.8.3",
     "copy-webpack-plugin": "^9.0.1",
     "core-js": "^3.19.0",
-    "eslint": "^8.1.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",
