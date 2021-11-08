@@ -944,6 +944,15 @@ To fix this, confirm the auth cookies are set in your browser's dev tools. If th
 
 In addition, please double-check your server logs for any errors to ensure the Firebase admin app is initializing properly.
 
+#### I get an "auth/argument-error" with message "Firebase ID token has invalid signature".
+
+Often, this is caused by an incorrect the email in Firebase credentials. Please verify that the email is correct and is from the same Firebase account as your private key, or try generating a new key:
+https://firebase.google.com/docs/admin/setup
+
+You can try setting up your credentials in [the example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) to be sure your app code isn't a problem.
+
+In local development, try clearing data/cookies for `localhost` in case you previously signed in with another Firebase account and still have auth cookies signed by another private key.
+
 ## Limitations & Feedback
 
 We expect some apps will need some features that are not currently available:
