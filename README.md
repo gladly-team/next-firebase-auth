@@ -46,9 +46,11 @@ Depending on your app's needs, other approaches might work better for you.
 
 ## Get Started
 
-Install:
+**Install:**
 
-`yarn add next-firebase-auth`
+Firebase v8: `yarn add next-firebase-auth`
+
+Firebase v9+: `yarn add next-firebase-auth@canary`
 
 > ⚠️ If you're using v9 of the Firebase JS SDK, use `next-firebase-auth@canary`. This is an unstable v1 prerelease. Track progress on v1 [in this issue](https://github.com/gladly-team/next-firebase-auth/issues/265).
 
