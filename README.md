@@ -85,6 +85,8 @@ const initAuth = () => {
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
+    // Takes precedence over fireaseAdminInitConfig if set
+    // firebaseAdminDefaultCredential: true //
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
@@ -428,7 +430,7 @@ Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.go
 
 The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
-> Note: if using environent variables in Vercel, add the private key *with double quotes* via the CLI:
+> Note: if using environment variables in Vercel, add the private key *with double quotes* via the CLI:
 >
 >   `vercel secrets add firebase-private-key '"my-key-here"'`
 >
@@ -441,6 +443,12 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 >    ```
 >
 > See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
+
+**firebaseAdminDefaultCredential**
+
+When set to true, it passes application default credential to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
+
+**NOTE**: When set to true default credentials will override values passed to `firebaseAdminInitConfig.credential`
 
 **firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The "firebaseClientInitConfig.apiKey" value is always **required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
 

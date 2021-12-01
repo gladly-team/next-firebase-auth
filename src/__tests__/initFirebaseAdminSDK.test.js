@@ -13,6 +13,9 @@ beforeEach(() => {
     ...obj,
     _mockFirebaseCert: true,
   }))
+  admin.credential.applicationDefault.mockImplementation(() => ({
+    _mockFirebaseDefaultCred: true,
+  }))
   admin.apps = []
 })
 
@@ -33,6 +36,24 @@ describe('initFirebaseAdminSDK', () => {
         projectId: 'my-example-app',
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
+    })
+  })
+
+  it('calls admin.initializeApp with application default credentials if firebaseAdminDefaultCredential set to true', () => {
+    expect.assertions(2)
+    const mockConfig = createMockConfig({ clientSide: false })
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      firebaseAdminDefaultCredential: true,
+    })
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(admin.credential.applicationDefault).toHaveBeenCalled()
+    expect(admin.initializeApp).toHaveBeenCalledWith({
+      credential: {
+        _mockFirebaseDefaultCred: true,
+      }
     })
   })
 
