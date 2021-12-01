@@ -9,11 +9,14 @@ const initFirebaseAdminSDK = () => {
         'If not initializing the Firebase admin SDK elsewhere, you must provide "firebaseAdminInitConfig" to next-firebase-auth.'
       )
     }
+    // Initialize with credential if provided, otherwise fallback to applicationDefault
     admin.initializeApp({
       ...firebaseAdminInitConfig,
-      credential: admin.credential.cert({
-        ...firebaseAdminInitConfig.credential,
-      }),
+      credential: firebaseAdminInitConfig.credential
+        ? admin.credential.cert({
+          ...firebaseAdminInitConfig.credential,
+        })
+        : admin.credential.applicationDefault(),
     })
   }
   return admin
