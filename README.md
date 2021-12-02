@@ -80,13 +80,13 @@ const initAuth = () => {
       credential: {
         projectId: 'my-example-app-id',
         clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
-        // The private key must not be accesssible on the client side.
+        // The private key must not be accessible on the client side.
         privateKey: process.env.FIREBASE_PRIVATE_KEY,
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
-    // Takes precedence over fireaseAdminInitConfig if set
-    // firebaseAdminDefaultCredential: true //
+    // Use application default credentials (takes precedence over fireaseAdminInitConfig if set)
+    // firebaseAdminDefaultCredential: true,
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
@@ -446,7 +446,7 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 
 **firebaseAdminDefaultCredential**
 
-When set to true, it passes application default credential to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
+A boolean that when set to true, the application default credential will be passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
 
 **NOTE**: When set to true default credentials will override values passed to `firebaseAdminInitConfig.credential`
 
