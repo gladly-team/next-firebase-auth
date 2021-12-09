@@ -52,6 +52,7 @@ const withAuthUser =
     appPageURL = null,
     authPageURL = null,
     LoaderComponent = null,
+    onRedirect = null,
   } = {}) =>
   (ChildComponent) => {
     const WithAuthUserHOC = (props) => {
@@ -123,6 +124,12 @@ const withAuthUser =
           ? authRequestCompleted
           : true)
 
+      const shouldUseCustomRedirect = [
+        whenAuthed,
+        whenUnauthedBeforeInit,
+        whenUnauthedAfterInit,
+      ].includes(AuthAction.REDIRECT)
+
       const router = useRouter()
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
@@ -166,6 +173,36 @@ const withAuthUser =
         }
         router.replace(destination)
       }, [router, AuthUser])
+      const redirectToCustom = useCallback(() => {
+        logDebug('Redirecting to user-specified endpoint')
+        const redirectConfig = onRedirect || getConfig().onRedirect
+        if (!redirectConfig) {
+          throw new Error(
+            'The "onRedirect" config setting must be set when using `REDIRECT`.'
+          )
+        }
+
+        const authStateConfig = isAuthed
+          ? onRedirect.whenAuthed
+          : onRedirect.whenUnauthed
+
+        if (!authStateConfig || !authStateConfig.destination) {
+          throw new Error(
+            `The "destination" in the "onRedirect.whenAuthed" and "onRedirect.whenUnauthed" redirect configs must resolve to a non-empty string`
+          )
+        }
+
+        if (
+          authStateConfig &&
+          (!authStateConfig.destination ||
+            typeof authStateConfig.destination !== 'string')
+        ) {
+          throw new Error(
+            'The "destination" must be set to a non-empty string or resolve to a non-empty string'
+          )
+        }
+        router.replace(authStateConfig.destination)
+      }, [router, isAuthed])
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
@@ -177,12 +214,16 @@ const withAuthUser =
           redirectToApp()
         } else if (shouldRedirectToLogin) {
           redirectToLogin()
+        } else if (shouldUseCustomRedirect) {
+          redirectToCustom()
         }
       }, [
         shouldRedirectToApp,
         shouldRedirectToLogin,
+        shouldUseCustomRedirect,
         redirectToApp,
         redirectToLogin,
+        redirectToCustom,
       ])
 
       // Decide what to render.
