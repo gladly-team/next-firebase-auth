@@ -2,6 +2,9 @@
  * @jest-environment node
  */
 
+// Allow importing firebase-admin as wildcard.
+/* eslint-disable no-import-assign */
+
 import * as admin from 'firebase-admin'
 import createMockConfig from '../testHelpers/createMockConfig'
 import { setConfig } from '../config'

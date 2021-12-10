@@ -1,3 +1,6 @@
+// Allow importing firebase-admin as wildcard.
+/* eslint-disable no-import-assign */
+
 import * as admin from 'firebase-admin'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
@@ -12,6 +15,9 @@ beforeEach(() => {
   admin.credential.cert.mockImplementation((obj) => ({
     ...obj,
     _mockFirebaseCert: true,
+  }))
+  admin.credential.applicationDefault.mockImplementation(() => ({
+    _mockFirebaseDefaultCred: true,
   }))
   admin.apps = []
 })
@@ -33,6 +39,24 @@ describe('initFirebaseAdminSDK', () => {
         projectId: 'my-example-app',
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
+    })
+  })
+
+  it('calls admin.initializeApp with application default credentials if useFirebaseAdminDefaultCredential set to true', () => {
+    expect.assertions(2)
+    const mockConfig = createMockConfig({ clientSide: false })
+    setConfig({
+      ...mockConfig,
+      firebaseAdminInitConfig: undefined,
+      useFirebaseAdminDefaultCredential: true,
+    })
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(admin.credential.applicationDefault).toHaveBeenCalled()
+    expect(admin.initializeApp).toHaveBeenCalledWith({
+      credential: {
+        _mockFirebaseDefaultCred: true,
+      },
     })
   })
 
@@ -62,7 +86,7 @@ describe('initFirebaseAdminSDK', () => {
     expect(() => {
       initFirebaseAdminSDK()
     }).toThrow(
-      'If not initializing the Firebase admin SDK elsewhere, you must provide "firebaseAdminInitConfig" to next-firebase-auth.'
+      'Missing firebase-admin credentials in next-firebase-auth. Set "firebaseAdminInitConfig", "useFirebaseAdminDefaultCredential", or initialize firebase-admin yourself.'
     )
   })
 

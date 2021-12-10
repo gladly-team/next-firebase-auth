@@ -86,11 +86,13 @@ const initAuth = () => {
       credential: {
         projectId: 'my-example-app-id',
         clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
-        // The private key must not be accesssible on the client side.
+        // The private key must not be accessible on the client side.
         privateKey: process.env.FIREBASE_PRIVATE_KEY,
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
+    // Use application default credentials (takes precedence over fireaseAdminInitConfig if set)
+    // useFirebaseAdminDefaultCredential: true,
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
@@ -412,15 +414,35 @@ export default withAuthUser()(Artist)
 
 See an [example config here](#example-config). Provide the config when you call `init`.
 
-**authPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+#### authPageURL
 
-**appPageURL**: The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+`String|Function`
 
-**loginAPIEndpoint**: The API endpoint this module will call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
-**logoutAPIEndpoint**: The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+#### appPageURL
 
-**tokenChangedHandler**: A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives an `AuthUser` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
+`String|Function`
+
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+
+#### loginAPIEndpoint
+
+`String`
+
+The API endpoint this module will call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+
+#### logoutAPIEndpoint
+
+`String`
+
+The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+
+#### tokenChangedHandler
+
+`Function`
+
+A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives an `AuthUser` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
 
 If this callback is specified, user is responsible for:
 
@@ -430,17 +452,23 @@ If this callback is specified, user is responsible for:
 
 Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
 
-**firebaseAuthEmulatorHost**: The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
+#### firebaseAuthEmulatorHost
+
+`String`
+
+The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
 
 Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`.
 
-#### **firebaseAdminInitConfig**
+#### firebaseAdminInitConfig
+
+`Object`
 
 Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
 
 The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
-> Note: if using environent variables in Vercel, add the private key _with double quotes_ via the CLI:
+> Note: if using environment variables in Vercel, add the private key _with double quotes_ via the CLI:
 >
 > `vercel secrets add firebase-private-key '"my-key-here"'`
 >
@@ -454,9 +482,23 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 >
 > See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
 
-**firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The "firebaseClientInitConfig.apiKey" value is always **required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
+#### useFirebaseAdminDefaultCredential
 
-#### **cookies**
+`Boolean`
+
+When true, `firebase-admin` will use the Google Cloud application default credentials during [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
+
+**Note**: When true, default credentials will override values passed to `firebaseAdminInitConfig.credential`.
+
+#### firebaseClientInitConfig
+
+`Object`
+
+Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
+
+#### cookies
+
+`Object`
 
 Settings used for auth cookies. We use [`cookies`](https://github.com/pillarjs/cookies) to manage cookies.
 
