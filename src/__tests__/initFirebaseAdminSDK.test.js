@@ -39,13 +39,13 @@ describe('initFirebaseAdminSDK', () => {
     })
   })
 
-  it('calls admin.initializeApp with application default credentials if firebaseAdminDefaultCredential set to true', () => {
+  it('calls admin.initializeApp with application default credentials if useFirebaseAdminDefaultCredential set to true', () => {
     expect.assertions(2)
     const mockConfig = createMockConfig({ clientSide: false })
     setConfig({
       ...mockConfig,
       firebaseAdminInitConfig: undefined,
-      firebaseAdminDefaultCredential: true,
+      useFirebaseAdminDefaultCredential: true,
     })
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
@@ -53,7 +53,7 @@ describe('initFirebaseAdminSDK', () => {
     expect(admin.initializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseDefaultCred: true,
-      }
+      },
     })
   })
 

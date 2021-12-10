@@ -86,7 +86,7 @@ const initAuth = () => {
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
     // Use application default credentials (takes precedence over fireaseAdminInitConfig if set)
-    // firebaseAdminDefaultCredential: true,
+    // useFirebaseAdminDefaultCredential: true,
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
@@ -444,7 +444,7 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 >
 > See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
 
-**firebaseAdminDefaultCredential**
+**useFirebaseAdminDefaultCredential**
 
 A boolean that when set to true, the application default credential will be passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
 
