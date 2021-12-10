@@ -78,6 +78,13 @@ export const verifyIdToken = async (token, refreshToken = null) => {
         firebaseUser = null
         break
       default:
+        // TODO: return an unauthenticated user for any error, then
+        //   call an optional onAuthError callback provided by user
+        //   for the unexpected errors (ones we don't handle above).
+        //   Rationale: it's not particularly easy for developers to
+        //   catch errors in `withAuthUserSSR`, and in most cases an
+        //   unauthed user + optional error log is preferable to a 500
+        //   error.
         // Otherwise, throw.
         throw e
     }
