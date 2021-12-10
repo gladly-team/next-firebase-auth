@@ -4,9 +4,9 @@ import initAuth from '../utils/initAuth'
 
 initAuth()
 
-function MyApp({ Component, pageProps }) {
+const MyApp = ({ Component, pageProps }) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return <Component {...pageProps} />
-}
+  <Component {...pageProps} />
+)
 
 export default MyApp
