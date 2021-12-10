@@ -864,4 +864,102 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     const props = await func(createMockNextContext())
     expect(props).toEqual({ notFound: true })
   })
+
+  it('redirects to the provided destination when user is unauthenticated', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT,
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    })
+  })
+
+  it('throws when "onRedirect" is not provided and the user is unauthenticated', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      onRedirect: null,
+    })
+
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT,
+    })(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(
+      new Error(
+        `When "whenAuthed" or "whenUnauthed" are set to AuthAction.REDIRECT, "onRedirect" must be set.`
+      )
+    )
+  })
+
+  it('throws when "onRedirect.whenUnauthed.destination" is not provided and the user is unauthenticated', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      onRedirect: {
+        whenUnauthed: {},
+      },
+    })
+
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT,
+    })(mockGetSSPFunc)
+    await expect(func(createMockNextContext())).rejects.toEqual(
+      new Error(
+        `The "destination" in the "onRedirect.whenAuthed" and "onRedirect.whenUnauthed" redirect configs must resolve to a non-empty string`
+      )
+    )
+  })
+
+  it('uses instantiation parameters for redirect config when user is unauthenticated', async () => {
+    expect.assertions(1)
+
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      onRedirect: null,
+    })
+
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT,
+      onRedirect: {
+        whenUnauthed: {
+          destination: '/auth/login',
+          permanent: false,
+        },
+      },
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    })
+  })
 })

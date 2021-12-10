@@ -154,8 +154,8 @@ const withAuthUserTokenSSR =
       }
 
       const authStateConfig = AuthUser.id
-        ? onRedirect.whenAuthed
-        : onRedirect.whenUnauthed
+        ? redirectConfig.whenAuthed
+        : redirectConfig.whenUnauthed
 
       if (!authStateConfig || !authStateConfig.destination) {
         throw new Error(

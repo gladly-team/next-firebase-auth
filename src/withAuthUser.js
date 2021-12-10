@@ -183,24 +183,15 @@ const withAuthUser =
         }
 
         const authStateConfig = isAuthed
-          ? onRedirect.whenAuthed
-          : onRedirect.whenUnauthed
+          ? redirectConfig.whenAuthed
+          : redirectConfig.whenUnauthed
 
         if (!authStateConfig || !authStateConfig.destination) {
           throw new Error(
-            `The "destination" in the "onRedirect.whenAuthed" and "onRedirect.whenUnauthed" redirect configs must resolve to a non-empty string`
+            `The "destination" in the "onRedirect.whenAuthed" or "onRedirect.whenUnauthed" redirect config must be set to a non-empty string.`
           )
         }
 
-        if (
-          authStateConfig &&
-          (!authStateConfig.destination ||
-            typeof authStateConfig.destination !== 'string')
-        ) {
-          throw new Error(
-            'The "destination" must be set to a non-empty string or resolve to a non-empty string'
-          )
-        }
         router.replace(authStateConfig.destination)
       }, [router, isAuthed])
 
