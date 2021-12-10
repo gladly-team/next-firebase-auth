@@ -83,7 +83,7 @@ describe('initFirebaseAdminSDK', () => {
     expect(() => {
       initFirebaseAdminSDK()
     }).toThrow(
-      'If not initializing the Firebase admin SDK elsewhere, you must provide "firebaseAdminInitConfig" to next-firebase-auth.'
+      'Missing firebase-admin credentials in next-firebase-auth. Set "firebaseAdminInitConfig", "useFirebaseAdminDefaultCredential", or initialize firebase-admin yourself.'
     )
   })
 
