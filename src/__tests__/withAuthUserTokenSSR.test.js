@@ -927,7 +927,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        `The "destination" in the "onRedirect.whenAuthed" and "onRedirect.whenUnauthed" redirect configs must resolve to a non-empty string`
+        `The "destination" in the "onRedirect.whenUnauthed" redirect config must be set to a non-empty string.`
       )
     )
   })

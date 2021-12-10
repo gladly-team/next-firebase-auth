@@ -188,7 +188,9 @@ const withAuthUser =
 
         if (!authStateConfig || !authStateConfig.destination) {
           throw new Error(
-            `The "destination" in the "onRedirect.whenAuthed" or "onRedirect.whenUnauthed" redirect config must be set to a non-empty string.`
+            `The "destination" in the ${
+              isAuthed ? '"onRedirect.whenAuthed"' : '"onRedirect.whenUnauthed"'
+            } redirect config must be set to a non-empty string.`
           )
         }
 

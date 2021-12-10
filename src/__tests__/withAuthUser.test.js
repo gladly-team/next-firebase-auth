@@ -1023,7 +1023,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "destination" in the "onRedirect.whenAuthed" or "onRedirect.whenUnauthed" redirect config must be set to a non-empty string.'
+      'The "destination" in the "onRedirect.whenAuthed" redirect config must be set to a non-empty string.'
     )
   })
 
@@ -1067,7 +1067,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "destination" in the "onRedirect.whenAuthed" or "onRedirect.whenUnauthed" redirect config must be set to a non-empty string.'
+      'The "destination" in the "onRedirect.whenAuthed" redirect config must be set to a non-empty string.'
     )
   })
 })

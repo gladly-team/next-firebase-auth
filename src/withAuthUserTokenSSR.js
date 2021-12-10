@@ -159,17 +159,11 @@ const withAuthUserTokenSSR =
 
       if (!authStateConfig || !authStateConfig.destination) {
         throw new Error(
-          `The "destination" in the "onRedirect.whenAuthed" and "onRedirect.whenUnauthed" redirect configs must resolve to a non-empty string`
-        )
-      }
-
-      if (
-        authStateConfig &&
-        (!authStateConfig.destination ||
-          typeof authStateConfig.destination !== 'string')
-      ) {
-        throw new Error(
-          'The "destination" must be set to a non-empty string or resolve to a non-empty string'
+          `The "destination" in the ${
+            AuthUser.id
+              ? '"onRedirect.whenAuthed"'
+              : '"onRedirect.whenUnauthed"'
+          } redirect config must be set to a non-empty string.`
         )
       }
 
