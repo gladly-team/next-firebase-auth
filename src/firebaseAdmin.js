@@ -19,6 +19,10 @@ const getFirebasePublicAPIKey = () => {
  * @return {String} The new ID token
  */
 const refreshExpiredIdToken = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new Error('The "refreshToken" argument is required.')
+  }
+
   // https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
 
