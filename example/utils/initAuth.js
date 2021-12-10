@@ -94,7 +94,7 @@ const initAuth = () => {
       maxAge: TWELVE_DAYS_IN_MS,
       overwrite: true,
       path: '/',
-      sameSite: 'strict',
+      sameSite: 'lax',
       secure: process.env.NEXT_PUBLIC_COOKIE_SECURE === 'true',
       signed: true,
     },
