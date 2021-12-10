@@ -1,3 +1,6 @@
+// Allow importing firebase-admin as wildcard.
+/* eslint-disable no-import-assign */
+
 import * as admin from 'firebase-admin'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
