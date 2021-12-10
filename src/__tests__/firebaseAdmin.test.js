@@ -65,7 +65,7 @@ describe('verifyIdToken', () => {
     expect(token).toEqual('some-token')
   })
 
-  it('returns an AuthUser with a new token when the token is refreshed', async () => {
+  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/id-token-expired error', async () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -85,6 +85,40 @@ describe('verifyIdToken', () => {
       'The provided Firebase ID token is expired.'
     )
     expiredTokenErr.code = 'auth/id-token-expired'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async (token) => {
+      if (token === 'some-token') {
+        throw expiredTokenErr
+      } else {
+        return mockFirebaseUser
+      }
+    })
+    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual('a-new-token')
+  })
+
+  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/argument-error error', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+
+    // Mock the behavior of refreshing the token.
+    global.fetch.mockImplementation(async (endpoint) => {
+      if (endpoint.indexOf(googleRefreshTokenEndpoint) === 0) {
+        return {
+          ...createMockFetchResponse(),
+          json: () => Promise.resolve({ id_token: 'a-new-token' }),
+        }
+      }
+      // Incorrect endpoint. Return a 500.
+      return { ...createMockFetchResponse(), ok: false, status: 500 }
+    })
+
+    // Mock that the original token is expired but a new token works.
+    const expiredTokenErr = new Error(
+      'Firebase ID token has "kid" claim which does not correspond to a known public key. Most likely the ID token is expired, so get a fresh token from your client app and try again.'
+    )
+    expiredTokenErr.code = 'auth/argument-error'
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
     admin.auth().verifyIdToken.mockImplementation(async (token) => {
@@ -158,6 +192,86 @@ describe('verifyIdToken', () => {
       },
       method: 'POST',
     })
+  })
+
+  it('returns an unauthenticated AuthUser if verifying the token fails with auth/invalid-user-token', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+
+    const expiredTokenErr = new Error('Mock error message.')
+    expiredTokenErr.code = 'auth/invalid-user-token'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async (token) => {
+      if (token === 'some-token') {
+        throw expiredTokenErr
+      } else {
+        return mockFirebaseUser
+      }
+    })
+    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(AuthUser.id).toEqual(null)
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual(null)
+  })
+
+  it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-token-expired', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+
+    const expiredTokenErr = new Error('Mock error message.')
+    expiredTokenErr.code = 'auth/user-token-expired'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async (token) => {
+      if (token === 'some-token') {
+        throw expiredTokenErr
+      } else {
+        return mockFirebaseUser
+      }
+    })
+    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(AuthUser.id).toEqual(null)
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual(null)
+  })
+
+  it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-disabled', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+
+    const expiredTokenErr = new Error('Mock error message.')
+    expiredTokenErr.code = 'auth/user-disabled'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async (token) => {
+      if (token === 'some-token') {
+        throw expiredTokenErr
+      } else {
+        return mockFirebaseUser
+      }
+    })
+    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(AuthUser.id).toEqual(null)
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual(null)
+  })
+
+  it('returns an unauthenticated AuthUser if there is no refresh token and the id token has expired', async () => {
+    const { verifyIdToken } = require('src/firebaseAdmin')
+
+    const expiredTokenErr = new Error('Mock error message.')
+    expiredTokenErr.code = 'auth/id-token-expired'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async (token) => {
+      if (token === 'some-token') {
+        throw expiredTokenErr
+      } else {
+        return mockFirebaseUser
+      }
+    })
+    const AuthUser = await verifyIdToken('some-token')
+    expect(AuthUser.id).toEqual(null)
+    const token = await AuthUser.getIdToken()
+    expect(token).toEqual(null)
   })
 
   it('throws if there is an error refreshing the token', async () => {
