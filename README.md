@@ -86,11 +86,13 @@ const initAuth = () => {
       credential: {
         projectId: 'my-example-app-id',
         clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
-        // The private key must not be accesssible on the client side.
+        // The private key must not be accessible on the client side.
         privateKey: process.env.FIREBASE_PRIVATE_KEY,
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
+    // Use application default credentials (takes precedence over fireaseAdminInitConfig if set)
+    // useFirebaseAdminDefaultCredential: true,
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
       authDomain: 'my-example-app.firebaseapp.com',
@@ -440,7 +442,7 @@ Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.go
 
 The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
-> Note: if using environent variables in Vercel, add the private key _with double quotes_ via the CLI:
+> Note: if using environment variables in Vercel, add the private key _with double quotes_ via the CLI:
 >
 > `vercel secrets add firebase-private-key '"my-key-here"'`
 >
@@ -453,6 +455,12 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 > ```
 >
 > See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
+
+**useFirebaseAdminDefaultCredential**
+
+A boolean that when set to true, the application default credential will be passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
+
+**NOTE**: When set to true default credentials will override values passed to `firebaseAdminInitConfig.credential`
 
 **firebaseClientInitConfig**: Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The "firebaseClientInitConfig.apiKey" value is always **required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
 
