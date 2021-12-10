@@ -6,17 +6,20 @@ import { getConfig } from 'src/config'
 
 const initFirebaseAdminSDK = () => {
   if (!admin.apps.length) {
-    const { firebaseAdminInitConfig } = getConfig()
-    if (!firebaseAdminInitConfig) {
+    const { firebaseAdminInitConfig, useFirebaseAdminDefaultCredential } =
+      getConfig()
+    if (!firebaseAdminInitConfig && !useFirebaseAdminDefaultCredential) {
       throw new Error(
-        'If not initializing the Firebase admin SDK elsewhere, you must provide "firebaseAdminInitConfig" to next-firebase-auth.'
+        'Missing firebase-admin credentials in next-firebase-auth. Set "firebaseAdminInitConfig", "useFirebaseAdminDefaultCredential", or initialize firebase-admin yourself.'
       )
     }
     admin.initializeApp({
       ...firebaseAdminInitConfig,
-      credential: admin.credential.cert({
-        ...firebaseAdminInitConfig.credential,
-      }),
+      credential: useFirebaseAdminDefaultCredential
+        ? admin.credential.applicationDefault()
+        : admin.credential.cert({
+            ...firebaseAdminInitConfig.credential,
+          }),
     })
   }
   return admin
