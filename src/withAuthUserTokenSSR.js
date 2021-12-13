@@ -38,7 +38,6 @@ const withAuthUserTokenSSR =
       whenUnauthed = AuthAction.RENDER,
       appPageURL = null,
       authPageURL = null,
-      onRedirect = null,
     } = {},
     { useToken = true } = {}
   ) =>
@@ -142,33 +141,6 @@ const withAuthUserTokenSSR =
           destination,
           permanent: false,
         },
-      }
-    }
-
-    if ([whenAuthed, whenUnauthed].includes(AuthAction.REDIRECT)) {
-      const redirectConfig = onRedirect || getConfig().onRedirect
-      if (!redirectConfig) {
-        throw new Error(
-          `When "whenAuthed" or "whenUnauthed" are set to AuthAction.REDIRECT, "onRedirect" must be set.`
-        )
-      }
-
-      const authStateConfig = AuthUser.id
-        ? redirectConfig.whenAuthed
-        : redirectConfig.whenUnauthed
-
-      if (!authStateConfig || !authStateConfig.destination) {
-        throw new Error(
-          `The "destination" in the ${
-            AuthUser.id
-              ? '"onRedirect.whenAuthed"'
-              : '"onRedirect.whenUnauthed"'
-          } redirect config must be set to a non-empty string.`
-        )
-      }
-
-      return {
-        redirect: authStateConfig,
       }
     }
 

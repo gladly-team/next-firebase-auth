@@ -52,7 +52,6 @@ const withAuthUser =
     appPageURL = null,
     authPageURL = null,
     LoaderComponent = null,
-    onRedirect = null,
   } = {}) =>
   (ChildComponent) => {
     const WithAuthUserHOC = (props) => {
@@ -124,12 +123,6 @@ const withAuthUser =
           ? authRequestCompleted
           : true)
 
-      const shouldUseCustomRedirect = [
-        whenAuthed,
-        whenUnauthedBeforeInit,
-        whenUnauthedAfterInit,
-      ].includes(AuthAction.REDIRECT)
-
       const router = useRouter()
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
@@ -140,17 +133,27 @@ const withAuthUser =
           )
         }
 
-        const destination =
-          typeof appRedirectDestination === 'string'
-            ? appRedirectDestination
-            : appRedirectDestination({ ctx: undefined, AuthUser })
+        let destination
+        const redirectDestinationType = typeof appRedirectDestination
+        if (redirectDestinationType === 'string') {
+          destination = appRedirectDestination
+        } else if (redirectDestinationType === 'object') {
+          destination = appRedirectDestination.url
+        } else if (redirectDestinationType === 'function') {
+          destination = appRedirectDestination({ ctx: undefined, AuthUser })
+        }
 
         if (!destination || typeof destination !== 'string') {
           throw new Error(
-            'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+            'The "appPageURL" must be set to a non-empty string, an object with a "url" property, or resolve to a non-empty string'
           )
         }
-        router.replace(destination)
+
+        if (appRedirectDestination.basePath === false) {
+          window.location = destination
+        } else {
+          router.replace(destination)
+        }
       }, [router, AuthUser])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
@@ -161,41 +164,28 @@ const withAuthUser =
           )
         }
 
-        const destination =
-          typeof authRedirectDestination === 'string'
-            ? authRedirectDestination
-            : authRedirectDestination({ ctx: undefined, AuthUser })
+        let destination
+        const redirectDestinationType = typeof authRedirectDestination
+        if (redirectDestinationType === 'string') {
+          destination = authRedirectDestination
+        } else if (redirectDestinationType === 'object') {
+          destination = authRedirectDestination.url
+        } else if (redirectDestinationType === 'function') {
+          destination = authRedirectDestination({ ctx: undefined, AuthUser })
+        }
 
         if (!destination || typeof destination !== 'string') {
           throw new Error(
             'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
           )
         }
-        router.replace(destination)
+
+        if (authRedirectDestination.basePath === false) {
+          window.location = destination
+        } else {
+          router.replace(destination)
+        }
       }, [router, AuthUser])
-      const redirectToCustom = useCallback(() => {
-        logDebug('Redirecting to user-specified endpoint')
-        const redirectConfig = onRedirect || getConfig().onRedirect
-        if (!redirectConfig) {
-          throw new Error(
-            'The "onRedirect" config setting must be set when using `REDIRECT`.'
-          )
-        }
-
-        const authStateConfig = isAuthed
-          ? redirectConfig.whenAuthed
-          : redirectConfig.whenUnauthed
-
-        if (!authStateConfig || !authStateConfig.destination) {
-          throw new Error(
-            `The "destination" in the ${
-              isAuthed ? '"onRedirect.whenAuthed"' : '"onRedirect.whenUnauthed"'
-            } redirect config must be set to a non-empty string.`
-          )
-        }
-
-        router.replace(authStateConfig.destination)
-      }, [router, isAuthed])
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
@@ -207,16 +197,12 @@ const withAuthUser =
           redirectToApp()
         } else if (shouldRedirectToLogin) {
           redirectToLogin()
-        } else if (shouldUseCustomRedirect) {
-          redirectToCustom()
         }
       }, [
         shouldRedirectToApp,
         shouldRedirectToLogin,
-        shouldUseCustomRedirect,
         redirectToApp,
         redirectToLogin,
-        redirectToCustom,
       ])
 
       // Decide what to render.
