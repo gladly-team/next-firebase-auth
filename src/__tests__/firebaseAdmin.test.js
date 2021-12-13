@@ -338,7 +338,6 @@ describe('verifyIdToken', () => {
     })
 
     const { verifyIdToken } = require('src/firebaseAdmin')
-    const { onTokenRefreshError } = getConfig()
     global.fetch.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
@@ -359,7 +358,8 @@ describe('verifyIdToken', () => {
       }
     })
 
-    // Not awaiting verifyIdToken here
+    // Not awaiting verifyIdToken here. We'll rely on `expect.assertions`.
+    // eslint-disable-next-line jest/valid-expect-in-promise
     verifyIdToken('some-token', 'my-refresh-token').then(() => {
       expect(isResolved).toBe(true)
     })
@@ -443,7 +443,6 @@ describe('verifyIdToken', () => {
     })
 
     const { verifyIdToken } = require('src/firebaseAdmin')
-    const { onVerifyTokenError } = getConfig()
     global.fetch.mockImplementation(async (endpoint) => {
       if (endpoint.indexOf(googleRefreshTokenEndpoint) === 0) {
         return {
@@ -461,7 +460,8 @@ describe('verifyIdToken', () => {
       throw otherErr
     })
 
-    // Not awaiting verifyIdToken here
+    // Not awaiting verifyIdToken here. We'll rely on `expect.assertions`.
+    // eslint-disable-next-line jest/valid-expect-in-promise
     verifyIdToken('some-token', 'my-refresh-token').then(() => {
       expect(isResolved).toBe(true)
     })
@@ -537,7 +537,6 @@ describe('verifyIdToken', () => {
     })
 
     const { verifyIdToken } = require('src/firebaseAdmin')
-    const { onVerifyTokenError } = getConfig()
 
     // Mock that verifyIdToken throws a "token expired" error even for
     // the refreshed token, for some reason.
@@ -550,7 +549,8 @@ describe('verifyIdToken', () => {
       throw expiredTokenErr
     })
 
-    // Not awaiting verifyIdToken here
+    // Not awaiting verifyIdToken here. We'll rely on `expect.assertions`.
+    // eslint-disable-next-line jest/valid-expect-in-promise
     verifyIdToken('some-token', 'my-refresh-token').then(() => {
       expect(isResolved).toBe(true)
     })
