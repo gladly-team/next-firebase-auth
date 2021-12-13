@@ -81,14 +81,14 @@ export const verifyIdToken = async (token, refreshToken = null) => {
             newTokenFailure = true
 
             // Call developer-provided error callback.
-            onTokenRefreshError(refreshErr)
+            await onTokenRefreshError(refreshErr)
           }
 
           if (!newTokenFailure) {
             try {
               firebaseUser = await admin.auth().verifyIdToken(newToken)
             } catch (verifyErr) {
-              onVerifyTokenError(verifyErr)
+              await onVerifyTokenError(verifyErr)
             }
           }
 
@@ -118,7 +118,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
         firebaseUser = null
 
         // Call developer-provided error callback.
-        onVerifyTokenError(e)
+        await onVerifyTokenError(e)
     }
   }
   const AuthUser = createAuthUser({
