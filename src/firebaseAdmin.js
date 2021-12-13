@@ -2,9 +2,6 @@ import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 
-// https://firebase.google.com/docs/auth/admin/errors
-const FIREBASE_ERROR_TOKEN_EXPIRED = 'auth/id-token-expired'
-
 // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
 const getTokenPrefix = () =>
   process.env.FIREBASE_AUTH_EMULATOR_HOST
@@ -59,13 +56,37 @@ export const verifyIdToken = async (token, refreshToken = null) => {
   try {
     firebaseUser = await admin.auth().verifyIdToken(token)
   } catch (e) {
-    // If the user's ID token has expired, refresh it if possible.
-    if (refreshToken && e.code === FIREBASE_ERROR_TOKEN_EXPIRED) {
-      newToken = await refreshExpiredIdToken(refreshToken)
-      firebaseUser = await admin.auth().verifyIdToken(newToken)
-    } else {
-      // Otherwise, throw.
-      throw e
+    // https://firebase.google.com/docs/auth/admin/errors
+    switch (e.code) {
+      case 'auth/id-token-expired':
+      case 'auth/argument-error':
+        // If the user's ID token has expired, refresh it if possible.
+        if (refreshToken) {
+          newToken = await refreshExpiredIdToken(refreshToken)
+          firebaseUser = await admin.auth().verifyIdToken(newToken)
+        } else {
+          // Return an unauthenticated user
+          newToken = null
+          firebaseUser = null
+        }
+        break
+      case 'auth/invalid-user-token':
+      case 'auth/user-token-expired':
+      case 'auth/user-disabled':
+        // Return an unauthenticated user
+        newToken = null
+        firebaseUser = null
+        break
+      default:
+        // TODO: return an unauthenticated user for any error, then
+        //   call an optional onAuthError callback provided by user
+        //   for the unexpected errors (ones we don't handle above).
+        //   Rationale: it's not particularly easy for developers to
+        //   catch errors in `withAuthUserSSR`, and in most cases an
+        //   unauthed user + optional error log is preferable to a 500
+        //   error.
+        // Otherwise, throw.
+        throw e
     }
   }
   const AuthUser = createAuthUser({
