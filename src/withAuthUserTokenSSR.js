@@ -7,6 +7,10 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
+import {
+  getRedirectToLoginDestination,
+  getRedirectToAppDestination,
+} from 'src/redirects'
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -94,15 +98,11 @@ const withAuthUserTokenSSR =
     // If specified, redirect to the login page if the user is unauthed.
     if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
       const authRedirectDestination = authPageURL || getConfig().authPageURL
-      if (!authRedirectDestination) {
-        throw new Error(
-          `When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.`
-        )
-      }
-      const destination =
-        typeof authRedirectDestination === 'string'
-          ? authRedirectDestination
-          : authRedirectDestination({ ctx, AuthUser })
+      const destination = getRedirectToLoginDestination(
+        authRedirectDestination,
+        ctx,
+        AuthUser
+      )
 
       if (!destination) {
         throw new Error(
@@ -121,21 +121,18 @@ const withAuthUserTokenSSR =
     // If specified, redirect to the app page if the user is authed.
     if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
       const appRedirectDestination = appPageURL || getConfig().appPageURL
-      if (!appRedirectDestination) {
-        throw new Error(
-          `When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.`
-        )
-      }
-      const destination =
-        typeof appRedirectDestination === 'string'
-          ? appRedirectDestination
-          : appRedirectDestination({ ctx, AuthUser })
+      const destination = getRedirectToAppDestination(
+        appRedirectDestination,
+        ctx,
+        AuthUser
+      )
 
       if (!destination) {
         throw new Error(
           'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
         )
       }
+
       return {
         redirect: {
           destination,

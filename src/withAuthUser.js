@@ -1,3 +1,4 @@
+/* globals window */
 import React, { useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import hoistNonReactStatics from 'hoist-non-react-statics'
@@ -8,6 +9,10 @@ import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
+import {
+  getRedirectToAppDestination,
+  getRedirectToLoginDestination,
+} from 'src/redirects'
 
 /**
  * A higher-order component that provides pages with the
@@ -127,25 +132,15 @@ const withAuthUser =
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
         const appRedirectDestination = appPageURL || getConfig().appPageURL
-        if (!appRedirectDestination) {
+        const destination = getRedirectToAppDestination(
+          appRedirectDestination,
+          undefined,
+          AuthUser
+        )
+
+        if (!destination) {
           throw new Error(
             'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
-          )
-        }
-
-        let destination
-        const redirectDestinationType = typeof appRedirectDestination
-        if (redirectDestinationType === 'string') {
-          destination = appRedirectDestination
-        } else if (redirectDestinationType === 'object') {
-          destination = appRedirectDestination.url
-        } else if (redirectDestinationType === 'function') {
-          destination = appRedirectDestination({ ctx: undefined, AuthUser })
-        }
-
-        if (!destination || typeof destination !== 'string') {
-          throw new Error(
-            'The "appPageURL" must be set to a non-empty string, an object with a "url" property, or resolve to a non-empty string'
           )
         }
 
@@ -158,25 +153,15 @@ const withAuthUser =
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
         const authRedirectDestination = authPageURL || getConfig().authPageURL
-        if (!authRedirectDestination) {
-          throw new Error(
-            'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
-          )
-        }
+        const destination = getRedirectToLoginDestination(
+          authRedirectDestination,
+          undefined,
+          AuthUser
+        )
 
-        let destination
-        const redirectDestinationType = typeof authRedirectDestination
-        if (redirectDestinationType === 'string') {
-          destination = authRedirectDestination
-        } else if (redirectDestinationType === 'object') {
-          destination = authRedirectDestination.url
-        } else if (redirectDestinationType === 'function') {
-          destination = authRedirectDestination({ ctx: undefined, AuthUser })
-        }
-
-        if (!destination || typeof destination !== 'string') {
+        if (!destination) {
           throw new Error(
-            'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+            'The "authPageURL" config must be set when using `REDIRECT_TO_LOGIN`'
           )
         }
 

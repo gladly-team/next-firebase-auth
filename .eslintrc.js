@@ -64,7 +64,6 @@ module.exports = {
   },
   env: {
     es6: true,
-    browser: true,
   },
   globals: {
     // Polyfilled in Next.js 9.4. Set as a Webpack external.

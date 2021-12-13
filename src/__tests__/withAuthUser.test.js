@@ -898,17 +898,13 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('redirects to url through router when authPageURL is an object', () => {
-  })
+  it('redirects to url through router when authPageURL is an object', () => {})
 
-  it('redirects to url through router when appPageURL is an object', () => {
-  })
+  it('redirects to url through router when appPageURL is an object', () => {})
 
-  it('redirects to url through window.location when authPageURL is an object and basePath is false', () => {
-  })
+  it('redirects to url through window.location when authPageURL is an object and basePath is false', () => {})
 
-  it('redirects to url through window.location when appPageURL is an object and basePath is false', () => {
-  })
+  it('redirects to url through window.location when appPageURL is an object and basePath is false', () => {})
 })
 
 describe('withAuthUser: AuthUser context', () => {
