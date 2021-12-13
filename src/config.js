@@ -61,6 +61,8 @@ const defaultConfig = {
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
+  // The config should have *either* a tokenChangedHandler *or* the API
+  // endpoints for login/logout.
   if (mergedConfig.tokenChangedHandler) {
     if (mergedConfig.loginAPIEndpoint) {
       errorMessages.push(
@@ -94,7 +96,7 @@ const validateConfig = (mergedConfig) => {
     )
   }
 
-  // make sure the host address is set correctly.
+  // Make sure the host address is set correctly.
   if (
     mergedConfig.firebaseAuthEmulatorHost &&
     mergedConfig.firebaseAuthEmulatorHost.startsWith('http')
@@ -112,8 +114,11 @@ const validateConfig = (mergedConfig) => {
     keys.length &&
     (keys.filter ? keys.filter((item) => item !== undefined).length : true)
 
-  // Validate client-side config.
+  // Validate config values that differ between client and server context.
   if (isClientSide()) {
+    /**
+     * START: config specific to client side
+     */
     if (
       mergedConfig.firebaseAdminInitConfig &&
       mergedConfig.firebaseAdminInitConfig.credential &&
@@ -128,8 +133,13 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.keys" setting should not be available on the client side.'
       )
     }
-    // Validate server-side config.
+    /**
+     * END: config specific to client side
+     */
   } else {
+    /**
+     * START: config specific to server side
+     */
     if (!mergedConfig.cookies.name) {
       errorMessages.push(
         'The "cookies.name" setting is required on the server side.'
@@ -140,8 +150,9 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.keys" setting must be set if "cookies.signed" is true.'
       )
     }
-    // check if the AUTH_EMULATOR_HOST_VARIABLE is set if the user has
-    // set the config to use the authEmultor
+
+    // Verify that the AUTH_EMULATOR_HOST_VARIABLE is set if the user has
+    // provided the emulator host in the config.
     if (mergedConfig.firebaseAuthEmulatorHost) {
       if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) {
         errorMessages.push(
@@ -156,6 +167,7 @@ const validateConfig = (mergedConfig) => {
         )
       }
     }
+
     // Limit the max cookie age to two weeks for security. This matches
     // Firebase's limit for user identity cookies:
     // https://firebase.google.com/docs/auth/admin/manage-cookies
@@ -166,7 +178,11 @@ const validateConfig = (mergedConfig) => {
         `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
       )
     }
+    /**
+     * END: config specific to server side
+     */
   }
+
   return {
     isValid: errorMessages.length === 0,
     errors: errorMessages,
