@@ -524,4 +524,60 @@ describe('config', () => {
       setConfig(mockConfig)
     }).not.toThrow()
   })
+
+  it('does not throw if onVerifyTokenError is undefined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onVerifyTokenError: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('throws if onVerifyTokenError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onVerifyTokenError: 'no errors please',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onVerifyTokenError" setting must be a function.'
+    )
+  })
+
+  it('does not throw if onTokenRefreshError is undefined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onTokenRefreshError: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('throws if onTokenRefreshError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onTokenRefreshError: false,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
+    )
+  })
 })

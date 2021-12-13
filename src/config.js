@@ -17,6 +17,12 @@ const defaultConfig = {
   // Optional function: callback handler to call on auth state
   // changes. Replaces need for loginAPIEndpoint and logoutAPIEndpoint
   tokenChangedHandler: undefined,
+  // Optional function: handler called if there are unexpected errors while
+  // verifying the user's ID token server-side.
+  onVerifyTokenError: () => {},
+  // Optional function: handler called if there are unexpected errors while
+  // refreshing the user's ID token server-side.
+  onTokenRefreshError: () => {},
   // Optional string: the URL to navigate to when the user
   // needs to log in.
   authPageURL: undefined,
@@ -103,6 +109,19 @@ const validateConfig = (mergedConfig) => {
   ) {
     errorMessages.push(
       'The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+    )
+  }
+
+  // Ensure error callbacks are functions or undefined.
+  const funcOrUndefArr = ['function', 'undefined']
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onVerifyTokenError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onVerifyTokenError" setting must be a function.'
+    )
+  }
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onTokenRefreshError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
     )
   }
 
