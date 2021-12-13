@@ -62,10 +62,19 @@ export const verifyIdToken = async (token, refreshToken = null) => {
       case 'auth/argument-error':
         // If the user's ID token has expired, refresh it if possible.
         if (refreshToken) {
-          newToken = await refreshExpiredIdToken(refreshToken)
-          firebaseUser = await admin.auth().verifyIdToken(newToken)
+          try {
+            newToken = await refreshExpiredIdToken(refreshToken)
+            firebaseUser = await admin.auth().verifyIdToken(newToken)
+          } catch (refreshErr) {
+            // Return an unauthenticated user.
+            // https://github.com/gladly-team/next-firebase-auth/issues/366
+            newToken = null
+            firebaseUser = null
+
+            // TODO: call `onTokenRefreshError` from config, if provided
+          }
         } else {
-          // Return an unauthenticated user
+          // Return an unauthenticated user.
           newToken = null
           firebaseUser = null
         }
@@ -73,20 +82,21 @@ export const verifyIdToken = async (token, refreshToken = null) => {
       case 'auth/invalid-user-token':
       case 'auth/user-token-expired':
       case 'auth/user-disabled':
-        // Return an unauthenticated user
+        // Return an unauthenticated user.
         newToken = null
         firebaseUser = null
         break
       default:
-        // TODO: return an unauthenticated user for any error, then
-        //   call an optional onAuthError callback provided by user
-        //   for the unexpected errors (ones we don't handle above).
-        //   Rationale: it's not particularly easy for developers to
-        //   catch errors in `withAuthUserSSR`, and in most cases an
-        //   unauthed user + optional error log is preferable to a 500
-        //   error.
-        // Otherwise, throw.
-        throw e
+        // Return an unauthenticated user for any other error.
+        // Rationale: it's not particularly easy for developers to
+        // catch errors in `withAuthUserSSR`, so default to returning
+        // an unauthed user and give the developer control over
+        // handling the error.
+        // https://github.com/gladly-team/next-firebase-auth/issues/366
+
+        // TODO: call `onVerifyTokenError` from config, if provided
+        newToken = null
+        firebaseUser = null
     }
   }
   const AuthUser = createAuthUser({

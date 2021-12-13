@@ -353,7 +353,7 @@ describe('verifyIdToken', () => {
   })
 
   it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     global.fetch.mockImplementation(async (endpoint) => {
       if (endpoint.indexOf(googleRefreshTokenEndpoint) === 0) {
@@ -397,7 +397,7 @@ describe('verifyIdToken', () => {
   })
 
   it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws an expired token error for the refreshed token", async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock that verifyIdToken throws a "token expired" error even for
