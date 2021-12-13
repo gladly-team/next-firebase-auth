@@ -1,8 +1,5 @@
 /* eslint-env jest */
 
-const onVerifyTokenError = () => {}
-const onTokenRefreshError = () => {}
-
 const createMockConfig = ({ clientSide } = {}) => {
   // eslint-disable-next-line global-require
   const isClientSide = require('src/isClientSide').default
@@ -12,8 +9,8 @@ const createMockConfig = ({ clientSide } = {}) => {
     debug: false,
     loginAPIEndpoint: 'https://example.com/api/login',
     logoutAPIEndpoint: 'https://example.com/api/logout',
-    onVerifyTokenError,
-    onTokenRefreshError,
+    onVerifyTokenError: jest.fn(),
+    onTokenRefreshError: jest.fn(),
     authPageURL: '/login',
     appPageURL: '/',
     firebaseAdminInitConfig: {

@@ -40,6 +40,8 @@ describe('config', () => {
     setConfig(mockConfig)
     const expectedConfig = {
       ...mockConfig,
+      onVerifyTokenError: expect.any(Function),
+      onTokenRefreshError: expect.any(Function),
       cookies: {
         ...mockConfig.cookies,
         keys: ['hidden'],

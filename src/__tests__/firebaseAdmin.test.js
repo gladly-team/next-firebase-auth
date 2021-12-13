@@ -1,7 +1,7 @@
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
-import { setConfig } from 'src/config'
+import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 
@@ -284,9 +284,10 @@ describe('verifyIdToken', () => {
     expect(token).toEqual(null)
   })
 
-  it('does not throw if there is an error refreshing the token', async () => {
-    expect.assertions(1)
+  it('does not throw if there is an error refreshing the token; calls config.onTokenRefreshError with the error', async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
+    const { onTokenRefreshError } = getConfig()
     global.fetch.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
@@ -309,6 +310,10 @@ describe('verifyIdToken', () => {
     await expect(
       verifyIdToken('some-token', 'my-refresh-token')
     ).resolves.not.toThrow()
+    const expectedErr = new Error(
+      'Problem refreshing token: {"error":"Something happened, sorry."}'
+    )
+    expect(onTokenRefreshError).toHaveBeenCalledWith(expectedErr)
   })
 
   it('returns an unauthenticated AuthUser if there is an error refreshing the token', async () => {
@@ -339,9 +344,10 @@ describe('verifyIdToken', () => {
     expect(token).toEqual(null)
   })
 
-  it("does not throw if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
-    expect.assertions(1)
+  it("does not throw if Firebase admin's verifyIdToken throws something other than an expired token error; calls config.onVerifyTokenError with the error", async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
+    const { onVerifyTokenError } = getConfig()
     global.fetch.mockImplementation(async (endpoint) => {
       if (endpoint.indexOf(googleRefreshTokenEndpoint) === 0) {
         return {
@@ -361,6 +367,7 @@ describe('verifyIdToken', () => {
     await expect(
       verifyIdToken('some-token', 'my-refresh-token')
     ).resolves.not.toThrow()
+    expect(onVerifyTokenError).toHaveBeenCalledWith(otherErr)
   })
 
   it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
@@ -388,9 +395,10 @@ describe('verifyIdToken', () => {
     expect(token).toEqual(null)
   })
 
-  it("does not throw if Firebase admin's verifyIdToken throws an expired token error for the refreshed token", async () => {
-    expect.assertions(1)
+  it("does not throw if Firebase admin's verifyIdToken throws an expired token error for the refreshed token; calls config.onVerifyTokenError with the error", async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
+    const { onVerifyTokenError } = getConfig()
 
     // Mock that verifyIdToken throws a "token expired" error even for
     // the refreshed token, for some reason.
@@ -405,6 +413,7 @@ describe('verifyIdToken', () => {
     await expect(
       verifyIdToken('some-token', 'my-refresh-token')
     ).resolves.not.toThrow()
+    expect(onVerifyTokenError).toHaveBeenCalledWith(expiredTokenErr)
   })
 
   it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws an expired token error for the refreshed token", async () => {
