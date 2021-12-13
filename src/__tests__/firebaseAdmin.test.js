@@ -38,6 +38,7 @@ const googleCustomTokenEndpoint =
 
 describe('verifyIdToken', () => {
   it('returns an AuthUser', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const expectedReturn = createAuthUser({
@@ -56,6 +57,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an AuthUser with the same token when the token has not expired', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
@@ -66,6 +68,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/id-token-expired error', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -100,6 +103,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/argument-error error', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -134,6 +138,7 @@ describe('verifyIdToken', () => {
   })
 
   it('calls the Google token refresh endpoint with the public Firebase API key as a query parameter value', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Set the Firebase API key.
@@ -167,6 +172,7 @@ describe('verifyIdToken', () => {
   })
 
   it('passes the expected fetch options when refreshing the token', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock that the original token is expired but a new token works.
@@ -195,6 +201,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an unauthenticated AuthUser if verifying the token fails with auth/invalid-user-token', async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -215,6 +222,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-token-expired', async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -235,6 +243,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-disabled', async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -255,6 +264,7 @@ describe('verifyIdToken', () => {
   })
 
   it('returns an unauthenticated AuthUser if there is no refresh token and the id token has expired', async () => {
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -275,6 +285,7 @@ describe('verifyIdToken', () => {
   })
 
   it('does not throw if there is an error refreshing the token', async () => {
+    expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     global.fetch.mockImplementation(async () => ({
       ...createMockFetchResponse(),
@@ -419,6 +430,7 @@ describe('verifyIdToken', () => {
 
 describe('getCustomIdAndRefreshTokens', () => {
   it("passes the Firebase user's ID (from verifyIdToken) to createCustomToken", async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
@@ -431,6 +443,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('calls the public google endpoint if the firebaseAuthEmulatorHost is not set to get a custom token, including the public Firebase API key as a URL parameter', async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Set the Firebase API key.
@@ -485,6 +498,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('uses the expected fetch options when calling to get a custom token', async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
@@ -502,6 +516,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('returns the expected token values', async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
@@ -527,6 +542,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('returns the expected AuthUser value', async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
@@ -557,6 +573,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('throws if fetching a custom token fails', async () => {
+    expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
