@@ -104,12 +104,6 @@ const withAuthUserTokenSSR =
         AuthUser
       )
 
-      if (!destination) {
-        throw new Error(
-          'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
-        )
-      }
-
       return {
         redirect: {
           destination,
@@ -126,12 +120,6 @@ const withAuthUserTokenSSR =
         ctx,
         AuthUser
       )
-
-      if (!destination) {
-        throw new Error(
-          'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
-        )
-      }
 
       return {
         redirect: {

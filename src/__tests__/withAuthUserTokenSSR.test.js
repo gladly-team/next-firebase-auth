@@ -482,7 +482,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'When "whenUnauthed" is set to AuthAction.REDIRECT_TO_LOGIN, "authPageURL" must be set.'
+        'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
       )
     )
   })
@@ -506,7 +506,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
       )
     )
   })
@@ -683,7 +683,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'When "whenAuthed" is set to AuthAction.REDIRECT_TO_APP, "appPageURL" must be set.'
+        'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
       )
     )
   })
@@ -730,7 +730,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+        'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
       )
     )
   })

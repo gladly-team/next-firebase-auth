@@ -451,7 +451,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     ).toThrow(
-      'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
     )
   })
 
@@ -688,7 +688,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
     )
   })
 
@@ -898,7 +898,37 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('redirects to url through router when authPageURL is an object', () => {})
+  it('redirects to url through router when authPageURL resolves an object', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+      authRequestCompleted: false, // waiting
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: ({ AuthUser }) => ({
+        url: `/my-app/here/?email=${AuthUser.email}`,
+        basePath: false,
+      }),
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    const { container } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(container.firstChild).toBeNull()
+  })
 
   it('redirects to url through router when appPageURL is an object', () => {})
 

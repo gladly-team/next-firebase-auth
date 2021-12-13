@@ -1,6 +1,5 @@
 /* globals window */
 import React, { useEffect, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/router'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
@@ -128,7 +127,6 @@ const withAuthUser =
           ? authRequestCompleted
           : true)
 
-      const router = useRouter()
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
         const appRedirectDestination = appPageURL || getConfig().appPageURL
@@ -138,17 +136,6 @@ const withAuthUser =
           AuthUser
         )
 
-        if (!destination) {
-          throw new Error(
-            'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
-          )
-        }
-
-        if (appRedirectDestination.basePath === false) {
-          window.location = destination
-        } else {
-          router.replace(destination)
-        }
       }, [router, AuthUser])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
@@ -159,13 +146,7 @@ const withAuthUser =
           AuthUser
         )
 
-        if (!destination) {
-          throw new Error(
-            'The "authPageURL" config must be set when using `REDIRECT_TO_LOGIN`'
-          )
-        }
-
-        if (authRedirectDestination.basePath === false) {
+        if (typeof destination === 'object' && destination.basePath === false) {
           window.location = destination
         } else {
           router.replace(destination)
