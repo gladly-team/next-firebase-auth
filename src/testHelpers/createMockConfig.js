@@ -9,6 +9,8 @@ const createMockConfig = ({ clientSide } = {}) => {
     debug: false,
     loginAPIEndpoint: 'https://example.com/api/login',
     logoutAPIEndpoint: 'https://example.com/api/logout',
+    onVerifyTokenError: jest.fn(),
+    onTokenRefreshError: jest.fn(),
     authPageURL: '/login',
     appPageURL: '/',
     firebaseAdminInitConfig: {
