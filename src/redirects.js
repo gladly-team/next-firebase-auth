@@ -1,10 +1,3 @@
-/**
- * getDestinationURL leverages an incoming redirect destination and deter
- *
- * @param {} ctx
- * @param {} AuthUser
- * @param {} redirectDestination
- */
 const getDestination = (ctx, AuthUser, redirectDestination) => {
   if (typeof redirectDestination === 'function') {
     return redirectDestination({ ctx, AuthUser })
@@ -13,13 +6,6 @@ const getDestination = (ctx, AuthUser, redirectDestination) => {
   return redirectDestination
 }
 
-/**
- * getRedirectToLoginDestination.
- *
- * @param {} ctx
- * @param {} AuthUser
- * @param {} redirectDestination
- */
 export const getRedirectToLoginDestination = (
   authRedirectDestination,
   ctx,
@@ -41,13 +27,6 @@ export const getRedirectToLoginDestination = (
   return destination
 }
 
-/**
- * getRedirectToAppDestination.
- *
- * @param {} ctx
- * @param {} AuthUser
- * @param {} redirectDestination
- */
 export const getRedirectToAppDestination = (
   appRedirectDestination,
   ctx,
