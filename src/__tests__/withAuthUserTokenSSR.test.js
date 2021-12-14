@@ -506,7 +506,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
+        'The "authPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
       )
     )
   })
