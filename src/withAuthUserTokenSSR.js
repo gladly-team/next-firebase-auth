@@ -104,9 +104,10 @@ const withAuthUserTokenSSR =
         AuthUser
       )
 
+      const location = destination.location ? destination.location : destination
       return {
         redirect: {
-          destination,
+          destination: location,
           permanent: false,
         },
       }
@@ -121,9 +122,10 @@ const withAuthUserTokenSSR =
         AuthUser
       )
 
+      const location = destination.location ? destination.location : destination
       return {
         redirect: {
-          destination,
+          destination: location,
           permanent: false,
         },
       }

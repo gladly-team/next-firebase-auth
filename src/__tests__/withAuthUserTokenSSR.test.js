@@ -437,6 +437,28 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })
   })
 
+  it('redirects to the provided object login URL when the user is not authed and auth *is* required', async () => {
+    expect.assertions(1)
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+      authPageURL: ({ ctx }) => ({
+        location: `/my-login?next=${ctx.pathname}`,
+        basePath: false,
+      }),
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/my-login?next=/my-path',
+        permanent: false,
+      },
+    })
+  })
+
   it("redirects to the config's default login URL when no login URL is provided, the user is not authed, and auth *is* required", async () => {
     expect.assertions(1)
 
@@ -543,6 +565,51 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       appPageURL: '/my-app',
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/my-app',
+        permanent: false,
+      },
+    })
+  })
+
+  it('redirects to the provided object app URL when the user is authed and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
+    expect.assertions(1)
+
+    // Mock that the user is authed.
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+      appPageURL: {
+        location: '/my-app',
+        basePath: false,
+      },
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({

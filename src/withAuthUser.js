@@ -135,7 +135,7 @@ const withAuthUser =
             typeof destination === 'object' &&
             destination.basePath === false
           ) {
-            window.location.assign(destination.url)
+            window.location.assign(destination.location)
           } else {
             router.replace(destination)
           }

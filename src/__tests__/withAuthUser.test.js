@@ -918,7 +918,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       authPageURL: (props) => {
         propsSpy = props
         return {
-          url: `/some-auth-page`,
+          location: `/some-auth-page`,
           basePath: false,
         }
       }, // custom auth page
@@ -954,7 +954,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     setConfig({
       ...mockConfig,
       appPageURL: {
-        url: '/my-app/here/', // custom app page
+        location: '/my-app/here/', // custom app page
         basePath: false,
       },
     })
