@@ -1,6 +1,3 @@
-/* globals window */
-import { useRouter } from 'next/router'
-
 /**
  * getDestinationURL leverages an incoming redirect destination and deter
  *
@@ -37,7 +34,7 @@ export const getRedirectToLoginDestination = (
 
   if (!destination) {
     throw new Error(
-      'The "appPageURL" must be set to a non-empty string, an object literal containing "url:string" and "basePath:boolean", or resolve to either'
+      'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
     )
   }
 

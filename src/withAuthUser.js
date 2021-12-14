@@ -129,6 +129,19 @@ const withAuthUser =
           : true)
 
       const router = useRouter()
+      const routeToDestination = useCallback(
+        (destination) => {
+          if (
+            typeof destination === 'object' &&
+            destination.basePath === false
+          ) {
+            window.location.assign(destination.url)
+          } else {
+            router.replace(destination)
+          }
+        },
+        [router]
+      )
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
         const appRedirectDestination = appPageURL || getConfig().appPageURL
@@ -138,12 +151,8 @@ const withAuthUser =
           AuthUser
         )
 
-        if (typeof destination === 'object' && destination.basePath === false) {
-          window.location = destination.url
-        } else {
-          router.replace(destination)
-        }
-      }, [router, AuthUser])
+        routeToDestination(destination)
+      }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
         const authRedirectDestination = authPageURL || getConfig().authPageURL
@@ -153,12 +162,8 @@ const withAuthUser =
           AuthUser
         )
 
-        if (typeof destination === 'object' && destination.basePath === false) {
-          window.location = destination
-        } else {
-          router.replace(destination)
-        }
-      }, [router, AuthUser])
+        routeToDestination(destination)
+      }, [AuthUser, routeToDestination])
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
