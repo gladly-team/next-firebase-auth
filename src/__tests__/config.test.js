@@ -540,6 +540,16 @@ describe('config', () => {
     }).not.toThrow()
   })
 
+  it('defaults onVerifyTokenError to a function', () => {
+    expect.assertions(1)
+    const { getConfig, setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    delete mockConfigDefault.onVerifyTokenError
+    setConfig(mockConfigDefault)
+    const config = getConfig()
+    expect(typeof config.onVerifyTokenError).toEqual('function')
+  })
+
   it('throws if onVerifyTokenError is not a function', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
@@ -566,6 +576,16 @@ describe('config', () => {
     expect(() => {
       setConfig(mockConfig)
     }).not.toThrow()
+  })
+
+  it('defaults onTokenRefreshError to a function', () => {
+    expect.assertions(1)
+    const { getConfig, setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    delete mockConfigDefault.onTokenRefreshError
+    setConfig(mockConfigDefault)
+    const config = getConfig()
+    expect(typeof config.onTokenRefreshError).toEqual('function')
   })
 
   it('throws if onTokenRefreshError is not a function', () => {
