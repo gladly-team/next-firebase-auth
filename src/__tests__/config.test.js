@@ -40,6 +40,8 @@ describe('config', () => {
     setConfig(mockConfig)
     const expectedConfig = {
       ...mockConfig,
+      onVerifyTokenError: expect.any(Function),
+      onTokenRefreshError: expect.any(Function),
       cookies: {
         ...mockConfig.cookies,
         keys: ['hidden'],
@@ -458,70 +460,146 @@ describe('config', () => {
       'The "logoutAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
     )
   })
-})
 
-it('should throw if the config.firebaseAuthEmulator has a http or https prefix', () => {
-  expect.assertions(1)
-  const { setConfig } = require('src/config')
-  const mockConfigDefault = createMockConfig()
-  const mockConfig = {
-    ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'http://localhost:9099',
-  }
-  expect(() => {
-    setConfig(mockConfig)
-  }).toThrow(
-    'Invalid next-firebase-auth options: The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
-  )
-})
+  it('throws if the config.firebaseAuthEmulator has a http or https prefix', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAuthEmulatorHost: 'http://localhost:9099',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+    )
+  })
 
-it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the FIREBASE_AUTH_EMULATOR_HOST env var', () => {
-  expect.assertions(1)
-  const isClientSide = require('src/isClientSide').default
-  isClientSide.mockReturnValue(false)
-  const { setConfig } = require('src/config')
-  const mockConfigDefault = createMockConfig()
-  const mockConfig = {
-    ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'localhost:9099',
-  }
-  expect(() => {
-    setConfig(mockConfig)
-  }).toThrow(
-    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be set if you are using the "firebaseAuthEmulatorHost" option'
-  )
-})
+  it('[server-side] throws if config.firebaseAuthEmulatorHost is set, but not the FIREBASE_AUTH_EMULATOR_HOST env var', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAuthEmulatorHost: 'localhost:9099',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be set if you are using the "firebaseAuthEmulatorHost" option'
+    )
+  })
 
-it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from the one set in the config', () => {
-  expect.assertions(1)
-  const isClientSide = require('src/isClientSide').default
-  isClientSide.mockReturnValue(false)
-  const { setConfig } = require('src/config')
-  const mockConfigDefault = createMockConfig()
-  const mockConfig = {
-    ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'localhost:9099',
-  }
-  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:8088'
-  expect(() => {
-    setConfig(mockConfig)
-  }).toThrow(
-    'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
-  )
-})
+  it('[server-side] throws if the FIREBASE_AUTH_EMULATOR_HOST env var differs from the one set in the config', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAuthEmulatorHost: 'localhost:9099',
+    }
+    process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:8088'
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "FIREBASE_AUTH_EMULATOR_HOST" environment variable should be the same as the host set in the config'
+    )
+  })
 
-it('[server-side] should not throw if the FIREBASE_AUTH_EMULATOR_HOST env variable is set and matches the one set in the config', () => {
-  expect.assertions(1)
-  const isClientSide = require('src/isClientSide').default
-  isClientSide.mockReturnValue(false)
-  const { setConfig } = require('src/config')
-  const mockConfigDefault = createMockConfig()
-  const mockConfig = {
-    ...mockConfigDefault,
-    firebaseAuthEmulatorHost: 'localhost:9099',
-  }
-  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
-  expect(() => {
-    setConfig(mockConfig)
-  }).not.toThrow()
+  it('[server-side] should not throw if the FIREBASE_AUTH_EMULATOR_HOST env variable is set and matches the one set in the config', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      firebaseAuthEmulatorHost: 'localhost:9099',
+    }
+    process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('does not throw if onVerifyTokenError is undefined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onVerifyTokenError: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('defaults onVerifyTokenError to a function', () => {
+    expect.assertions(1)
+    const { getConfig, setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    delete mockConfigDefault.onVerifyTokenError
+    setConfig(mockConfigDefault)
+    const config = getConfig()
+    expect(typeof config.onVerifyTokenError).toEqual('function')
+  })
+
+  it('throws if onVerifyTokenError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onVerifyTokenError: 'no errors please',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onVerifyTokenError" setting must be a function.'
+    )
+  })
+
+  it('does not throw if onTokenRefreshError is undefined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onTokenRefreshError: undefined,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('defaults onTokenRefreshError to a function', () => {
+    expect.assertions(1)
+    const { getConfig, setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    delete mockConfigDefault.onTokenRefreshError
+    setConfig(mockConfigDefault)
+    const config = getConfig()
+    expect(typeof config.onTokenRefreshError).toEqual('function')
+  })
+
+  it('throws if onTokenRefreshError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onTokenRefreshError: false,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
+    )
+  })
 })
