@@ -306,7 +306,7 @@ When either `appPageURL` or `authPageURL` are set as an object literal or an obj
 
 ```javascript
 {
-  url: string,
+  location: string,
   basePath: boolean
 }
 ```
