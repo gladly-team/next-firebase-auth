@@ -826,6 +826,29 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(container.firstChild).toBeNull()
   })
 
+  it('renders the child component when redirecting to the app and whenAuthedBeforeRedirect === AuthAction.RENDER', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const MockCompWithUser = withAuthUser({
+      whenAuthedBeforeRedirect: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Hello! How are you?')).toBeTruthy()
+  })
+
   it('renders null when redirecting to the app, even while waiting for authRequestCompleted', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
