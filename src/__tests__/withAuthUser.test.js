@@ -802,7 +802,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
 
-  it('renders null when redirecting to the app', () => {
+  it('renders null by default when redirecting to the app', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
@@ -849,7 +849,32 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
 
-  it('renders null when redirecting to the app, even while waiting for authRequestCompleted', () => {
+  it('renders the loader component when redirecting to the app and whenAuthedBeforeRedirect === AuthAction.SHOW_LOADER', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const MyLoader = () => <div>Things are loading up!</div>
+    const MockCompWithUser = withAuthUser({
+      whenAuthedBeforeRedirect: AuthAction.SHOW_LOADER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+      LoaderComponent: MyLoader,
+    })(MockComponent)
+    const { queryByText } = render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(queryByText('Things are loading up!')).toBeTruthy()
+  })
+
+  it('renders null by default when redirecting to the app, even while waiting for authRequestCompleted', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user

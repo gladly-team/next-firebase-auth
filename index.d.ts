@@ -127,7 +127,7 @@ export const verifyIdToken: (token: string) => Promise<AuthUser>
 
 export const withAuthUser: <P = unknown>(options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
-  whenAuthedBeforeRedirect:
+  whenAuthedBeforeRedirect?:
     | AuthAction.RENDER
     | AuthAction.SHOW_LOADER
     | AuthAction.RETURN_NULL
