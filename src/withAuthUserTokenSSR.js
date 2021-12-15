@@ -95,11 +95,11 @@ const withAuthUserTokenSSR =
     }
     const AuthUserSerialized = AuthUser.serialize()
 
-    const redirectToDestination = (destination) => {
+    const redirectToDestination = (redirectURL) => {
       const redirect =
-        typeof destination === 'object'
-          ? destination
-          : { destination, permanent: false }
+        typeof redirectURL === 'object'
+          ? redirectURL
+          : { destination: redirectURL, permanent: false }
 
       return {
         redirect,
