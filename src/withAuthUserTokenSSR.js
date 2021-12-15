@@ -95,6 +95,17 @@ const withAuthUserTokenSSR =
     }
     const AuthUserSerialized = AuthUser.serialize()
 
+    const redirectToDestination = (destination) => {
+      const redirect =
+        typeof destination === 'object'
+          ? destination
+          : { destination, permanent: false }
+
+      return {
+        redirect,
+      }
+    }
+
     // If specified, redirect to the login page if the user is unauthed.
     if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
       const authRedirectDestination = authPageURL || getConfig().authPageURL
@@ -104,13 +115,7 @@ const withAuthUserTokenSSR =
         AuthUser
       )
 
-      const location = destination.location ? destination.location : destination
-      return {
-        redirect: {
-          destination: location,
-          permanent: false,
-        },
-      }
+      return redirectToDestination(destination)
     }
 
     // If specified, redirect to the app page if the user is authed.
@@ -122,13 +127,7 @@ const withAuthUserTokenSSR =
         AuthUser
       )
 
-      const location = destination.location ? destination.location : destination
-      return {
-        redirect: {
-          destination: location,
-          permanent: false,
-        },
-      }
+      return redirectToDestination(destination)
     }
 
     // Prepare return data

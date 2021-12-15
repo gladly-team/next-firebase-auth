@@ -306,8 +306,9 @@ When either `appPageURL` or `authPageURL` are set as an object literal or an obj
 
 ```javascript
 {
-  location: string,
-  basePath: boolean
+  destination: string,
+  permanent: boolean,
+  basePath: boolean,
 }
 ```
 >>>>>>> a67d0ed (test: add test coverage for new supported data type)

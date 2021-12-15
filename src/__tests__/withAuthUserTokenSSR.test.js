@@ -446,7 +446,8 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: ({ ctx }) => ({
-        location: `/my-login?next=${ctx.pathname}`,
+        destination: `/my-login?next=${ctx.pathname}`,
+        permanent: false,
         basePath: false,
       }),
     })(mockGetSSPFunc)
@@ -455,6 +456,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-login?next=/my-path',
         permanent: false,
+        basePath: false,
       },
     })
   })
@@ -607,7 +609,8 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       appPageURL: {
-        location: '/my-app',
+        destination: '/my-app',
+        permanent: false,
         basePath: false,
       },
     })(mockGetSSPFunc)
@@ -616,6 +619,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-app',
         permanent: false,
+        basePath: false,
       },
     })
   })

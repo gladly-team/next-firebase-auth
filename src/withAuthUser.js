@@ -130,14 +130,14 @@ const withAuthUser =
 
       const router = useRouter()
       const routeToDestination = useCallback(
-        (destination) => {
+        (redirectURL) => {
           if (
-            typeof destination === 'object' &&
-            destination.basePath === false
+            typeof redirectURL === 'object' &&
+            redirectURL.basePath === false
           ) {
-            window.location.assign(destination.location)
+            window.location.assign(redirectURL.destination)
           } else {
-            router.replace(destination)
+            router.replace(redirectURL)
           }
         },
         [router]
