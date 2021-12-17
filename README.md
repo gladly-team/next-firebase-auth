@@ -678,10 +678,44 @@ Here is an example of how the migration might look in your app:
 
 ## Examples
 
+- [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
 - [Using the Firebase Apps](#using-the-firebase-apps)
 - [TypeScript](#typescript)
 - [Dynamic Redirects](#dynamic-redirects)
 - [Testing and Mocking with Jest](#testing-and-mocking-with-jest)
+
+### Adding a private key to Vercel
+
+There are various ways to add your Firebase private key as an environment variable to Vercel.
+
+__Vercel console__
+
+In the [Vercel console](https://vercel.com/docs/concepts/projects/environment-variables), add the private key in double quotes (screenshot [here](https://github.com/gladly-team/next-firebase-auth/issues/212)).
+
+Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property::
+
+
+```javascript
+privateKey: process.env.FIREBASE_PRIVATE_KEY
+```
+
+__Vercel CLI__
+
+Via the Vercel CLI, add the private key _with double quotes_:
+
+`vercel secrets add firebase-private-key '"my-key-here"'`
+
+Then, use `JSON.parse` in the `firebaseAdminInitConfig.credential.privateKey` property:
+
+```javascript
+privateKey: process.env.FIREBASE_PRIVATE_KEY
+  ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
+  : undefined
+```
+
+__Alternative formatting__
+
+Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: https://github.com/gladly-team/next-firebase-auth/discussions/95
 
 ### Using the Firebase Apps
 
