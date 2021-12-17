@@ -703,7 +703,7 @@ privateKey: process.env.FIREBASE_PRIVATE_KEY
 
 __Alternative formatting__
 
-Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: https://github.com/gladly-team/next-firebase-auth/discussions/95
+Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: [discussion #95](https://github.com/gladly-team/next-firebase-auth/discussions/95)
 
 ### Using the Firebase Apps
 
@@ -1067,7 +1067,7 @@ In local development, try clearing data/cookies for `localhost` in case you prev
 
 #### I get the error, "Failed to parse private key: Error: Invalid PEM formatted message."
 
-See [adding a private key to Vercel](#adding-a-private-key-to-Vercel).
+See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) and [this discussion](https://github.com/gladly-team/next-firebase-auth/discussions/95) on private key formatting.
 
 ## Limitations & Feedback
 
