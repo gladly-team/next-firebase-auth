@@ -8,10 +8,13 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of the bug.
 
-**Version**
-What version of `next-firebase-auth` are you using?
+**Versions**
+
+`next-firebase-auth` version: 
+Firebase JS SDK: 
+Next.js: 
 
 **To Reproduce**
 Steps to reproduce the behavior:
