@@ -80,8 +80,13 @@ const initAuth = () => {
     appPageURL: '/',
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
+    onLoginRequestError: (err) => {
+      console.error(err),
+    },
+    onLogoutRequestError: (err) => {
+      console.error(err),
+    },
     firebaseAuthEmulatorHost: 'localhost:9099',
-    // Required in most cases.
     firebaseAdminInitConfig: {
       credential: {
         projectId: 'my-example-app-id',
@@ -115,16 +120,12 @@ const initAuth = () => {
       secure: true, // set this to false in local (non-HTTPS) development
       signed: true,
     },
-    /**
-      * Optional function: handler called if there's an unexpected error while
-      * verifying the user's ID token server-side.
-     */
-    // onVerifyTokenError: (err) => {}
-    /**
-      * Optional function: handler called if there's an unexpected error while
-      * refreshing the user's ID token server-side.
-     */
-    // onTokenRefreshError: (err) => {}
+    onVerifyTokenError: (err) => {
+      console.error(err),
+    },
+    onTokenRefreshError: (err) => {
+      console.error(err),
+    },
   })
 }
 
@@ -441,13 +442,33 @@ The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` nee
 
 `String`
 
-The API endpoint this module will call when the auth state changes for an authenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+The API endpoint this module will call when the auth state changes for an authenticated Firebase user.
+
+Required unless a custom `tokenChangedHandler` is set, in which case it cannot be defined.
 
 #### logoutAPIEndpoint
 
 `String`
 
-The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user.
+
+Required unless a custom `tokenChangedHandler` is set, in which case it cannot be defined.
+
+#### onLoginRequestError
+
+`Function` (optional)
+
+A handler called if the login API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
+
+Not used or allowed if a custom `tokenChangedHandler` is set.
+
+#### onLogoutRequestError
+
+`Function` (optional)
+
+A handler called if the logout API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
+
+Not used or allowed if a custom `tokenChangedHandler` is set.
 
 #### tokenChangedHandler
 
@@ -461,7 +482,7 @@ If this callback is specified, user is responsible for:
 2. Passing the user's ID token in the Authorization header
 3. Ensuring it allows the request to set cookies.
 
-Cannot be set with `loginAPIEndpoint` or `logoutAPIEndpoint`.
+See the [default handler](https://github.com/gladly-team/next-firebase-auth/blob/fda3fe1f1b69a989da8608cc30412f39c0cbe1ad/src/useFirebaseUser.js#L9) for guidance.
 
 #### firebaseAuthEmulatorHost
 
