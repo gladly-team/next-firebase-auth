@@ -18,6 +18,11 @@ import logDebug from 'src/logDebug'
  * @param {String} whenAuthed - The behavior to take if the user
  *   *is* authenticated. One of AuthAction.RENDER or
  *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
+ * @param {String} whenAuthedBeforeRedirect - The behavior to take
+ *   if the user is authenticated and
+ *   whenAuthed is set to AuthAction.REDIRECT_TO_APP.
+ *   One of: AuthAction.RENDER, AuthAction.SHOW_LOADER, AuthAction.RETURN_NULL.
+ *   Defaults to AuthAction.RETURN_NULL.
  * @param {String} whenUnauthedBeforeInit - The behavior to take
  *   if the user is not authenticated but the Firebase client JS
  *   SDK has not initialized. One of: AuthAction.RENDER,
@@ -43,6 +48,7 @@ const withAuthUser =
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
     whenUnauthedAfterInit = AuthAction.RENDER,
+    whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
     appPageURL = null,
     authPageURL = null,
     LoaderComponent = null,
@@ -189,7 +195,13 @@ const withAuthUser =
         </AuthUserContext.Provider>
       )
       if (willRedirectToApp) {
-        returnVal = null
+        if (whenAuthedBeforeRedirect === AuthAction.RENDER) {
+          returnVal = comps
+        } else if (whenAuthedBeforeRedirect === AuthAction.SHOW_LOADER) {
+          returnVal = loaderComp
+        } else {
+          returnVal = null
+        }
       } else if (willRedirectToLogin) {
         if (whenUnauthedBeforeInit === AuthAction.RETURN_NULL) {
           returnVal = null
