@@ -680,7 +680,7 @@ __Vercel console__
 
 In the [Vercel console](https://vercel.com/docs/concepts/projects/environment-variables), add the private key in double quotes (screenshot [here](https://github.com/gladly-team/next-firebase-auth/issues/212)).
 
-Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property::
+Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property:
 
 
 ```javascript
