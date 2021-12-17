@@ -500,19 +500,7 @@ Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.go
 
 The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
-> Note: if using environment variables in Vercel, add the private key _with double quotes_ via the CLI:
->
-> `vercel secrets add firebase-private-key '"my-key-here"'`
->
-> Then, use `JSON.parse` in the `firebaseAdminInitConfig.credential.privateKey` property:
->
-> ```
->   privateKey: process.env.FIREBASE_PRIVATE_KEY
->     ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
->     : undefined
-> ```
->
-> See [this Vercel issue](https://github.com/vercel/vercel/issues/749#issuecomment-707515089) for more information.
+> ℹ️ Using Vercel? See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) for guidance.
 
 #### useFirebaseAdminDefaultCredential
 
