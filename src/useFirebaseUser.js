@@ -7,7 +7,12 @@ import { filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 
 const defaultTokenChangedHandler = async (authUser) => {
-  const { loginAPIEndpoint, logoutAPIEndpoint } = getConfig()
+  const {
+    loginAPIEndpoint,
+    logoutAPIEndpoint,
+    onLoginRequestError,
+    onLogoutRequestError,
+  } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
   if (authUser.id) {
@@ -21,11 +26,20 @@ const defaultTokenChangedHandler = async (authUser) => {
     })
     if (!response.ok) {
       const responseJSON = await response.json()
-      throw new Error(
+
+      // If the developer provided a handler for login errors,
+      // call it and don't throw.
+      // https://github.com/gladly-team/next-firebase-auth/issues/367
+      const err = new Error(
         `Received ${
           response.status
         } response from login API endpoint: ${JSON.stringify(responseJSON)}`
       )
+      if (onLoginRequestError) {
+        await onLoginRequestError(err)
+      } else {
+        throw err
+      }
     }
   } else {
     // If the user is not authed, call logout to unset the cookie.
@@ -35,11 +49,20 @@ const defaultTokenChangedHandler = async (authUser) => {
     })
     if (!response.ok) {
       const responseJSON = await response.json()
-      throw new Error(
+
+      // If the developer provided a handler for logout errors,
+      // call it and don't throw.
+      // https://github.com/gladly-team/next-firebase-auth/issues/367
+      const err = new Error(
         `Received ${
           response.status
         } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
       )
+      if (onLogoutRequestError) {
+        await onLogoutRequestError(err)
+      } else {
+        throw err
+      }
     }
   }
   return response
