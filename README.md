@@ -1065,6 +1065,10 @@ You can try setting up your credentials in [the example app](https://github.com/
 
 In local development, try clearing data/cookies for `localhost` in case you previously signed in with another Firebase account and still have auth cookies signed by another private key.
 
+#### I get the error, "Failed to parse private key: Error: Invalid PEM formatted message."
+
+See [adding a private key to Vercel](#adding-a-private-key-to-Vercel).
+
 ## Limitations & Feedback
 
 We expect some apps will need some features that are not currently available:
