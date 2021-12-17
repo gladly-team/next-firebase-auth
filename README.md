@@ -74,8 +74,13 @@ const initAuth = () => {
     appPageURL: '/',
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
+    onLoginRequestError: (err) => {
+      console.error(err),
+    },
+    onLogoutRequestError: (err) => {
+      console.error(err),
+    },
     firebaseAuthEmulatorHost: 'localhost:9099',
-    // Required in most cases.
     firebaseAdminInitConfig: {
       credential: {
         projectId: 'my-example-app-id',
@@ -109,16 +114,12 @@ const initAuth = () => {
       secure: true, // set this to false in local (non-HTTPS) development
       signed: true,
     },
-    /**
-      * Optional function: handler called if there's an unexpected error while
-      * verifying the user's ID token server-side.
-     */
-    // onVerifyTokenError: (err) => {}
-    /**
-      * Optional function: handler called if there's an unexpected error while
-      * refreshing the user's ID token server-side.
-     */
-    // onTokenRefreshError: (err) => {}
+    onVerifyTokenError: (err) => {
+      console.error(err),
+    },
+    onTokenRefreshError: (err) => {
+      console.error(err),
+    },
   })
 }
 
@@ -437,6 +438,23 @@ The API endpoint this module will call when the auth state changes for an authen
 `String`
 
 The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user. Must be set unless `tokenChangedHandler` is set.
+
+#### onLoginRequestError
+
+`Function` (optional)
+
+A handler called if the login API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
+
+Not used if a custom "tokenChangedHandler" is defined.
+
+#### onLogoutRequestError
+
+`Function` (optional)
+
+A handler called if the logout API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
+
+Not used if a custom "tokenChangedHandler" is defined.
+
 
 #### tokenChangedHandler
 
