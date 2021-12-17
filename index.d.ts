@@ -57,6 +57,8 @@ interface InitConfig {
   appPageURL?: PageURL
   loginAPIEndpoint?: string
   logoutAPIEndpoint?: string
+  onVerifyTokenError?: (error: unknown) => void
+  onTokenRefreshError?: (error: unknown) => void
   tokenChangedHandler?: (user: AuthUser) => void
   firebaseAdminInitConfig?: {
     credential: {

@@ -115,6 +115,16 @@ const initAuth = () => {
       secure: true, // set this to false in local (non-HTTPS) development
       signed: true,
     },
+    /**
+      * Optional function: handler called if there's an unexpected error while
+      * verifying the user's ID token server-side.
+     */
+    // onVerifyTokenError: (err) => {}
+    /**
+      * Optional function: handler called if there's an unexpected error while
+      * refreshing the user's ID token server-side.
+     */
+    // onTokenRefreshError: (err) => {}
   })
 }
 
@@ -516,6 +526,22 @@ For security, the `maxAge` value must be two weeks or less. Note that `maxAge` i
 > **Note:** The cookies' expirations will be extended automatically when the user loads the Firebase JS SDK.
 >
 > The Firebase JS SDK is the source of truth for authentication, so if the cookies expire but the user is still authed with Firebase, the cookies will be automatically set again when the user loads the Firebase JS SDK—but the user will not be authed during SSR on that first request.
+
+#### onVerifyTokenError
+
+`Function` (optional)
+
+Error handler that will be called if there's an unexpected error while verifying the user's ID token server-side. It will receive a [Firebase auth error](https://firebase.google.com/docs/reference/node/firebase.auth.Error).
+
+This library will **not** throw when it cannot verify an ID token. Instead, it will provide an unauthenticated user to the app. It will typically handle common auth-related errors such as `auth/id-token-expired` and `auth/user-disabled` without throwing. See [#366](https://github.com/gladly-team/next-firebase-auth/issues/366) and [#174](https://github.com/gladly-team/next-firebase-auth/issues/174) for additional background.
+
+#### onTokenRefreshError
+
+`Function` (optional)
+
+Error handler that will be called if there's an unexpected error while refreshing the user's ID token server-side.
+
+This library will **not** throw when it cannot refresh an ID token. Instead, it will provide an unauthenticated user to the app. See [#366](https://github.com/gladly-team/next-firebase-auth/issues/366) and [#174](https://github.com/gladly-team/next-firebase-auth/issues/174) for additional background.
 
 ## Types
 
