@@ -21,7 +21,7 @@ const Demo = () => {
   const fetchData = useCallback(async () => {
     // Note that forcing token refresh here will cause the API to fire
     // twice (a second time when AuthUser changes).
-    const token = await AuthUser.getIdToken()
+    const token = await AuthUser.getIdToken(true)
     const endpoint = getAbsoluteURL('/api/example')
     const response = await fetch(endpoint, {
       method: 'GET',
