@@ -270,6 +270,49 @@ describe('useFirebaseUser', () => {
     })
   })
 
+  it('calls onLoginRequestError if defined, rather than throwing, when the login endpoint returns a non-OK response', async () => {
+    expect.assertions(2)
+    const mockOnLoginRequestError = jest.fn()
+    setConfig({
+      ...createMockConfig(),
+      loginAPIEndpoint: 'https://example.com/api/my-login',
+      logoutAPIEndpoint: 'https://example.com/api/my-logout',
+      onLoginRequestError: mockOnLoginRequestError,
+    })
+
+    let onIdTokenChangedCallback
+    const onIdTokenChanged = jest.fn((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+
+    const idTokenResult = createMockIdTokenResult()
+    const getIdTokenResult = jest.fn(async () => idTokenResult)
+    jest.spyOn(firebase, 'auth').mockImplementation(() => ({
+      currentUser: { getIdTokenResult },
+      onIdTokenChanged,
+    }))
+
+    const mockFirebaseUser = createMockFirebaseUserClientSDK()
+    renderHook(() => useFirebaseUser())
+
+    // Mock that `fetch` returns a non-OK response.
+    global.fetch.mockResolvedValue({
+      ...createMockFetchResponse(),
+      ok: false,
+      status: 500,
+    })
+
+    await act(async () => {
+      await expect(
+        onIdTokenChangedCallback(mockFirebaseUser)
+      ).resolves.not.toThrow()
+      expect(mockOnLoginRequestError).toHaveBeenCalledWith(
+        new Error('Received 500 response from login API endpoint: {}')
+      )
+    })
+  })
+
   it('throws if `fetch` throws when calling the login endpoint', async () => {
     expect.assertions(1)
     let onIdTokenChangedCallback
@@ -310,6 +353,41 @@ describe('useFirebaseUser', () => {
     await act(async () => {
       await expect(onIdTokenChangedCallback(mockFirebaseUser)).rejects.toThrow(
         'Received 500 response from logout API endpoint: {}'
+      )
+    })
+  })
+
+  it('calls onLogoutRequestError if defined, rather than throwing, when the logout endpoint returns a non-OK response', async () => {
+    expect.assertions(2)
+    const mockOnLogoutRequestError = jest.fn()
+    setConfig({
+      ...createMockConfig(),
+      loginAPIEndpoint: 'https://example.com/api/my-login',
+      logoutAPIEndpoint: 'https://example.com/api/my-logout',
+      onLogoutRequestError: mockOnLogoutRequestError,
+    })
+
+    let onIdTokenChangedCallback
+    firebase.auth().onIdTokenChanged.mockImplementation((callback) => {
+      onIdTokenChangedCallback = callback
+      return () => {} // "unsubscribe" function
+    })
+    const mockFirebaseUser = undefined
+    renderHook(() => useFirebaseUser())
+
+    // Mock that `fetch` returns a non-OK response.
+    global.fetch.mockResolvedValue({
+      ...createMockFetchResponse(),
+      ok: false,
+      status: 500,
+    })
+
+    await act(async () => {
+      await expect(
+        onIdTokenChangedCallback(mockFirebaseUser)
+      ).resolves.not.toThrow()
+      expect(mockOnLogoutRequestError).toHaveBeenCalledWith(
+        new Error('Received 500 response from logout API endpoint: {}')
       )
     })
   })
