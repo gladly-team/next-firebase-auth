@@ -51,7 +51,7 @@ Depending on your app's needs, other approaches might work better for you.
 
 > A quick note on what this package does _not_ do:
 >
-> - It does not provide authentication UI. Consider [firebasesui-web](https://github.com/firebase/firebaseui-web) or build your own.
+> - It does not provide authentication UI. Consider [firebaseui-web](https://github.com/firebase/firebaseui-web) or build your own.
 > - It does not extend Firebase functionality beyond providing universal access to the authed user. Use the Firebase admin SDK and Firebase JS SDK for any other needs.
 
 ## Get Started
