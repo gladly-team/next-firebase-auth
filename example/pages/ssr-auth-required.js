@@ -46,6 +46,10 @@ export const getServerSideProps = withAuthUserTokenSSR({
   // `getServerSideProps`, including redirects.
   // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
   const token = await AuthUser.getIdToken()
+
+  // Note: you shouldn't typically fetch your own API routes from within
+  // `getServerSideProps`. This is for example purposes only.
+  // https://github.com/gladly-team/next-firebase-auth/issues/264
   const endpoint = getAbsoluteURL('/api/example', req)
   const response = await fetch(endpoint, {
     method: 'GET',
