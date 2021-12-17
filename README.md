@@ -461,6 +461,8 @@ Required unless a custom `tokenChangedHandler` is set, in which case it cannot b
 
 #### onLoginRequestError
 
+_Added in v0.14.0_
+
 `Function` (optional)
 
 A handler called if the login API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
@@ -468,6 +470,8 @@ A handler called if the login API endpoint returns a non-200 response. If a hand
 Not used or allowed if a custom `tokenChangedHandler` is set.
 
 #### onLogoutRequestError
+
+_Added in v0.14.0_
 
 `Function` (optional)
 
@@ -555,6 +559,8 @@ For security, the `maxAge` value must be two weeks or less. Note that `maxAge` i
 
 #### onVerifyTokenError
 
+_Added in v0.14.0_
+
 `Function` (optional)
 
 Error handler that will be called if there's an unexpected error while verifying the user's ID token server-side. It will receive a [Firebase auth error](https://firebase.google.com/docs/reference/node/firebase.auth.Error).
@@ -562,6 +568,8 @@ Error handler that will be called if there's an unexpected error while verifying
 This library will **not** throw when it cannot verify an ID token. Instead, it will provide an unauthenticated user to the app. It will typically handle common auth-related errors such as `auth/id-token-expired` and `auth/user-disabled` without throwing. See [#366](https://github.com/gladly-team/next-firebase-auth/issues/366) and [#174](https://github.com/gladly-team/next-firebase-auth/issues/174) for additional background.
 
 #### onTokenRefreshError
+
+_Added in v0.14.0_
 
 `Function` (optional)
 
