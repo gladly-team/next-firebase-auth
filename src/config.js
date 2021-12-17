@@ -6,6 +6,7 @@ let config
 const ONE_WEEK_IN_MS = 7 * 60 * 60 * 24 * 1000
 const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 
+// https://github.com/gladly-team/next-firebase-auth#config
 const defaultConfig = {
   debug: false,
   // Required string: the API endpoint to call on auth state
@@ -14,8 +15,18 @@ const defaultConfig = {
   // Required string: the API endpoint to call on auth state
   // change for a signed-out user.
   logoutAPIEndpoint: undefined,
-  // Optional function: callback handler to call on auth state
-  // changes. Replaces need for loginAPIEndpoint and logoutAPIEndpoint
+  // Optional function: handler called if the login API endpoint returns
+  // a non-200 response. Not used if a custom "tokenChangedHandler" is
+  // defined. If a handler is not defined, this library will throw on any
+  // non-200 responses.
+  onLoginRequestError: undefined,
+  // Optional function: handler called if the logout API endpoint returns
+  // a non-200 response. Not used if a custom "tokenChangedHandler" is
+  // defined. If a handler is not defined, this library will throw on any
+  // non-200 responses.
+  onLogoutRequestError: undefined,
+  // Optional function: a handler to call on auth state changes. More info:
+  // https://github.com/gladly-team/next-firebase-auth#tokenchangedhandler
   tokenChangedHandler: undefined,
   // Optional string: the URL to navigate to when the user
   // needs to log in.
@@ -61,6 +72,8 @@ const defaultConfig = {
 const validateConfig = (mergedConfig) => {
   const errorMessages = []
 
+  // The config should have *either* a tokenChangedHandler *or* other
+  // settings for login/logout.
   if (mergedConfig.tokenChangedHandler) {
     if (mergedConfig.loginAPIEndpoint) {
       errorMessages.push(
@@ -70,6 +83,16 @@ const validateConfig = (mergedConfig) => {
     if (mergedConfig.logoutAPIEndpoint) {
       errorMessages.push(
         'The "logoutAPIEndpoint" setting should not be set if you are using a "tokenChangedHandler".'
+      )
+    }
+    if (mergedConfig.onLoginRequestError) {
+      errorMessages.push(
+        'The "onLoginRequestError" setting should not be set if you are using a "tokenChangedHandler".'
+      )
+    }
+    if (mergedConfig.onLogoutRequestError) {
+      errorMessages.push(
+        'The "onLogoutRequestError" setting should not be set if you are using a "tokenChangedHandler".'
       )
     }
   } else {
@@ -101,6 +124,29 @@ const validateConfig = (mergedConfig) => {
   ) {
     errorMessages.push(
       'The firebaseAuthEmulatorHost should be set without a prefix (e.g., localhost:9099)'
+    )
+  }
+
+  // Ensure error handlers are functions or undefined.
+  const funcOrUndefArr = ['function', 'undefined']
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onVerifyTokenError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onVerifyTokenError" setting must be a function.'
+    )
+  }
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onTokenRefreshError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
+    )
+  }
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onLoginRequestError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onLoginRequestError" setting must be a function.'
+    )
+  }
+  if (funcOrUndefArr.indexOf(typeof mergedConfig.onLogoutRequestError) < 0) {
+    errorMessages.push(
+      'Invalid next-firebase-auth options: The "onLogoutRequestError" setting must be a function.'
     )
   }
 
