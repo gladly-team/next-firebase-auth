@@ -461,6 +461,72 @@ describe('config', () => {
     )
   })
 
+  it('throws if both the tokenChangedHandler and onLoginRequestError are defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      loginAPIEndpoint: undefined,
+      logoutAPIEndpoint: undefined,
+      onLoginRequestError: () => {},
+      tokenChangedHandler: async (token) => token,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "onLoginRequestError" setting should not be set if you are using a "tokenChangedHandler".'
+    )
+  })
+
+  it('throws if both the tokenChangedHandler and onLogoutRequestError are defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      loginAPIEndpoint: undefined,
+      logoutAPIEndpoint: undefined,
+      onLogoutRequestError: () => {},
+      tokenChangedHandler: async (token) => token,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'The "onLogoutRequestError" setting should not be set if you are using a "tokenChangedHandler".'
+    )
+  })
+
+  it('throws if onLoginRequestError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onLoginRequestError: 'no errors please',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onLoginRequestError" setting must be a function.'
+    )
+  })
+
+  it('throws if onLogoutRequestError is not a function', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      onLogoutRequestError: 'no errors please',
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).toThrow(
+      'Invalid next-firebase-auth options: The "onLogoutRequestError" setting must be a function.'
+    )
+  })
+
   it('throws if the config.firebaseAuthEmulator has a http or https prefix', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
