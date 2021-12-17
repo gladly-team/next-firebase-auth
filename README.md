@@ -229,14 +229,15 @@ A higher-order function to provide the `AuthUser` context to a component. Use th
 
 It accepts the following options:
 
-| Option                   | Description                                                                                                                                                                                          | Default              |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `whenAuthed`             | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                                                                         | `AuthAction.RENDER`  |
-| `whenUnauthedBeforeInit` | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`. | `AuthAction.RENDER`  |
-| `whenUnauthedAfterInit`  | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                           | `AuthAction.RENDER`  |
-| `appPageURL`             | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                            | `config.appPageURL`  |
-| `authPageURL`            | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                     | `config.authPageURL` |
-| `LoaderComponent`        | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                   | null                 |
+| Option                     | Description                                                                                                                                                                                                                                     | Default                  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `whenAuthed`               | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                                                                                                                    | `AuthAction.RENDER`      |
+| `whenAuthedBeforeRedirect` | The action to take while waiting for the browser to redirect. Relevant when the user is authenticated and whenAuthed is set to AuthAction.REDIRECT_TO_APP. One of: `AuthAction.RENDER` or `AuthAction.SHOW_LOADER` or `AuthAction.RETURN_NULL`. | `AuthAction.RETURN_NULL` |
+| `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
+| `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
+| `appPageURL`               | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                       | `config.appPageURL`      |
+| `authPageURL`              | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                | `config.authPageURL`     |
+| `LoaderComponent`          | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                                                              | null                     |
 
 For example, this page will redirect to the login page if the user is not authenticated:
 
@@ -486,7 +487,7 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 
 `Boolean`
 
-When true, `firebase-admin` will use the Google Cloud application default credentials during [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). 
+When true, `firebase-admin` will use the Google Cloud application default credentials during [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk).
 
 **Note**: When true, default credentials will override values passed to `firebaseAdminInitConfig.credential`.
 
