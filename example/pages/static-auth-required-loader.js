@@ -19,6 +19,8 @@ const Demo = () => {
 
   const [favoriteColor, setFavoriteColor] = useState()
   const fetchData = useCallback(async () => {
+    // Note that forcing token refresh here will cause the API to fire
+    // twice (a second time when AuthUser changes).
     const token = await AuthUser.getIdToken()
     const endpoint = getAbsoluteURL('/api/example')
     const response = await fetch(endpoint, {
@@ -70,6 +72,9 @@ const Demo = () => {
             redirects to the login page.
           </p>
           <p>Your favorite color is: {favoriteColor}</p>
+          <button type="button" onClick={fetchData}>
+            Refetch data
+          </button>
         </div>
         <DemoPageLinks />
       </div>

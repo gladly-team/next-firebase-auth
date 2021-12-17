@@ -18,11 +18,26 @@ const styles = {
 
 const Demo = () => {
   const AuthUser = useAuthUser()
+
+  // Debugging:
+  // https://github.com/gladly-team/next-firebase-auth/issues/319
+  const debugging = async () => {
+    // eslint-disable-next-line no-unused-vars
+    const token = await AuthUser.getIdToken(true)
+
+    // The token is different each time, as expected.
+    // eslint-disable-next-line no-console
+    console.log(token)
+  }
+
   return (
     <div>
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
+          <button type="button" onClick={debugging}>
+            Debugging
+          </button>
           <h3>Home</h3>
           <p>
             This page does not require authentication, so it won't redirect to

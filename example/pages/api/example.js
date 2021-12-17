@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin'
 import { verifyIdToken } from 'next-firebase-auth'
 import initAuth from '../../utils/initAuth'
 
@@ -18,6 +19,11 @@ const handler = async (req, res) => {
   } else {
     try {
       await verifyIdToken(token)
+
+      // The "exp" property is different each time, as expected.
+      const decodedToken = await admin.auth().verifyIdToken(token)
+      // eslint-disable-next-line no-console
+      console.log(decodedToken.exp)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
