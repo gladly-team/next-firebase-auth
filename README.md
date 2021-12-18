@@ -306,9 +306,8 @@ When either `appPageURL` or `authPageURL` are set as an object literal or an obj
 
 ```javascript
 {
-  destination: string,
-  permanent: boolean,
-  basePath: boolean,
+  destination: string, // the URL destination of a redirect
+  basePath: boolean, // Optional, defaults to true. Whether to use the Next.js base path.
 }
 ```
 >>>>>>> a67d0ed (test: add test coverage for new supported data type)

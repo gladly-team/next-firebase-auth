@@ -130,39 +130,34 @@ const withAuthUser =
 
       const router = useRouter()
       const routeToDestination = useCallback(
-        (redirectURL) => {
-          if (
-            typeof redirectURL === 'object' &&
-            redirectURL.basePath === false
-          ) {
-            window.location.assign(redirectURL.destination)
+        ({ basePath, destination }) => {
+          if (basePath === false) {
+            window.location.assign(destination)
           } else {
-            router.replace(redirectURL)
+            router.replace(destination)
           }
         },
         [router]
       )
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
-        const appRedirectDestination = appPageURL || getConfig().appPageURL
-        const destination = getRedirectToAppDestination(
-          appRedirectDestination,
-          undefined,
-          AuthUser
-        )
+        const redirectDestination = appPageURL || getConfig().appPageURL
+        const destination = getRedirectToAppDestination({
+          redirectDestination,
+          AuthUser,
+        })
 
         routeToDestination(destination)
       }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
-        const authRedirectDestination = authPageURL || getConfig().authPageURL
-        const destination = getRedirectToLoginDestination(
-          authRedirectDestination,
-          undefined,
-          AuthUser
-        )
+        const redirectDestination = authPageURL || getConfig().authPageURL
+        const redirectURL = getRedirectToLoginDestination({
+          redirectDestination,
+          AuthUser,
+        })
 
-        routeToDestination(destination)
+        routeToDestination(redirectURL)
       }, [AuthUser, routeToDestination])
 
       useEffect(() => {

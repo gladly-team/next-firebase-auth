@@ -414,6 +414,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-login',
         permanent: false,
+        basePath: true,
       },
     })
   })
@@ -433,11 +434,12 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-login?next=/my-path',
         permanent: false,
+        basePath: true,
       },
     })
   })
 
-  it('redirects to the provided object login URL when the user is not authed and auth *is* required', async () => {
+  it('redirects to the provided object login URL when basePath is false, the user is not authed, and auth *is* required', async () => {
     expect.assertions(1)
     getCookie.mockReturnValue(undefined) // the user has no auth cookies
 
@@ -447,7 +449,6 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: ({ ctx }) => ({
         destination: `/my-login?next=${ctx.pathname}`,
-        permanent: false,
         basePath: false,
       }),
     })(mockGetSSPFunc)
@@ -457,6 +458,29 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
         destination: '/my-login?next=/my-path',
         permanent: false,
         basePath: false,
+      },
+    })
+  })
+
+  it('redirects to the provided object login URL when basePath is true, the user is not authed, and auth *is* required', async () => {
+    expect.assertions(1)
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR({
+      whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+      authPageURL: ({ ctx }) => ({
+        destination: `/my-login?next=${ctx.pathname}`,
+        basePath: true,
+      }),
+    })(mockGetSSPFunc)
+    const props = await func(createMockNextContext())
+    expect(props).toEqual({
+      redirect: {
+        destination: '/my-login?next=/my-path',
+        permanent: false,
+        basePath: true,
       },
     })
   })
@@ -483,6 +507,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/log-in-here',
         permanent: false,
+        basePath: true,
       },
     })
   })
@@ -506,7 +531,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
+        'The "authPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
       )
     )
   })
@@ -530,7 +555,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "authPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
+        'The "authPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
       )
     )
   })
@@ -573,6 +598,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-app',
         permanent: false,
+        basePath: true,
       },
     })
   })
@@ -662,6 +688,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/my-app?next=/my-path',
         permanent: false,
+        basePath: true,
       },
     })
   })
@@ -709,6 +736,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
       redirect: {
         destination: '/default-app-homepage',
         permanent: false,
+        basePath: true,
       },
     })
   })
@@ -754,7 +782,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
+        'The "appPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
       )
     )
   })
@@ -801,7 +829,7 @@ describe('withAuthUserTokenSSR: redirect and composed prop logic', () => {
     })(mockGetSSPFunc)
     await expect(func(createMockNextContext())).rejects.toEqual(
       new Error(
-        'The "appPageURL" must be set to a non-empty string, an object literal containing "url" and "basePath", or resolve to either'
+        'The "appPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
       )
     )
   })
