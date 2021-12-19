@@ -1,0 +1,12 @@
+{
+  "files": [
+    {
+      "path": "build/index.browser.js",
+      "maxSize": "6 kB"
+    },
+    {
+      "path": "build/index.node.js",
+      "maxSize": "14 kB"
+    }
+  ]
+}
