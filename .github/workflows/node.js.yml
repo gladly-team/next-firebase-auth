@@ -7,12 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Run tests and build on Node
+    - name: Set up node
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-    - run: yarn install
-    - run: yarn test # generates coverage
+    - name: Install dependencies
+      run: yarn install
+    - name: Run tests
+      run: yarn test # generates coverage
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
-    - run: yarn run build
+    - name: Build
+      run: yarn run build
+    - name: Check bundle sizes
+      run: yarn run bundlesize:no-build
+      env:
+        BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
