@@ -267,6 +267,54 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
     })
   })
 
+  // https://github.com/gladly-team/next-firebase-auth/issues/195
+  it('throws if cookies are unsigned', async () => {
+    expect.assertions(1)
+
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      cookies: {
+        ...mockConfig.cookies,
+        signed: false,
+      },
+    })
+
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    verifyIdToken.mockResolvedValue(
+      createAuthUser({
+        token: 'a-user-identity-token-abc',
+        firebaseUserAdminSDK: mockFirebaseAdminUser,
+      })
+    )
+
+    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const mockGetSSPFunc = jest.fn()
+    const func = withAuthUserTokenSSR(undefined, { useToken: false })(
+      mockGetSSPFunc
+    )
+    const expectedErr = new Error(
+      'Cookies must be signed when using withAuthUserSSR.'
+    )
+    await expect(func(createMockNextContext())).rejects.toEqual(expectedErr)
+  })
+
   it('uses the auth info cookie, not the ID token, in the case they are different and "useToken" is false', async () => {
     expect.assertions(1)
 

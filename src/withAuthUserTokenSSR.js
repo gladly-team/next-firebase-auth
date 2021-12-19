@@ -75,6 +75,11 @@ const withAuthUserTokenSSR =
         AuthUser = createAuthUser() // unauthenticated AuthUser
       }
     } else {
+      // https://github.com/gladly-team/next-firebase-auth/issues/195
+      if (!signed) {
+        throw new Error('Cookies must be signed when using withAuthUserSSR.')
+      }
+
       // Get the user's info from a cookie, verify it (refreshing
       // as needed), and return the serialized AuthUser in props.
       const cookieValStr = getCookie(
