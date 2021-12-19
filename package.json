@@ -23,7 +23,7 @@
     "lint": "eslint ./",
     "bundlesize": "npm-run-all -s build bundlesize:no-build",
     "bundlesize:no-build": "bundlesize",
-    "test": "npm-run-all -s install-example-deps lint test:coverage bundlesize",
+    "test": "npm-run-all -s install-example-deps lint test:coverage",
     "test:run": "jest --env=jsdom",
     "test:coverage": "yarn run test:run --coverage",
     "test:watch": "yarn run test:run --watch",
