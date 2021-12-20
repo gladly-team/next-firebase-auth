@@ -50,14 +50,14 @@ type URLResolveFunction = (obj: {
   AuthUser: AuthUser
 }) => string | PageURL
 
-type NextRedirectObject = {
+type RedirectObject = {
   destination: string
   basePath: boolean
   permanent: boolean
   statusCode?: boolean
 }
 
-type PageURL = string | NextRedirectObject | URLResolveFunction
+type PageURL = string | RedirectObject | URLResolveFunction
 
 interface InitConfig {
   authPageURL?: PageURL
