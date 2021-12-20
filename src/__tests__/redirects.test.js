@@ -104,7 +104,7 @@ describe('redirects', () => {
           const result = redirectFunc({
             options: {
               [redirectConfigName]: ({ ctx, AuthUser }) => ({
-                destination: `//${ctx.id}/${AuthUser.id}`,
+                destination: `/${ctx.id}/${AuthUser.id}`,
               }),
             },
             ctx: { id: 'context-id' },
@@ -112,7 +112,7 @@ describe('redirects', () => {
           })
 
           expect(result).toEqual({
-            destination: '//context-id/user-id',
+            destination: '/context-id/user-id',
             basePath: true,
             permanent: false,
           })
@@ -166,6 +166,7 @@ describe('redirects', () => {
             [redirectConfigName]: undefined,
           })
         })
+
         it('throws when undefined parameters are passed in', () => {
           expect(() => redirectFunc()).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
@@ -181,7 +182,9 @@ describe('redirects', () => {
         it('throws when "destination" is an empty string', () => {
           expect(() =>
             redirectFunc({
-              destination: '',
+              options: {
+                [redirectConfigName]: '',
+              },
             })
           ).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
@@ -191,7 +194,9 @@ describe('redirects', () => {
         it('throws when "destination" is a number', () => {
           expect(() =>
             redirectFunc({
-              destination: 42,
+              options: {
+                [redirectConfigName]: 42,
+              },
             })
           ).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
