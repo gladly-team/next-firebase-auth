@@ -5,7 +5,6 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-import { getConfig } from 'src/config'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
@@ -49,16 +48,15 @@ import {
  * @return {Function} A function that takes a child component
  */
 const withAuthUser =
-  ({
-    whenAuthed = AuthAction.RENDER,
-    whenUnauthedBeforeInit = AuthAction.RENDER,
-    whenUnauthedAfterInit = AuthAction.RENDER,
-    whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
-    appPageURL = null,
-    authPageURL = null,
-    LoaderComponent = null,
-  } = {}) =>
+  (withAuthUserConfig = {}) =>
   (ChildComponent) => {
+    const {
+      whenAuthed = AuthAction.RENDER,
+      whenUnauthedBeforeInit = AuthAction.RENDER,
+      whenUnauthedAfterInit = AuthAction.RENDER,
+      whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
+      LoaderComponent = null,
+    } = withAuthUserConfig
     const WithAuthUserHOC = (props) => {
       const { AuthUserSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
@@ -141,23 +139,21 @@ const withAuthUser =
       )
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
-        const redirectDestination = appPageURL || getConfig().appPageURL
         const destination = getRedirectToAppDestination({
-          redirectDestination,
           AuthUser,
+          options: withAuthUserConfig,
         })
 
         routeToDestination(destination)
       }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
-        const redirectDestination = authPageURL || getConfig().authPageURL
-        const redirectURL = getRedirectToLoginDestination({
-          redirectDestination,
+        const destination = getRedirectToLoginDestination({
           AuthUser,
+          options: withAuthUserConfig,
         })
 
-        routeToDestination(redirectURL)
+        routeToDestination(destination)
       }, [AuthUser, routeToDestination])
 
       useEffect(() => {

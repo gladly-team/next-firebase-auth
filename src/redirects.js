@@ -1,3 +1,5 @@
+import { getConfig } from 'src/config'
+
 const REDIRECT_DEFAULTS = {
   basePath: true,
   permanent: false,
@@ -41,22 +43,37 @@ const throwWhenInvalid = (prop, redirectURL) => {
   return redirectURL
 }
 
-export const getRedirectToLoginDestination = ({
-  redirectDestination,
-  ctx,
-  AuthUser,
-} = {}) =>
-  throwWhenInvalid(
-    'authPageURL',
-    getDestination({ ctx, AuthUser, redirectDestination })
+const getRedirectByUrlConfigName = (redirectConfig) => {
+  const { redirectConfigName, options, ctx, AuthUser } = redirectConfig
+  return throwWhenInvalid(
+    redirectConfigName,
+    getDestination({
+      ctx,
+      AuthUser,
+      redirectDestination:
+        options && options[redirectConfigName]
+          ? options[redirectConfigName]
+          : getConfig()[redirectConfigName],
+    })
   )
+}
 
-export const getRedirectToAppDestination = ({
-  redirectDestination,
-  ctx,
+export const getRedirectToLoginDestination = ({
+  options,
   AuthUser,
+  ctx,
 } = {}) =>
-  throwWhenInvalid(
-    'appPageURL',
-    getDestination({ ctx, AuthUser, redirectDestination })
-  )
+  getRedirectByUrlConfigName({
+    redirectConfigName: 'authPageURL',
+    options,
+    AuthUser,
+    ctx,
+  })
+
+export const getRedirectToAppDestination = ({ options, AuthUser, ctx } = {}) =>
+  getRedirectByUrlConfigName({
+    redirectConfigName: 'appPageURL',
+    options,
+    AuthUser,
+    ctx,
+  })

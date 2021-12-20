@@ -36,19 +36,12 @@ import {
  * @return {Object} response.props.AuthUser
  */
 const withAuthUserTokenSSR =
-  (
-    {
-      whenAuthed = AuthAction.RENDER,
-      whenUnauthed = AuthAction.RENDER,
-      appPageURL = null,
-      authPageURL = null,
-    } = {},
-    { useToken = true } = {}
-  ) =>
+  (withAuthUserSSRConfig = {}, { useToken = true } = {}) =>
   (getServerSidePropsFunc) =>
   async (ctx) => {
     const { req, res } = ctx
-
+    const { whenAuthed = AuthAction.RENDER, whenUnauthed = AuthAction.RENDER } =
+      withAuthUserSSRConfig
     const { keys, secure, signed } = getConfig().cookies
 
     let AuthUser
@@ -97,11 +90,10 @@ const withAuthUserTokenSSR =
 
     // If specified, redirect to the login page if the user is unauthed.
     if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
-      const redirectDestination = authPageURL || getConfig().authPageURL
       const redirect = getRedirectToLoginDestination({
-        redirectDestination,
         ctx,
         AuthUser,
+        options: withAuthUserSSRConfig,
       })
 
       return {
@@ -111,11 +103,10 @@ const withAuthUserTokenSSR =
 
     // If specified, redirect to the app page if the user is authed.
     if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
-      const redirectDestination = appPageURL || getConfig().appPageURL
       const redirect = getRedirectToAppDestination({
-        redirectDestination,
         ctx,
         AuthUser,
+        options: withAuthUserSSRConfig,
       })
 
       return {
