@@ -48,13 +48,11 @@ interface AuthUserContext extends AuthUser {
 type URLResolveFunction = (obj: {
   ctx: GetServerSidePropsContext<ParsedUrlQuery>
   AuthUser: AuthUser
-}) => string | PageURL
+}) => string | RedirectObject
 
 type RedirectObject = {
-  destination: string
+  destination: string | URLResolveFunction
   basePath: boolean
-  permanent: boolean
-  statusCode?: boolean
 }
 
 type PageURL = string | RedirectObject | URLResolveFunction
