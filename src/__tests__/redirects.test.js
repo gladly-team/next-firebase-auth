@@ -167,12 +167,6 @@ describe('redirects', () => {
           })
         })
 
-        it('throws when undefined parameters are passed in', () => {
-          expect(() => redirectFunc()).toThrow(
-            `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
-          )
-        })
-
         it('throws when empty parameter object is passed in', () => {
           expect(() => redirectFunc({})).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`

@@ -58,11 +58,7 @@ const getRedirectByUrlConfigName = (redirectConfig) => {
   )
 }
 
-export const getRedirectToLoginDestination = ({
-  options,
-  AuthUser,
-  ctx,
-} = {}) =>
+export const getRedirectToLoginDestination = ({ options, AuthUser, ctx }) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'authPageURL',
     options,
@@ -70,7 +66,7 @@ export const getRedirectToLoginDestination = ({
     ctx,
   })
 
-export const getRedirectToAppDestination = ({ options, AuthUser, ctx } = {}) =>
+export const getRedirectToAppDestination = ({ options, AuthUser, ctx }) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'appPageURL',
     options,
