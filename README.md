@@ -81,10 +81,7 @@ import { init } from 'next-firebase-auth'
 const initAuth = () => {
   init({
     authPageURL: '/auth',
-    appPageURL: {
-      destination: ({ ctx, AuthUser }) => `${ctx}`,
-      basePath: false,
-    },
+    appPageURL: '/',
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
     onLoginRequestError: (err) => {
@@ -313,7 +310,6 @@ When either `appPageURL` or `authPageURL` are set as an object literal or an obj
   basePath: boolean, // Optional, defaults to true. Whether to use the Next.js base path.
 }
 ```
->>>>>>> a67d0ed (test: add test coverage for new supported data type)
 
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
@@ -448,15 +444,15 @@ See an [example config here](#example-config). Provide the config when you call 
 
 #### authPageURL
 
-`String|Function`
+`String|Function|Object`
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
-`String|Function`
+`String|Function|Object`
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 

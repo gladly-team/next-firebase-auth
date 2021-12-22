@@ -34,7 +34,7 @@ const getUseFirebaseUserResponse = () => ({
 
 beforeEach(() => {
   delete window.location
-  window.location = { assign: jest.fn() }
+  window.location = { replace: jest.fn() }
   // Default to client side context.
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(true)
@@ -937,7 +937,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
     expect(propsSpy.ctx).toBeUndefined()
     expect(propsSpy.AuthUser.id).toBeNull()
-    expect(window.location.assign).toHaveBeenCalledWith('/some-auth-page')
+    expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
   })
 
   it('calls the "appPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
@@ -971,7 +971,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(window.location.assign).toHaveBeenCalledWith('/my-app/here/')
+    expect(window.location.replace).toHaveBeenCalledWith('/my-app/here/')
   })
 
   it('calls the "appPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login within the base path on client', () => {

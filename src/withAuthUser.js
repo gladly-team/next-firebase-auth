@@ -48,15 +48,16 @@ import {
  * @return {Function} A function that takes a child component
  */
 const withAuthUser =
-  (withAuthUserConfig = {}) =>
+  ({
+    whenAuthed = AuthAction.RENDER,
+    whenUnauthedBeforeInit = AuthAction.RENDER,
+    whenUnauthedAfterInit = AuthAction.RENDER,
+    whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
+    appPageURL = null,
+    authPageURL = null,
+    LoaderComponent = null,
+  } = {}) =>
   (ChildComponent) => {
-    const {
-      whenAuthed = AuthAction.RENDER,
-      whenUnauthedBeforeInit = AuthAction.RENDER,
-      whenUnauthedAfterInit = AuthAction.RENDER,
-      whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
-      LoaderComponent = null,
-    } = withAuthUserConfig
     const WithAuthUserHOC = (props) => {
       const { AuthUserSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
@@ -130,7 +131,7 @@ const withAuthUser =
       const routeToDestination = useCallback(
         ({ basePath, destination }) => {
           if (basePath === false) {
-            window.location.assign(destination)
+            window.location.replace(destination)
           } else {
             router.replace(destination)
           }
