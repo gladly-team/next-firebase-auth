@@ -940,7 +940,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
   })
 
-  it('calls the "appPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
+  it('calls the "appPageURL" a function that returns an object with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
     const MockSerializedAuthUser = undefined // no server-side user
