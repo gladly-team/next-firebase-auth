@@ -8,10 +8,7 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
-import {
-  getRedirectToAppDestination,
-  getRedirectToLoginDestination,
-} from 'src/redirects'
+import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 
 /**
  * A higher-order component that provides pages with the
@@ -140,18 +137,18 @@ const withAuthUser =
       )
       const redirectToApp = useCallback(() => {
         logDebug('Redirecting to app.')
-        const destination = getRedirectToAppDestination({
+        const destination = getAppRedirectInfo({
           AuthUser,
-          options: withAuthUserConfig,
+          redirectURL: appPageURL,
         })
 
         routeToDestination(destination)
       }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
         logDebug('Redirecting to login.')
-        const destination = getRedirectToLoginDestination({
+        const destination = getLoginRedirectInfo({
           AuthUser,
-          options: withAuthUserConfig,
+          redirectURL: authPageURL,
         })
 
         routeToDestination(destination)

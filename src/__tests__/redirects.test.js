@@ -1,7 +1,4 @@
-import {
-  getRedirectToLoginDestination,
-  getRedirectToAppDestination,
-} from 'src/redirects'
+import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { setConfig } from 'src/config'
 
@@ -9,11 +6,11 @@ describe('redirects', () => {
   const redirectOperations = [
     ({
       redirectConfigName: 'authPageURL',
-      redirectFunc: getRedirectToLoginDestination,
+      redirectFunc: getLoginRedirectInfo,
     },
     {
       redirectConfigName: 'appPageURL',
-      redirectFunc: getRedirectToAppDestination,
+      redirectFunc: getAppRedirectInfo,
     }),
   ]
 
@@ -37,17 +34,15 @@ describe('redirects', () => {
         })
       })
 
-      describe('with config specified in "options"', () => {
+      describe('with config specified in "redirectURL"', () => {
         it('returns a redirect object when "redirectDestination" set to a string', () => {
-          const destination = '/'
+          const redirectURL = '/'
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: destination,
-            },
+            redirectURL,
           })
 
           expect(result).toEqual({
-            destination,
+            destination: '/',
             basePath: true,
             permanent: false,
           })
@@ -55,11 +50,7 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a minimally valid object', () => {
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: {
-                destination: '/', // Only required field
-              },
-            },
+            redirectURL: '/', // Only required field
           })
 
           expect(result).toEqual({
@@ -71,11 +62,9 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a full and valid object', () => {
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: {
-                destination: '/',
-                basePath: false,
-              },
+            redirectURL: {
+              destination: '/',
+              basePath: false,
             },
           })
 
@@ -88,9 +77,7 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a string', () => {
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: () => '/',
-            },
+            redirectURL: () => '/',
           })
 
           expect(result).toEqual({
@@ -102,11 +89,9 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with a computed "destination"', () => {
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: ({ ctx, AuthUser }) => ({
-                destination: `/${ctx.id}/${AuthUser.id}`,
-              }),
-            },
+            redirectURL: ({ ctx, AuthUser }) => ({
+              destination: `/${ctx.id}/${AuthUser.id}`,
+            }),
             ctx: { id: 'context-id' },
             AuthUser: { id: 'user-id' },
           })
@@ -120,13 +105,11 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with additional parameters', () => {
           const result = redirectFunc({
-            options: {
-              [redirectConfigName]: () => ({
-                destination: '/',
-                basePath: false,
-                anotherProp: true,
-              }),
-            },
+            redirectURL: () => ({
+              destination: '/',
+              basePath: false,
+              anotherProp: true,
+            }),
           })
 
           expect(result).toEqual({
@@ -141,13 +124,11 @@ describe('redirects', () => {
           const result = redirectFunc({
             ctx: { id: 'context-id' },
             AuthUser: { id: 'user-id' },
-            options: {
-              [redirectConfigName]: () => ({
-                destination: `/`,
-                basePath: false,
-                permanent: true,
-              }),
-            },
+            redirectURL: () => ({
+              destination: `/`,
+              basePath: false,
+              permanent: true,
+            }),
           })
 
           expect(result).toEqual({

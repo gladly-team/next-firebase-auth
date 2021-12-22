@@ -28,7 +28,7 @@ const getDestination = ({ ctx, AuthUser, redirectDestination }) => {
   return null
 }
 
-const throwWhenInvalid = (prop, redirectURL) => {
+const throwWhenInvalid = (redirectConfigName, redirectURL) => {
   const isValid =
     redirectURL &&
     (typeof redirectURL === 'string' ||
@@ -36,7 +36,7 @@ const throwWhenInvalid = (prop, redirectURL) => {
 
   if (!isValid) {
     throw new Error(
-      `The "${prop}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
+      `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
     )
   }
 
@@ -44,32 +44,47 @@ const throwWhenInvalid = (prop, redirectURL) => {
 }
 
 const getRedirectByUrlConfigName = (redirectConfig) => {
-  const { redirectConfigName, options, ctx, AuthUser } = redirectConfig
+  const { redirectConfigName, redirectURL, ctx, AuthUser } = redirectConfig
   return throwWhenInvalid(
     redirectConfigName,
     getDestination({
       ctx,
       AuthUser,
-      redirectDestination:
-        options && options[redirectConfigName]
-          ? options[redirectConfigName]
-          : getConfig()[redirectConfigName],
+      redirectDestination: redirectURL || getConfig()[redirectConfigName],
     })
   )
 }
 
-export const getRedirectToLoginDestination = ({ options, AuthUser, ctx }) =>
+/**
+ * getLoginRedirectInfo validates and returns the configuration for redirecting to the login page
+ * by using the "redirectURL" prop or the "authPageURL" global config setting
+ *
+ * @param {Object} LoginRedirectProps
+ * @param {String|Function|Object} LoginRedirectProps.redirectURL - redirect config for determining the redirect destination
+ * @param {Object} LoginRedirectProps.AuthUser - The firebase user object
+ * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
+ */
+export const getLoginRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'authPageURL',
-    options,
+    redirectURL,
     AuthUser,
     ctx,
   })
 
-export const getRedirectToAppDestination = ({ options, AuthUser, ctx }) =>
+/**
+ * getAppRedirectInfo validates and returns the configuration for redirecting to the main app page
+ * by using the "redirectURL" prop or the "appPageURL" global config setting
+ *
+ * @param {Object} LoginRedirectProps
+ * @param {String|Function|Object} LoginRedirectProps.redirectURL - redirect config for determining the redirect destination
+ * @param {Object} LoginRedirectProps.AuthUser - The firebase user object
+ * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
+ */
+export const getAppRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'appPageURL',
-    options,
+    redirectURL,
     AuthUser,
     ctx,
   })
