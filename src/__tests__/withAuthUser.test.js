@@ -940,6 +940,39 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
   })
 
+  it('calls the "appPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: () => ({
+        destination: '/my-app/here/', // custom app page
+        permanent: false,
+        basePath: false,
+      }),
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(window.location.replace).toHaveBeenCalledWith('/my-app/here/')
+  })
 
   it('calls the "appPageURL" an object with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
     expect.assertions(1)
