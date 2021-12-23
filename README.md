@@ -1066,6 +1066,8 @@ You can try setting up your credentials in [the example app](https://github.com/
 
 In local development, try clearing data/cookies for `localhost` in case you previously signed in with another Firebase account and still have auth cookies signed by another private key.
 
+You can also try disabling the Firebase Authentication Emulator. Remove `firebaseAuthEmulatorHost` from your config and remove `FIREBASE_AUTH_EMULATOR_HOST` from your `.env` file. 
+
 #### I get the error, "Failed to parse private key: Error: Invalid PEM formatted message."
 
 See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) and [this discussion](https://github.com/gladly-team/next-firebase-auth/discussions/95) on private key formatting.
