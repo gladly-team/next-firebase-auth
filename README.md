@@ -82,10 +82,10 @@ const initAuth = () => {
     loginAPIEndpoint: '/api/login', // required
     logoutAPIEndpoint: '/api/logout', // required
     onLoginRequestError: (err) => {
-      console.error(err),
+      console.error(err)
     },
     onLogoutRequestError: (err) => {
-      console.error(err),
+      console.error(err)
     },
     firebaseAuthEmulatorHost: 'localhost:9099',
     firebaseAdminInitConfig: {
@@ -122,10 +122,10 @@ const initAuth = () => {
       signed: true,
     },
     onVerifyTokenError: (err) => {
-      console.error(err),
+      console.error(err)
     },
     onTokenRefreshError: (err) => {
-      console.error(err),
+      console.error(err)
     },
   })
 }
