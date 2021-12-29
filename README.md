@@ -665,7 +665,7 @@ Or an object:
 Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
 
 ```javascript
-const redirect = (ctx, AuthUser) => {
+const redirect = ({ ctx, AuthUser }) => {
   // any custom logic here
   return `/my-url/here/?username=${AuthUser.displayName}`
 }
