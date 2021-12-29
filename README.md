@@ -648,6 +648,32 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
+### PageURL
+
+`String|Function|Object`
+
+Used in `appPageURL` and `authPageURL` in the config and higher-order components, the PageURL defines a redirect destination URL or path.
+
+It can be a string: `/my-url/here/`
+
+Or an object:
+
+```javascript
+{
+  destination: '/my-url/here/', // Required string: the URL destination of a redirect
+  basePath: true, // Optional boolean (efaults to true): whether to use the Next.js base path.
+}
+```
+
+Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
+
+```javascript
+(ctx, AuthUser) => {
+  // any custom logic here
+  return `/my-url/here/?username=${AuthUser.displayName}`
+}
+```
+
 ## Examples
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
