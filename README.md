@@ -299,15 +299,6 @@ It accepts the following options:
 | `appPageURL`   | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                              | `config.appPageURL`  |
 | `authPageURL`  | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                       | `config.authPageURL` |
 
-When either `appPageURL` or `authPageURL` are set as an object literal or an object literal is returned from a function, the object must have the following schema:
-
-```javascript
-{
-  destination: string, // the URL destination of a redirect
-  basePath: boolean, // Optional, defaults to true. Whether to use the Next.js base path.
-}
-```
-
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
 ```jsx
