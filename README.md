@@ -134,7 +134,6 @@ const initAuth = () => {
 }
 
 export default initAuth
-
 ```
 
 Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
@@ -251,8 +250,8 @@ It accepts the following options:
 | `whenAuthedBeforeRedirect` | The action to take while waiting for the browser to redirect. Relevant when the user is authenticated and whenAuthed is set to AuthAction.REDIRECT_TO_APP. One of: `AuthAction.RENDER` or `AuthAction.SHOW_LOADER` or `AuthAction.RETURN_NULL`. | `AuthAction.RETURN_NULL` |
 | `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
 | `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
-| `appPageURL`               | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                       | `config.appPageURL`      |
-| `authPageURL`              | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                | `config.authPageURL`     |
+| `appPageURL`               | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                                                                                                         | `config.appPageURL`      |
+| `authPageURL`              | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                                                                                                  | `config.authPageURL`     |
 | `LoaderComponent`          | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                                                              | null                     |
 
 For example, this page will redirect to the login page if the user is not authenticated:
@@ -293,23 +292,12 @@ A higher-order function that wraps a Next.js pages's `getServerSideProps` functi
 
 It accepts the following options:
 
-| Option         | Description                                                                                                                                      | Default              |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                     | `AuthAction.RENDER`  |
-| `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`.                             | `AuthAction.RENDER`  |
-| `appPageURL`   | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx, AuthUser }`                 |                      |
-|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.appPageURL`  |
-| `authPageURL`  | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx, AuthUser }`          |                      |
-|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.authPageURL` |
-
-When either `appPageURL` or `authPageURL` are set as an object literal or an object literal is returned from a function, the object must have the following schema:
-
-```javascript
-{
-  destination: string, // the URL destination of a redirect
-  basePath: boolean, // Optional, defaults to true. Whether to use the Next.js base path.
-}
-```
+| Option         | Description                                                                                                          | Default              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.         | `AuthAction.RENDER`  |
+| `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`  |
+| `appPageURL`   | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                              | `config.appPageURL`  |
+| `authPageURL`  | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                       | `config.authPageURL` |
 
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
@@ -444,15 +432,15 @@ See an [example config here](#example-config). Provide the config when you call 
 
 #### authPageURL
 
-`String|Function|Object`
+`String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
-`String|Function|Object`
+`String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 
@@ -648,6 +636,34 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
+### PageURL
+
+`String|Function|Object`
+
+Used in `appPageURL` and `authPageURL` in the config and higher-order components, the PageURL defines a redirect destination URL or path.
+
+It can be a string: `/my-url/here/`
+
+Or an object:
+
+```javascript
+{
+  destination: '/my-url/here/', // Required string: the URL destination of a redirect
+  basePath: true, // Optional boolean (defaults to true): whether to use the Next.js base path.
+}
+```
+
+Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
+
+```javascript
+const redirect = ({ ctx, AuthUser }) => {
+  // any custom logic here
+  return `/my-url/here/?username=${AuthUser.displayName}`
+}
+```
+
+The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server-side, or undefined if client-side.
+
 ## Examples
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
@@ -660,18 +676,17 @@ A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/refe
 
 There are various ways to add your Firebase private key as an environment variable to Vercel.
 
-__Vercel console__
+**Vercel console**
 
 In the [Vercel console](https://vercel.com/docs/concepts/projects/environment-variables), add the private key in double quotes (screenshot [here](https://github.com/gladly-team/next-firebase-auth/issues/212)).
 
 Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property:
 
-
 ```javascript
 privateKey: process.env.FIREBASE_PRIVATE_KEY
 ```
 
-__Vercel CLI__
+**Vercel CLI**
 
 Via the Vercel CLI, add the private key _with double quotes_:
 
@@ -685,7 +700,7 @@ privateKey: process.env.FIREBASE_PRIVATE_KEY
   : undefined
 ```
 
-__Alternative formatting__
+**Alternative formatting**
 
 Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: [discussion #95](https://github.com/gladly-team/next-firebase-auth/discussions/95)
 
@@ -756,7 +771,7 @@ For a full example with server-side data fetching, see the [TypeScript demo page
 
 ### Dynamic Redirects
 
-This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic: the `authPageURL` and `appPageURL` properties, used in the config and higher-order components, can be functions that receive `{ ctx }` and return a URL.
+This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic: the [PageURL](#pageurl) can be a function that returns the URL at runtime.
 
 The [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) uses this to set a post-login destination URL:
 
@@ -1052,7 +1067,7 @@ You can try setting up your credentials in [the example app](https://github.com/
 
 In local development, try clearing data/cookies for `localhost` in case you previously signed in with another Firebase account and still have auth cookies signed by another private key.
 
-You can also try disabling the Firebase Authentication Emulator. Remove `firebaseAuthEmulatorHost` from your config and remove `FIREBASE_AUTH_EMULATOR_HOST` from your `.env` file. 
+You can also try disabling the Firebase Authentication Emulator. Remove `firebaseAuthEmulatorHost` from your config and remove `FIREBASE_AUTH_EMULATOR_HOST` from your `.env` file.
 
 #### I get the error, "Failed to parse private key: Error: Invalid PEM formatted message."
 

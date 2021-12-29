@@ -61,7 +61,7 @@ const getRedirectByUrlConfigName = (redirectConfig) => {
  *
  * @param {Object} LoginRedirectProps
  * @param {String|Function|Object} LoginRedirectProps.redirectURL - redirect config for determining the redirect destination
- * @param {Object} LoginRedirectProps.AuthUser - The firebase user object
+ * @param {Object} LoginRedirectProps.AuthUser - An instance of AuthUser
  * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
  */
 export const getLoginRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
@@ -78,7 +78,7 @@ export const getLoginRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
  *
  * @param {Object} LoginRedirectProps
  * @param {String|Function|Object} LoginRedirectProps.redirectURL - redirect config for determining the redirect destination
- * @param {Object} LoginRedirectProps.AuthUser - The firebase user object
+ * @param {Object} LoginRedirectProps.AuthUser - An instance of AuthUser
  * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
  */
 export const getAppRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
