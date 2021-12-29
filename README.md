@@ -293,8 +293,19 @@ It accepts the following options:
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
 | `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                     | `AuthAction.RENDER`  |
 | `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`.                             | `AuthAction.RENDER`  |
-| `appPageURL`   | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL.        | `config.appPageURL`  |
-| `authPageURL`  | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL. | `config.authPageURL` |
+| `appPageURL`   | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx, AuthUser }`                 |                      |
+|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.appPageURL`  |
+| `authPageURL`  | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx, AuthUser }`          |                      |
+|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.authPageURL` |
+
+When either `appPageURL` or `authPageURL` are set as an object literal or an object literal is returned from a function, the object must have the following schema:
+
+```javascript
+{
+  destination: string, // the URL destination of a redirect
+  basePath: boolean, // Optional, defaults to true. Whether to use the Next.js base path.
+}
+```
 
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
@@ -429,15 +440,15 @@ See an [example config here](#example-config). Provide the config when you call 
 
 #### authPageURL
 
-`String|Function`
+`String|Function|Object`
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
-`String|Function`
+`String|Function|Object`
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 
