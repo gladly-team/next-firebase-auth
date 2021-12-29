@@ -1,3 +1,4 @@
+/* globals window */
 import React from 'react'
 import { render } from '@testing-library/react'
 import { setConfig } from 'src/config'
@@ -32,6 +33,8 @@ const getUseFirebaseUserResponse = () => ({
 })
 
 beforeEach(() => {
+  delete window.location
+  window.location = { replace: jest.fn() }
   // Default to client side context.
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(true)
@@ -411,7 +414,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "authPageURL" config setting must be set when using `REDIRECT_TO_LOGIN`.'
+      'The "authPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
     )
   })
 
@@ -451,7 +454,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     ).toThrow(
-      'The "authPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      'The "authPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
     )
   })
 
@@ -647,7 +650,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "appPageURL" config setting must be set when using `REDIRECT_TO_APP`.'
+      'The "appPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
     )
   })
 
@@ -688,7 +691,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         />
       )
     }).toThrow(
-      'The "appPageURL" must be set to a non-empty string or resolve to a non-empty string'
+      'The "appPageURL" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.'
     )
   })
 
@@ -896,6 +899,146 @@ describe('withAuthUser: rendering/redirecting', () => {
       />
     )
     expect(container.firstChild).toBeNull()
+  })
+
+  it('calls the "authPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
+    expect.assertions(3)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: undefined, // no client-side user
+      initialized: true, // already initialized
+      authRequestCompleted: true,
+    })
+    const mockConfig = getMockConfig()
+    let propsSpy
+    setConfig({
+      ...mockConfig,
+      authPageURL: (props) => {
+        propsSpy = props
+        return {
+          destination: `/some-auth-page`,
+          permanent: false,
+          basePath: false,
+        }
+      }, // custom auth page
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+      whenAuthed: AuthAction.RENDER,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(propsSpy.ctx).toBeUndefined()
+    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
+  })
+
+  it('calls location.replace (with appPageURL as a function returning an object) when redirecting to the login outside the base path on client', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: () => ({
+        destination: '/my-app/here/', // custom app page
+        permanent: false,
+        basePath: false,
+      }),
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(window.location.replace).toHaveBeenCalledWith('/my-app/here/')
+  })
+
+  it('calls location.replace (with appPageURL as an object) when redirecting to the login outside the base path on client', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: {
+        destination: '/my-app/here/', // custom app page
+        permanent: false,
+        basePath: false,
+      },
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(window.location.replace).toHaveBeenCalledWith('/my-app/here/')
+  })
+
+  it('calls router.replace (with appPageURL as an object) when redirecting to the login *within* the base path on client', () => {
+    expect.assertions(1)
+    const withAuthUser = require('src/withAuthUser').default
+    const MockSerializedAuthUser = undefined // no server-side user
+    useFirebaseUser.mockReturnValue({
+      ...getUseFirebaseUserResponse(),
+      user: createMockFirebaseUserClientSDK(), // client-side user exists
+      claims: undefined,
+      initialized: true,
+      authRequestCompleted: true,
+    })
+    const mockConfig = getMockConfig()
+    setConfig({
+      ...mockConfig,
+      appPageURL: {
+        destination: '/my-app/here/', // custom app page
+        basePath: true,
+      },
+    })
+    const MockCompWithUser = withAuthUser({
+      whenUnauthedBeforeInit: AuthAction.RENDER,
+      whenUnauthedAfterInit: AuthAction.RENDER,
+      whenAuthed: AuthAction.REDIRECT_TO_APP,
+    })(MockComponent)
+    render(
+      <MockCompWithUser
+        serializedAuthUser={MockSerializedAuthUser}
+        message="How are you?"
+      />
+    )
+    expect(mockRouterReplace).toHaveBeenCalledWith('/my-app/here/')
   })
 })
 
