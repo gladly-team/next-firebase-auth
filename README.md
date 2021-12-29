@@ -625,6 +625,34 @@ The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
 
 A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
 
+### PageURL
+
+`String|Function|Object`
+
+Used in `appPageURL` and `authPageURL` in the config and higher-order components, the PageURL defines a redirect destination URL or path.
+
+It can be a string: `/my-url/here/`
+
+Or an object:
+
+```javascript
+{
+  destination: '/my-url/here/', // Required string: the URL destination of a redirect
+  basePath: true, // Optional boolean (defaults to true): whether to use the Next.js base path.
+}
+```
+
+Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
+
+```javascript
+const redirect = ({ ctx, AuthUser }) => {
+  // any custom logic here
+  return `/my-url/here/?username=${AuthUser.displayName}`
+}
+```
+
+The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server-side, or undefined if client-side.
+
 ## Upgrading to Firebase 9
 
 Firebase 9 has a new API surface designed to facilitate tree-shaking (removal of unused code) to make your web app as small and fast as possible.
@@ -664,34 +692,6 @@ Here is an example of how the migration might look in your app:
    )
  }
 ```
-
-### PageURL
-
-`String|Function|Object`
-
-Used in `appPageURL` and `authPageURL` in the config and higher-order components, the PageURL defines a redirect destination URL or path.
-
-It can be a string: `/my-url/here/`
-
-Or an object:
-
-```javascript
-{
-  destination: '/my-url/here/', // Required string: the URL destination of a redirect
-  basePath: true, // Optional boolean (defaults to true): whether to use the Next.js base path.
-}
-```
-
-Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
-
-```javascript
-const redirect = ({ ctx, AuthUser }) => {
-  // any custom logic here
-  return `/my-url/here/?username=${AuthUser.displayName}`
-}
-```
-
-The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server-side, or undefined if client-side.
 
 ## Examples
 
