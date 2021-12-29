@@ -134,7 +134,6 @@ const initAuth = () => {
 }
 
 export default initAuth
-
 ```
 
 Set the private environment variables `FIREBASE_PRIVATE_KEY`, `COOKIE_SECRET_CURRENT`, and `COOKIE_SECRET_PREVIOUS` in `.env.local`. If you have enabled [the Firebase Authentication Emulator](#https://firebase.google.com/docs/emulator-suite/connect_auth), you will also need to set the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
@@ -251,8 +250,8 @@ It accepts the following options:
 | `whenAuthedBeforeRedirect` | The action to take while waiting for the browser to redirect. Relevant when the user is authenticated and whenAuthed is set to AuthAction.REDIRECT_TO_APP. One of: `AuthAction.RENDER` or `AuthAction.SHOW_LOADER` or `AuthAction.RETURN_NULL`. | `AuthAction.RETURN_NULL` |
 | `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
 | `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
-| `appPageURL`               | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                                                      | `config.appPageURL`      |
-| `authPageURL`              | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                                                | `config.authPageURL`     |
+| `appPageURL`               | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                                                                                                         | `config.appPageURL`      |
+| `authPageURL`              | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                                                                                                  | `config.authPageURL`     |
 | `LoaderComponent`          | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                                                              | null                     |
 
 For example, this page will redirect to the login page if the user is not authenticated:
@@ -293,12 +292,12 @@ A higher-order function that wraps a Next.js pages's `getServerSideProps` functi
 
 It accepts the following options:
 
-| Option         | Description                                                                                                                                      | Default              |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                     | `AuthAction.RENDER`  |
-| `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`.                             | `AuthAction.RENDER`  |
-| `appPageURL`   | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                               | `config.appPageURL`  |
-| `authPageURL`  | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                               | `config.authPageURL` |
+| Option         | Description                                                                                                          | Default              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.         | `AuthAction.RENDER`  |
+| `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`. | `AuthAction.RENDER`  |
+| `appPageURL`   | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                              | `config.appPageURL`  |
+| `authPageURL`  | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                       | `config.authPageURL` |
 
 When either `appPageURL` or `authPageURL` are set as an object literal or an object literal is returned from a function, the object must have the following schema:
 
@@ -666,7 +665,7 @@ Or an object:
 Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
 
 ```javascript
-(ctx, AuthUser) => {
+const redirect = (ctx, AuthUser) => {
   // any custom logic here
   return `/my-url/here/?username=${AuthUser.displayName}`
 }
@@ -684,18 +683,17 @@ Or a function that receives `{ ctx, AuthUser }` and returns a string or Redirect
 
 There are various ways to add your Firebase private key as an environment variable to Vercel.
 
-__Vercel console__
+**Vercel console**
 
 In the [Vercel console](https://vercel.com/docs/concepts/projects/environment-variables), add the private key in double quotes (screenshot [here](https://github.com/gladly-team/next-firebase-auth/issues/212)).
 
 Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property:
 
-
 ```javascript
 privateKey: process.env.FIREBASE_PRIVATE_KEY
 ```
 
-__Vercel CLI__
+**Vercel CLI**
 
 Via the Vercel CLI, add the private key _with double quotes_:
 
@@ -709,7 +707,7 @@ privateKey: process.env.FIREBASE_PRIVATE_KEY
   : undefined
 ```
 
-__Alternative formatting__
+**Alternative formatting**
 
 Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: [discussion #95](https://github.com/gladly-team/next-firebase-auth/discussions/95)
 
@@ -1076,7 +1074,7 @@ You can try setting up your credentials in [the example app](https://github.com/
 
 In local development, try clearing data/cookies for `localhost` in case you previously signed in with another Firebase account and still have auth cookies signed by another private key.
 
-You can also try disabling the Firebase Authentication Emulator. Remove `firebaseAuthEmulatorHost` from your config and remove `FIREBASE_AUTH_EMULATOR_HOST` from your `.env` file. 
+You can also try disabling the Firebase Authentication Emulator. Remove `firebaseAuthEmulatorHost` from your config and remove `FIREBASE_AUTH_EMULATOR_HOST` from your `.env` file.
 
 #### I get the error, "Failed to parse private key: Error: Invalid PEM formatted message."
 
