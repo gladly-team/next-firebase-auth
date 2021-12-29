@@ -671,6 +671,8 @@ const redirect = ({ ctx, AuthUser }) => {
 }
 ```
 
+The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server-side, or undefined if client-side.
+
 ## Examples
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
