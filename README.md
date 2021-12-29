@@ -778,7 +778,7 @@ For a full example with server-side data fetching, see the [TypeScript demo page
 
 ### Dynamic Redirects
 
-This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic: the `authPageURL` and `appPageURL` properties, used in the config and higher-order components, can be functions that receive `{ ctx }` and return a URL.
+This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic by using functions (see see [PageURL](#pageurl) type).
 
 The [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) uses this to set a post-login destination URL:
 
