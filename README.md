@@ -251,8 +251,8 @@ It accepts the following options:
 | `whenAuthedBeforeRedirect` | The action to take while waiting for the browser to redirect. Relevant when the user is authenticated and whenAuthed is set to AuthAction.REDIRECT_TO_APP. One of: `AuthAction.RENDER` or `AuthAction.SHOW_LOADER` or `AuthAction.RETURN_NULL`. | `AuthAction.RETURN_NULL` |
 | `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
 | `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
-| `appPageURL`               | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                       | `config.appPageURL`      |
-| `authPageURL`              | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx }` and returns a URL.                                                                                                | `config.authPageURL`     |
+| `appPageURL`               | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                                                      | `config.appPageURL`      |
+| `authPageURL`              | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                                                | `config.authPageURL`     |
 | `LoaderComponent`          | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                                                              | null                     |
 
 For example, this page will redirect to the login page if the user is not authenticated:
@@ -297,10 +297,8 @@ It accepts the following options:
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
 | `whenAuthed`   | The action to take if the user is authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                     | `AuthAction.RENDER`  |
 | `whenUnauthed` | The action to take if the user is _not_ authenticated. Either `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_LOGIN`.                             | `AuthAction.RENDER`  |
-| `appPageURL`   | The redirect destination URL when we should redirect to the app. Can be a string or a function that receives `{ ctx, AuthUser }`                 |                      |
-|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.appPageURL`  |
-| `authPageURL`  | The redirect destination URL when we should redirect to the login page. Can be a string or a function that receives `{ ctx, AuthUser }`          |                      |
-|                | and returns a URL as a string or an object (see below for schema).                                                                               | `config.authPageURL` |
+| `appPageURL`   | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                               | `config.appPageURL`  |
+| `authPageURL`  | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                               | `config.authPageURL` |
 
 When either `appPageURL` or `authPageURL` are set as an object literal or an object literal is returned from a function, the object must have the following schema:
 
@@ -444,15 +442,15 @@ See an [example config here](#example-config). Provide the config when you call 
 
 #### authPageURL
 
-`String|Function|Object`
+`String|Function|Object` – see [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
-`String|Function|Object`
+`String|Function|Object` – see [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Can be a string, an object, or a function that receives `{ ctx, AuthUser }` and returns a URL. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 
