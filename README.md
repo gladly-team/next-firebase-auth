@@ -441,13 +441,13 @@ See an [example config here](#example-config). Provide the config when you call 
 
 #### authPageURL
 
-`String|Function|Object` – see [PageURL](#pageurl)
+`String|Function|Object` – a [PageURL](#pageurl)
 
 The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
-`String|Function|Object` – see [PageURL](#pageurl)
+`String|Function|Object` – a [PageURL](#pageurl)
 
 The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
@@ -778,8 +778,8 @@ For a full example with server-side data fetching, see the [TypeScript demo page
 
 ### Dynamic Redirects
 
-This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic by using functions (see see [PageURL](#pageurl) type).
-
+This package makes it easy to redirect to a login page or app page depending on whether a user is logged in. The destination URLs can also be dynamic: the [PageURL](#pageurl) values can be a function that returns the URLs at runtime.
+s
 The [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) uses this to set a post-login destination URL:
 
 ```js
