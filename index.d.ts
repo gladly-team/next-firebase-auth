@@ -65,6 +65,8 @@ interface InitConfig {
   onVerifyTokenError?: (error: unknown) => void
   onTokenRefreshError?: (error: unknown) => void
   tokenChangedHandler?: (user: AuthUser) => void
+  onLoginRequestError?: (error: unknown) => void
+  onLogoutRequestError?: (error: unknown) => void
   firebaseAdminInitConfig?: {
     credential: {
       projectId: string
