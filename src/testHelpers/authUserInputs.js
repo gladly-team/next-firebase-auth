@@ -11,7 +11,7 @@ export const createMockFirebaseUserClientSDK = () => ({
 })
 
 // https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken#uid
-export const createMockFirebaseUserAdminSDK = () => ({
+export const createMockFirebaseUserAdminSDK = ({ tenant } = {}) => ({
   uid: 'def-456',
   email: 'def@example.com',
   email_verified: true,
@@ -25,7 +25,9 @@ export const createMockFirebaseUserAdminSDK = () => ({
   sub: 'def-456',
   iat: 1540000000,
   exp: 1540000000,
-  firebase: {},
+  firebase: {
+    tenant,
+  },
   // ... other properties
 })
 
