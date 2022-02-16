@@ -1,5 +1,4 @@
 import createMockConfig from 'src/testHelpers/createMockConfig'
-import logDebug from 'src/logDebug'
 
 jest.mock('src/isClientSide')
 jest.mock('src/logDebug')
@@ -29,36 +28,6 @@ describe('config', () => {
     const mockConfig = createMockConfig()
     setConfig(mockConfig)
     expect(getConfig()).toEqual(mockConfig)
-  })
-
-  it('[server-side] logs the config for debugging', () => {
-    expect.assertions(1)
-    const isClientSide = require('src/isClientSide').default
-    isClientSide.mockReturnValue(false)
-    const { setConfig } = require('src/config')
-    const mockConfig = createMockConfig()
-    setConfig(mockConfig)
-    const expectedConfig = {
-      ...mockConfig,
-      onVerifyTokenError: expect.any(Function),
-      onTokenRefreshError: expect.any(Function),
-      cookies: {
-        ...mockConfig.cookies,
-        keys: ['hidden'],
-      },
-      firebaseAdminInitConfig: {
-        ...mockConfig.firebaseAdminInitConfig,
-        credential: {
-          ...mockConfig.firebaseAdminInitConfig.credential,
-          privateKey: 'hidden',
-          clientEmail: 'hidden',
-        },
-      },
-    }
-    expect(logDebug).toHaveBeenCalledWith(
-      'Setting config with provided value:',
-      expectedConfig
-    )
   })
 
   it('[client-side] returns the set config with defaults', () => {
@@ -666,6 +635,116 @@ describe('config', () => {
       setConfig(mockConfig)
     }).toThrow(
       'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
+    )
+  })
+})
+
+describe('config: debug logging', () => {
+  it('[server-side] logs the config for debugging', () => {
+    expect.assertions(1)
+    const logDebug = require('src/logDebug').default
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = createMockConfig()
+    setConfig(mockConfig)
+    const expectedConfig = {
+      ...mockConfig,
+      onVerifyTokenError: expect.any(Function),
+      onTokenRefreshError: expect.any(Function),
+      cookies: {
+        ...mockConfig.cookies,
+        keys: ['hidden'],
+      },
+      firebaseAdminInitConfig: {
+        ...mockConfig.firebaseAdminInitConfig,
+        credential: {
+          ...mockConfig.firebaseAdminInitConfig.credential,
+          privateKey: 'hidden',
+          clientEmail: 'hidden',
+        },
+      },
+    }
+    expect(logDebug).toHaveBeenCalledWith(
+      'Setting config with provided value:',
+      expectedConfig
+    )
+  })
+
+  // For usage with the useFirebaseAdminDefaultCredential setting:
+  // https://github.com/gladly-team/next-firebase-auth/issues/434
+  it('[server-side] does not throw an error if the firebaseAdminInitConfig is not set', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: undefined,
+      useFirebaseAdminDefaultCredential: true,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('[server-side] ignores an unset firebaseAdminInitConfig value when logging for debugging', () => {
+    expect.assertions(1)
+    const logDebug = require('src/logDebug').default
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: undefined,
+      useFirebaseAdminDefaultCredential: true,
+    }
+    setConfig(mockConfig)
+    const expectedConfig = {
+      ...mockConfig,
+      onVerifyTokenError: expect.any(Function),
+      onTokenRefreshError: expect.any(Function),
+      cookies: {
+        ...mockConfig.cookies,
+        keys: ['hidden'],
+      },
+      firebaseAdminInitConfig: undefined,
+    }
+    expect(logDebug).toHaveBeenCalledWith(
+      'Setting config with provided value:',
+      expectedConfig
+    )
+  })
+
+  it('[server-side] ignores an unset firebaseAdminInitConfig.credential value when logging for debugging', () => {
+    expect.assertions(1)
+    const logDebug = require('src/logDebug').default
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: {
+        databaseURL: 'some-database-url-here',
+      },
+      useFirebaseAdminDefaultCredential: true,
+    }
+    setConfig(mockConfig)
+    const expectedConfig = {
+      ...mockConfig,
+      onVerifyTokenError: expect.any(Function),
+      onTokenRefreshError: expect.any(Function),
+      cookies: {
+        ...mockConfig.cookies,
+        keys: ['hidden'],
+      },
+      firebaseAdminInitConfig: {
+        databaseURL: 'some-database-url-here',
+      },
+    }
+    expect(logDebug).toHaveBeenCalledWith(
+      'Setting config with provided value:',
+      expectedConfig
     )
   })
 })
