@@ -675,7 +675,6 @@ describe('config: debug logging', () => {
   // https://github.com/gladly-team/next-firebase-auth/issues/434
   it('[server-side] does not throw an error if the firebaseAdminInitConfig is not set', () => {
     expect.assertions(1)
-    const logDebug = require('src/logDebug').default
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false)
     const { setConfig } = require('src/config')
