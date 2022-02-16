@@ -61,6 +61,23 @@ describe('config', () => {
     )
   })
 
+  // For usage with the useFirebaseAdminDefaultCredential setting:
+  // https://github.com/gladly-team/next-firebase-auth/issues/434
+  it('[server-side] does not throw an error if the firebaseAdminInitConfig is not set', () => {
+    expect.assertions(1)
+    const isClientSide = require('src/isClientSide').default
+    isClientSide.mockReturnValue(false)
+    const { setConfig } = require('src/config')
+    const mockConfig = {
+      ...createMockConfig(),
+      firebaseAdminInitConfig: undefined,
+      useFirebaseAdminDefaultCredential: true,
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
   it('[client-side] returns the set config with defaults', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
