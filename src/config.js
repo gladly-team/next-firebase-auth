@@ -248,14 +248,18 @@ const replacePrivateValues = (unredactedConfig) => {
       ...unredactedConfig.cookies,
       keys: ['hidden'],
     },
-    firebaseAdminInitConfig: {
-      ...unredactedConfig.firebaseAdminInitConfig,
-      credential: {
-        ...unredactedConfig.firebaseAdminInitConfig.credential,
-        privateKey: 'hidden',
-        clientEmail: 'hidden',
+    ...(unredactedConfig.firebaseAdminInitConfig && {
+      firebaseAdminInitConfig: {
+        ...unredactedConfig.firebaseAdminInitConfig,
+        ...(unredactedConfig.firebaseAdminInitConfig.credential && {
+          credential: {
+            ...unredactedConfig.firebaseAdminInitConfig.credential,
+            privateKey: 'hidden',
+            clientEmail: 'hidden',
+          },
+        }),
       },
-    },
+    }),
   }
   return redactedConfig
 }
