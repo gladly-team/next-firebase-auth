@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR,
@@ -35,4 +36,8 @@ const StuffPage = () => {
   )
 }
 
-export default withAuthUser()(StuffPage)
+export default withAuthUser({
+  // FIXME: this causes a redirect loop
+  // https://github.com/gladly-team/next-firebase-auth/issues/440
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+})(StuffPage)
