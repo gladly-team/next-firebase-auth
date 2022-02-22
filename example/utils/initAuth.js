@@ -19,7 +19,7 @@ const initAuth = () => {
       const destPath =
         typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
       const destURL = new URL(destPath, origin)
-      return `auth-ssr?destination=${encodeURIComponent(destURL)}`
+      return `/auth-ssr?destination=${encodeURIComponent(destURL)}`
     },
 
     // This demonstrates setting a dynamic destination URL when
