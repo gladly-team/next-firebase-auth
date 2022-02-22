@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR,
-} from 'next-firebase-auth'
+import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import Header from '../../components/Header'
 import DemoPageLinks from '../../components/DemoPageLinks'
