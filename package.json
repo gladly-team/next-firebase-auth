@@ -1,6 +1,6 @@
 {
-  "name": "next-firebase-auth",
-  "version": "0.14.3-alpha.0",
+  "name": "@side/next-firebase-auth",
+  "version": "0.0.0-development",
   "description": "Simple Firebase authentication for all Next.js rendering strategies",
   "keywords": [
     "Next",
