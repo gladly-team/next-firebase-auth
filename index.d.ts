@@ -2,13 +2,18 @@ import * as Cookies from 'cookies'
 import type { User } from 'firebase/auth'
 import * as firebaseAdmin from 'firebase-admin'
 import type {
+  GetServerSideProps,
   GetServerSidePropsContext,
   GetServerSidePropsResult,
   NextApiRequest,
   NextApiResponse,
+  PreviewData,
 } from 'next'
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Dictionary<T = any> = Record<string, T>
 
 export enum AuthAction {
   RENDER = 'render',
@@ -32,14 +37,16 @@ export interface AuthUser {
   signOut: () => Promise<void>
 }
 
-export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
-  GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
+export type SSRPropsContext<
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = GetServerSidePropsContext<Q, D> & { AuthUser: AuthUser }
 
 export type SSRPropGetter<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  P extends { [key: string]: any } = { [key: string]: any },
-  Q extends ParsedUrlQuery = ParsedUrlQuery
-> = (context: SSRPropsContext<Q>) => Promise<GetServerSidePropsResult<P>>
+  P extends Dictionary = Dictionary,
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = (context: SSRPropsContext<Q, D>) => Promise<GetServerSidePropsResult<P>>
 
 interface AuthUserContext extends AuthUser {
   serialize: (opts?: { includeToken?: boolean }) => string
@@ -151,16 +158,19 @@ export const withAuthUser: <P = unknown>(options?: {
   LoaderComponent?: ComponentType | null
 }) => (component: ComponentType<P>) => ComponentType<P>
 
-export const withAuthUserTokenSSR: (options?: {
+type GetServerSidePropsAuthWrapper = (options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
   appPageURL?: PageURL
   authPageURL?: PageURL
-}) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
+}) => <
+  P extends Dictionary = Dictionary,
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+>(
+  propGetter?: SSRPropGetter<P, Q, D>
+) => GetServerSideProps<P, Q, D>
 
-export const withAuthUserSSR: (options?: {
-  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
-  whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
-  appPageURL?: PageURL
-  authPageURL?: PageURL
-}) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
+export const withAuthUserTokenSSR: GetServerSidePropsAuthWrapper
+
+export const withAuthUserSSR: GetServerSidePropsAuthWrapper

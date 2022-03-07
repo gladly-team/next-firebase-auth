@@ -48,6 +48,12 @@ module.exports = {
       extends: ['plugin:@typescript-eslint/recommended'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
+      settings: {
+        'import/resolver': {
+          // enable `eslint-import-resolver-typescript`
+          typescript: {},
+        },
+      },
       rules: {
         // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
         'no-shadow': 0,
@@ -55,6 +61,12 @@ module.exports = {
         // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
         'no-use-before-define': 'off',
         '@typescript-eslint/no-use-before-define': ['error'],
+      },
+    },
+    {
+      files: ['index.tests.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
       },
     },
   ],
