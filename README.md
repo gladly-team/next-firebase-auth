@@ -33,7 +33,7 @@ We treat the Firebase JS SDK as the source of truth for auth status. When the us
 
 Depending on your app's needs, other approaches might work better for you.
 
-**If your app only uses static pages** or doesn't need the Firebase user for SSR, use the Firebase JS SDK directly to load the user on the client side.
+**If your app only uses static pages** or doesn't need the Firebase user for SSR, use the Firebase JS SDK directly to load the user on the client-side.
 
 - _Pros:_ It's simpler and removes this package as a dependency.
 - _Cons:_ You will not have access to the Firebase user when you use `getServerSideProps`.
@@ -45,7 +45,7 @@ Depending on your app's needs, other approaches might work better for you.
    - _Cons:_ The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. (Note that you can set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.)
 2. Use [Firebase's session cookies](https://firebase.google.com/docs/auth/admin/manage-cookies).
    - _Pros:_ It removes this package as a dependency.
-   - _Cons:_ You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement logic for verifying the session and managing session state.
+   - _Cons:_ You won't have access to the Firebase ID token server-side, so you won't be able to access other Firebase services. You'll need to implement the logic for verifying the session and managing the session state.
 
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server-side.
 
@@ -58,9 +58,9 @@ Depending on your app's needs, other approaches might work better for you.
 
 **Install:**
 
-Firebase v8: `yarn add next-firebase-auth`
+Firebase v8: `yarn add next-firebase-auth` or `npm i next-firebase-auth`
 
-Firebase v9+: `yarn add next-firebase-auth@canary`
+Firebase v9+: `yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
 
 > ⚠️ If you're using v9 of the Firebase JS SDK, use `next-firebase-auth@canary`. This is an unstable v1 prerelease. Track progress on v1 [in this issue](https://github.com/gladly-team/next-firebase-auth/issues/265).
 
@@ -95,7 +95,7 @@ const initAuth = () => {
       credential: {
         projectId: 'my-example-app-id',
         clientEmail: 'example-abc123@my-example-app.iam.gserviceaccount.com',
-        // The private key must not be accessible on the client side.
+        // The private key must not be accessible on the client-side.
         privateKey: process.env.FIREBASE_PRIVATE_KEY,
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
@@ -111,7 +111,7 @@ const initAuth = () => {
     cookies: {
       name: 'ExampleApp', // required
       // Keys are required unless you set `signed` to `false`.
-      // The keys cannot be accessible on the client side.
+      // The keys cannot be accessible on the client-side.
       keys: [
         process.env.COOKIE_SECRET_CURRENT,
         process.env.COOKIE_SECRET_PREVIOUS,
@@ -248,8 +248,8 @@ It accepts the following options:
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | `whenAuthed`               | The action to take if the user is authenticated. One of `AuthAction.RENDER` or `AuthAction.REDIRECT_TO_APP`.                                                                                                                                    | `AuthAction.RENDER`      |
 | `whenAuthedBeforeRedirect` | The action to take while waiting for the browser to redirect. Relevant when the user is authenticated and whenAuthed is set to AuthAction.REDIRECT_TO_APP. One of: `AuthAction.RENDER` or `AuthAction.SHOW_LOADER` or `AuthAction.RETURN_NULL`. | `AuthAction.RETURN_NULL` |
-| `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
-| `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
+| `whenUnauthedBeforeInit`   | The action to take if the user is _not_ authenticated but the Firebase client JS SDK has not yet been initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`, `AuthAction.SHOW_LOADER`.                                            | `AuthAction.RENDER`      |
+| `whenUnauthedAfterInit`    | The action to take if the user is _not_ authenticated and the Firebase client JS SDK has already been initialized. One of: `AuthAction.RENDER`, `AuthAction.REDIRECT_TO_LOGIN`.                                                                      | `AuthAction.RENDER`      |
 | `appPageURL`               | The redirect destination URL when we should redirect to the app. A [PageURL](#pageurl).                                                                                                                                                         | `config.appPageURL`      |
 | `authPageURL`              | The redirect destination URL when we should redirect to the login page. A [PageURL](#pageurl).                                                                                                                                                  | `config.authPageURL`     |
 | `LoaderComponent`          | The component to render when the user is unauthed and `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.                                                                                                                              | null                     |
@@ -332,7 +332,7 @@ export default withAuthUser()(DemoPage)
 
 Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: it does not validate an ID token. Instead, it simply uses the `AuthUser` data from a cookie. Consequently:
 
-- It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
+- It does not provide an ID token on the server-side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
 - It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
 - It does _not_ check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withAuthUserTokenSSR`.
 
@@ -358,7 +358,7 @@ const Demo = () => {
   )
 }
 
-export default withAuthUser()(DemoPage)
+export default withAuthUser()(Demo)
 ```
 
 #### `setAuthCookies(req, res)`
@@ -369,7 +369,7 @@ Cookies are managed with [`cookies`](https://github.com/pillarjs/cookies). See [
 
 The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object. It requires that the `Authorization` request header be set to the Firebase user ID token, which this package handles automatically.
 
-This can only be called on the server side.
+This can only be called on the server-side.
 
 #### `unsetAuthCookies(req, res)`
 
@@ -377,7 +377,7 @@ Unsets (expires) the auth cookies. Call this from your "logout" API endpoint.
 
 The `req` argument should be an `IncomingMessage` / Next.js request object. The `res` argument should be a `ServerResponse` / Next.js response object.
 
-This can only be called on the server side.
+This can only be called on the server-side.
 
 #### `verifyIdToken(token) => Promise<AuthUser>`
 
@@ -393,7 +393,7 @@ _Added in v0.13.1_
 
 A convenience function that returns the configured Firebase admin module.
 
-This can only be called from the server side. It will throw an error if called from the client side.
+This can only be called from the server-side. It will throw an error if called from the client-side.
 
 For example:
 
@@ -498,7 +498,7 @@ See the [default handler](https://github.com/gladly-team/next-firebase-auth/blob
 
 The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
 
-Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`.
+Must match the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`.
 
 #### firebaseAdminInitConfig
 
@@ -506,7 +506,7 @@ Must be exactly the same as the value of the `FIREBASE_AUTH_EMULATOR_HOST` envir
 
 Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
 
-The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
+The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client-side and should live in a secret environment variable.
 
 > ℹ️ Using Vercel? See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) for guidance.
 
@@ -514,9 +514,9 @@ The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the cli
 
 `Boolean`
 
-When true, `firebase-admin` will use the Google Cloud application default credentials during [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk).
+When true, `firebase-admin` will implicitly find your hosting environment service account during `initializeApp`. This is applicable for both [Firebase](https://firebase.google.com/docs/admin/setup#initialize-sdk), and [Google Cloud Platform](https://cloud.google.com/docs/authentication/production), and more recommended than adding service account key to the code via file path or direct value.
 
-**Note**: When true, default credentials will override values passed to `firebaseAdminInitConfig.credential`.
+**Note**: To setup `firebase-admin`, either `firebaseAdminInitConfig` or `useFirebaseAdminDefaultCredential` must be provided. Using the default credentials will override values passed to `firebaseAdminInitConfig.credential` if both are presented.
 
 #### firebaseClientInitConfig
 
@@ -536,7 +536,7 @@ Properties include:
 - `keys`: An array of strings that will be used to sign cookies; for instance, `['xD$WVv3qrP3ywY', '2x6#msoUeNhVHr']`. As these strings are secrets, provide them via secret environment variables, such as `[ process.env.COOKIE_SECRET_CURRENT, process.env.COOKIE_SECRET_PREVIOUS ]`. The `keys` array is passed to the [Keygrip](https://www.npmjs.com/package/keygrip) constructor as described in [the `cookies` package](https://github.com/pillarjs/cookies#cookies--new-cookies-request-response--options--). **Required** unless `signed` is set to `false`.
 - [All options for `cookies.set`](https://github.com/pillarjs/cookies#cookiesset-name--value---options--).
 
-The `keys` value cannot be defined on the client side and should live in a secret environment variable.
+The `keys` value cannot be defined on the client-side and should live in a secret environment variable.
 
 For security, the `maxAge` value must be two weeks or less. Note that `maxAge` is defined in milliseconds.
 
@@ -568,7 +568,7 @@ This library will **not** throw when it cannot refresh an ID token. Instead, it 
 
 ### AuthAction
 
-Defines actions to take depending on on a user's auth status, using the following constants:
+Defines actions to take depending on a user's auth status, using the following constants:
 
 **`AuthAction.RENDER`**: render the child component
 
@@ -582,7 +582,7 @@ Defines actions to take depending on on a user's auth status, using the followin
 
 ### AuthUser
 
-The auth user object used across server- and client-side contexts. This is a normalized representation of a Firebase user.
+The auth user object is used across server- and client-side contexts. This is a normalized representation of a Firebase user.
 
 **id** - `String|null`
 
@@ -626,15 +626,15 @@ An async function that resolves to a valid Firebase ID token string, or null if 
 
 **clientInitialized** - `Boolean`
 
-Whether the Firebase JS SDK has initialized. If `true`, we are no longer using any user info from server-side props.
+Whether the Firebase JS SDK has been initialized. If `true`, we are no longer using any user info from server-side props.
 
 **firebaseUser** - [`FirebaseUser`](https://firebase.google.com/docs/reference/js/firebase.User)`|null`
 
-The user from the Firebase JS SDK, if it has initialized. Otherwise, null.
+The user from the Firebase JS SDK, if it has been initialized. Otherwise, null.
 
 **signOut** - `Function => Promise<void>`
 
-A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has initialized. If the SDK has not initialized, this method is a noop.
+A method that calls Firebase's [`signOut`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout) if the Firebase JS SDK has been initialized. If the SDK has not been initialized, this method is a no-op.
 
 ### PageURL
 
@@ -841,9 +841,9 @@ export default initAuth
 
 ### Testing and Mocking with Jest
 
-In order to test components wrapped with functions from `next-firebase-auth`, you will likely want to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks#mocking-node-modules).
+To test components wrapped with functions from `next-firebase-auth`, you will likely want to mock the `next-firebase-auth` library. This can be achieved using the [manual mocks feature of Jest](https://jestjs.io/docs/manual-mocks#mocking-node-modules).
 
-It can be helpful to define default mock behavior of `next-firebase-auth` across your tests. To do so, stub out the module in a top-level `__mocks__` folder (alongside the `node_modules` in your application):
+It can be helpful to define the default mock behavior of `next-firebase-auth` across your tests. To do so, stub out the module in a top-level `__mocks__` folder (alongside the `node_modules` in your application):
 
 ```
 ├── __mocks__
@@ -908,7 +908,7 @@ export default getMockAuthUser
 
 Now, you can use and customize the mock behavior in your tests.
 
-If you're modifying higher-order functions, component being tested needs to be `require`d inside a `beforeEach` function or inside each test case. This is because mocking `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (e.g., `export default withAuthUser()(MyComponent)`).
+If you're modifying higher-order functions, components being tested will be `required` inside a `beforeEach` function or each test case. This is because mocking `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (e.g., `export default withAuthUser()(MyComponent)`).
 
 Given the following component:
 
@@ -1036,15 +1036,15 @@ describe('UserDisplayName', () => {
 
 _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/discussions) or open your own Q&A discussion describing what you've already tried._
 
-#### I get the error "[Some setting] should not be available on the client side."
+#### I get the error "[Some setting] should not be available on the client-side."
 
-We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
+We expect certain sensitive config values to be falsy on the client-side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
 
-To fix this, ensure the config setting is `undefined` on the client side by logging it to your browser console. You can use Next's `.env` support to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
+To fix this, ensure the config setting is `undefined` on the client-side by logging it to your browser console. You can use Next's `.env` support to set server-only variables. Never use the `NEXT_PUBLIC*` prefix for any secret values.
 
 #### I get an "INVALID_CUSTOM_TOKEN" error when trying to get a refresh token.
 
-This package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side. You're seeting an error in that request.
+This package will call [a Google endpoint](https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token) when it needs to refresh a token server-side. You're seeing an error from that request.
 
 To fix this, confirm that your `firebaseAdminInitConfig.credential.clientEmail` is correct. It should be the email paired with your Firebase private key.
 
@@ -1052,7 +1052,7 @@ If that doesn't help, try inspecting the custom token to manually validate the v
 
 #### Server-side auth is not working. The user and token are always null when using `withAuthUserTokenSSR`, but client-side auth works.
 
-If auth is working on the client side but not on the server-side, the auth cookies are most likely not set.
+If auth is working on the client-side but not on the server-side, the auth cookies are most likely not set.
 
 To fix this, confirm the auth cookies are set in your browser's dev tools. If they're not set, please check that the `secure`, `sameSite`, and `path` options passed in the `next-firebase-auth` config make sense for your environment. For example, if you're testing on non-HTTPS localhost, make sure `secure` is false.
 
@@ -1060,7 +1060,7 @@ In addition, please double-check your server logs for any errors to ensure the F
 
 #### I get an "auth/argument-error" with message "Firebase ID token has invalid signature".
 
-Often, this is caused by an incorrect the email in Firebase credentials. Please verify that the email is correct and is from the same Firebase account as your private key, or try generating a new key:
+Often, this is caused by an incorrect email in Firebase credentials. Please verify that the email is correct and is from the same Firebase account as your private key, or try generating a new key:
 https://firebase.google.com/docs/admin/setup
 
 You can try setting up your credentials in [the example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) to be sure your app code isn't a problem.
