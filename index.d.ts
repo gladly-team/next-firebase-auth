@@ -67,6 +67,7 @@ interface InitConfig {
   tokenChangedHandler?: (user: AuthUser) => void
   onLoginRequestError?: (error: unknown) => void
   onLogoutRequestError?: (error: unknown) => void
+  useFirebaseAdminDefaultCredential?: boolean
   firebaseAdminInitConfig?: {
     credential: {
       projectId: string
