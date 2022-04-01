@@ -2795,7 +2795,7 @@ next-absolute-url@^1.2.2:
   resolved "https://registry.yarnpkg.com/next-absolute-url/-/next-absolute-url-1.2.2.tgz#9aba5adcee8effcffd63271d99e13213ad04c23b"
   integrity sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==
 
-next-firebase-auth@^0.14.1-alpha.0:
+next-firebase-auth@^0.14.3:
   version "0.14.3"
   resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.14.3.tgz#4d67b3fe920a6117f00a135510c08c0b9ba7ce96"
   integrity sha512-l0Xl8tN0mgPzvM2VR80Jimi9IvEWYDjrSKslZyqPY/SVxh5DkmYKi8smc2Fk2DYkZMFVa2nfZmmw6vgVje3dfA==
