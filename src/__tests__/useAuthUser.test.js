@@ -47,6 +47,7 @@ describe('useAuthUser', () => {
       .spyOn(console, 'error')
       .mockImplementationOnce(() => {})
       .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
     expect(() => {
       render(<TestComp />)
     }).toThrow(err)
