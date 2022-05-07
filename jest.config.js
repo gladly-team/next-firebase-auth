@@ -14,7 +14,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/',
+    '/node_modules/(?!(firebase|@firebase)/)',
     '/.yalc/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
