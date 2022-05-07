@@ -172,6 +172,6 @@ type GetServerSidePropsAuthWrapper = (options?: {
   propGetter?: SSRPropGetter<P, Q, D>
 ) => GetServerSideProps<P, Q, D>
 
-export const withAuthUserTokenSSR: GetServerSidePropsAuthWrapper
+export const withAuthUserTokenSSR: AuthUser
 
 export const withAuthUserSSR: GetServerSidePropsAuthWrapper
