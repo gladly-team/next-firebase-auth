@@ -26,7 +26,8 @@ const defaultProps = {
   favoriteColor: undefined,
 }
 
-const Demo: VFC<DataType> = ({ favoriteColor }) => {
+const Demo: VFC<DataType> = (props: DataType) => {
+  const { favoriteColor } = props
   const AuthUser = useAuthUser()
   return (
     <div>
