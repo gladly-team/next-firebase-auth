@@ -60,6 +60,9 @@ export const getServerSideProps = withAuthUserSSR({
   // include one. If you need a server-side token, use
   // `withAuthUserTokenSSR`.
   const token = await AuthUser.getIdToken()
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore: Don't worry about type definitions in this example app.
   const endpoint = getAbsoluteURL('/api/example', req)
   const response = await fetch(endpoint, {
     method: 'GET',
