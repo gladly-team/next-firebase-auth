@@ -25,7 +25,7 @@ export enum AuthAction {
 
 export interface AuthUser {
   id: string | null
-  email: string | null
+  // email: string | null
   emailVerified: boolean
   phoneNumber: string | null
   displayName: string | null
