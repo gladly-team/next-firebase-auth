@@ -1,12 +1,17 @@
+import { ChakraProvider } from '@chakra-ui/react'
 import React from 'react'
 import '../styles/globals.css'
 import initAuth from '../utils/initAuth'
 
 initAuth()
 
-const MyApp = ({ Component, pageProps }) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <Component {...pageProps} />
-)
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <ChakraProvider>
+      <Component {...pageProps} />
+    </ChakraProvider>
+  )
+}
 
 export default MyApp
