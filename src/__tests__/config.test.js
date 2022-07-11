@@ -222,7 +222,7 @@ describe('config: server side', () => {
     }).not.toThrow()
   })
 
-  it('throws if the tokenChangedHandler and loginAPIEndpoint are not defined', () => {
+  it('does not throw if the tokenChangedHandler and loginAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -232,9 +232,7 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "loginAPIEndpoint" setting is required.'
-    )
+    }).not.toThrow()
   })
 
   it('throws if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
@@ -247,9 +245,7 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "logoutAPIEndpoint" setting is required.'
-    )
+    }).not.toThrow()
   })
 
   it('throws if both the tokenChangedHandler and loginAPIEndpoint are defined', () => {
@@ -437,6 +433,23 @@ describe('config: server side', () => {
     }).toThrow(
       'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
     )
+  })
+
+  it('does not throw with the expected minimalistic config for a Node backend', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const minimalConfig = {
+      firebaseClientInitConfig: {
+        apiKey: 'fakeAPIKey123',
+      },
+      cookies: {
+        name: 'someExample',
+        signed: false,
+      },
+    }
+    expect(() => {
+      setConfig(minimalConfig)
+    }).not.toThrow()
   })
 })
 // End: server-side testing
