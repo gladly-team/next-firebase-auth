@@ -448,7 +448,7 @@ describe('config: client side', () => {
     isClientSide.mockReturnValue(true)
   })
 
-  it('[client-side] returns the set config with defaults', () => {
+  it('returns the set config with defaults', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
@@ -475,7 +475,7 @@ describe('config: client side', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
-  it('[client-side] throws if the user does not define the firebaseClientInitConfig', () => {
+  it('throws if the user does not define the firebaseClientInitConfig', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -489,7 +489,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides firebaseClientInitConfig without an API key', () => {
+  it('throws if the user provides firebaseClientInitConfig without an API key', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -505,7 +505,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
+  it('does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -524,7 +524,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
+  it('throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -545,7 +545,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides a cookies.keys value', () => {
+  it('throws if the user provides a cookies.keys value', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -563,7 +563,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides a cookies.keys array', () => {
+  it('throws if the user provides a cookies.keys array', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -581,7 +581,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] does not throw if the user provides an undefined cookies.keys value', () => {
+  it('does not throw if the user provides an undefined cookies.keys value', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -597,7 +597,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] does not throw if the user provides an empty cookies.keys array', () => {
+  it('does not throw if the user provides an empty cookies.keys array', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -613,7 +613,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] does not throw if the user provides a cookies.keys array with only undefined values', () => {
+  it('does not throw if the user provides a cookies.keys array with only undefined values', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
