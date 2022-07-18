@@ -1,8 +1,10 @@
 // https://github.com/pillarjs/cookies
 import Cookies from 'cookies'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
+import logDebug, { setDebugEnabled } from 'src/logDebug'
 
 const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
+  setDebugEnabled(true)
   // https://github.com/pillarjs/cookies
   const cookies = Cookies(req, res, {
     keys,
@@ -68,6 +70,9 @@ export const setCookie = (
     secure,
     signed,
   })
+  logDebug('setCookie: name', name)
+  logDebug('setCookie: cookieVal', cookieVal)
+  logDebug('currentCookies', cookies.get())
 }
 
 // Some options, like path and domain, must match those used when setting

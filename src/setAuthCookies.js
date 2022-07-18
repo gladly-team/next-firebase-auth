@@ -5,8 +5,10 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
+import logDebug, { setDebugEnabled } from 'src/logDebug'
 
 const setAuthCookies = async (req, res) => {
+  setDebugEnabled(true)
   if (!(req.headers && req.headers.authorization)) {
     throw new Error('The request is missing an Authorization header value')
   }
@@ -14,12 +16,16 @@ const setAuthCookies = async (req, res) => {
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
   const token = req.headers.authorization
+  logDebug('setAuthCookies: token', token)
 
   // Get a custom ID token and refresh token, given a valid
   // Firebase ID token.
   const { idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
     token
   )
+  logDebug('setAuthCookies: idToken', idToken)
+  logDebug('setAuthCookies: refreshToken', refreshToken)
+  logDebug('setAuthCookies: AuthUser', AuthUser)
 
   // Pick a subset of the config.cookies options to
   // pass to setCookie.
@@ -44,6 +50,7 @@ const setAuthCookies = async (req, res) => {
     secure,
     signed,
   }))(getConfig().cookies)
+  logDebug('setAuthCookies: cookieOptions', cookieOptions)
 
   // Store the ID and refresh tokens in a cookie. This
   // cookie will be available to future requests to pages,
@@ -59,6 +66,10 @@ const setAuthCookies = async (req, res) => {
     }),
     { req, res },
     cookieOptions
+  )
+  logDebug(
+    'setAuthCookies: getAuthUserTokensCookieName',
+    getAuthUserTokensCookieName()
   )
 
   // Store the AuthUser data. This cookie will be available
@@ -81,6 +92,7 @@ const setAuthCookies = async (req, res) => {
     },
     cookieOptions
   )
+  logDebug('setAuthCookies: getAuthUserCookieName', getAuthUserCookieName())
 
   return {
     idToken,
