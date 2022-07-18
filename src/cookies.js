@@ -72,7 +72,7 @@ export const setCookie = (
   })
   logDebug('setCookie: name', name)
   logDebug('setCookie: cookieVal', cookieVal)
-  logDebug('currentCookies', cookies.get())
+  logDebug('currentCookies', cookies.get(name))
 }
 
 // Some options, like path and domain, must match those used when setting
