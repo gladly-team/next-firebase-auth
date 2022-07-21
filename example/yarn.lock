@@ -2196,9 +2196,9 @@ next-absolute-url@^1.2.2:
   integrity sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==
 
 next-firebase-auth@^1.0.0-canary.9:
-  version "1.0.0-canary.9"
-  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-1.0.0-canary.9.tgz#5bf8e0533f1b8df9f80c9a37b302399724210e7d"
-  integrity sha512-N2C/p6vCbTH4i+kk4DdSFSnTljRgX5TjK7JH0mAcxJgDCZm8b+z39c+LSP/wnRYAOYawrInh6onFoZosmeNIOA==
+  version "1.0.0-canary.10"
+  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-1.0.0-canary.10.tgz#a3d406f05577e2469fcbdc849324d409ce06e5f7"
+  integrity sha512-4FYKSqqlxfCebHcG+bfl/YfnOimf570nYDSk7BDruBdFh/9pLC/Y1YktMai9vm+O0RkAGcO4MYVZm2JGEFj3HQ==
   dependencies:
     cookies "^0.8.0"
     hoist-non-react-statics "^3.3.2"
