@@ -29,7 +29,7 @@
     "test:watch": "yarn run test:run --watch",
     "test:types": "npm-run-all -s test:types:info test:types:run",
     "test:types:run": "tsc",
-    "test:types:info": "echo \"*** Be sure to build before testing types ***\"",
+    "test:types:info": "echo \"\n\n******\nReminder: build before testing types!\n******\n\"",
     "install-example-deps": "cd example && yarn",
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
     "dev:yalc-publish-push": "yalc publish --push",
