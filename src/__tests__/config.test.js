@@ -235,7 +235,7 @@ describe('config: server side', () => {
     }).not.toThrow()
   })
 
-  it('throws if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
+  it('does not throw if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -636,6 +636,21 @@ describe('config: client side', () => {
         ...mockConfigDefault.cookies,
         keys: [undefined, undefined],
       },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('does not throw if the tokenChangedHandler is set and loginAPIEndpoint/logoutAPIEndpoint are not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      tokenChangedHandler: () => {},
+      loginAPIEndpoint: undefined,
+      logoutAPIEndpoint: undefined,
     }
     expect(() => {
       setConfig(mockConfig)

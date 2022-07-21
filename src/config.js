@@ -160,12 +160,15 @@ const validateConfig = (mergedConfig) => {
     /**
      * START: config specific to client side
      */
-    if (!mergedConfig.loginAPIEndpoint) {
-      errorMessages.push('The "loginAPIEndpoint" setting is required.')
+    if (!mergedConfig.tokenChangedHandler) {
+      if (!mergedConfig.loginAPIEndpoint) {
+        errorMessages.push('The "loginAPIEndpoint" setting is required.')
+      }
+      if (!mergedConfig.logoutAPIEndpoint) {
+        errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+      }
     }
-    if (!mergedConfig.logoutAPIEndpoint) {
-      errorMessages.push('The "logoutAPIEndpoint" setting is required.')
-    }
+
     if (
       mergedConfig.firebaseAdminInitConfig &&
       mergedConfig.firebaseAdminInitConfig.credential &&
