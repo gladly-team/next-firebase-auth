@@ -222,7 +222,7 @@ describe('config: server side', () => {
     }).not.toThrow()
   })
 
-  it('throws if the tokenChangedHandler and loginAPIEndpoint are not defined', () => {
+  it('does not throw if the tokenChangedHandler and loginAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -232,12 +232,10 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "loginAPIEndpoint" setting is required.'
-    )
+    }).not.toThrow()
   })
 
-  it('throws if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
+  it('does not throw if the tokenChangedHandler and logoutAPIEndpoint are not defined', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -247,9 +245,7 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "logoutAPIEndpoint" setting is required.'
-    )
+    }).not.toThrow()
   })
 
   it('throws if both the tokenChangedHandler and loginAPIEndpoint are defined', () => {
@@ -438,6 +434,23 @@ describe('config: server side', () => {
       'Invalid next-firebase-auth options: The "onTokenRefreshError" setting must be a function.'
     )
   })
+
+  it('does not throw with the expected minimalistic config for a Node backend', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const minimalConfig = {
+      firebaseClientInitConfig: {
+        apiKey: 'fakeAPIKey123',
+      },
+      cookies: {
+        name: 'someExample',
+        signed: false,
+      },
+    }
+    expect(() => {
+      setConfig(minimalConfig)
+    }).not.toThrow()
+  })
 })
 // End: server-side testing
 
@@ -448,7 +461,7 @@ describe('config: client side', () => {
     isClientSide.mockReturnValue(true)
   })
 
-  it('[client-side] returns the set config with defaults', () => {
+  it('returns the set config with defaults', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
     const mockConfig = {
@@ -475,7 +488,7 @@ describe('config: client side', () => {
     expect(getConfig()).toEqual(expectedConfig)
   })
 
-  it('[client-side] throws if the user does not define the firebaseClientInitConfig', () => {
+  it('throws if the user does not define the firebaseClientInitConfig', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -489,7 +502,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides firebaseClientInitConfig without an API key', () => {
+  it('throws if the user provides firebaseClientInitConfig without an API key', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -505,7 +518,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
+  it('does not throw if the user provides firebaseAdminInitConfig on the client side, as long as the private key is not set', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -524,7 +537,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
+  it('throws if the user provides firebaseAdminInitConfig.credential.privateKey on the client side', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfig = {
@@ -545,7 +558,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides a cookies.keys value', () => {
+  it('throws if the user provides a cookies.keys value', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -563,7 +576,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] throws if the user provides a cookies.keys array', () => {
+  it('throws if the user provides a cookies.keys array', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -581,7 +594,7 @@ describe('config: client side', () => {
     )
   })
 
-  it('[client-side] does not throw if the user provides an undefined cookies.keys value', () => {
+  it('does not throw if the user provides an undefined cookies.keys value', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -597,7 +610,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] does not throw if the user provides an empty cookies.keys array', () => {
+  it('does not throw if the user provides an empty cookies.keys array', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -613,7 +626,7 @@ describe('config: client side', () => {
     }).not.toThrow()
   })
 
-  it('[client-side] does not throw if the user provides a cookies.keys array with only undefined values', () => {
+  it('does not throw if the user provides a cookies.keys array with only undefined values', () => {
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -623,6 +636,21 @@ describe('config: client side', () => {
         ...mockConfigDefault.cookies,
         keys: [undefined, undefined],
       },
+    }
+    expect(() => {
+      setConfig(mockConfig)
+    }).not.toThrow()
+  })
+
+  it('does not throw if the tokenChangedHandler is set and loginAPIEndpoint/logoutAPIEndpoint are not defined', () => {
+    expect.assertions(1)
+    const { setConfig } = require('src/config')
+    const mockConfigDefault = createMockConfig()
+    const mockConfig = {
+      ...mockConfigDefault,
+      tokenChangedHandler: () => {},
+      loginAPIEndpoint: undefined,
+      logoutAPIEndpoint: undefined,
     }
     expect(() => {
       setConfig(mockConfig)

@@ -9,11 +9,9 @@ const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 // https://github.com/gladly-team/next-firebase-auth#config
 const defaultConfig = {
   debug: false,
-  // Required string: the API endpoint to call on auth state
-  // change for an authenticated user.
+  // The API endpoint to call on auth state change for an authenticated user.
   loginAPIEndpoint: undefined,
-  // Required string: the API endpoint to call on auth state
-  // change for a signed-out user.
+  // The API endpoint to call on auth state change for a signed-out user.
   logoutAPIEndpoint: undefined,
   // Optional function: handler called if the login API endpoint returns
   // a non-200 response. Not used if a custom "tokenChangedHandler" is
@@ -59,7 +57,7 @@ const defaultConfig = {
   cookies: {
     // Required string. The base name for the auth cookies.
     name: undefined,
-    // Required string or array.
+    // String or array.
     keys: undefined,
     // Options below are passed to cookies.set:
     // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
@@ -100,13 +98,6 @@ const validateConfig = (mergedConfig) => {
       errorMessages.push(
         'The "onLogoutRequestError" setting should not be set if you are using a "tokenChangedHandler".'
       )
-    }
-  } else {
-    if (!mergedConfig.loginAPIEndpoint) {
-      errorMessages.push('The "loginAPIEndpoint" setting is required.')
-    }
-    if (!mergedConfig.logoutAPIEndpoint) {
-      errorMessages.push('The "logoutAPIEndpoint" setting is required.')
     }
   }
 
@@ -169,6 +160,15 @@ const validateConfig = (mergedConfig) => {
     /**
      * START: config specific to client side
      */
+    if (!mergedConfig.tokenChangedHandler) {
+      if (!mergedConfig.loginAPIEndpoint) {
+        errorMessages.push('The "loginAPIEndpoint" setting is required.')
+      }
+      if (!mergedConfig.logoutAPIEndpoint) {
+        errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+      }
+    }
+
     if (
       mergedConfig.firebaseAdminInitConfig &&
       mergedConfig.firebaseAdminInitConfig.credential &&

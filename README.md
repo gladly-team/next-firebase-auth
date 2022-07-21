@@ -83,8 +83,8 @@ const initAuth = () => {
   init({
     authPageURL: '/auth',
     appPageURL: '/',
-    loginAPIEndpoint: '/api/login', // required
-    logoutAPIEndpoint: '/api/logout', // required
+    loginAPIEndpoint: '/api/login',
+    logoutAPIEndpoint: '/api/logout',
     onLoginRequestError: (err) => {
       console.error(err)
     },
@@ -449,15 +449,11 @@ The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` nee
 
 The API endpoint this module will call when the auth state changes for an authenticated Firebase user.
 
-Required unless a custom `tokenChangedHandler` is set, in which case it cannot be defined.
-
 #### logoutAPIEndpoint
 
 `String`
 
 The API endpoint this module will call when the auth state changes for an unauthenticated Firebase user.
-
-Required unless a custom `tokenChangedHandler` is set, in which case it cannot be defined.
 
 #### onLoginRequestError
 
@@ -519,7 +515,7 @@ When true, `firebase-admin` will implicitly find your hosting environment servic
 
 `Object`
 
-Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
+Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth` (or, less commonly, if you're running `next-firebase-auth` solely on the server side).
 
 #### cookies
 

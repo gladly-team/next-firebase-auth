@@ -92,6 +92,20 @@
     "react": ">=16.8.0 <19",
     "react-dom": ">=16.8.0 <19"
   },
+  "peerDependenciesMeta": {
+    "firebase": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "cookies": "^0.8.0",
     "hoist-non-react-statics": "^3.3.2"
