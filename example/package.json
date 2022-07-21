@@ -9,9 +9,9 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "^9.8.0",
-    "firebase-admin": "^10.2.0",
-    "next": "12.1.6",
+    "firebase": "^9.9.0",
+    "firebase-admin": "^11.0.0",
+    "next": "12.2.2",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.0-canary.9",
     "react": "18.2.0",
