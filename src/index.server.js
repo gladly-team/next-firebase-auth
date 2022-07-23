@@ -2,6 +2,7 @@
 
 // TODO: don't import here
 import index from 'src/index'
+import initCommon from 'src/initCommon'
 import AuthAction from 'src/AuthAction'
 
 // These are exclusively for server-side use.
@@ -13,11 +14,10 @@ import { verifyIdToken } from 'src/firebaseAdmin'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 const initServer = (config) => {
-  // TODO: don't rely on client init logic; make modular
-  const clientInit = index.init(config)
+  initCommon(config)
+
   // We only initialize the Firebase admin SDK as it's needed. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/70
-  return clientInit
 }
 
 const withAuthUserTokenSSR = (options) =>
