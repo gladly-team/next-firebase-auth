@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
-// TODO: don't import here
-import index from 'src/index'
+import withAuthUserModule from 'src/withAuthUser'
+import useAuthUserModule from 'src/useAuthUser'
 import initCommon from 'src/initCommon'
 import AuthAction from 'src/AuthAction'
 
@@ -13,28 +13,31 @@ import { verifyIdToken } from 'src/firebaseAdmin'
 
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
-const initServer = (config) => {
+const init = (config) => {
   initCommon(config)
 
   // We only initialize the Firebase admin SDK as it's needed. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/70
 }
 
-const withAuthUserTokenSSR = (options) =>
-  withAuthUserTokenSSRModule(options, { useToken: true })
+const withAuthUser = withAuthUserModule
 
+// TODO: support optional dependencies
+const useAuthUser = useAuthUserModule
+
+// TODO: support optional dependencies
 const withAuthUserSSR = (options) =>
   withAuthUserTokenSSRModule(options, { useToken: false })
 
+const withAuthUserTokenSSR = (options) =>
+  withAuthUserTokenSSRModule(options, { useToken: true })
+
 const getFirebaseAdmin = () => initFirebaseAdminSDK()
 
-// TODO: support optional dependencies in these modules:
-// withAuthUser
-// useAuthUser
-
 export default {
-  ...index,
-  init: initServer,
+  init,
+  withAuthUser,
+  useAuthUser,
   withAuthUserSSR,
   withAuthUserTokenSSR,
   setAuthCookies,
