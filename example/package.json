@@ -16,7 +16,7 @@
     "next-firebase-auth": "^0.14.4-alpha.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-firebaseui": "^6.0.0"
+    "react-firebaseui": "^5.0.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.2.3",
