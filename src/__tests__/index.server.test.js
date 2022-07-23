@@ -6,7 +6,6 @@ import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
 
-jest.mock('src/index')
 jest.mock('src/config')
 jest.mock('src/logDebug')
 jest.mock('src/setAuthCookies')
@@ -72,13 +71,6 @@ describe('index.server.js: withAuthUser', () => {
     expect(indexServer.withAuthUser).toBeDefined()
     expect(indexServer.withAuthUser).toEqual(expect.any(Function))
   })
-
-  it("matches index.js's withAuthUser", () => {
-    expect.assertions(1)
-    const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    expect(indexServer.withAuthUser).toEqual(index.withAuthUser)
-  })
 })
 
 describe('index.server.js: useAuthUser', () => {
@@ -87,13 +79,6 @@ describe('index.server.js: useAuthUser', () => {
     const indexServer = require('src/index.server').default
     expect(indexServer.useAuthUser).toBeDefined()
     expect(indexServer.useAuthUser).toEqual(expect.any(Function))
-  })
-
-  it("matches index.js's useAuthUser", () => {
-    expect.assertions(1)
-    const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    expect(indexServer.useAuthUser).toEqual(index.useAuthUser)
   })
 })
 
