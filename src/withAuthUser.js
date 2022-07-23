@@ -1,8 +1,11 @@
 /* globals window */
 import hoistNonReactStatics from 'hoist-non-react-statics'
+
+// TODO: require below
 import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
+
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
