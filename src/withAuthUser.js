@@ -1,5 +1,4 @@
 /* globals window */
-import React, { useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import { AuthUserContext } from 'src/useAuthUser'
@@ -55,6 +54,24 @@ const withAuthUser =
     LoaderComponent = null,
   } = {}) =>
   (ChildComponent) => {
+    // React is an optional dependency. Throw if it isn't installed
+    // when calling this API.
+    // https://github.com/gladly-team/next-firebase-auth/issues/502
+    let React
+    let useEffect
+    let useCallback
+    let useMemo
+    try {
+      // eslint-disable-next-line global-require
+      React = require('react')
+      // eslint-disable-next-line global-require
+      ;({ useEffect, useCallback, useMemo } = require('react'))
+    } catch (e) {
+      throw new Error(
+        'The dependency "react" is required when calling `withAuthUser`.'
+      )
+    }
+
     const WithAuthUserHOC = (props) => {
       const { AuthUserSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
