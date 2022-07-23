@@ -2,9 +2,7 @@
 
 // TODO: don't import here
 import index from 'src/index'
-
-// TODO: use this directly
-// import AuthAction from 'src/AuthAction'
+import AuthAction from 'src/AuthAction'
 
 // These are exclusively for server-side use.
 import setAuthCookies from 'src/setAuthCookies'
@@ -42,6 +40,6 @@ export default {
   setAuthCookies,
   unsetAuthCookies,
   verifyIdToken,
-  // AuthAction,
+  AuthAction,
   getFirebaseAdmin,
 }
