@@ -9,9 +9,9 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "^9.9.0",
+    "firebase": "^9.9.1",
     "firebase-admin": "^11.0.0",
-    "next": "12.2.2",
+    "next": "12.2.3",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.0-canary.9",
     "react": "18.2.0",
@@ -19,10 +19,10 @@
     "react-firebaseui": "^6.0.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.2.2",
+    "@next/bundle-analyzer": "^12.2.3",
     "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",
-    "eslint-config-next": "^12.2.2",
+    "eslint-config-next": "^12.2.3",
     "typescript": "^4.7.4"
   }
 }
