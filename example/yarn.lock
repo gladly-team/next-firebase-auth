@@ -2081,10 +2081,10 @@ next-absolute-url@^1.2.2:
   resolved "https://registry.yarnpkg.com/next-absolute-url/-/next-absolute-url-1.2.2.tgz#9aba5adcee8effcffd63271d99e13213ad04c23b"
   integrity sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==
 
-next-firebase-auth@^0.14.4-alpha.1:
-  version "0.14.4-alpha.1"
-  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.14.4-alpha.1.tgz#a40d5495607a610eab364c6686d73b63568d1a69"
-  integrity sha512-ErK/0Pew+TFnHYC88+vuCxRwKIw70fN2CTAQWU8oUFBE61iNWLFH7m1jY2FoLkiFccBFBA1uzAAnPSAmt9eIcA==
+next-firebase-auth@^0.14.4:
+  version "0.14.4"
+  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-0.14.4.tgz#c4f904a095e052097cf65d3afab41ab5f4e195d2"
+  integrity sha512-v3/wfoWAwXqOSbz8eW44tZBEXCTneWj21Q62I5SKXiETPSkeAxrMUjZsY5/SqblPmIR9e8LVbBrL9btzt5njVw==
   dependencies:
     cookies "^0.8.0"
     hoist-non-react-statics "^3.3.2"
