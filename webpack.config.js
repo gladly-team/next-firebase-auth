@@ -13,6 +13,9 @@ const sharedConfig = {
     libraryTarget: 'commonjs2',
     libraryExport: 'default',
   },
+  resolve: {
+    extensions: ['.js', '.jx', '.ts', '.tsx'],
+  },
   module: {
     rules: [
       {
