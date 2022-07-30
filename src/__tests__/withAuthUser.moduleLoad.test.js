@@ -1,3 +1,5 @@
+// Allow using the name "mockModuleNotFoundError".
+/* eslint-disable new-cap */
 jest.mock('react')
 const mockRouterPush = jest.fn()
 const mockRouterReplace = jest.fn()
@@ -43,6 +45,7 @@ describe('withAuthUser (resetting module)', () => {
       })
     })
 
+    // eslint-disable-next-line no-unused-expressions
     require('src/withAuthUser').default
   })
 
