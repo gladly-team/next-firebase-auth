@@ -10,12 +10,19 @@ import {
 } from 'src/authCookies'
 import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import AuthAction from 'src/AuthAction'
+// import getUserFromCookies from 'src/getUserFromCookies'
 
-// Note that we don't mock createAuthUser or "src/config".
+/**
+ * We intentionally don't mock a few modules whose behavior we want to
+ * test:
+ * - createAuthUser
+ * - src/config
+ */
 jest.mock('src/cookies')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/isClientSide')
+// jest.mock('src/getUserFromCookies') // TODO: migrate tests
 
 beforeEach(() => {
   // This is always called server-side.
@@ -180,7 +187,10 @@ describe('withAuthUserTokenSSR: with ID token', () => {
     await func(mockCtx)
     expect(getCookie).toHaveBeenCalledWith(
       'MyCookie.AuthUserTokens',
-      { req: mockCtx.req, res: mockCtx.res },
+      {
+        req: mockCtx.req,
+        // res: mockCtx.res // TODO: needed?
+      },
       { keys: ['aaa', 'bbb'], signed: true, secure: false }
     )
   })
@@ -412,7 +422,10 @@ describe('withAuthUserTokenSSR: *without* ID token', () => {
     await func(mockCtx)
     expect(getCookie).toHaveBeenCalledWith(
       'MyCookie.AuthUser',
-      { req: mockCtx.req, res: mockCtx.res },
+      {
+        req: mockCtx.req,
+        // res: mockCtx.res // TODO: needed?
+      },
       { keys: ['aaa', 'bbb'], signed: true, secure: false }
     )
   })
