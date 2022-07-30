@@ -2,6 +2,8 @@ import { setConfig } from 'src/config'
 import { setDebugEnabled } from 'src/logDebug'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
+import withAuthUser from 'src/withAuthUser'
+import useAuthUser from 'src/useAuthUser'
 import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
@@ -10,6 +12,8 @@ jest.mock('src/config')
 jest.mock('src/logDebug')
 jest.mock('src/setAuthCookies')
 jest.mock('src/unsetAuthCookies')
+jest.mock('src/withAuthUser')
+jest.mock('src/useAuthUser')
 jest.mock('src/withAuthUserTokenSSR')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/firebaseAdmin')
@@ -71,6 +75,15 @@ describe('index.server.js: withAuthUser', () => {
     expect(indexServer.withAuthUser).toBeDefined()
     expect(indexServer.withAuthUser).toEqual(expect.any(Function))
   })
+
+  it('calls the withAuthUser module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.withAuthUser({ appPageURL: '/my-fake-app-page' })
+    expect(withAuthUser).toHaveBeenCalledWith({
+      appPageURL: '/my-fake-app-page',
+    })
+  })
 })
 
 describe('index.server.js: useAuthUser', () => {
@@ -79,6 +92,13 @@ describe('index.server.js: useAuthUser', () => {
     const indexServer = require('src/index.server').default
     expect(indexServer.useAuthUser).toBeDefined()
     expect(indexServer.useAuthUser).toEqual(expect.any(Function))
+  })
+
+  it('calls the useAuthUser module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.useAuthUser()
+    expect(useAuthUser).toHaveBeenCalled()
   })
 })
 
