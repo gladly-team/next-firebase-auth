@@ -26,6 +26,16 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
   },
   overrides: [
     // Set Jest rules only for test files.
@@ -84,7 +94,10 @@ module.exports = {
   settings: {
     // Handle linting for absolute imports.
     'import/resolver': {
-      alias: [['src', './src']],
+      alias: {
+        map: [['src', './src']],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
     },
   },
 }
