@@ -1,3 +1,7 @@
+// Tests for withAuthUser.js that require resetting all
+// modules between tests. Most tests should reside in
+// withAuthUser.test.js.
+
 // Allow using the name "mockModuleNotFoundError".
 /* eslint-disable new-cap */
 jest.mock('react')
@@ -16,7 +20,7 @@ afterEach(() => {
   jest.resetModules()
 })
 
-describe('withAuthUser (resetting module)', () => {
+describe('withAuthUser (resetting modules)', () => {
   it('runs without error by default', () => {
     expect.assertions(1)
     const withAuthUser = require('src/withAuthUser').default
