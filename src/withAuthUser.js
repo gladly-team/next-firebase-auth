@@ -1,11 +1,8 @@
 /* globals window */
 import hoistNonReactStatics from 'hoist-non-react-statics'
 
-// TODO: require below
-import { AuthUserContext } from 'src/useAuthUser'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
@@ -64,6 +61,7 @@ const withAuthUser =
     let useCallback
     let useMemo
     let useRouter
+    let AuthUserContext
     try {
       // eslint-disable-next-line global-require
       React = require('react')
@@ -71,6 +69,7 @@ const withAuthUser =
       ;({ useEffect, useCallback, useMemo } = require('react'))
       // eslint-disable-next-line global-require
       ;({ useRouter } = require('next/router'))
+      ;({ AuthUserContext } = require('src/useAuthUser'))
     } catch (e) {
       throw new Error(
         'The dependencies "react" and "next" are required when calling `withAuthUser`.'
