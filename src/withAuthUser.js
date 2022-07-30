@@ -1,14 +1,13 @@
 /* globals window */
 import hoistNonReactStatics from 'hoist-non-react-statics'
 
+import { MODULE_NOT_FOUND } from 'src/constants'
 import createAuthUser from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
-
-const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
 
 /**
  * A higher-order component that provides pages with the

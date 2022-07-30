@@ -12,16 +12,6 @@ jest.mock('src/logDebug')
 
 const MockComponent = () => null
 
-function mockModuleNotFoundError({
-  moduleName,
-  callingModule = 'exampleModule.js',
-}) {
-  this.name = 'ModuleNotFoundError'
-  this.code = 'MODULE_NOT_FOUND'
-  this.message = `Cannot find module '${moduleName}' from '${callingModule}'`
-}
-mockModuleNotFoundError.prototype = Error.prototype
-
 afterEach(() => {
   jest.resetModules()
 })
@@ -39,6 +29,8 @@ describe('withAuthUser (resetting module)', () => {
     expect.assertions(0)
 
     // Fake that the module is not installed.
+    const mockModuleNotFoundError =
+      require('src/testHelpers/mockModuleNotFoundError').default
     jest.mock('react', () => {
       throw new mockModuleNotFoundError({
         moduleName: 'react',
@@ -54,6 +46,8 @@ describe('withAuthUser (resetting module)', () => {
     const expectedErr = new Error(
       'The dependencies "react" and "next" are required when calling `withAuthUser`.'
     )
+    const mockModuleNotFoundError =
+      require('src/testHelpers/mockModuleNotFoundError').default
     jest.mock('react', () => {
       throw new mockModuleNotFoundError({
         moduleName: 'react',
@@ -71,6 +65,8 @@ describe('withAuthUser (resetting module)', () => {
     const expectedErr = new Error(
       'The dependencies "react" and "next" are required when calling `withAuthUser`.'
     )
+    const mockModuleNotFoundError =
+      require('src/testHelpers/mockModuleNotFoundError').default
     jest.mock('next', () => {
       throw new mockModuleNotFoundError({
         moduleName: 'next',
