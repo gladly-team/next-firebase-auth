@@ -78,13 +78,14 @@ const withAuthUserTokenSSR =
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
         if (composedProps.props) {
-          // If composedProps does have a valid props object, we inject AuthUser in there
+          // If there are composed props, add Authuser to the props.
           returnData = { ...composedProps }
           returnData.props.AuthUserSerialized = AuthUserSerialized
         } else if (composedProps.notFound || composedProps.redirect) {
-          // If composedProps returned a 'notFound' or 'redirect' key
-          // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
-          // it means it contains a custom dynamic routing logic that should not be overwritten
+          // If the composed props include a 'notFound' or 'redirect' key,
+          // it means it contains a custom dynamic routing logic that should
+          // not be overwritten:
+          // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
           returnData = { ...composedProps }
         }
       }

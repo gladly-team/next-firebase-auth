@@ -172,8 +172,6 @@ describe('getUserFromCookies: with ID token', () => {
       'MyCookie.AuthUserTokens',
       {
         req: mockReq,
-        // TODO: needed?
-        // res: mockCtx.res
       },
       { keys: ['aaa', 'bbb'], signed: true, secure: false }
     )
@@ -344,8 +342,6 @@ describe('getUserFromCookies: *without* ID token', () => {
       'MyCookie.AuthUser',
       {
         req: mockReq,
-        // TODO: needed?
-        // res: mockCtx.res
       },
       { keys: ['aaa', 'bbb'], signed: true, secure: false }
     )
