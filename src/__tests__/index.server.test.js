@@ -1,12 +1,19 @@
+import { setConfig } from 'src/config'
+import { setDebugEnabled } from 'src/logDebug'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
+import withAuthUser from 'src/withAuthUser'
+import useAuthUser from 'src/useAuthUser'
 import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
 
-jest.mock('src/index')
+jest.mock('src/config')
+jest.mock('src/logDebug')
 jest.mock('src/setAuthCookies')
 jest.mock('src/unsetAuthCookies')
+jest.mock('src/withAuthUser')
+jest.mock('src/useAuthUser')
 jest.mock('src/withAuthUserTokenSSR')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/firebaseAdmin')
@@ -23,6 +30,34 @@ describe('index.server.js: init', () => {
     expect(indexServer.init).toEqual(expect.any(Function))
   })
 
+  it('calls setDebugEnabled with true if config.debug is true', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.init({ debug: true })
+    expect(setDebugEnabled).toHaveBeenCalledWith(true)
+  })
+
+  it('calls setDebugEnabled with false if config.debug is truthy but non-true', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.init({ debug: 'yes' })
+    expect(setDebugEnabled).toHaveBeenCalledWith(false)
+  })
+
+  it('calls setDebugEnabled with false if config.debug is false', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.init({ debug: false })
+    expect(setDebugEnabled).toHaveBeenCalledWith(false)
+  })
+
+  it('calls setConfig with the provided config', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    indexServer.init({ some: 'config' })
+    expect(setConfig).toHaveBeenCalledWith({ some: 'config' })
+  })
+
   // We only initialize the Firebase admin SDK as it's needed. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/70
   it('does not call initFirebaseAdminSDK', () => {
@@ -30,23 +65,6 @@ describe('index.server.js: init', () => {
     const indexServer = require('src/index.server').default
     indexServer.init({ fake: 'config' })
     expect(initFirebaseAdminSDK).not.toHaveBeenCalled()
-  })
-
-  it('calls index.js (client) init', () => {
-    expect.assertions(1)
-    const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    indexServer.init({ fake: 'config' })
-    expect(index.init).toHaveBeenCalledWith({ fake: 'config' })
-  })
-
-  it('returns the value of the index.js (client) init', () => {
-    expect.assertions(1)
-    const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    index.init.mockReturnValueOnce({ some: 'response' })
-    const response = indexServer.init({ fake: 'config' })
-    expect(response).toEqual({ some: 'response' })
   })
 })
 
@@ -58,11 +76,13 @@ describe('index.server.js: withAuthUser', () => {
     expect(indexServer.withAuthUser).toEqual(expect.any(Function))
   })
 
-  it("matches index.js's withAuthUser", () => {
+  it('calls the withAuthUser module', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    expect(indexServer.withAuthUser).toEqual(index.withAuthUser)
+    indexServer.withAuthUser({ appPageURL: '/my-fake-app-page' })
+    expect(withAuthUser).toHaveBeenCalledWith({
+      appPageURL: '/my-fake-app-page',
+    })
   })
 })
 
@@ -74,11 +94,11 @@ describe('index.server.js: useAuthUser', () => {
     expect(indexServer.useAuthUser).toEqual(expect.any(Function))
   })
 
-  it("matches index.js's useAuthUser", () => {
+  it('calls the useAuthUser module', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server').default
-    const index = require('src/index').default
-    expect(indexServer.useAuthUser).toEqual(index.useAuthUser)
+    indexServer.useAuthUser()
+    expect(useAuthUser).toHaveBeenCalled()
   })
 })
 
