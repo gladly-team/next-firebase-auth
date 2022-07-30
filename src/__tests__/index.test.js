@@ -208,3 +208,21 @@ describe('index.js: AuthAction', () => {
     })
   })
 })
+
+describe('index.js: getUserFromCookies', () => {
+  it('exports getUserFromCookies', () => {
+    expect.assertions(2)
+    const index = require('src/index').default
+    expect(index.getFirebaseAdmin).toBeDefined()
+    expect(index.getFirebaseAdmin).toEqual(expect.any(Function))
+  })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.getUserFromCookies()
+    }).toThrow('"getUserFromCookies" can only be called server-side.')
+  })
+})

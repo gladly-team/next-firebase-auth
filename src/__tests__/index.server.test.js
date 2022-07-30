@@ -7,6 +7,7 @@ import useAuthUser from 'src/useAuthUser'
 import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
+import getUserFromCookies from 'src/getUserFromCookies'
 
 jest.mock('src/config')
 jest.mock('src/logDebug')
@@ -17,6 +18,7 @@ jest.mock('src/useAuthUser')
 jest.mock('src/withAuthUserTokenSSR')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/firebaseAdmin')
+jest.mock('src/getUserFromCookies')
 
 afterEach(() => {
   jest.clearAllMocks()
@@ -182,5 +184,20 @@ describe('index.server.js: verifyIdToken', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server').default
     expect(indexServer.verifyIdToken).toEqual(verifyIdToken)
+  })
+})
+
+describe('index.server.js: getUserFromCookies', () => {
+  it('exports getUserFromCookies', () => {
+    expect.assertions(2)
+    const indexServer = require('src/index.server').default
+    expect(indexServer.getUserFromCookies).toBeDefined()
+    expect(indexServer.getUserFromCookies).toEqual(expect.any(Function))
+  })
+
+  it('exports the expected module', () => {
+    expect.assertions(1)
+    const indexServer = require('src/index.server').default
+    expect(indexServer.getUserFromCookies).toEqual(getUserFromCookies)
   })
 })
