@@ -8,6 +8,8 @@ import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 
+const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
+
 /**
  * A higher-order component that provides pages with the
  * AuthUser and, optionally, redirects or renders different
@@ -63,17 +65,20 @@ const withAuthUser =
     let useRouter
     let AuthUserContext
     try {
-      // eslint-disable-next-line global-require
+      /* eslint-disable global-require */
       React = require('react')
-      // eslint-disable-next-line global-require
       ;({ useEffect, useCallback, useMemo } = require('react'))
-      // eslint-disable-next-line global-require
       ;({ useRouter } = require('next/router'))
       ;({ AuthUserContext } = require('src/useAuthUser'))
+      /* eslint-enable global-require */
     } catch (e) {
-      throw new Error(
-        'The dependencies "react" and "next" are required when calling `withAuthUser`.'
-      )
+      if (e.code === MODULE_NOT_FOUND) {
+        throw new Error(
+          'The dependencies "react" and "next" are required when calling `withAuthUser`.'
+        )
+      } else {
+        throw e
+      }
     }
 
     const WithAuthUserHOC = (props) => {
