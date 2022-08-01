@@ -342,6 +342,38 @@ describe('cookies.js: getCookie', () => {
       },
     })
   })
+
+  // This is necessary for the logic used in getUserFromCookies.js.
+  it('works with a barebones request object structure that contains only a headers object', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = {
+      my: ['data', 'here'],
+    }
+    await testApiHandler({
+      handler: async (_, res) => {
+        const { getCookie } = require('src/cookies')
+        const req = {
+          headers: {
+            foo: 'blah',
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
+              JSON.stringify(MOCK_COOKIE_VAL)
+            )};`,
+          },
+        }
+        const cookieVal = getCookie(
+          MOCK_COOKIE_NAME,
+          { req, res },
+          { ...createGetCookieOptions(), keys: undefined, signed: false }
+        )
+        expect(JSON.parse(cookieVal)).toEqual(MOCK_COOKIE_VAL)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch()
+      },
+    })
+  })
 })
 /**
  * END: getCookie tests

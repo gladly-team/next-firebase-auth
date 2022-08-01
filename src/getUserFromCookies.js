@@ -1,5 +1,4 @@
 // TODO:
-// * support authCookie and authCookieSig inputs
 // * manually test in example app
 
 import createAuthUser from 'src/createAuthUser'
@@ -7,7 +6,9 @@ import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
   getAuthUserCookieName,
+  getAuthUserSigCookieName,
   getAuthUserTokensCookieName,
+  getAuthUserTokensSigCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 
@@ -26,24 +27,50 @@ import { getConfig } from 'src/config'
  *   Defaults to true. Read more about the distinction in the docs for
  *   `withAuthUserSSR` here:
  *   https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
- * @param {String} params.authCookie - The value of the `next-firebase-auth`
- *   auth cookie from which to get the user. This is an alternative to
- *   passing the request object.
- * @param {String} params.authCookieSig - The `next-firebase-auth` auth
+ * @param {String} params.authCookieValue - The value of the
+ *   `next-firebase-auth` auth cookie from which to get the user. This is an
+ *   alternative to passing the request object.
+ * @param {String} params.authCookieSigValue - The `next-firebase-auth` auth
  *   cookie signature value, if using signed cookies. This is an alternative
  *   to passing the request object.
  * @return {Object} An AuthUser instance
  */
 const getUserFromCookies = async ({
-  req,
+  req: initialReq,
   includeToken = true,
-  // TODO
-  authCookie, // eslint-disable-line no-unused-vars
-  // TODO
-  authCookieSig, // eslint-disable-line no-unused-vars
+  authCookieValue,
+  authCookieSigValue,
 }) => {
   const { keys, secure, signed } = getConfig().cookies
   let user
+
+  // If cookie values are provided instead of a request object, construct
+  // a replacement "request object" for compatibility with our cookies
+  // library.
+  let req = initialReq
+  if (!initialReq) {
+    if (!authCookieValue) {
+      throw new Error('Either "req" or "authCookieValue" must be provided.')
+    }
+    const cookieName = includeToken
+      ? getAuthUserTokensCookieName()
+      : getAuthUserCookieName()
+    const cookieSigName = includeToken
+      ? getAuthUserTokensSigCookieName()
+      : getAuthUserSigCookieName()
+    const sigCookieStr = authCookieSigValue
+      ? `${cookieSigName}=${authCookieSigValue};`
+      : ''
+    const cookieStr = `${cookieName}=${authCookieValue};${
+      authCookieSigValue ? ` ${sigCookieStr}` : ''
+    }`
+    req = {
+      headers: {
+        cookie: cookieStr,
+      },
+    }
+  }
+
   // Get the user either from:
   // * the ID token, refreshing the token as needed (via a network
   //   request), which will make `AuthUser.getIdToken` resolve to

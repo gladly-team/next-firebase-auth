@@ -8,7 +8,9 @@ import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
   getAuthUserCookieName,
+  getAuthUserSigCookieName,
   getAuthUserTokensCookieName,
+  getAuthUserTokensSigCookieName,
 } from 'src/authCookies'
 
 jest.mock('src/cookies')
@@ -253,6 +255,67 @@ describe('getUserFromCookies: with ID token', () => {
       },
     })
   })
+
+  it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
+    expect.assertions(1)
+    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    getAuthUserTokensSigCookieName.mockReturnValue(
+      'MyCookie.AuthUserTokens.sig'
+    )
+    const authCookieValue = 'thequickbrownfox'
+    const authCookieSigValue = '1q2w3e4r'
+    await getUserFromCookies({
+      authCookieValue,
+      authCookieSigValue,
+      includeToken: true,
+    })
+    const expectedReqObj = {
+      headers: {
+        cookie:
+          'MyCookie.AuthUserTokens=thequickbrownfox; MyCookie.AuthUserTokens.sig=1q2w3e4r;',
+      },
+    }
+    const { req: passedReq } = getCookie.mock.calls[0][1]
+    expect(passedReq).toEqual(expectedReqObj)
+  })
+
+  it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (*not* incl. signed cookie)', async () => {
+    expect.assertions(1)
+    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    getAuthUserTokensSigCookieName.mockReturnValue(
+      'MyCookie.AuthUserTokens.sig'
+    )
+    const authCookieValue = 'thequickbrownfox'
+    const authCookieSigValue = undefined // no signed cookie
+    await getUserFromCookies({
+      authCookieValue,
+      authCookieSigValue,
+      includeToken: true,
+    })
+    const expectedReqObj = {
+      headers: {
+        cookie: 'MyCookie.AuthUserTokens=thequickbrownfox;',
+      },
+    }
+    const { req: passedReq } = getCookie.mock.calls[0][1]
+    expect(passedReq).toEqual(expectedReqObj)
+  })
+
+  it('throws if both `req` and `authCookieValue` are not provided', async () => {
+    expect.assertions(1)
+    await expect(
+      getUserFromCookies({
+        // Not including req or authCookieValue
+        includeToken: true,
+      })
+    ).rejects.toThrow(
+      new Error('Either "req" or "authCookieValue" must be provided.')
+    )
+  })
 })
 /**
  * END: tests with ID token
@@ -467,6 +530,67 @@ describe('getUserFromCookies: *without* ID token', () => {
         })
       },
     })
+  })
+
+  it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
+    expect.assertions(1)
+    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    getAuthUserTokensSigCookieName.mockReturnValue(
+      'MyCookie.AuthUserTokens.sig'
+    )
+    const authCookieValue = 'thequickbrownfox'
+    const authCookieSigValue = '1q2w3e4r'
+    await getUserFromCookies({
+      authCookieValue,
+      authCookieSigValue,
+      includeToken: false,
+    })
+    const expectedReqObj = {
+      headers: {
+        cookie:
+          'MyCookie.AuthUser=thequickbrownfox; MyCookie.AuthUser.sig=1q2w3e4r;',
+      },
+    }
+    const { req: passedReq } = getCookie.mock.calls[0][1]
+    expect(passedReq).toEqual(expectedReqObj)
+  })
+
+  it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (not incl. signed cookie)', async () => {
+    expect.assertions(1)
+    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    getAuthUserTokensSigCookieName.mockReturnValue(
+      'MyCookie.AuthUserTokens.sig'
+    )
+    const authCookieValue = 'thequickbrownfox'
+    const authCookieSigValue = undefined // no signed cookie
+    await getUserFromCookies({
+      authCookieValue,
+      authCookieSigValue,
+      includeToken: false,
+    })
+    const expectedReqObj = {
+      headers: {
+        cookie: 'MyCookie.AuthUser=thequickbrownfox;',
+      },
+    }
+    const { req: passedReq } = getCookie.mock.calls[0][1]
+    expect(passedReq).toEqual(expectedReqObj)
+  })
+
+  it('throws if both `req` and `authCookieValue` are not provided', async () => {
+    expect.assertions(1)
+    await expect(
+      getUserFromCookies({
+        // Not including req or authCookieValue
+        includeToken: false,
+      })
+    ).rejects.toThrow(
+      new Error('Either "req" or "authCookieValue" must be provided.')
+    )
   })
 })
 /**
