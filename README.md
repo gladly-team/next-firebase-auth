@@ -230,6 +230,7 @@ export default withAuthUser()(Demo)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
+- [getUserFromCookies](#getuserfromcookies-options-)
 - [AuthAction](#authaction)
 - [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
 
@@ -383,6 +384,44 @@ This can only be called on the server side.
 #### `verifyIdToken(token) => Promise<AuthUser>`
 
 Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance. This serves a similar purpose as Firebase admin SDK's [verifyIdToken](https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_the_firebase_admin_sdk).
+
+#### `getUserFromCookies({ ...options })`
+
+_Added in v1_
+
+Verifies and returns the [`AuthUser`](#authuser) from auth cookies. This is an alternative to `verifyIdToken`, which verifies the user from an ID token.
+
+In general, we recommend that API endpoints use an ID token rather than cookies to identify the user, which avoids some potential CSRF vulnerabilities. However, this method will be helpful for endpoints must rely exclusively on cookie values to identify the user.
+
+This can only be called on the server side.
+
+The options argument can include:
+
+#### req
+
+`Object` – an `IncomingMessage` / Next.js request object
+
+A request object whose `cookie` header value will be used to verify a user. Either the `req` value or `authCookieValue` are required.
+
+#### includeToken
+
+`Boolean`
+
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withAuthUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
+
+#### authCookieValue
+
+`String`
+
+As an alternative to providing the `req` object, you can directly provide the auth cookie value to use. For example, if your auth cookie is named `MyAuth`, you would provide the value of the cookie `MyAuth.AuthUser` (if `includeToken` is false) or `MyAuth.AuthUserTokens` (if `includeToken` is true).
+
+Either the `req` value or `authCookieValue` are required.
+
+#### authCookieValueSig
+
+`String`
+
+The value of the auth cookie's signature, if using signed cookies. For example, if your auth cookie is named `MyAuth`, you would provide the value of the cookie `MyAuth.AuthUser.sig` (if `includeToken` is false) or `MyAuth.AuthUserTokens.sig` (if `includeToken` is true).
 
 #### `AuthAction`
 

@@ -51,17 +51,18 @@ describe('setAuthCookies', () => {
   it('throws if req.headers.authorization is not set', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    await testApiHandler({
-      handler: async (req, res) => {
-        await expect(setAuthCookies(req, res)).rejects.toThrow(
-          'The request is missing an Authorization header value'
-        )
-        return res.status(200).end()
-      },
-      test: async ({ fetch }) => {
-        await fetch() // no Authorization header
-      },
-    })
+    jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+    await expect(
+      testApiHandler({
+        rejectOnHandlerError: true,
+        handler: async (req, res) => {
+          await setAuthCookies(req, res)
+        },
+        test: async ({ fetch }) => {
+          await fetch() // no Authorization header
+        },
+      })
+    ).rejects.toThrow('The request is missing an Authorization header value')
   })
 
   it('passes the token from req.headers.authorization to Firebase admin', async () => {
