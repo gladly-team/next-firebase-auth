@@ -23,7 +23,7 @@ export const getCookie = (
     )
   }
   if (!req) {
-    throw new Error('The `req` object is required when calling `getCookie`.')
+    throw new Error('The "req" argument is required when calling `getCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
@@ -56,7 +56,7 @@ export const setCookie = (
     )
   }
   if (!res) {
-    throw new Error('The `res` object is required when calling `setCookie`.')
+    throw new Error('The "res" argument is required when calling `setCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })

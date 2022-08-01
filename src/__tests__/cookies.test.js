@@ -306,7 +306,7 @@ describe('cookies.js: getCookie', () => {
             { req: undefined, res },
             { ...createGetCookieOptions() }
           )
-        }).toThrow('The `req` object is required when calling `getCookie`.')
+        }).toThrow('The "req" argument is required when calling `getCookie`.')
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
@@ -1137,7 +1137,7 @@ describe('cookies.js: setCookie', () => {
             { req, res: undefined },
             { ...createSetCookieOptions() }
           )
-        }).toThrow('The `res` object is required when calling `setCookie`.')
+        }).toThrow('The "res" argument is required when calling `setCookie`.')
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
