@@ -6,14 +6,15 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 
-const setAuthCookies = async (req, res) => {
-  if (!(req.headers && req.headers.authorization)) {
-    throw new Error('The request is missing an Authorization header value')
-  }
-
+const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
-  const token = req.headers.authorization
+  const token = userProvidedToken || req.headers.authorization
+  if (!token) {
+    throw new Error(
+      'The request must have an Authorization header value, or you should explicitly provide an ID token to "setAuthCookies".'
+    )
+  }
 
   // Get a custom ID token and refresh token, given a valid
   // Firebase ID token.
