@@ -230,7 +230,7 @@ export default withAuthUser()(Demo)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
-- [getUserFromCookies](#getUserFromCookies-options)
+- [getUserFromCookies](#getuserfromcookies-options-)
 - [AuthAction](#authaction)
 - [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
 
@@ -393,6 +393,8 @@ Verifies and returns the [`AuthUser`](#authuser) from auth cookies. This is an a
 
 In general, we recommend that API endpoints use an ID token rather than cookies to identify the user, which avoids some potential CSRF vulnerabilities. However, this method will be helpful for endpoints must rely exclusively on cookie values to identify the user.
 
+The options argument can include:
+
 #### req
 
 `Object` – an `IncomingMessage` / Next.js request object
@@ -403,7 +405,7 @@ A request object whose `cookie` header value will be used to verify a user. Eith
 
 `Boolean`
 
-Whether or not the returned user should include a Firebase ID token. When true, the behavior follows that of `withAuthUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withAuthUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
 
 #### authCookieValue
 
