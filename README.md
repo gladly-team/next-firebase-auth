@@ -393,6 +393,8 @@ Verifies and returns the [`AuthUser`](#authuser) from auth cookies. This is an a
 
 In general, we recommend that API endpoints use an ID token rather than cookies to identify the user, which avoids some potential CSRF vulnerabilities. However, this method will be helpful for endpoints must rely exclusively on cookie values to identify the user.
 
+This can only be called on the server side.
+
 The options argument can include:
 
 #### req
