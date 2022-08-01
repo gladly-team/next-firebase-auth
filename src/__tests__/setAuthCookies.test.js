@@ -48,7 +48,7 @@ afterEach(() => {
 })
 
 describe('setAuthCookies', () => {
-  it('throws if req.headers.authorization is not set', async () => {
+  it('throws if the Authorization header is not set (and no other token is passed explicitly)', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
     jest.spyOn(console, 'error').mockImplementationOnce(() => {})
@@ -57,15 +57,35 @@ describe('setAuthCookies', () => {
         rejectOnHandlerError: true,
         handler: async (req, res) => {
           await setAuthCookies(req, res)
+          return res.status(200).end()
         },
         test: async ({ fetch }) => {
           await fetch() // no Authorization header
         },
       })
-    ).rejects.toThrow('The request is missing an Authorization header value')
+    ).rejects.toThrow(
+      'The request must have an Authorization header value, or you should explicitly provide an ID token to "setAuthCookies".'
+    )
   })
 
-  it('passes the token from req.headers.authorization to Firebase admin', async () => {
+  it('does not throw if the Authorization header is not set but the token is passed explicitly', async () => {
+    expect.assertions(1)
+    const setAuthCookies = require('src/setAuthCookies').default
+    await expect(
+      testApiHandler({
+        rejectOnHandlerError: true,
+        handler: async (req, res) => {
+          await setAuthCookies(req, res, { token: 'some-token' })
+          return res.status(200).end()
+        },
+        test: async ({ fetch }) => {
+          await fetch() // no Authorization header
+        },
+      })
+    ).resolves.not.toThrow()
+  })
+
+  it('passes the token from the Authorization header to Firebase admin (if no other token is passed explicitly)', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
     await testApiHandler({
@@ -81,6 +101,42 @@ describe('setAuthCookies', () => {
         })
         expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith(
           'some-token-here'
+        )
+      },
+    })
+  })
+
+  it('passes the explicitly-provided token to Firebase admin', async () => {
+    expect.assertions(1)
+    const setAuthCookies = require('src/setAuthCookies').default
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res, { token: 'a-cool-token' })
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch() // no Authorization header
+        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith('a-cool-token')
+      },
+    })
+  })
+
+  it('uses the explicitly-passed token rather than the Authorization header value if both are provided', async () => {
+    expect.assertions(1)
+    const setAuthCookies = require('src/setAuthCookies').default
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res, { token: 'another-token-here' })
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith(
+          'another-token-here'
         )
       },
     })
