@@ -57,7 +57,6 @@ const getUserFromCookies = async ({
       getAuthUserTokensCookieName(),
       {
         req,
-        // res, // TODO: ?
       },
       { keys, secure, signed }
     )
@@ -81,7 +80,6 @@ const getUserFromCookies = async ({
       getAuthUserCookieName(),
       {
         req,
-        // res, // TODO: ?
       },
       { keys, secure, signed }
     )
