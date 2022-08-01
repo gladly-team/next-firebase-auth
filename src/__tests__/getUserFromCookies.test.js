@@ -1,3 +1,4 @@
+import { testApiHandler } from 'next-test-api-route-handler'
 import getUserFromCookies from 'src/getUserFromCookies'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
@@ -61,6 +62,9 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
+/**
+ * START: tests with ID token
+ */
 describe('getUserFromCookies: with ID token', () => {
   it('returns an authenticated user', async () => {
     expect.assertions(1)
@@ -228,8 +232,35 @@ describe('getUserFromCookies: with ID token', () => {
     const mockReq = {}
     await expect(getUserFromCookies({ req: mockReq })).rejects.toEqual(mockErr)
   })
-})
 
+  it('passes the expected request object to getCookie when `req` is provided', async () => {
+    expect.assertions(2)
+    await testApiHandler({
+      handler: async (req, res) => {
+        await getUserFromCookies({ req, includeToken: true })
+        const { req: passedReq } = getCookie.mock.calls[0][1]
+        expect(passedReq).toEqual(req)
+        expect(passedReq.headers.cookie).toEqual('someStuff=foo;')
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+            cookie: `someStuff=foo;`,
+          },
+        })
+      },
+    })
+  })
+})
+/**
+ * END: tests with ID token
+ */
+
+/**
+ * START: tests *without* ID token
+ */
 describe('getUserFromCookies: *without* ID token', () => {
   it('returns an authenticated user', async () => {
     expect.assertions(1)
@@ -416,4 +447,28 @@ describe('getUserFromCookies: *without* ID token', () => {
       getUserFromCookies({ req: mockReq, includeToken: false })
     ).rejects.toEqual(expectedErr)
   })
+
+  it('passes the expected request object to getCookie when `req` is provided', async () => {
+    expect.assertions(2)
+    await testApiHandler({
+      handler: async (req, res) => {
+        await getUserFromCookies({ req, includeToken: false })
+        const { req: passedReq } = getCookie.mock.calls[0][1]
+        expect(passedReq).toEqual(req)
+        expect(passedReq.headers.cookie).toEqual('someStuff=foo;')
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+            cookie: `someStuff=foo;`,
+          },
+        })
+      },
+    })
+  })
 })
+/**
+ * END: tests *without* ID token
+ */
