@@ -1,5 +1,4 @@
 // TODO:
-// * verify response object isn't required for getting cookies
 // * support authCookie and authCookieSig inputs
 // * manually test in example app
 

@@ -66,6 +66,9 @@ const createSetCookieOptions = () => ({
 
 const createDeleteCookieOptions = createSetCookieOptions
 
+/**
+ * START: getCookie tests
+ */
 describe('cookies.js: getCookie', () => {
   it('returns the expected cookie value [unsigned]', async () => {
     expect.assertions(1)
@@ -291,8 +294,62 @@ describe('cookies.js: getCookie', () => {
       },
     })
   })
-})
 
+  it('throws if request object is not provided', async () => {
+    expect.assertions(1)
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        expect(() => {
+          getCookie(
+            'foo',
+            { req: undefined, res },
+            { ...createGetCookieOptions() }
+          )
+        }).toThrow('The `req` object is required when calling `getCookie`.')
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+          },
+        })
+      },
+    })
+  })
+
+  it('does not throw if a response object is not provided', async () => {
+    expect.assertions(1)
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        expect(() => {
+          getCookie(
+            'foo',
+            { req, res: undefined },
+            { ...createGetCookieOptions() }
+          )
+        }).not.toThrow()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+          },
+        })
+      },
+    })
+  })
+})
+/**
+ * END: getCookie tests
+ */
+
+/**
+ * START: setCookie tests
+ */
 describe('cookies.js: setCookie', () => {
   it('sets the expected base64-encoded cookie value', async () => {
     expect.assertions(1)
@@ -1033,8 +1090,68 @@ describe('cookies.js: setCookie', () => {
       },
     })
   })
-})
 
+  it('throws if response object is not provided', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        expect(() => {
+          setCookie(
+            MOCK_COOKIE_NAME,
+            MOCK_COOKIE_VALUE,
+            { req, res: undefined },
+            { ...createSetCookieOptions() }
+          )
+        }).toThrow('The `res` object is required when calling `setCookie`.')
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+          },
+        })
+      },
+    })
+  })
+
+  it('does not throw if a request object is not provided', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VALUE = JSON.stringify({ some: 'data' })
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { setCookie } = require('src/cookies')
+        expect(() => {
+          setCookie(
+            MOCK_COOKIE_NAME,
+            MOCK_COOKIE_VALUE,
+            { req: undefined, res },
+            { ...createSetCookieOptions() }
+          )
+        }).not.toThrow()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            foo: 'blah',
+          },
+        })
+      },
+    })
+  })
+})
+/**
+ * END: setCookie tests
+ */
+
+/**
+ * START: deleteCookie tests
+ */
 describe('cookies.js: deleteCookie', () => {
   it('sets the expected expired date', async () => {
     expect.assertions(1)
@@ -1134,3 +1251,6 @@ describe('cookies.js: deleteCookie', () => {
     })
   })
 })
+/**
+ * END: deleteCookie tests
+ */
