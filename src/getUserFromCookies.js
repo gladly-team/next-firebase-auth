@@ -1,6 +1,3 @@
-// TODO:
-// * manually test in example app
-
 import createAuthUser from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
