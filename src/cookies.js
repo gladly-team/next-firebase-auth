@@ -13,6 +13,7 @@ const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
 
 export const getCookie = (
   name,
+  // The request object is mandatory. The response is optional and unused.
   { req, res },
   { keys, secure, signed } = {}
 ) => {
@@ -20,6 +21,9 @@ export const getCookie = (
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
     )
+  }
+  if (!req) {
+    throw new Error('The "req" argument is required when calling `getCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
@@ -32,6 +36,7 @@ export const getCookie = (
 export const setCookie = (
   name,
   cookieVal,
+  // The response object is mandatory. The request is optional and unused.
   { req, res },
   {
     keys,
@@ -49,6 +54,9 @@ export const setCookie = (
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
     )
+  }
+  if (!res) {
+    throw new Error('The "res" argument is required when calling `setCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
