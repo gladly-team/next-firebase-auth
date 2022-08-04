@@ -19,7 +19,12 @@ const sharedConfig = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx)$/,
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: 'ts-loader',
+      },
+      {
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader',
       },

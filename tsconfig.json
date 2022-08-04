@@ -10,13 +10,14 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "declaration": false, // disable declaration generation until migration is done
+    "outDir": "./build",
     "baseUrl": ".",
     "paths": {
       "src": [
