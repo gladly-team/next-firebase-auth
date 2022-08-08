@@ -48,6 +48,8 @@ Depending on your app's needs, other approaches might work better for you.
    - _Pros:_ It removes this package as a dependency.
    - _Cons:_ You won't have access to the Firebase ID token server side, so you won't be able to access other Firebase services. You'll need to implement the logic for verifying the session and managing the session state.
 
+**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does *not* use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
+
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server side.
 
 > A quick note on what this package does _not_ do:
