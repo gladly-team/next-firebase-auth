@@ -25,7 +25,22 @@ const sharedConfig = {
   externals: [
     // By default, don't bundle anything from node_modules.
     nodeExternals({
-      allowlist: ['cookies', 'hoist-non-react-statics'],
+      allowlist: [
+        'hoist-non-react-statics',
+        // Apparently webpack-node-externals does not whitelist
+        // subdependencies:
+        // https://github.com/liady/webpack-node-externals/issues/72
+        // https://stackoverflow.com/q/45763620/1332513
+        // So we need to whitelist dependencies down the tree for our
+        // bundled dependencies.
+
+        /* Begin: 'cookies' dependencies */
+        'cookies',
+        'depd', // cookies#depd
+        'keygrip', // cookies#keygrip
+        'tsscmp', // cookies#keygrip#tsscmp
+        /* End: 'cookies' dependencies */
+      ],
     }),
     'fetch',
   ],
