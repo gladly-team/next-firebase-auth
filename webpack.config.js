@@ -29,11 +29,7 @@ const sharedConfig = {
       // Using `includeSubdependencies` ensures that dependencies all the way
       // down the tree are included for these modules:
       // https://github.com/kmjennison/datwd
-      allowlist: includeSubdependencies([
-        'hoist-non-react-statics',
-        'cookies',
-        ])
-      ],
+      allowlist: includeSubdependencies(['hoist-non-react-statics', 'cookies']),
     }),
     'fetch',
   ],
