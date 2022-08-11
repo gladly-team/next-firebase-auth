@@ -2,6 +2,7 @@ const path = require('path')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const nodeExternals = require('webpack-node-externals')
 const CopyPlugin = require('copy-webpack-plugin')
+const includeSubdependencies = require('datwd')
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -25,21 +26,13 @@ const sharedConfig = {
   externals: [
     // By default, don't bundle anything from node_modules.
     nodeExternals({
-      allowlist: [
+      // Using `includeSubdependencies` ensures that dependencies all the way
+      // down the tree are included for these modules:
+      // https://github.com/kmjennison/datwd
+      allowlist: includeSubdependencies([
         'hoist-non-react-statics',
-        // Apparently webpack-node-externals does not whitelist
-        // subdependencies:
-        // https://github.com/liady/webpack-node-externals/issues/72
-        // https://stackoverflow.com/q/45763620/1332513
-        // So we need to whitelist dependencies down the tree for our
-        // bundled dependencies.
-
-        /* Begin: 'cookies' dependencies */
         'cookies',
-        'depd', // cookies#depd
-        'keygrip', // cookies#keygrip
-        'tsscmp', // cookies#keygrip#tsscmp
-        /* End: 'cookies' dependencies */
+        ])
       ],
     }),
     'fetch',

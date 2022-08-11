@@ -3339,6 +3339,11 @@ data-urls@^3.0.1:
     whatwg-mimetype "^3.0.0"
     whatwg-url "^11.0.0"
 
+datwd@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/datwd/-/datwd-0.1.0.tgz#c8652eb6c5cad92646006c6243110231b6f9bd01"
+  integrity sha512-F/UcucBDeXy1ESS2L5OJ8tes1mqKVdFvk22wU95bN4C4JflJK069b7MXa9VGXIoRvfqWkMhqYCC55Vsr2u8vSA==
+
 debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
