@@ -5,10 +5,9 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
-import logDebug, { setDebugEnabled } from 'src/logDebug'
+import logDebug from 'src/logDebug'
 
 const setAuthCookies = async (req, res) => {
-  setDebugEnabled(true)
   if (!(req.headers && req.headers.authorization)) {
     throw new Error('The request is missing an Authorization header value')
   }
