@@ -138,6 +138,13 @@ export const unsetAuthCookies: (
   res: NextApiResponse
 ) => Promise<void>
 
+export const getUserFromCookies: (options: {
+  req?: NextApiRequest
+  includeToken?: boolean
+  authCookieValue?: string
+  authCookieSigValue?: string
+}) => Promise<AuthUser>
+
 export const useAuthUser: () => AuthUserContext
 
 export const verifyIdToken: (token: string) => Promise<AuthUser>
