@@ -419,7 +419,7 @@ As an alternative to providing the `req` object, you can directly provide the au
 
 Either the `req` value or `authCookieValue` are required.
 
-#### authCookieValueSig
+#### authCookieSigValue
 
 `String`
 
