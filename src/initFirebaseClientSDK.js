@@ -11,6 +11,11 @@ export default function initFirebaseClientSDK() {
       )
     }
     initializeApp(firebaseClientInitConfig)
+    logDebug('Initialized Firebase JS SDK.')
+  } else {
+    logDebug(
+      'Did not initialize Firebase JS SDK because an app already exists.'
+    )
   }
   // If the user has provided the firebaseAuthEmulatorHost address, set the emulator
   if (firebaseAuthEmulatorHost) {
