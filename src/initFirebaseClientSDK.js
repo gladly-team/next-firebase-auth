@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getConfig } from 'src/config'
+import logDebug from 'src/logDebug'
 
 export default function initFirebaseClientSDK() {
   const { firebaseClientInitConfig, firebaseAuthEmulatorHost } = getConfig()
