@@ -5,9 +5,13 @@ import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 
+// TODO: add tests
+// import logDebug from 'src/logDebug'
+
 // We're not mocking initFirebaseAdminSDK.js, instead just mocking
 // the underyling Firebase admin app.
 jest.mock('firebase-admin')
+jest.mock('src/logDebug')
 
 // stash and restore the system env vars
 let env = null
