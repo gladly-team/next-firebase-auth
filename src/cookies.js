@@ -13,8 +13,21 @@ const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
 
 export const getCookie = (
   name,
-  // The request object is mandatory. The response is optional and unused.
-  { req, res },
+  // The request object is mandatory. The response object is optional.
+  {
+    req,
+    // The "cookies" package still interacts with the response object when
+    // initializing. As a convenience, default to a minimal response object
+    // that avoids unhelpful "cookies" errors when a response object is not
+    // provided.
+    // https://github.com/pillarjs/cookies/blob/master/index.js
+    res = {
+      getHeader: () => [],
+      setHeader: () => ({
+        call: () => {},
+      }),
+    },
+  },
   { keys, secure, signed } = {}
 ) => {
   if (signed && !keys) {

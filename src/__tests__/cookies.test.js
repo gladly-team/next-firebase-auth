@@ -353,7 +353,8 @@ describe('cookies.js: getCookie', () => {
     ).resolves.not.toThrow()
   })
 
-  // This is necessary for the logic used in getUserFromCookies.js.
+  // Users calling the `getUserFromCookies` method don't have to provide a
+  // response object.
   it('works with a barebones request object structure that contains only a headers object', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
@@ -381,6 +382,44 @@ describe('cookies.js: getCookie', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
+      },
+    })
+  })
+
+  // Users calling the `getUserFromCookies` method don't have to provide a
+  // response object. When passing an undefined response object to the
+  // cookies package, and the cookie signature is incorrect, the cookies
+  // package will throw:
+  //   "TypeError: Cannot read property 'getHeader' of undefined"
+  // To avoid this error while still not requiring a response object be
+  // passed to getCookie, we construct a no-op, placeholder response object
+  // in the getCookie method.
+  it('does not throw when not provided with a response object and the cookie signature is incorrect [signed]', async () => {
+    expect.assertions(1)
+    const MOCK_COOKIE_NAME = 'myStuff'
+    const MOCK_COOKIE_VAL = 'abc123'
+    const MOCK_COOKIE_SIG_VAL = 'incorrect-value' // wrong
+
+    await testApiHandler({
+      handler: async (req, res) => {
+        const { getCookie } = require('src/cookies')
+        expect(() => {
+          getCookie(
+            MOCK_COOKIE_NAME,
+            { req, res: undefined },
+            { ...createGetCookieOptions(), keys: ['some-key'], signed: true }
+          )
+        }).not.toThrow()
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch({
+          headers: {
+            cookie: `${MOCK_COOKIE_NAME}=${encodeBase64(
+              MOCK_COOKIE_VAL
+            )}; ${MOCK_COOKIE_NAME}.sig=${MOCK_COOKIE_SIG_VAL};`,
+          },
+        })
       },
     })
   })
