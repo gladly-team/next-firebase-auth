@@ -31,7 +31,9 @@ const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
       token
     ))
   } catch (e) {
-    logDebug(e)
+    logDebug(
+      '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+    )
   }
 
   // Pick a subset of the config.cookies options to

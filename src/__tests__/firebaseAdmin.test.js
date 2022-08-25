@@ -958,7 +958,7 @@ describe('getCustomIdAndRefreshTokens', () => {
 
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toThrow(
-      '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+      'Failed to verify the ID token.'
     )
   })
 

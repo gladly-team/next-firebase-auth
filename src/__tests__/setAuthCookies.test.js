@@ -348,9 +348,7 @@ describe('setAuthCookies', () => {
     expect.assertions(4)
     const setAuthCookies = require('src/setAuthCookies').default
     getCustomIdAndRefreshTokens.mockRejectedValue(
-      new Error(
-        '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
-      )
+      new Error('Failed to verify the ID token.')
     )
     await testApiHandler({
       handler: async (req, res) => {
@@ -368,9 +366,7 @@ describe('setAuthCookies', () => {
           '[setAuthCookies] Attempting to set auth cookies.'
         )
         expect(logDebug).toHaveBeenCalledWith(
-          new Error(
-            '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
-          )
+          '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
         )
         expect(logDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Set auth cookies. The user is not authenticated.'
