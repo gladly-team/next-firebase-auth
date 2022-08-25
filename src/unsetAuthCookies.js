@@ -39,7 +39,7 @@ const unsetAuthCookies = async (req, res) => {
     },
     cookieOptions
   )
-  logDebug('Unset auth cookies.')
+  logDebug('[unsetAuthCookies] Unset auth cookies.')
 }
 
 export default unsetAuthCookies

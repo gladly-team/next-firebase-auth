@@ -127,7 +127,9 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(logDebug).toHaveBeenCalledWith('Unset auth cookies.')
+        expect(logDebug).toHaveBeenCalledWith(
+          '[unsetAuthCookies] Unset auth cookies.'
+        )
       },
     })
   })
