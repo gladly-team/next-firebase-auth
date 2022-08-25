@@ -110,7 +110,9 @@ describe('initFirebaseAdminSDK', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Initialized the Firebase admin SDK.'
+    )
   })
 
   it('does not call logDebug when not initializing a new app', () => {

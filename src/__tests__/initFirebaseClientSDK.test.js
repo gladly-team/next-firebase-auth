@@ -101,7 +101,9 @@ describe('initFirebaseClientSDK', () => {
     expect.assertions(1)
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     initFirebaseClientSDK()
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase JS SDK.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Initialized the Firebase JS SDK.'
+    )
   })
 
   it('calls logDebug when not initializing', () => {
@@ -110,7 +112,7 @@ describe('initFirebaseClientSDK', () => {
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     initFirebaseClientSDK()
     expect(logDebug).toHaveBeenCalledWith(
-      'Did not initialize the Firebase JS SDK because an app already exists.'
+      '[init] Did not initialize the Firebase JS SDK because an app already exists.'
     )
   })
 })

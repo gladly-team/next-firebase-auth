@@ -22,7 +22,7 @@ const initFirebaseAdminSDK = () => {
             ...firebaseAdminInitConfig.credential,
           }),
     })
-    logDebug('Initialized the Firebase admin SDK.')
+    logDebug('[init] Initialized the Firebase admin SDK.')
   }
   return admin
 }
