@@ -270,9 +270,11 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(logDebug).toHaveBeenCalledWith('Attempting to set auth cookies.')
         expect(logDebug).toHaveBeenCalledWith(
-          'Set auth cookies for an authenticated user.'
+          '[setAuthCookies] Attempting to set auth cookies.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Set auth cookies for an authenticated user.'
         )
         expect(logDebug).toHaveBeenCalledTimes(2)
       },
@@ -300,9 +302,11 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(logDebug).toHaveBeenCalledWith('Attempting to set auth cookies.')
         expect(logDebug).toHaveBeenCalledWith(
-          'Set auth cookies. The user is not authenticated.'
+          '[setAuthCookies] Attempting to set auth cookies.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Set auth cookies. The user is not authenticated.'
         )
         expect(logDebug).toHaveBeenCalledTimes(2)
       },
