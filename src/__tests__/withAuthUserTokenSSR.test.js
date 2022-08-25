@@ -512,8 +512,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     expect(props).toEqual({ notFound: true })
   })
 
-  it('does not log any debug logs when not redirecting (getUserFromCookies.js will provide logs)', async () => {
-    expect.assertions(1)
+  it('logs the expected debug logs when not redirecting', async () => {
+    expect.assertions(2)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     const user = createAuthUser({
       token: 'a-user-identity-token-abc',
@@ -525,11 +525,14 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     logDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).not.toHaveBeenCalled()
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs expected debug logs when redirecting to the login URL', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -539,12 +542,17 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     })(mockGetSSPFunc)
     logDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).toHaveBeenCalledWith('Redirecting to login.')
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUserSSR] Redirecting to login.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs expected debug logs when redirecting to the app URL', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
@@ -563,7 +571,12 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     })(mockGetSSPFunc)
     logDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).toHaveBeenCalledWith('Redirecting to app.')
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUserSSR] Redirecting to app.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 })
