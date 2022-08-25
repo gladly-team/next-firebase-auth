@@ -4,6 +4,7 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import { deleteCookie } from 'src/cookies'
+import logDebug from 'src/logDebug'
 
 const unsetAuthCookies = async (req, res) => {
   // Pick a subset of the config.cookies options to
@@ -38,6 +39,7 @@ const unsetAuthCookies = async (req, res) => {
     },
     cookieOptions
   )
+  logDebug('[unsetAuthCookies] Unset auth cookies.')
 }
 
 export default unsetAuthCookies

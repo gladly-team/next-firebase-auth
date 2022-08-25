@@ -16,7 +16,7 @@ import { filterStandardClaims } from 'src/claims'
  *   a serialized AuthUser, previously returned from an AuthUser instance's
  *   serialize method.
  *
- * @return {Object|null} AuthUser - The user object.
+ * @return {Object} AuthUser - The user object.
  * @return {Boolean} AuthUser.clientInitialized - This will be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.

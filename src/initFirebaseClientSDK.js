@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getConfig } from 'src/config'
+import logDebug from 'src/logDebug'
 
 export default function initFirebaseClientSDK() {
   const { firebaseClientInitConfig, firebaseAuthEmulatorHost } = getConfig()
@@ -11,6 +12,11 @@ export default function initFirebaseClientSDK() {
       )
     }
     initializeApp(firebaseClientInitConfig)
+    logDebug('[init] Initialized the Firebase JS SDK.')
+  } else {
+    logDebug(
+      '[init] Did not initialize the Firebase JS SDK because an app already exists.'
+    )
   }
   // If the user has provided the firebaseAuthEmulatorHost address, set the emulator
   if (firebaseAuthEmulatorHost) {

@@ -12,23 +12,19 @@ import {
   getAuthUserTokensCookieName,
   getAuthUserTokensSigCookieName,
 } from 'src/authCookies'
-
-jest.mock('src/cookies')
-jest.mock('src/firebaseAdmin')
-jest.mock('src/authCookies')
-jest.mock('src/isClientSide')
+import logDebug from 'src/logDebug'
 
 /**
  * We intentionally don't mock a few modules whose behavior we want to
  * test:
  * - createAuthUser
  * - src/config
- * - getUserFromCookies
  */
 jest.mock('src/cookies')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/isClientSide')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   // This is always called server-side.
@@ -316,6 +312,110 @@ describe('getUserFromCookies: with ID token', () => {
       new Error('Either "req" or "authCookieValue" must be provided.')
     )
   })
+
+  it('logs expected debug logs for an authenticated user', async () => {
+    expect.assertions(3)
+
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    const expectedUser = createAuthUser({
+      token: 'a-user-identity-token-abc',
+      firebaseUserAdminSDK: mockFirebaseAdminUser,
+    })
+    verifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {}
+
+    logDebug.mockClear()
+    await getUserFromCookies({ req: mockReq })
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
+  })
+
+  it('logs expected debug logs for a user without valid auth cookie values', async () => {
+    expect.assertions(3)
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    const mockFirebaseAdminUser = undefined
+    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    const mockReq = {}
+
+    logDebug.mockClear()
+    await getUserFromCookies({ req: mockReq })
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
+  })
+
+  it('logs expected debug logs for a user whose ID token is not successfully verified', async () => {
+    expect.assertions(3)
+
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const expectedUser = createAuthUser() // unauthenticated user!
+    verifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {}
+
+    logDebug.mockClear()
+    await getUserFromCookies({ req: mockReq })
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
+  })
 })
 /**
  * END: tests with ID token
@@ -591,6 +691,62 @@ describe('getUserFromCookies: *without* ID token', () => {
     ).rejects.toThrow(
       new Error('Either "req" or "authCookieValue" must be provided.')
     )
+  })
+
+  it('logs expected debug logs for an authenticated user', async () => {
+    expect.assertions(3)
+
+    getCookie.mockImplementation((cookieName) => {
+      if (cookieName === 'SomeName.AuthUserTokens') {
+        return JSON.stringify({
+          idToken: 'some-id-token',
+          refreshToken: 'some-refresh-token',
+        })
+      }
+      if (cookieName === 'SomeName.AuthUser') {
+        return createAuthUser({
+          firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
+        }).serialize()
+      }
+      return undefined
+    })
+
+    // Mock the Firebase admin user verification.
+    const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
+    const expectedUser = createAuthUser({
+      token: 'a-user-identity-token-abc',
+      firebaseUserAdminSDK: mockFirebaseAdminUser,
+    })
+    verifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {}
+
+    logDebug.mockClear()
+    await getUserFromCookies({ req: mockReq, includeToken: false })
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Successfully retrieved the user info from cookies.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
+  })
+
+  it('logs expected debug logs for an unauthenticated user', async () => {
+    expect.assertions(3)
+    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    const mockFirebaseAdminUser = undefined
+    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    const mockReq = {}
+
+    logDebug.mockClear()
+    await getUserFromCookies({ req: mockReq, includeToken: false })
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
+    )
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 })
 /**

@@ -5,8 +5,11 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
+import logDebug from 'src/logDebug'
 
 const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
+  logDebug('[setAuthCookies] Attempting to set auth cookies.')
+
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
   const token = userProvidedToken || req.headers.authorization
@@ -82,6 +85,14 @@ const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
     },
     cookieOptions
   )
+
+  if (AuthUser.id) {
+    logDebug('[setAuthCookies] Set auth cookies for an authenticated user.')
+  } else {
+    logDebug(
+      '[setAuthCookies] Set auth cookies. The user is not authenticated.'
+    )
+  }
 
   return {
     idToken,

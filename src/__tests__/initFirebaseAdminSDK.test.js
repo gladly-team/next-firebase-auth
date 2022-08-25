@@ -4,9 +4,11 @@
 import * as admin from 'firebase-admin'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import logDebug from 'src/logDebug'
 
 jest.mock('firebase-admin')
 jest.mock('src/config')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   const mockConfig = createMockConfig({ clientSide: false })
@@ -102,5 +104,22 @@ describe('initFirebaseAdminSDK', () => {
     expect(() => {
       initFirebaseAdminSDK()
     }).not.toThrow()
+  })
+
+  it('calls logDebug when initializing the admin app', () => {
+    expect.assertions(1)
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Initialized the Firebase admin SDK.'
+    )
+  })
+
+  it('does not call logDebug when not initializing a new app', () => {
+    expect.assertions(1)
+    admin.apps = [{ some: 'app' }]
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(logDebug).not.toHaveBeenCalled()
   })
 })

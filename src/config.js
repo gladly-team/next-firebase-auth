@@ -266,7 +266,7 @@ const replacePrivateValues = (unredactedConfig) => {
 
 export const setConfig = (userConfig = {}) => {
   logDebug(
-    'Setting config with provided value:',
+    '[init] Setting config with provided value:',
     replacePrivateValues(userConfig)
   )
 

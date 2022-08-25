@@ -1,6 +1,7 @@
 import getUserFromCookies from 'src/getUserFromCookies'
 import AuthAction from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
+import logDebug from 'src/logDebug'
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -37,12 +38,16 @@ const withAuthUserTokenSSR =
   ) =>
   (getServerSidePropsFunc) =>
   async (ctx) => {
+    logDebug(
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+    )
     const { req } = ctx
     const AuthUser = await getUserFromCookies({ req, includeToken: useToken })
     const AuthUserSerialized = AuthUser.serialize()
 
     // If specified, redirect to the login page if the user is unauthed.
     if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
+      logDebug('[withAuthUserSSR] Redirecting to login.')
       const redirect = getLoginRedirectInfo({
         ctx,
         AuthUser,
@@ -56,6 +61,7 @@ const withAuthUserTokenSSR =
 
     // If specified, redirect to the app page if the user is authed.
     if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
+      logDebug('[withAuthUserSSR] Redirecting to app.')
       const redirect = getAppRedirectInfo({
         ctx,
         AuthUser,

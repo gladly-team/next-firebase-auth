@@ -3,6 +3,7 @@
 
 import * as admin from 'firebase-admin'
 import { getConfig } from 'src/config'
+import logDebug from 'src/logDebug'
 
 const initFirebaseAdminSDK = () => {
   if (!admin.apps.length) {
@@ -21,6 +22,7 @@ const initFirebaseAdminSDK = () => {
             ...firebaseAdminInitConfig.credential,
           }),
     })
+    logDebug('[init] Initialized the Firebase admin SDK.')
   }
   return admin
 }

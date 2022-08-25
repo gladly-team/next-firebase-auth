@@ -286,7 +286,9 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(logDebug).toHaveBeenCalledWith('Redirecting to login.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUser] Redirecting to login.'
+    )
   })
 
   it('redirects to login on the client side when there is no user and a redirecting strategy is set, but only *after* Firebase initializes and the auth cookie request is complete', () => {
@@ -578,7 +580,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         message="How are you?"
       />
     )
-    expect(logDebug).toHaveBeenCalledWith('Redirecting to app.')
+    expect(logDebug).toHaveBeenCalledWith('[withAuthUser] Redirecting to app.')
   })
 
   it('does not redirect to the app on the server side, even when we will redirect to the app on the client side', () => {
@@ -1376,7 +1378,10 @@ describe('withAuthUser: AuthUser context', () => {
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
     render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(logDebug).toHaveBeenCalledWith('AuthUser set to:', expectedAuthUser)
+    expect(logDebug).toHaveBeenCalledWith(
+      '[withAuthUser] Set AuthUser to:',
+      expectedAuthUser
+    )
   })
 
   it('provides the same AuthUser object reference after "authRequestCompleted" changes (that is, it does not cause a re-render)', () => {

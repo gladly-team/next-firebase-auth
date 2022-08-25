@@ -8,11 +8,14 @@ import {
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
+import logDebug from 'src/logDebug'
+import createAuthUser from 'src/createAuthUser'
 
 jest.mock('src/config')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   const mockAuthUser = createMockAuthUser()
@@ -248,6 +251,64 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
+      },
+    })
+  })
+
+  it('logs expected debug logs when the user is authenticated', async () => {
+    expect.assertions(3)
+    const setAuthCookies = require('src/setAuthCookies').default
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        logDebug.mockClear()
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Attempting to set auth cookies.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Set auth cookies for an authenticated user.'
+        )
+        expect(logDebug).toHaveBeenCalledTimes(2)
+      },
+    })
+  })
+
+  it('logs expected debug logs when the user is not authenticated', async () => {
+    expect.assertions(3)
+    const setAuthCookies = require('src/setAuthCookies').default
+
+    getCustomIdAndRefreshTokens.mockResolvedValue({
+      idToken: null,
+      refreshToken: null,
+      AuthUser: createAuthUser(), // unauthenticated
+    })
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        logDebug.mockClear()
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Attempting to set auth cookies.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Set auth cookies. The user is not authenticated.'
+        )
+        expect(logDebug).toHaveBeenCalledTimes(2)
       },
     })
   })

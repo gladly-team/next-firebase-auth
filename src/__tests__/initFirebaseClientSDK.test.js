@@ -2,10 +2,12 @@ import { getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import logDebug from 'src/logDebug'
 
 jest.mock('firebase/app')
 jest.mock('firebase/auth')
 jest.mock('src/config')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   const mockConfig = createMockConfig()
@@ -93,5 +95,24 @@ describe('initFirebaseClientSDK', () => {
 
     initFirebaseClientSDK()
     expect(connectAuthEmulator).not.toHaveBeenCalled()
+  })
+
+  it('calls logDebug when initializing', () => {
+    expect.assertions(1)
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    initFirebaseClientSDK()
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Initialized the Firebase JS SDK.'
+    )
+  })
+
+  it('calls logDebug when not initializing', () => {
+    expect.assertions(1)
+    getApps.mockReturnValue([{ some: 'app' }])
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+    initFirebaseClientSDK()
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Did not initialize the Firebase JS SDK because an app already exists.'
+    )
   })
 })

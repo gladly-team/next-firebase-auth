@@ -54,6 +54,8 @@ const withAuthUser =
     LoaderComponent = null,
   } = {}) =>
   (ChildComponent) => {
+    logDebug('[withAuthUser] Calling "withAuthUser".')
+
     // Some dependencies are optional. Throw if they aren't installed
     // when calling this API.
     // https://github.com/gladly-team/next-firebase-auth/issues/502
@@ -161,7 +163,7 @@ const withAuthUser =
         [router]
       )
       const redirectToApp = useCallback(() => {
-        logDebug('Redirecting to app.')
+        logDebug('[withAuthUser] Redirecting to app.')
         const destination = getAppRedirectInfo({
           AuthUser,
           redirectURL: appPageURL,
@@ -170,7 +172,7 @@ const withAuthUser =
         routeToDestination(destination)
       }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
-        logDebug('Redirecting to login.')
+        logDebug('[withAuthUser] Redirecting to login.')
         const destination = getLoginRedirectInfo({
           AuthUser,
           redirectURL: authPageURL,
@@ -234,7 +236,7 @@ const withAuthUser =
         returnVal = comps
       }
 
-      logDebug('AuthUser set to:', AuthUser)
+      logDebug('[withAuthUser] Set AuthUser to:', AuthUser)
 
       return returnVal
     }
