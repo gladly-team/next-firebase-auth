@@ -142,6 +142,24 @@ describe('verifyIdToken', () => {
     expect(token).toEqual('a-new-token')
   })
 
+  // https://github.com/gladly-team/next-firebase-auth/issues/531
+  it('calls onVerifyTokenError when an auth/argument-error occurs and is not resolvable because there is no refresh token', async () => {
+    expect.assertions(1)
+    const { verifyIdToken } = require('src/firebaseAdmin')
+    const { onVerifyTokenError } = getConfig()
+    // Mock that the original token is expired but a new token works.
+    const expiredTokenErr = new Error(
+      'Firebase ID token has "kid" claim which does not correspond to a known public key. Most likely the ID token is expired, so get a fresh token from your client app and try again.'
+    )
+    expiredTokenErr.code = 'auth/argument-error'
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(async () => {
+      throw expiredTokenErr
+    })
+    await verifyIdToken('some-token')
+    expect(onVerifyTokenError).toHaveBeenCalledWith(expiredTokenErr)
+  })
+
   it('calls the Google token refresh endpoint with the public Firebase API key as a query parameter value', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
@@ -944,6 +962,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     )
   })
 
+  // https://github.com/gladly-team/next-firebase-auth/issues/531
   it('throws if fetching a refresh token fails', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
