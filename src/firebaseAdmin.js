@@ -90,9 +90,6 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
             // Call developer-provided error callback.
             await onTokenRefreshError(refreshErr)
-            logDebug(
-              `Failed to refresh the ID token. Error code: ${refreshErr.code}`
-            )
           }
 
           if (!newTokenFailure) {
@@ -140,15 +137,16 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
         // Call developer-provided error callback.
         await onVerifyTokenError(e)
-        logDebug(
-          `Error in verifyIdToken: ${e.code}. User will be unauthenticated.`
-        )
+        logDebug(errorMessageVerifyFailed(e.code))
     }
   }
   const AuthUser = createAuthUser({
     firebaseUserAdminSDK: firebaseUser,
     token: newToken,
   })
+  if (AuthUser.id) {
+    logDebug(`Successfully verified the ID token.`)
+  }
   return AuthUser
 }
 
@@ -165,7 +163,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
-  logDebug('Getting refresh token from ID token.')
+  logDebug('Getting a refresh token from the ID token.')
 
   const AuthUser = await verifyIdToken(token)
   const admin = getFirebaseAdminApp()
@@ -194,6 +192,7 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   })
   const refreshTokenJSON = await refreshTokenResponse.json()
   if (!refreshTokenResponse.ok) {
+    logDebug('Failed to get a refresh token from the ID token.')
     throw new Error(
       `Problem getting a refresh token: ${JSON.stringify(refreshTokenJSON)}`
     )
