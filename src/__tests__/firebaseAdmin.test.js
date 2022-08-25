@@ -5,11 +5,10 @@ import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
 import logDebug from 'src/logDebug'
+import * as firebaseAdmin from 'firebase-admin'
 
-// FIXME: make init more accurate
-// We're not mocking initFirebaseAdminSDK.js, instead just mocking
-// the underyling Firebase admin app.
 jest.mock('firebase-admin')
+jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/logDebug')
 
 // stash and restore the system env vars
@@ -28,11 +27,13 @@ beforeEach(() => {
     },
   })
   env = { ...process.env }
+  getFirebaseAdminApp.mockImplementation(() => firebaseAdmin)
 })
 
 afterEach(() => {
   process.env = env
   env = null
+  jest.clearAllMocks()
 })
 
 const googleRefreshTokenEndpoint = 'https://securetoken.googleapis.com/v1/token'
@@ -583,7 +584,7 @@ describe('verifyIdToken', () => {
   })
 
   it('logs debugging logs as expected for an authed user', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
@@ -591,13 +592,12 @@ describe('verifyIdToken', () => {
 
     logDebug.mockClear()
     await verifyIdToken('some-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/invalid-user-token', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -613,15 +613,14 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'Error during verifyIdToken: auth/invalid-user-token. User will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/user-token-expired', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -637,15 +636,14 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'Error during verifyIdToken: auth/user-token-expired. User will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/user-disabled', async () => {
-    expect.assertions(3)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     const expiredTokenErr = new Error('Mock error message.')
@@ -661,15 +659,14 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'Error during verifyIdToken: auth/user-disabled. User will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected when the token is successfully refreshed because of a Firebase auth/argument-error error', async () => {
-    expect.assertions(5)
+    expect.assertions(4)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
@@ -700,7 +697,6 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'ID token is expired (error code auth/argument-error). Attempting to refresh the ID token.'
     )
@@ -708,11 +704,11 @@ describe('verifyIdToken', () => {
       'Successfully refreshed the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
-    expect(logDebug).toHaveBeenCalledTimes(4)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs debugging logs as expected when there is an error refreshing the token', async () => {
-    expect.assertions(4)
+    expect.assertions(3)
     const { verifyIdToken } = require('src/firebaseAdmin')
     global.fetch.mockImplementation(async () => ({
       ...createMockFetchResponse(),
@@ -735,18 +731,17 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'ID token is expired (error code auth/id-token-expired). Attempting to refresh the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
       'Failed to refresh the ID token. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
   it("logs debugging logs as expected when Firebase admin's verifyIdToken throws an unhandled error code", async () => {
-    expect.assertions(3)
+    expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     global.fetch.mockImplementation(async (endpoint) => {
       if (endpoint.indexOf(googleRefreshTokenEndpoint) === 0) {
@@ -766,11 +761,10 @@ describe('verifyIdToken', () => {
     })
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'Error during verifyIdToken: auth/some-unexpected-error. User will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(1)
   })
 })
 /* END: verifyIdToken tests */
@@ -945,7 +939,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   })
 
   it('logs debugging logs as expected', async () => {
-    expect.assertions(5)
+    expect.assertions(3)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
@@ -968,16 +962,12 @@ describe('getCustomIdAndRefreshTokens', () => {
     expect(logDebug).toHaveBeenCalledWith(
       'Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
-
-    // FIXME: edit after improving admin mock
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
-    expect(logDebug).toHaveBeenCalledTimes(4)
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs debugging logs as expected when failing to get a refresh token', async () => {
-    expect.assertions(6)
+    expect.assertions(4)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
@@ -1006,15 +996,11 @@ describe('getCustomIdAndRefreshTokens', () => {
     expect(logDebug).toHaveBeenCalledWith(
       'Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
-
-    // FIXME: edit after improving admin mock
-    expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
     expect(logDebug).toHaveBeenCalledWith(
       'Failed to get a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(5)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 })
 /* END: getCustomIdAndRefreshTokens tests */
