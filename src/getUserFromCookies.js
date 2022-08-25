@@ -79,7 +79,7 @@ const getUserFromCookies = async ({
     // Get the user's ID token from a cookie, verify it (refreshing
     // as needed), and return the serialized AuthUser in props.
     logDebug(
-      'getUserFromCookies: Attempting to get user info from cookies via the ID token.'
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     const cookieValStr = getCookie(
       getAuthUserTokensCookieName(),
@@ -93,21 +93,14 @@ const getUserFromCookies = async ({
       : {}
     if (idToken) {
       logDebug(
-        'getUserFromCookies: Successfully retrieved the ID token from cookies.'
+        '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
       )
+
+      // verifyIdToken will provide additional debug logs.
       user = await verifyIdToken(idToken, refreshToken)
-      if (user.id) {
-        logDebug(
-          'getUserFromCookies: Successfully verified the ID token. The user is authenticated.'
-        )
-      } else {
-        logDebug(
-          'getUserFromCookies: Failed to verify the ID token. The user will be unauthenticated.'
-        )
-      }
     } else {
       logDebug(
-        'getUserFromCookies: Failed to retrieve the ID token from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
+        "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
       )
       user = createAuthUser() // unauthenticated AuthUser
     }
@@ -120,7 +113,7 @@ const getUserFromCookies = async ({
     // Get the user's info from a cookie, verify it (refreshing
     // as needed), and return the serialized AuthUser in props.
     logDebug(
-      'getUserFromCookies: Attempting to get user info from cookies (not using the ID token).'
+      '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
     const cookieValStr = getCookie(
       getAuthUserCookieName(),
@@ -131,11 +124,11 @@ const getUserFromCookies = async ({
     )
     if (cookieValStr) {
       logDebug(
-        'getUserFromCookies: Successfully retrieved the user info from cookies.'
+        '[getUserFromCookies] Successfully retrieved the user info from cookies.'
       )
     } else {
       logDebug(
-        'getUserFromCookies: Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
+        '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
       )
     }
     user = createAuthUser({

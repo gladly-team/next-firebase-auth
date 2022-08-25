@@ -314,7 +314,7 @@ describe('getUserFromCookies: with ID token', () => {
   })
 
   it('logs expected debug logs for an authenticated user', async () => {
-    expect.assertions(4)
+    expect.assertions(3)
 
     getCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
@@ -343,15 +343,12 @@ describe('getUserFromCookies: with ID token', () => {
     logDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Attempting to get user info from cookies via the ID token.'
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Successfully retrieved the ID token from cookies.'
+      '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Successfully verified the ID token. The user is authenticated.'
-    )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs expected debug logs for a user without valid auth cookie values', async () => {
@@ -378,16 +375,16 @@ describe('getUserFromCookies: with ID token', () => {
     logDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Attempting to get user info from cookies via the ID token.'
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Failed to retrieve the ID token from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
+      "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
     )
     expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs expected debug logs for a user whose ID token is not successfully verified', async () => {
-    expect.assertions(4)
+    expect.assertions(3)
 
     getCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
@@ -412,15 +409,12 @@ describe('getUserFromCookies: with ID token', () => {
     logDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Attempting to get user info from cookies via the ID token.'
+      '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Successfully retrieved the ID token from cookies.'
+      '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Failed to verify the ID token. The user will be unauthenticated.'
-    )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(logDebug).toHaveBeenCalledTimes(2)
   })
 })
 /**
@@ -729,10 +723,10 @@ describe('getUserFromCookies: *without* ID token', () => {
     logDebug.mockClear()
     await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Attempting to get user info from cookies (not using the ID token).'
+      '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Successfully retrieved the user info from cookies.'
+      '[getUserFromCookies] Successfully retrieved the user info from cookies.'
     )
     expect(logDebug).toHaveBeenCalledTimes(2)
   })
@@ -747,10 +741,10 @@ describe('getUserFromCookies: *without* ID token', () => {
     logDebug.mockClear()
     await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Attempting to get user info from cookies (not using the ID token).'
+      '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'getUserFromCookies: Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
+      '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(2)
   })
