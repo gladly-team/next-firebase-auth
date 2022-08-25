@@ -15,7 +15,7 @@ const getFirebasePublicAPIKey = () => {
 }
 
 const errorMessageVerifyFailed = (errCode) =>
-  `Error during verifyIdToken: ${errCode}. User will be unauthenticated.`
+  `[verifyIdToken] Error verifying the ID token: ${errCode}. The user will be unauthenticated.`
 
 /**
  * Given a refresh token, get a new Firebase ID token. Call this when
@@ -80,7 +80,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
       case 'auth/argument-error':
         if (refreshToken) {
           logDebug(
-            `ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
+            `[verifyIdToken] The ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
           )
           let newTokenFailure = false
           try {
@@ -93,7 +93,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           }
 
           if (!newTokenFailure) {
-            logDebug('Successfully refreshed the ID token.')
+            logDebug('[verifyIdToken] Successfully refreshed the ID token.')
             try {
               firebaseUser = await admin.auth().verifyIdToken(newToken)
             } catch (verifyErr) {
@@ -109,7 +109,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
             newToken = null
             firebaseUser = null
             logDebug(
-              'Failed to refresh the ID token. The user will be unauthenticated.'
+              '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
             )
           }
         } else {
@@ -145,7 +145,9 @@ export const verifyIdToken = async (token, refreshToken = null) => {
     token: newToken,
   })
   if (AuthUser.id) {
-    logDebug(`Successfully verified the ID token.`)
+    logDebug(
+      `[verifyIdToken] Successfully verified the ID token. The user is authenticated.`
+    )
   }
   return AuthUser
 }
@@ -163,13 +165,15 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
-  logDebug('Getting a refresh token from the ID token.')
-
   const AuthUser = await verifyIdToken(token)
   const admin = getFirebaseAdminApp()
 
   // FIXME: ensure a user is authenticated before proceeding. Issue:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
+
+  // Prefixing with "[setAuthCookies]" because that's currently the only
+  // use case for using getCustomIdAndRefreshTokens.
+  logDebug('[setAuthCookies] Getting a refresh token from the ID token.')
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
@@ -192,7 +196,9 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   })
   const refreshTokenJSON = await refreshTokenResponse.json()
   if (!refreshTokenResponse.ok) {
-    logDebug('Failed to get a refresh token from the ID token.')
+    logDebug(
+      '[setAuthCookies] Failed to get a refresh token from the ID token.'
+    )
     throw new Error(
       `Problem getting a refresh token: ${JSON.stringify(refreshTokenJSON)}`
     )

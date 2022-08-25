@@ -592,7 +592,9 @@ describe('verifyIdToken', () => {
 
     logDebug.mockClear()
     await verifyIdToken('some-token')
-    expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
+    )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
 
@@ -614,7 +616,7 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'Error during verifyIdToken: auth/invalid-user-token. User will be unauthenticated.'
+      '[verifyIdToken] Error verifying the ID token: auth/invalid-user-token. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
@@ -637,7 +639,7 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'Error during verifyIdToken: auth/user-token-expired. User will be unauthenticated.'
+      '[verifyIdToken] Error verifying the ID token: auth/user-token-expired. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
@@ -660,7 +662,7 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'Error during verifyIdToken: auth/user-disabled. User will be unauthenticated.'
+      '[verifyIdToken] Error verifying the ID token: auth/user-disabled. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
@@ -698,12 +700,14 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'ID token is expired (error code auth/argument-error). Attempting to refresh the ID token.'
+      '[verifyIdToken] The ID token is expired (error code auth/argument-error). Attempting to refresh the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'Successfully refreshed the ID token.'
+      '[verifyIdToken] Successfully refreshed the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
+    )
     expect(logDebug).toHaveBeenCalledTimes(3)
   })
 
@@ -732,10 +736,10 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'ID token is expired (error code auth/id-token-expired). Attempting to refresh the ID token.'
+      '[verifyIdToken] The ID token is expired (error code auth/id-token-expired). Attempting to refresh the ID token.'
     )
     expect(logDebug).toHaveBeenCalledWith(
-      'Failed to refresh the ID token. The user will be unauthenticated.'
+      '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(2)
   })
@@ -762,7 +766,7 @@ describe('verifyIdToken', () => {
     logDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'Error during verifyIdToken: auth/some-unexpected-error. User will be unauthenticated.'
+      '[verifyIdToken] Error verifying the ID token: auth/some-unexpected-error. The user will be unauthenticated.'
     )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
@@ -960,9 +964,11 @@ describe('getCustomIdAndRefreshTokens', () => {
     logDebug.mockClear()
     await getCustomIdAndRefreshTokens('some-token')
     expect(logDebug).toHaveBeenCalledWith(
-      'Getting a refresh token from the ID token.'
+      '[setAuthCookies] Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
+    expect(logDebug).toHaveBeenCalledWith(
+      '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
+    )
     expect(logDebug).toHaveBeenCalledTimes(2)
   })
 
@@ -994,11 +1000,13 @@ describe('getCustomIdAndRefreshTokens', () => {
       // eslint-disable-next-line no-empty
     } catch (e) {}
     expect(logDebug).toHaveBeenCalledWith(
-      'Getting a refresh token from the ID token.'
+      '[setAuthCookies] Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith('Successfully verified the ID token.')
     expect(logDebug).toHaveBeenCalledWith(
-      'Failed to get a refresh token from the ID token.'
+      '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
+    )
+    expect(logDebug).toHaveBeenCalledWith(
+      '[setAuthCookies] Failed to get a refresh token from the ID token.'
     )
     expect(logDebug).toHaveBeenCalledTimes(3)
   })
