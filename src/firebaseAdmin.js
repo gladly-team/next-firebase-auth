@@ -168,8 +168,11 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   const AuthUser = await verifyIdToken(token)
   const admin = getFirebaseAdminApp()
 
-  // FIXME: ensure a user is authenticated before proceeding. Issue:
+  // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
+  if (!AuthUser.id) {
+    throw new Error('Failed to verify ID token.')
+  }
 
   // Prefixing with "[setAuthCookies]" because that's currently the only
   // use case for using getCustomIdAndRefreshTokens.

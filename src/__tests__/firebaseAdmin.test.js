@@ -918,6 +918,32 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
   })
 
+  it('throws if the ID token is not verifiable (there is no user ID)', async () => {
+    expect.assertions(1)
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Mock the behavior of getting a custom token.
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      json: () =>
+        Promise.resolve({
+          idToken: 'the-id-token',
+          refreshToken: 'the-refresh-token',
+        }),
+    })
+
+    // Mock that the ID token is invalid.
+    const expiredTokenErr = new Error('Mock error message.')
+    expiredTokenErr.code = 'auth/invalid-user-token'
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockImplementation(() => expiredTokenErr)
+
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toThrow(
+      'Failed to verify ID token.'
+    )
+  })
+
   it('throws if fetching a refresh token fails', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
