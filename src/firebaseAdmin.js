@@ -112,21 +112,14 @@ export const verifyIdToken = async (token, refreshToken = null) => {
               '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
             )
           }
-        } else {
-          // TODO: call `onVerifyTokenError` here. Possibly just continue
-          // on to default case rather than breaking.
-          // https://github.com/gladly-team/next-firebase-auth/issues/531
-
-          // Return an unauthenticated user.
-          newToken = null
-          firebaseUser = null
-          logDebug(errorMessageVerifyFailed(e.code))
+          break
         }
-        break
 
-      // Errors we consider unexpected.
+      // Fall through here if there is no refresh token. Without a refresh
+      // token, an expired ID token is not resolvable.
+      // eslint-disable-next-line no-fallthrough
       default:
-        // Return an unauthenticated user for any other error.
+        // Here, any errors are unexpected. Return an unauthenticated user.
         // Rationale: it's not particularly easy for developers to
         // catch errors in `withAuthUserSSR`, so default to returning
         // an unauthed user and give the developer control over
@@ -168,8 +161,11 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   const AuthUser = await verifyIdToken(token)
   const admin = getFirebaseAdminApp()
 
-  // FIXME: ensure a user is authenticated before proceeding. Issue:
+  // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
+  if (!AuthUser.id) {
+    throw new Error('Failed to verify the ID token.')
+  }
 
   // Prefixing with "[setAuthCookies]" because that's currently the only
   // use case for using getCustomIdAndRefreshTokens.

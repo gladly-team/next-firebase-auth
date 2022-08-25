@@ -255,6 +255,37 @@ describe('setAuthCookies', () => {
     })
   })
 
+  it('returns the expected values when getCustomIdAndRefreshTokens throws', async () => {
+    expect.assertions(1)
+    const setAuthCookies = require('src/setAuthCookies').default
+    getCustomIdAndRefreshTokens.mockRejectedValue(
+      new Error(
+        '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+      )
+    )
+    await testApiHandler({
+      handler: async (req, res) => {
+        const response = await setAuthCookies(req, res)
+        expect(JSON.stringify(response)).toEqual(
+          JSON.stringify({
+            idToken: null,
+            refreshToken: null,
+            AuthUser: createAuthUser(), // unauthed user
+          })
+        )
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        logDebug.mockClear()
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+      },
+    })
+  })
+
   it('logs expected debug logs when the user is authenticated', async () => {
     expect.assertions(3)
     const setAuthCookies = require('src/setAuthCookies').default
@@ -309,6 +340,38 @@ describe('setAuthCookies', () => {
           '[setAuthCookies] Set auth cookies. The user is not authenticated.'
         )
         expect(logDebug).toHaveBeenCalledTimes(2)
+      },
+    })
+  })
+
+  it('logs expected debug logs when getCustomIdAndRefreshTokens throws', async () => {
+    expect.assertions(4)
+    const setAuthCookies = require('src/setAuthCookies').default
+    getCustomIdAndRefreshTokens.mockRejectedValue(
+      new Error('Failed to verify the ID token.')
+    )
+    await testApiHandler({
+      handler: async (req, res) => {
+        await setAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        logDebug.mockClear()
+        await fetch({
+          headers: {
+            authorization: 'some-token-here',
+          },
+        })
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Attempting to set auth cookies.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+        )
+        expect(logDebug).toHaveBeenCalledWith(
+          '[setAuthCookies] Set auth cookies. The user is not authenticated.'
+        )
+        expect(logDebug).toHaveBeenCalledTimes(3)
       },
     })
   })

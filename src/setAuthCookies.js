@@ -6,6 +6,7 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
+import createAuthUser from 'src/createAuthUser'
 
 const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
   logDebug('[setAuthCookies] Attempting to set auth cookies.')
@@ -19,11 +20,21 @@ const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
     )
   }
 
-  // Get a custom ID token and refresh token, given a valid
-  // Firebase ID token.
-  const { idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
-    token
-  )
+  // Get a custom ID token and refresh token, given a valid Firebase ID
+  // token. If the token isn't valid, set cookies for an unauthenticated
+  // user.
+  let idToken = null
+  let refreshToken = null
+  let AuthUser = createAuthUser() // default to an unauthed user
+  try {
+    ;({ idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
+      token
+    ))
+  } catch (e) {
+    logDebug(
+      '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+    )
+  }
 
   // Pick a subset of the config.cookies options to
   // pass to setCookie.
