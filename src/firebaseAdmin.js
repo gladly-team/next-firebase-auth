@@ -164,7 +164,9 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
   if (!AuthUser.id) {
-    throw new Error('Failed to verify ID token.')
+    throw new Error(
+      '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+    )
   }
 
   // Prefixing with "[setAuthCookies]" because that's currently the only
