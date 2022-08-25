@@ -23,10 +23,6 @@ const initFirebaseAdminSDK = () => {
           }),
     })
     logDebug('Initialized the Firebase admin SDK.')
-  } else {
-    logDebug(
-      'Did not initialize the Firebase admin SDK because an app already exists.'
-    )
   }
   return admin
 }

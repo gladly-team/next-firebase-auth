@@ -113,13 +113,11 @@ describe('initFirebaseAdminSDK', () => {
     expect(logDebug).toHaveBeenCalledWith('Initialized the Firebase admin SDK.')
   })
 
-  it('call logDebug when not initializing a new app', () => {
+  it('does not call logDebug when not initializing a new app', () => {
     expect.assertions(1)
     admin.apps = [{ some: 'app' }]
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(logDebug).toHaveBeenCalledWith(
-      'Did not initialize the Firebase admin SDK because an app already exists.'
-    )
+    expect(logDebug).not.toHaveBeenCalled()
   })
 })
