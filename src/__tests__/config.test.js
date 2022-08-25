@@ -904,7 +904,7 @@ describe('config: debug logging', () => {
       },
     }
     expect(logDebug).toHaveBeenCalledWith(
-      'Setting config with provided value:',
+      '[init] Setting config with provided value:',
       expectedConfig
     )
   })
@@ -932,7 +932,7 @@ describe('config: debug logging', () => {
       firebaseAdminInitConfig: undefined,
     }
     expect(logDebug).toHaveBeenCalledWith(
-      'Setting config with provided value:',
+      '[init] Setting config with provided value:',
       expectedConfig
     )
   })
@@ -964,7 +964,7 @@ describe('config: debug logging', () => {
       },
     }
     expect(logDebug).toHaveBeenCalledWith(
-      'Setting config with provided value:',
+      '[init] Setting config with provided value:',
       expectedConfig
     )
   })
