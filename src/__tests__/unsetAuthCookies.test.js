@@ -6,10 +6,12 @@ import { deleteCookie } from 'src/cookies'
 import { testApiHandler } from 'next-test-api-route-handler'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import logDebug from 'src/logDebug'
 
 jest.mock('src/config')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
@@ -111,6 +113,21 @@ describe('unsetAuthCookies', () => {
             signed: true,
           }
         )
+      },
+    })
+  })
+
+  it('logs expected debug logs', async () => {
+    expect.assertions(1)
+    const unsetAuthCookies = require('src/unsetAuthCookies').default
+    await testApiHandler({
+      handler: async (req, res) => {
+        unsetAuthCookies(req, res)
+        return res.status(200).end()
+      },
+      test: async ({ fetch }) => {
+        await fetch()
+        expect(logDebug).toHaveBeenCalledWith('Unset auth cookies.')
       },
     })
   })
