@@ -13,6 +13,25 @@ const styles = {
   },
 }
 
+/*
+  For issue:
+  https://github.com/gladly-team/next-firebase-auth/issues/163
+  
+  Manually testing, HMR works in:
+  - 1.0.0-canary.17
+  - 1.0.0-canary.8
+  - 1.0.0-canary.3
+  - 1.0.0-canary.0
+
+  This is with other dependencies:
+    "firebase": "^9.9.1",
+    "firebase-admin": "^11.0.0",
+    "next": "12.2.3",
+    "next-absolute-url": "^1.2.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-firebaseui": "^6.0.0"
+ */
 const Test1 = () => {
   const AuthUser = useAuthUser()
   const [clicks, setClicks] = useState(0)
