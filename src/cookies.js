@@ -30,10 +30,16 @@ export const getCookie = (
   },
   { keys, secure, signed } = {}
 ) => {
-  if (signed && !keys) {
-    throw new Error(
-      'The "keys" value must be provided when using signed cookies.'
-    )
+  if (signed) {
+    const areCookieKeysDefined =
+      keys &&
+      keys.length &&
+      (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+    if (!areCookieKeysDefined) {
+      throw new Error(
+        'The "keys" value must be provided when using signed cookies.'
+      )
+    }
   }
   if (!req) {
     throw new Error('The "req" argument is required when calling `getCookie`.')

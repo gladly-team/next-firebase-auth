@@ -301,6 +301,66 @@ describe('cookies.js: getCookie', () => {
     )
   })
 
+  it('throws if the "signed" option is true but "keys" is an empty array', async () => {
+    expect.assertions(1)
+    jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+    await expect(
+      testApiHandler({
+        rejectOnHandlerError: true,
+        handler: async (req, res) => {
+          const { getCookie } = require('src/cookies')
+          getCookie(
+            'foo',
+            { req, res },
+            { ...createGetCookieOptions(), keys: [], signed: true }
+          )
+          return res.status(200).end()
+        },
+        test: async ({ fetch }) => {
+          await fetch({
+            headers: {
+              foo: 'blah',
+            },
+          })
+        },
+      })
+    ).rejects.toThrow(
+      'The "keys" value must be provided when using signed cookies.'
+    )
+  })
+
+  it('throws if the "signed" option is true but "keys" is an array with only undefined values', async () => {
+    expect.assertions(1)
+    jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+    await expect(
+      testApiHandler({
+        rejectOnHandlerError: true,
+        handler: async (req, res) => {
+          const { getCookie } = require('src/cookies')
+          getCookie(
+            'foo',
+            { req, res },
+            {
+              ...createGetCookieOptions(),
+              keys: [undefined, undefined],
+              signed: true,
+            }
+          )
+          return res.status(200).end()
+        },
+        test: async ({ fetch }) => {
+          await fetch({
+            headers: {
+              foo: 'blah',
+            },
+          })
+        },
+      })
+    ).rejects.toThrow(
+      'The "keys" value must be provided when using signed cookies.'
+    )
+  })
+
   it('throws if request object is not provided', async () => {
     expect.assertions(1)
     jest.spyOn(console, 'error').mockImplementationOnce(() => {})

@@ -87,7 +87,9 @@ describe('config: server side', () => {
     )
   })
 
-  it('throws if the user does not provide cookies.keys but is using signed cookies', () => {
+  it('does not throw if the user does not provide cookies.keys but is using signed cookies', () => {
+    // We rely on a runtime check instead.
+    // https://github.com/gladly-team/next-firebase-auth/issues/444
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -101,12 +103,12 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
-    )
+    }).not.toThrow()
   })
 
-  it('throws if the user provides an empty cookies.keys array but is using signed cookies', () => {
+  it('does not throw if the user provides an empty cookies.keys array but is using signed cookies', () => {
+    // We rely on a runtime check instead.
+    // https://github.com/gladly-team/next-firebase-auth/issues/444
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -120,12 +122,12 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
-    )
+    }).not.toThrow()
   })
 
-  it('throws if the user provides an cookies.keys array with only undefined values but is using signed cookies', () => {
+  it('does not throw if the user provides an cookies.keys array with only undefined values but is using signed cookies', () => {
+    // We rely on a runtime check instead.
+    // https://github.com/gladly-team/next-firebase-auth/issues/444
     expect.assertions(1)
     const { setConfig } = require('src/config')
     const mockConfigDefault = createMockConfig()
@@ -139,9 +141,7 @@ describe('config: server side', () => {
     }
     expect(() => {
       setConfig(mockConfig)
-    }).toThrow(
-      'Invalid next-firebase-auth options: The "cookies.keys" setting must be set if "cookies.signed" is true.'
-    )
+    }).not.toThrow()
   })
 
   it('throws if the user sets a maxAge of greater than two weeks', () => {
