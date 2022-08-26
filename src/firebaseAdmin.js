@@ -17,6 +17,14 @@ const getFirebasePublicAPIKey = () => {
 const errorMessageVerifyFailed = (errCode) =>
   `[verifyIdToken] Error verifying the ID token: ${errCode}. The user will be unauthenticated.`
 
+const throwIfFetchNotDefined = () => {
+  if (typeof fetch === 'undefined') {
+    throw new Error(
+      'A `fetch` global is required when using next-firebase-auth. See documentation on setting up a `fetch` polyfill.'
+    )
+  }
+}
+
 /**
  * Given a refresh token, get a new Firebase ID token. Call this when
  * the Firebase ID token has expired.
@@ -54,6 +62,9 @@ const refreshExpiredIdToken = async (refreshToken) => {
  * @return {Object} An AuthUser instance
  */
 export const verifyIdToken = async (token, refreshToken = null) => {
+  // Ensure `fetch` is defined.
+  throwIfFetchNotDefined()
+
   let firebaseUser
   let newToken = token
   const admin = getFirebaseAdminApp()
@@ -158,6 +169,9 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token) => {
+  // Ensure `fetch` is defined.
+  throwIfFetchNotDefined()
+
   const AuthUser = await verifyIdToken(token)
   const admin = getFirebaseAdminApp()
 

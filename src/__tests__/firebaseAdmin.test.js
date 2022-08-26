@@ -788,6 +788,18 @@ describe('verifyIdToken', () => {
     )
     expect(logDebug).toHaveBeenCalledTimes(1)
   })
+
+  it('throws a helpful error if `fetch` is not defined', async () => {
+    expect.assertions(1)
+    delete global.fetch // no fetch
+    const { verifyIdToken } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    await expect(verifyIdToken('some-token')).rejects.toThrow(
+      'A `fetch` global is required when using next-firebase-auth. See documentation on setting up a `fetch` polyfill.'
+    )
+  })
 })
 /* END: verifyIdToken tests */
 
@@ -1054,6 +1066,22 @@ describe('getCustomIdAndRefreshTokens', () => {
       '[setAuthCookies] Failed to get a refresh token from the ID token.'
     )
     expect(logDebug).toHaveBeenCalledTimes(3)
+  })
+
+  it('throws a helpful error if `fetch` is not defined', async () => {
+    expect.assertions(1)
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    delete global.fetch
+
+    const admin = getFirebaseAdminApp()
+    admin
+      .auth()
+      .verifyIdToken.mockResolvedValue(createMockFirebaseUserAdminSDK())
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toThrow(
+      'A `fetch` global is required when using next-firebase-auth. See documentation on setting up a `fetch` polyfill.'
+    )
   })
 })
 /* END: getCustomIdAndRefreshTokens tests */
