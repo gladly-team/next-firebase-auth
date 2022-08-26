@@ -16,11 +16,16 @@ const styles = {
 /*
   For issue:
   https://github.com/gladly-team/next-firebase-auth/issues/163
-  
+
   Manually testing, HMR works in:
   - 1.0.0-canary.17
+  - 1.0.0-canary.14
+  - 1.0.0-canary.12 <-- release that fixed it
+
+  HMR does NOT work in:
+  - 1.0.0-canary.11
   - 1.0.0-canary.8
-  - 1.0.0-canary.3
+  - 1.0.0-canary.1
   - 1.0.0-canary.0
 
   This is with other dependencies:
@@ -45,7 +50,7 @@ const Test1 = () => {
         <div style={styles.infoTextContainer}>
           <h3>HMR test 1: with NFA</h3>
           <p>This page is wrapped in `withAuthUser`.</p>
-          <p>To test HMR, click the button then edit this paragraph's text.</p>
+          <p>To test HMR, click the button then edit this paragraph's text!</p>
           <p>Clicks: {clicks}</p>
           <button type="button" onClick={onClick}>
             Click me
