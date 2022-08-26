@@ -9,8 +9,6 @@ import unsetAuthCookies from 'src/unsetAuthCookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import getUserFromCookies from 'src/getUserFromCookies'
 
-import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-
 const init = (config) => {
   initCommon(config)
 
@@ -52,8 +50,6 @@ const withAuthUserTokenSSR = (options) => {
   return withAuthUserTokenSSRModule(options, { useToken: true })
 }
 
-const getFirebaseAdmin = () => initFirebaseAdminSDK()
-
 export default {
   init,
   withAuthUser,
@@ -64,6 +60,5 @@ export default {
   unsetAuthCookies,
   verifyIdToken,
   AuthAction,
-  getFirebaseAdmin,
   getUserFromCookies,
 }

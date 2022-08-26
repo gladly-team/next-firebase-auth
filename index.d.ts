@@ -122,6 +122,7 @@ interface FirebaseAdminType extends firebaseAdmin.app.App {
   credential: firebaseAdmin.credential.Credential
 }
 
+// TODO: remove
 export const getFirebaseAdmin: () => FirebaseAdminType
 
 export const setAuthCookies: (

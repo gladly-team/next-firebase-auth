@@ -234,7 +234,7 @@ export default withAuthUser()(Demo)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 - [getUserFromCookies](#getuserfromcookies-options-)
 - [AuthAction](#authaction)
-- [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
+- [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin) -- TODO: remove
 
 ---
 

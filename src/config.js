@@ -38,8 +38,8 @@ const defaultConfig = {
   // Optional string: the URL to navigate to when the user
   // is alredy logged in but on an authentication page.
   appPageURL: undefined,
-  // Optional object: the config passed to the Firebase
-  // Node admin SDK's firebaseAdmin.initializeApp.
+  // Optional object: the config passed to the Firebase admin SDK's
+  // `initializeApp`.
   // Not required if the app is initializing the admin SDK
   // elsewhere.
   firebaseAdminInitConfig: undefined,

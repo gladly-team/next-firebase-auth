@@ -1,4 +1,4 @@
-import getFirebaseAdminApp from 'src/initFirebaseAdminSDK'
+import { getAuth } from 'firebase-admin/auth'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -67,10 +67,10 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
   let firebaseUser
   let newToken = token
-  const admin = getFirebaseAdminApp()
+  const firebaseAdminAuth = getAuth()
   const { onTokenRefreshError, onVerifyTokenError } = getConfig()
   try {
-    firebaseUser = await admin.auth().verifyIdToken(token)
+    firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
   } catch (e) {
     // https://firebase.google.com/docs/reference/node/firebase.auth.Error
     switch (e.code) {
@@ -106,7 +106,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           if (!newTokenFailure) {
             logDebug('[verifyIdToken] Successfully refreshed the ID token.')
             try {
-              firebaseUser = await admin.auth().verifyIdToken(newToken)
+              firebaseUser = await firebaseAdminAuth.verifyIdToken(newToken)
             } catch (verifyErr) {
               await onVerifyTokenError(verifyErr)
               logDebug(errorMessageVerifyFailed(verifyErr.code))
@@ -173,7 +173,7 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   throwIfFetchNotDefined()
 
   const AuthUser = await verifyIdToken(token)
-  const admin = getFirebaseAdminApp()
+  const firebaseAdminAuth = getAuth()
 
   // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
@@ -187,7 +187,7 @@ export const getCustomIdAndRefreshTokens = async (token) => {
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
-  const customToken = await admin.auth().createCustomToken(AuthUser.id)
+  const customToken = await firebaseAdminAuth.createCustomToken(AuthUser.id)
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
