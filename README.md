@@ -234,7 +234,6 @@ export default withAuthUser()(Demo)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
 - [getUserFromCookies](#getuserfromcookies-options-)
 - [AuthAction](#authaction)
-- [getFirebaseAdmin](#getfirebaseadmin--firebaseadmin)
 
 ---
 
@@ -430,45 +429,6 @@ The value of the auth cookie's signature, if using signed cookies. For example, 
 #### `AuthAction`
 
 An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
-
-#### `getFirebaseAdmin() => FirebaseAdmin`
-
-_Added in v0.13.1_
-
-A convenience function that returns the configured Firebase admin module.
-
-This can only be called from the server side. It will throw an error if called from the client side.
-
-For example:
-
-```jsx
-import { getFirebaseAdmin } from 'next-firebase-auth'
-// ...other imports
-
-const Artist = ({ artists }) => {
-  return (
-    <ul>
-      {artists.map((artist) => (
-        <li>{artist.name}</li>
-      ))}
-    </ul>
-  )
-}
-
-export async function getServerSideProps({ params: { id } }) {
-  const db = getFirebaseAdmin().firestore()
-  const doc = await db.collection('artists').get()
-  return {
-    props: {
-      artists: artists.docs.map((a) => {
-        return { ...a.data(), key: a.id }
-      }),
-    },
-  }
-}
-
-export default withAuthUser()(Artist)
-```
 
 ## Config
 
@@ -780,11 +740,9 @@ Others have taken different approaches to deal with escaped newline characters i
 
 ### Using the Firebase Apps
 
-You may want to access the Firebase admin module or Firebase JS SDK.
+To use the Firebase admin package or Firebase JS SDK elsewhere in your app, simply import them as you normally would.
 
-To use the Firebase admin module, you can use [`getFirebaseAdmin`](#getfirebaseadmin--firebaseadmin). (If you prefer, you can instead choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`. [Here's some example code](https://github.com/gladly-team/next-firebase-auth/discussions/61#discussioncomment-323977) with this pattern.)
-
-To use the Firebase JS SDK, simply import Firebase as you normally would. For example:
+For example:
 
 ```jsx
 import { getApp } from 'firebase/app'
@@ -812,6 +770,20 @@ const Artists = () => {
   )
 }
 ```
+
+Or for the admin app:
+
+```js
+import { getAuth } from 'firebase-admin/auth'
+
+const myCode = () => {
+  const auth = getAuth()
+  // ...
+}
+```
+
+
+As a convenience, `next-firebase-auth` initializes the default Firebase admin app and default Firebase JS SDK app if they haven't already been initialized. However, if you prefer, you can choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`.
 
 ### Getting the user in an API route
 

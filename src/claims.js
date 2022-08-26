@@ -1,6 +1,6 @@
 /**
  * List of standard claims in the DecodedIdToken
- * https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken
+ * https://firebase.google.com/docs/reference/admin/node/firebase-admin.auth.decodedidtoken
  */
 export const STANDARD_CLAIMS = [
   'aud',

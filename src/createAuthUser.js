@@ -135,11 +135,11 @@ const createAuthUser = ({
     tokenString = null
   } else if (firebaseUserAdminSDK) {
     /**
-     * firebaseUserAdminSDK is a DecodedIDToken obtained from
-     * admin.auth().verifyIdToken which returns all the user's claims
+     * firebaseUserAdminSDK is a DecodedIDToken obtained from the Firebase
+     * admin app's `verifyIdToken`, which returns all the user's claims:
      * https://firebase.google.com/docs/auth/admin/custom-claims
      * In order for the claims to be consistent, we need to pass the
-     * entire adminSDK object as claims
+     * entire object as claims.
      */
     customClaims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid

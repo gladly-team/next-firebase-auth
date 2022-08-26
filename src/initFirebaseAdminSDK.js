@@ -1,12 +1,18 @@
 // Allow importing firebase-admin as wildcard.
 /* eslint-disable no-import-assign */
 
-import * as admin from 'firebase-admin'
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 
 const initFirebaseAdminSDK = () => {
-  if (!admin.apps.length) {
+  const apps = getApps()
+  if (!apps.length) {
     const { firebaseAdminInitConfig, useFirebaseAdminDefaultCredential } =
       getConfig()
     if (!firebaseAdminInitConfig && !useFirebaseAdminDefaultCredential) {
@@ -14,17 +20,16 @@ const initFirebaseAdminSDK = () => {
         'Missing firebase-admin credentials in next-firebase-auth. Set "firebaseAdminInitConfig", "useFirebaseAdminDefaultCredential", or initialize firebase-admin yourself.'
       )
     }
-    admin.initializeApp({
+    initializeApp({
       ...firebaseAdminInitConfig,
       credential: useFirebaseAdminDefaultCredential
-        ? admin.credential.applicationDefault()
-        : admin.credential.cert({
+        ? applicationDefault()
+        : cert({
             ...firebaseAdminInitConfig.credential,
           }),
     })
     logDebug('[init] Initialized the Firebase admin SDK.')
   }
-  return admin
 }
 
 export default initFirebaseAdminSDK
