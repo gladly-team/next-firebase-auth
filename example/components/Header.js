@@ -6,12 +6,14 @@ const nfaDependencyVersion =
 const nextDependencyVersion = require('../package.json').dependencies.next
 const firebaseDependencyVersion =
   require('../package.json').dependencies.firebase
+const firebaseAdminDependencyVersion =
+  require('../package.json').dependencies['firebase-admin']
 
 const styles = {
   container: {
     display: 'flex',
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     padding: 16,
   },
   versionsContainer: {
@@ -22,40 +24,54 @@ const styles = {
     marginLeft: 16,
     cursor: 'pointer',
   },
+  nfaVersion: {
+    fontWeight: '600',
+  },
+  loginContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
 }
 
 const Header = ({ email, signOut }) => (
   <div style={styles.container}>
     <div style={styles.versionsContainer}>
-      <div>v{nfaDependencyVersion}</div>
-      <div>Next.js v{nextDependencyVersion}</div>
-      <div>Firebase v{firebaseDependencyVersion}</div>
+      <div style={styles.nfaVersion}>Version {nfaDependencyVersion}</div>
+      <div>Next.js {nextDependencyVersion}</div>
+      <div>Firebase {firebaseDependencyVersion}</div>
+      <div>firebase-admin {firebaseAdminDependencyVersion}</div>
     </div>
-    {email ? (
-      <>
-        <p>Signed in as {email}</p>
-        <button
-          type="button"
-          onClick={() => {
-            signOut()
-          }}
-          style={styles.button}
-        >
-          Sign out
-        </button>
-      </>
-    ) : (
-      <>
-        <p>You are not signed in.</p>
-        <Link href="/auth">
-          <a>
-            <button type="button" style={styles.button}>
-              Sign in
+    <div style={styles.loginContainer}>
+      {email ? (
+        <>
+          <p>Signed in as {email}</p>
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                signOut()
+              }}
+              style={styles.button}
+            >
+              Sign out
             </button>
-          </a>
-        </Link>
-      </>
-    )}
+          </div>
+        </>
+      ) : (
+        <>
+          <p>You are not signed in.</p>
+          <div>
+            <Link href="/auth">
+              <a>
+                <button type="button" style={styles.button}>
+                  Sign in
+                </button>
+              </a>
+            </Link>
+          </div>
+        </>
+      )}
+    </div>
   </div>
 )
 
