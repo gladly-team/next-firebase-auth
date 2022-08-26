@@ -1,0 +1,45 @@
+import React, { useCallback, useState } from 'react'
+import { withAuthUser, AuthAction, useAuthUser } from 'next-firebase-auth'
+import Header from '../components/Header'
+import DemoPageLinks from '../components/DemoPageLinks'
+import FullPageLoader from '../components/FullPageLoader'
+
+const styles = {
+  content: {
+    padding: 32,
+  },
+  infoTextContainer: {
+    marginBottom: 32,
+  },
+}
+
+const Test1 = () => {
+  const AuthUser = useAuthUser()
+  const [clicks, setClicks] = useState(0)
+  const onClick = useCallback(() => {
+    setClicks((currentClicks) => currentClicks + 1)
+  }, [])
+  return (
+    <div>
+      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+      <div style={styles.content}>
+        <div style={styles.infoTextContainer}>
+          <h3>HMR test 1: with NFA</h3>
+          <p>This page is wrapped in `withAuthUser`.</p>
+          <p>To test HMR, click the button then edit this paragraph's text.</p>
+          <p>Clicks: {clicks}</p>
+          <button type="button" onClick={onClick}>
+            Click me
+          </button>
+        </div>
+        <DemoPageLinks />
+      </div>
+    </div>
+  )
+}
+
+export default withAuthUser({
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  LoaderComponent: FullPageLoader,
+})(Test1)
