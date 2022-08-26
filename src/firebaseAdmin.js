@@ -1,4 +1,5 @@
 import { getAuth } from 'firebase-admin/auth'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -64,6 +65,8 @@ const refreshExpiredIdToken = async (refreshToken) => {
 export const verifyIdToken = async (token, refreshToken = null) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
+
+  initFirebaseAdminSDK()
 
   let firebaseUser
   let newToken = token
@@ -171,6 +174,8 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 export const getCustomIdAndRefreshTokens = async (token) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
+
+  initFirebaseAdminSDK()
 
   const AuthUser = await verifyIdToken(token)
   const firebaseAdminAuth = getAuth()

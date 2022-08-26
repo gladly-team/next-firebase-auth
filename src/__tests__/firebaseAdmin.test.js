@@ -4,6 +4,7 @@ import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
 import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import logDebug from 'src/logDebug'
 
 jest.mock('firebase-admin/auth')
@@ -40,6 +41,16 @@ const googleCustomTokenEndpoint =
 
 /* BEGIN: verifyIdToken tests */
 describe('verifyIdToken', () => {
+  it('calls initFirebaseAdminSDK', async () => {
+    expect.assertions(1)
+    const { verifyIdToken } = require('src/firebaseAdmin')
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const firebaseAdminAuth = getAuth()
+    firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    await verifyIdToken('some-token')
+    expect(initFirebaseAdminSDK).toHaveBeenCalled()
+  })
+
   it('returns an AuthUser', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
@@ -803,6 +814,25 @@ describe('verifyIdToken', () => {
 
 /* BEGIN: getCustomIdAndRefreshTokens tests */
 describe('getCustomIdAndRefreshTokens', () => {
+  it('calls initFirebaseAdminSDK', async () => {
+    expect.assertions(1)
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      json: () =>
+        Promise.resolve({
+          idToken: 'the-id-token',
+          refreshToken: 'the-refresh-token',
+        }),
+    })
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const firebaseAdminAuth = getAuth()
+    firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
+    await getCustomIdAndRefreshTokens('some-token')
+    expect(initFirebaseAdminSDK).toHaveBeenCalled()
+  })
+
   it("passes the Firebase user's ID (from verifyIdToken) to createCustomToken", async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
