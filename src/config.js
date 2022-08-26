@@ -195,11 +195,6 @@ const validateConfig = (mergedConfig) => {
         'The "cookies.name" setting is required on the server side.'
       )
     }
-    if (mergedConfig.cookies.signed && !areCookieKeysDefined) {
-      errorMessages.push(
-        'The "cookies.keys" setting must be set if "cookies.signed" is true.'
-      )
-    }
 
     // Verify that the AUTH_EMULATOR_HOST_VARIABLE is set if the user has
     // provided the emulator host in the config.
