@@ -397,6 +397,8 @@ In general, we recommend that API endpoints use an ID token rather than cookies 
 
 This can only be called on the server side.
 
+See [this example](#getting-the-user-in-a-standalone-backend-environment) for more information on using this in a standalone backend environment outside of Next.js.
+
 The options argument can include:
 
 #### req
@@ -738,7 +740,7 @@ Here is an example of how the migration might look in your app:
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
 - [Using the Firebase Apps](#using-the-firebase-apps)
-- [Getting the user in a standalone backend environment](#todo)
+- [Getting the user in a standalone backend environment](#getting-the-user-in-a-standalone-backend-environment)
 - [TypeScript](#typescript)
 - [Dynamic Redirects](#dynamic-redirects)
 - [Testing and Mocking with Jest](#testing-and-mocking-with-jest)
@@ -824,7 +826,7 @@ To do so:
    - If `fetch` is not defined in your backend, add a polyfill using `node-fetch`: [documentation here](https://github.com/node-fetch/node-fetch#providing-global-access)
 3. Initialize `next-firebase-auth` as you normally would
    - Ensure your Firebase admin and cookies settings exactly match the settings you're using in Next.js or elsewhere.
-4. All set! Use `verifyIdToken` or `getUserWithCookies` as needed.
+4. All set! Use `verifyIdToken` or `getUserFromCookies` as needed.
 
 
 A small example:
