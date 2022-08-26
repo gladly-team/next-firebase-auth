@@ -397,6 +397,8 @@ In general, we recommend that API endpoints use an ID token rather than cookies 
 
 This can only be called on the server side.
 
+See [this example](#getting-the-user-in-a-standalone-backend-environment) for more information on using this in a standalone backend environment outside of Next.js.
+
 The options argument can include:
 
 #### req
@@ -738,6 +740,7 @@ Here is an example of how the migration might look in your app:
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
 - [Using the Firebase Apps](#using-the-firebase-apps)
+- [Getting the user in a standalone backend environment](#getting-the-user-in-a-standalone-backend-environment)
 - [TypeScript](#typescript)
 - [Dynamic Redirects](#dynamic-redirects)
 - [Testing and Mocking with Jest](#testing-and-mocking-with-jest)
@@ -807,6 +810,55 @@ const Artists = () => {
     </div>
   )
 }
+```
+
+### Getting the user in a standalone backend environment
+
+Your app might need to authenticate the user in another server-side environment that's separate from your Next.js app, such as an API service or another server-side rendered stack. This is straightforward with `next-firebase-auth`.
+
+To do so:
+
+1. Install dependencies
+   - `yarn add next-firebase-auth firebase-admin`
+   - Other peer dependencies are not required
+2. Ensure your environment supports `fetch`
+   - Next.js ships with a global `fetch` polyfill, but your environment might not have it.
+   - If `fetch` is not defined in your backend, add a polyfill using `node-fetch`: [documentation here](https://github.com/node-fetch/node-fetch#providing-global-access)
+3. Initialize `next-firebase-auth` as you normally would
+   - Ensure your Firebase admin and cookies settings exactly match the settings you're using in Next.js or elsewhere.
+4. All set! Use `verifyIdToken` or `getUserFromCookies` as needed.
+
+
+A small example:
+
+```js
+// my-api-module.js
+
+import { init, getUserFromCookies } from 'next-firebase-auth'
+
+// Adding `fetch` to a server environment that doesn't have it:
+// https://github.com/node-fetch/node-fetch#providing-global-access
+import './fetch-polyfill'
+
+
+init({
+  // ... config
+})
+
+const myApiHandler = ({ req }) => {
+  const user = await getUserFromCookies({
+    req,
+    includeToken: true,
+  })
+  // ... other logic
+
+  return {
+    // whatever
+  }
+}
+
+export default myApiHandler
+
 ```
 
 ### TypeScript
