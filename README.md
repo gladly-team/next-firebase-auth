@@ -740,6 +740,7 @@ Here is an example of how the migration might look in your app:
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
 - [Using the Firebase Apps](#using-the-firebase-apps)
+- [Getting the user in an API route](#getting-the-user-in-an-api-route)
 - [Getting the user in a standalone backend environment](#getting-the-user-in-a-standalone-backend-environment)
 - [TypeScript](#typescript)
 - [Dynamic Redirects](#dynamic-redirects)
@@ -811,6 +812,10 @@ const Artists = () => {
   )
 }
 ```
+
+### Getting the user in an API route
+
+You can easily get the user in an API route by using [verifyIdToken](#verifyidtokentoken--promiseauthuser) or [getUserFromCookies](#getuserfromcookies-options-). The demo app has an [example API route](https://github.com/gladly-team/next-firebase-auth/blob/v1.x/example/pages/api/example.js).
 
 ### Getting the user in a standalone backend environment
 
