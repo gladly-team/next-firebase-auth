@@ -1,7 +1,12 @@
 // Allow importing firebase-admin as wildcard.
 /* eslint-disable no-import-assign */
 
-import { cert, getApps, getApp, initializeApp } from 'firebase-admin/app'
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import logDebug from 'src/logDebug'
@@ -50,14 +55,11 @@ describe('initFirebaseAdminSDK', () => {
       useFirebaseAdminDefaultCredential: true,
     })
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
-    const mockApplicationDefault = jest.fn(() => ({
+    applicationDefault.mockReturnValue({
       _mockFirebaseDefaultCred: true,
-    }))
-    getApp.mockReturnValue({
-      applicationDefault: mockApplicationDefault,
     })
     initFirebaseAdminSDK()
-    expect(mockApplicationDefault).toHaveBeenCalled()
+    expect(applicationDefault).toHaveBeenCalled()
     expect(initializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseDefaultCred: true,

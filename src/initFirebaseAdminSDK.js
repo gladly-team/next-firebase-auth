@@ -1,14 +1,18 @@
 // Allow importing firebase-admin as wildcard.
 /* eslint-disable no-import-assign */
 
-import { cert, getApps, getApp, initializeApp } from 'firebase-admin/app'
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 
 const initFirebaseAdminSDK = () => {
   const apps = getApps()
   if (!apps.length) {
-    const app = getApp()
     const { firebaseAdminInitConfig, useFirebaseAdminDefaultCredential } =
       getConfig()
     if (!firebaseAdminInitConfig && !useFirebaseAdminDefaultCredential) {
@@ -19,7 +23,7 @@ const initFirebaseAdminSDK = () => {
     initializeApp({
       ...firebaseAdminInitConfig,
       credential: useFirebaseAdminDefaultCredential
-        ? app.applicationDefault()
+        ? applicationDefault()
         : cert({
             ...firebaseAdminInitConfig.credential,
           }),
