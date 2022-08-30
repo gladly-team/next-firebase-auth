@@ -775,6 +775,12 @@ Or for the admin app:
 
 ```js
 import { getAuth } from 'firebase-admin/auth'
+import { init } from 'next-firebase-auth'
+
+// Make sure NFA is initialized for any API routes, too.
+init({
+  // ... config
+})
 
 const myCode = () => {
   const auth = getAuth()
