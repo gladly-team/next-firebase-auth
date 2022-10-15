@@ -84,7 +84,10 @@ module.exports = {
   settings: {
     // Handle linting for absolute imports.
     'import/resolver': {
-      alias: [['src', './src']],
+      alias: [
+        ['codemod', './codemod'],
+        ['src', './src'],
+      ],
     },
   },
 }
