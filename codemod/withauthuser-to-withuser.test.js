@@ -23,4 +23,20 @@ describe('withauthuser-to-withuser', () => {
     const expected = read('./withauthuser-to-withuser.test/outputA.js')
     expect(actual).toEqual(expected)
   })
+
+  it('modifies the API name when it was already renamed', () => {
+    const actual = transform(
+      {
+        source: read('./withauthuser-to-withuser.test/inputB.js'),
+        path: require.resolve(
+          'codemod/withauthuser-to-withuser.test/outputB.js'
+        ),
+      },
+      { jscodeshift },
+      {}
+    )
+
+    const expected = read('./withauthuser-to-withuser.test/outputB.js')
+    expect(actual).toEqual(expected)
+  })
 })

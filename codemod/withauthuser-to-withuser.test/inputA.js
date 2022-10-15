@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react'
 import { withAuthUser } from 'next-firebase-auth'
 
