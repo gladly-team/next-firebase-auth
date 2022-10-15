@@ -7,36 +7,34 @@ function read(fileName) {
   return readFile(path.join(__dirname, fileName))
 }
 
-describe('withauthuser-to-withuser', () => {
+const transformName = `withauthuser-to-withuser`
+
+describe('withAuthUser -> withUser', () => {
   it('modifies the API name', () => {
     const actual = transform(
       {
-        source: read('./withauthuser-to-withuser.test/inputA.js'),
-        path: require.resolve(
-          'codemod/withauthuser-to-withuser.test/outputA.js'
-        ),
+        source: read(`./${transformName}.fixtures/inputA.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputA.js`),
       },
       { jscodeshift },
       {}
     )
 
-    const expected = read('./withauthuser-to-withuser.test/outputA.js')
+    const expected = read(`./${transformName}.fixtures/outputA.js`)
     expect(actual).toEqual(expected)
   })
 
-  it('modifies the API name when it was already renamed', () => {
+  it('modifies the API name when it is renamed on import', () => {
     const actual = transform(
       {
-        source: read('./withauthuser-to-withuser.test/inputB.js'),
-        path: require.resolve(
-          'codemod/withauthuser-to-withuser.test/outputB.js'
-        ),
+        source: read(`./${transformName}.fixtures/inputA.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputA.js`),
       },
       { jscodeshift },
       {}
     )
 
-    const expected = read('./withauthuser-to-withuser.test/outputB.js')
+    const expected = read(`./${transformName}.fixtures/outputA.js`)
     expect(actual).toEqual(expected)
   })
 })

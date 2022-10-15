@@ -7,24 +7,20 @@ function read(fileName) {
   return readFile(path.join(__dirname, fileName))
 }
 
-describe('withauthuser-to-withuser', () => {
+const transformName = `withauthusertokenssr-to-withusertokenssr`
+
+describe('withAuthUserTokenSSR -> withUserTokenSSR', () => {
   it('modifies the API name', () => {
     const actual = transform(
       {
-        source: read(
-          './withauthusertokenssr-to-withusertokenssr.test/inputA.js'
-        ),
-        path: require.resolve(
-          'codemod/withauthuser-to-withuser.test/outputA.js'
-        ),
+        source: read(`./${transformName}.fixtures/inputA.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputA.js`),
       },
       { jscodeshift },
       {}
     )
 
-    const expected = read(
-      './withauthusertokenssr-to-withusertokenssr.test/outputA.js'
-    )
+    const expected = read(`./${transformName}.fixtures/outputA.js`)
     expect(actual).toEqual(expected)
   })
 })

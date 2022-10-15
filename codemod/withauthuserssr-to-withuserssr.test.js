@@ -1,30 +1,26 @@
 import path from 'path'
 import jscodeshift from 'jscodeshift'
-import transform from 'codemod/withauthusertokenssr-to-withusertokenssr'
+import transform from 'codemod/withauthuserssr-to-withuserssr'
 import readFile from 'codemod/util/readFile'
 
 function read(fileName) {
   return readFile(path.join(__dirname, fileName))
 }
 
-describe('withauthuser-to-withuser', () => {
+const transformName = `withauthuserssr-to-withuserssr`
+
+describe('withAuthUserSSR -> withUserSSR', () => {
   it('modifies the API name', () => {
     const actual = transform(
       {
-        source: read(
-          './withauthusertokenssr-to-withusertokenssr.test/inputA.js'
-        ),
-        path: require.resolve(
-          'codemod/withauthuser-to-withuser.test/outputA.js'
-        ),
+        source: read(`./${transformName}.fixtures/inputA.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputA.js`),
       },
       { jscodeshift },
       {}
     )
 
-    const expected = read(
-      './withauthusertokenssr-to-withusertokenssr.test/outputA.js'
-    )
+    const expected = read(`./${transformName}.fixtures/outputA.js`)
     expect(actual).toEqual(expected)
   })
 })
