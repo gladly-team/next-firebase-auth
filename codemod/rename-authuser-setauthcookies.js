@@ -1,3 +1,5 @@
+import { get } from 'lodash/object'
+
 const funcName = 'setAuthCookies'
 const originalPropertyName = 'AuthUser'
 const newPropertyName = 'user'
@@ -48,16 +50,38 @@ export default function transformer(file, api, options) {
   })
 
   if (importFound) {
-    // Find the object return value of setUserCookies and rename the
-    // "AuthUser" key to "user", retaining variable value of "AuthUser".
+    // Find the object return value of `setUserCookies` and rename the
+    // "AuthUser" key to "user", retaining the variable name of "AuthUser".
     return root
       .find(jscodeshift.CallExpression, { callee: { name: funcName } })
       .forEach((path) => {
-        const varDeclaratorPath = findParentVarDeclaratorPath(path)
-        if (!varDeclaratorPath) {
-          return
+        let varPath
+
+        // Determine if the call uses promise or await syntax.
+        const possiblePromiseFunc = get(
+          path,
+          'parentPath.parentPath.value.arguments[0]'
+        )
+        const hasPromiseFunc = !!(
+          possiblePromiseFunc &&
+          ['FunctionExpression', 'ArrowFunctionExpression'].includes(
+            possiblePromiseFunc.type
+          )
+        )
+        if (hasPromiseFunc) {
+          // Promise syntax
+          const returnValVarName = possiblePromiseFunc.params[0]
+
+          // TODO: find any destructuring from this variable
+          console.log(returnValVarName)
+        } else {
+          // Await syntax
+          const varDeclaratorPath = findParentVarDeclaratorPath(path)
+          if (!varDeclaratorPath) {
+            return
+          }
+          varPath = findResultingVarObjPath(varDeclaratorPath)
         }
-        const varPath = findResultingVarObjPath(varDeclaratorPath)
         if (!varPath || !varPath.value) {
           return
         }

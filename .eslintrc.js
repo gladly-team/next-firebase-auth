@@ -42,6 +42,12 @@ module.exports = {
         'react/jsx-props-no-spreading': 0,
       },
     },
+    {
+      files: ['./codemod/**'],
+      rules: {
+        'import/no-extraneous-dependencies': 0,
+      },
+    },
     // Handle TypeScript separately.
     {
       files: ['**/*.ts', '**/*.tsx'],
