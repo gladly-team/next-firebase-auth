@@ -132,6 +132,7 @@ const createAuthUser = ({
      */
     getIdTokenFunc = async (forceRefresh) =>
       firebaseUserClientSDK.getIdToken(forceRefresh)
+    signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
     /**

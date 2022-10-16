@@ -1,14 +1,13 @@
-[![Build Status](https://img.shields.io/github/workflow/status/gladly-team/next-firebase-auth/Unit%20test,%20log%20code%20coverage,%20and%20build/v1.x)](https://github.com/gladly-team/next-firebase-auth/actions?query=workflow%3A%22Unit+test%2C+log+code+coverage%2C+and+build%22+branch%3Av1.x)
-[![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x/graph/badge.svg)](https://app.codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x)
-[![npm](https://img.shields.io/npm/v/next-firebase-auth/canary)](https://www.npmjs.com/package/next-firebase-auth)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/next-firebase-auth@canary?label=bundle%20size)](https://bundlephobia.com/package/next-firebase-auth@canary)
+[![Build Status](https://img.shields.io/github/workflow/status/gladly-team/next-firebase-auth/Unit%20test,%20log%20code%20coverage,%20and%20build)](https://github.com/gladly-team/next-firebase-auth/actions?query=workflow%3A%22Unit+test%2C+log+code+coverage%2C+and+build%22)
+[![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/main/graph/badge.svg)](https://codecov.io/gh/gladly-team/next-firebase-auth)
+[![npm](https://img.shields.io/npm/v/next-firebase-auth.svg)](https://www.npmjs.com/package/next-firebase-auth)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](./CODE_OF_CONDUCT.md)
 
 # next-firebase-auth
 
 Simple Firebase authentication for all Next.js rendering strategies.
 
-#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Upgrading to Firebase 9](#upgrading-to-firebase-9) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
 
 ## What It Does
 
@@ -28,9 +27,11 @@ We treat the Firebase JS SDK as the source of truth for auth status. When the us
 
 ## Demo
 
-[See a live demo](https://nfa-example-git-v1x-gladly-team.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
+[See a live demo](https://nfa-example.vercel.app/) of the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example).
 
 ## When (Not) to Use this Package
+
+**This package will likely be helpful** if you're using Firebase authentication and expect to use server-side rendering—especially if you need access to Firebase ID tokens on the server side.
 
 Depending on your app's needs, other approaches might work better for you.
 
@@ -43,21 +44,20 @@ Depending on your app's needs, other approaches might work better for you.
 
 1. On the client, set a JavaScript cookie with the Firebase user information once the Firebase JS SDK loads.
    - _Pros:_ You won't need login/logout API endpoints. You can structure the authed user data however you'd like.
-   - _Cons:_ The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server side, so you won't be able to access other Firebase services. (Note that you can set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.)
+   - _Cons:_ The cookie will be unsigned and accessible to other JavaScript, making this approach less secure. You won't always have access to the Firebase ID token server side, so you won't be able to access other Firebase services. You could set the ID token in the cookie, but it will expire after an hour and be invalid for future server-side-rendered pages.
 2. Use [Firebase's session cookies](https://firebase.google.com/docs/auth/admin/manage-cookies).
    - _Pros:_ It removes this package as a dependency.
    - _Cons:_ You won't have access to the Firebase ID token server side, so you won't be able to access other Firebase services. You'll need to implement the logic for verifying the session and managing the session state.
 
-**This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server side.
+**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does *not* use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
 
-> A quick note on what this package does _not_ do:
->
-> - It does not provide authentication UI. Consider [firebaseui-web](https://github.com/firebase/firebaseui-web) or build your own.
-> - It does not extend Firebase functionality beyond providing universal access to the authed user. Use the Firebase admin SDK and Firebase JS SDK for any other needs.
+**What this package does _not_ do:**
+- It does not provide authentication UI. Consider [firebaseui-web](https://github.com/firebase/firebaseui-web) or build your own.
+- It does not extend Firebase functionality beyond providing universal access to the authed user. Use the Firebase admin SDK and Firebase JS SDK for any other needs.
 
 ## Get Started
 
-Install:
+**Install:**
 
 Firebase v8: `yarn add next-firebase-auth` or `npm i next-firebase-auth`
 
@@ -101,7 +101,7 @@ const initAuth = () => {
       },
       databaseURL: 'https://my-example-app.firebaseio.com',
     },
-    // Use application default credentials (takes precedence over fireaseAdminInitConfig if set)
+    // Use application default credentials (takes precedence over firebaseAdminInitConfig if set)
     // useFirebaseAdminDefaultCredential: true,
     firebaseClientInitConfig: {
       apiKey: 'MyExampleAppAPIKey123', // required
@@ -461,6 +461,8 @@ Required unless a custom `tokenChangedHandler` is set, in which case it cannot b
 
 #### onLoginRequestError
 
+_Added in v0.14.0_
+
 `Function` (optional)
 
 A handler called if the login API endpoint returns a non-200 response. If a handler is not defined, this library will throw on any non-200 responses.
@@ -468,6 +470,8 @@ A handler called if the login API endpoint returns a non-200 response. If a hand
 Not used or allowed if a custom `tokenChangedHandler` is set.
 
 #### onLogoutRequestError
+
+_Added in v0.14.0_
 
 `Function` (optional)
 
@@ -543,6 +547,8 @@ For security, the `maxAge` value must be two weeks or less. Note that `maxAge` i
 
 #### onVerifyTokenError
 
+_Added in v0.14.0_
+
 `Function` (optional)
 
 Error handler that will be called if there's an unexpected error while verifying the user's ID token server side. It will receive a [Firebase auth error](https://firebase.google.com/docs/reference/node/firebase.auth.Error).
@@ -550,6 +556,8 @@ Error handler that will be called if there's an unexpected error while verifying
 This library will **not** throw when it cannot verify an ID token. Instead, it will provide an unauthenticated user to the app. It will typically handle common auth-related errors such as `auth/id-token-expired` and `auth/user-disabled` without throwing. See [#366](https://github.com/gladly-team/next-firebase-auth/issues/366) and [#174](https://github.com/gladly-team/next-firebase-auth/issues/174) for additional background.
 
 #### onTokenRefreshError
+
+_Added in v0.14.0_
 
 `Function` (optional)
 
@@ -657,46 +665,6 @@ const redirect = ({ ctx, AuthUser }) => {
 
 The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server side, or undefined if client side.
 
-## Upgrading to Firebase 9
-
-Firebase 9 has a new API surface designed to facilitate tree-shaking (removal of unused code) to make your web app as small and fast as possible.
-
-If you were previously using version 7 of 8 of the SDK you can easily upgrade by following the [official guide](https://firebase.google.com/docs/web/modular-upgrade).
-
-Here is an example of how the migration might look in your app:
-
-```diff
--import firebase from 'firebase/app'
--import 'firebase/firestore'
-+import { getApp } from 'firebase/app'
-+import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
- import { useEffect } from 'react'
-
- const Artists = () => {
-   const [artists, setArtists] = useState(artists)
-
-   useEffect(() => {
--    return firebase.firestore()
--      .collection('artists')
--      .onSnapshot((snap) => {
-+    return onSnapshot(collection(getFirestore(getApp()), 'artists'), (snap) => {
-       if (!snap) {
-         return
-       }
-       setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
-     })
-   }, [])
-
-   return (
-     <div>
-       {artists.map((artist) => (
-         <div>{artist.name}</div>
-       ))}
-     </div>
-   )
- }
-```
-
 ## Examples
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
@@ -746,20 +714,23 @@ To use the Firebase admin module, you can use [`getFirebaseAdmin`](#getfirebasea
 To use the Firebase JS SDK, simply import Firebase as you normally would. For example:
 
 ```jsx
-import { getApp } from 'firebase/app'
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 import { useEffect } from 'react'
 
 const Artists = () => {
   const [artists, setArtists] = useState(artists)
 
   useEffect(() => {
-    return onSnapshot(collection(getFirestore(getApp()), 'artists'), (snap) => {
-      if (!snap) {
-        return
-      }
-      setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
-    })
+    return firebase
+      .firestore()
+      .collection('artists')
+      .onSnapshot((snap) => {
+        if (!snap) {
+          return
+        }
+        setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
+      })
   }, [])
 
   return (

@@ -1,5 +1,4 @@
-import { getApps, initializeApp } from 'firebase/app'
-import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import firebase from 'firebase/app'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 
@@ -11,7 +10,7 @@ beforeEach(() => {
   const mockConfig = createMockConfig()
   setConfig(mockConfig)
 
-  getApps.mockReturnValue([])
+  firebase.apps = []
 })
 
 afterEach(() => {
@@ -23,7 +22,7 @@ describe('initFirebaseClientSDK', () => {
     expect.assertions(1)
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     initFirebaseClientSDK()
-    expect(initializeApp).toHaveBeenCalledWith({
+    expect(firebase.initializeApp).toHaveBeenCalledWith({
       apiKey: 'fakeAPIKey123',
       authDomain: 'my-example-app.firebaseapp.com',
       databaseURL: 'https://my-example-app.firebaseio.com',
@@ -33,10 +32,10 @@ describe('initFirebaseClientSDK', () => {
 
   it('does not call firebase.initializeApp if Firebase already has an initialized app', () => {
     expect.assertions(1)
-    getApps.mockReturnValue([{ some: 'app' }])
+    firebase.apps = [{ some: 'app' }]
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     initFirebaseClientSDK()
-    expect(initializeApp).not.toHaveBeenCalled()
+    expect(firebase.initializeApp).not.toHaveBeenCalled()
   })
 
   it('throws if config.firebaseClientInitConfig is not set and no app is initialized', () => {
@@ -61,7 +60,7 @@ describe('initFirebaseClientSDK', () => {
       ...mockConfig,
       firebaseClientInitConfig: undefined,
     })
-    getApps.mockReturnValue([{ some: 'app' }])
+    firebase.apps = [{ some: 'app' }]
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     expect(() => {
       initFirebaseClientSDK()
@@ -75,23 +74,29 @@ describe('initFirebaseClientSDK', () => {
       ...mockConfig,
       firebaseAuthEmulatorHost: 'localhost:9099',
     })
-    getApps.mockReturnValue([{ some: 'app' }])
-    getAuth.mockReturnValue('mockAuth')
+    firebase.apps = [{ some: 'app' }]
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
 
+    const useEmulator = jest.fn()
+    firebase.auth.mockImplementation(() => ({
+      useEmulator,
+    }))
+
     initFirebaseClientSDK()
-    expect(connectAuthEmulator).toHaveBeenCalledWith(
-      'mockAuth',
-      'http://localhost:9099'
-    )
+    expect(useEmulator).toHaveBeenCalledWith('http://localhost:9099')
   })
 
   it('does not initialize the client-side auth emulator if config.firebaseAuthEmulatorHost is not set', () => {
     expect.assertions(1)
-    getApps.mockReturnValue([{ some: 'app' }])
+    firebase.apps = [{ some: 'app' }]
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
 
+    const useEmulator = jest.fn()
+    firebase.auth.mockImplementation(() => ({
+      useEmulator,
+    }))
+
     initFirebaseClientSDK()
-    expect(connectAuthEmulator).not.toHaveBeenCalled()
+    expect(useEmulator).not.toHaveBeenCalled()
   })
 })

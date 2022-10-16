@@ -100,9 +100,9 @@ interface InitConfig {
     measurementId?: string
   }
   cookies: Cookies.Option &
-    Cookies.SetOption & {
-      name: string
-    }
+  Cookies.SetOption & {
+    name: string
+  }
   debug?: boolean
 }
 
@@ -145,14 +145,14 @@ export const verifyIdToken: (token: string) => Promise<AuthUser>
 export const withAuthUser: <P = unknown>(options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenAuthedBeforeRedirect?:
-    | AuthAction.RENDER
-    | AuthAction.SHOW_LOADER
-    | AuthAction.RETURN_NULL
+  | AuthAction.RENDER
+  | AuthAction.SHOW_LOADER
+  | AuthAction.RETURN_NULL
   whenUnauthedBeforeInit?:
-    | AuthAction.RENDER
-    | AuthAction.REDIRECT_TO_LOGIN
-    | AuthAction.SHOW_LOADER
-    | AuthAction.RETURN_NULL
+  | AuthAction.RENDER
+  | AuthAction.REDIRECT_TO_LOGIN
+  | AuthAction.SHOW_LOADER
+  | AuthAction.RETURN_NULL
   whenUnauthedAfterInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
   appPageURL?: PageURL
   authPageURL?: PageURL
