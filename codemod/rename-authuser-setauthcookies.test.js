@@ -37,9 +37,8 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     expect(actual).toEqual(expected)
   })
 
-  // TODO:
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('works with a promise variable not immediately awaited', () => {
+  // TODO
+  it('works with a promise variable not immediately awaited', () => {
     const actual = transform(
       {
         source: read(`./${transformName}.fixtures/inputC.js`),
@@ -65,9 +64,8 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     expect(actual).toEqual(expected)
   })
 
-  // TODO:
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('works when using promise syntax', () => {
+  // TODO
+  it('works when using promise syntax with an arrow function', () => {
     const actual = transform(
       {
         source: read(`./${transformName}.fixtures/inputE.js`),
@@ -90,6 +88,20 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
       {}
     )
     const expected = read(`./${transformName}.fixtures/outputF.js`)
+    expect(actual).toEqual(expected)
+  })
+
+  // TODO
+  it('works when using promise syntax with a function expression', () => {
+    const actual = transform(
+      {
+        source: read(`./${transformName}.fixtures/inputG.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputG.js`),
+      },
+      { jscodeshift },
+      {}
+    )
+    const expected = read(`./${transformName}.fixtures/outputG.js`)
     expect(actual).toEqual(expected)
   })
 })
