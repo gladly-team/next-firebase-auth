@@ -5,7 +5,7 @@ const handler = async (req, res) => {
   try {
     const prom = setAuthCookies(req, res)
     // eslint-disable-next-line no-unused-vars
-    const { AuthUser: myVar } = await prom
+    const { AuthUser } = await prom
   } catch (e) {
     return res.status(500).json({ error: 'Unexpected error.' })
   }

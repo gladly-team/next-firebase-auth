@@ -4,8 +4,8 @@ import { setAuthCookies } from 'next-firebase-auth'
 const handler = async (req, res) => {
   try {
     // eslint-disable-next-line prettier/prettier
-    const { idToken, refreshToken, user: AuthUser } = await setAuthCookies(req, res)
-    const { email } = AuthUser
+    const { idToken, refreshToken, AuthUser: foo } = await setAuthCookies(req, res)
+    const { email } = foo
   } catch (e) {
     return res.status(500).json({ error: 'Unexpected error.' })
   }
