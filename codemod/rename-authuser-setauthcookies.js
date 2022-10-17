@@ -88,6 +88,9 @@ export default function transformer(file, api, options) {
         const authUserProp = varPath.value.id.properties.find(
           (item) => item.key.name === originalPropertyName
         )
+        if (!authUserProp) {
+          return
+        }
         authUserProp.key.name = newPropertyName
         authUserProp.value.shorthand = true // assign to AuthUser variable
       })

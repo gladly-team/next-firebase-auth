@@ -104,4 +104,17 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     const expected = read(`./${transformName}.fixtures/outputG.js`)
     expect(actual).toEqual(expected)
   })
+
+  it('does not modify or throw an error if variables are assigned from setAuthCookies but they do not include "AuthUser"', () => {
+    const actual = transform(
+      {
+        source: read(`./${transformName}.fixtures/inputH.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputH.js`),
+      },
+      { jscodeshift },
+      {}
+    )
+    const expected = read(`./${transformName}.fixtures/outputH.js`)
+    expect(actual).toEqual(expected)
+  })
 })
