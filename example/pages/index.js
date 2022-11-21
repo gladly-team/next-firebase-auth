@@ -4,6 +4,8 @@ import {
   withAuthUser,
   withAuthUserTokenSSR,
 } from 'next-firebase-auth'
+import { getApp } from 'firebase-admin/app'
+// import { getFirestore } from 'firebase-admin/firestore'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 
@@ -39,6 +41,14 @@ const Demo = () => {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR()()
+// eslint-disable-next-line arrow-body-style
+export const getServerSideProps = withAuthUserTokenSSR()(async () => {
+  const app = getApp()
+  // eslint-disable-next-line no-unused-vars
+  // const firestore = getFirestore()
+  return {
+    props: {},
+  }
+})
 
 export default withAuthUser()(Demo)

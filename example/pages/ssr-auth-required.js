@@ -9,6 +9,8 @@ import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import getAbsoluteURL from '../utils/getAbsoluteURL'
 
+const { getFirestore } = require('firebase-admin/firestore')
+
 const styles = {
   content: {
     padding: 32,
@@ -45,6 +47,8 @@ const Demo = ({ favoriteColor, favoriteAnimal, email }) => {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
+  const firestore = getFirestore()
+
   // Optionally, get other props.
   // You can return anything you'd normally return from
   // `getServerSideProps`, including redirects.
