@@ -89,7 +89,7 @@
   "peerDependencies": {
     "firebase": "^9.0.0",
     "firebase-admin": ">=10.0.0 <12",
-    "next": ">=9.5.0 <13",
+    "next": ">=9.5.0 <14",
     "react": ">=16.8.0 <19",
     "react-dom": ">=16.8.0 <19"
   },
