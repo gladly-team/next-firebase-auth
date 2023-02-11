@@ -348,7 +348,7 @@ describe('getUserFromCookies: with ID token', () => {
     expect(logDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for a user without valid auth cookie values', async () => {
@@ -380,7 +380,7 @@ describe('getUserFromCookies: with ID token', () => {
     expect(logDebug).toHaveBeenCalledWith(
       "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for a user whose ID token is not successfully verified', async () => {
@@ -414,7 +414,7 @@ describe('getUserFromCookies: with ID token', () => {
     expect(logDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 })
 /**
@@ -728,7 +728,7 @@ describe('getUserFromCookies: *without* ID token', () => {
     expect(logDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the user info from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for an unauthenticated user', async () => {
@@ -746,7 +746,7 @@ describe('getUserFromCookies: *without* ID token', () => {
     expect(logDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(logDebug).toHaveBeenCalledTimes(3)
   })
 })
 /**
