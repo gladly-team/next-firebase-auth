@@ -9,6 +9,7 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 
 /**
  * Given a request object or cookie values, verify and return
@@ -41,6 +42,9 @@ const getUserFromCookies = async ({
 }) => {
   const { keys, secure, signed } = getConfig().cookies
   let user
+
+  // Make sure the Firebase Admin SDK is initialized.
+  initFirebaseAdminSDK()
 
   // If cookie values are provided instead of a request object, construct
   // a replacement "request object" for compatibility with our cookies
