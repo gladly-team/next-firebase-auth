@@ -303,7 +303,11 @@ It accepts the following options:
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
 ```jsx
-import { withAuthUser, AuthAction } from 'next-firebase-auth'
+import {
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from 'next-firebase-auth'
 
 const DemoPage = ({ thing }) => <div>The thing is: {thing}</div>
 
