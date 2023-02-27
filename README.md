@@ -335,7 +335,9 @@ export default withAuthUser()(DemoPage)
 
 #### `withAuthUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
-Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: it does not validate an ID token. Instead, it simply uses the `AuthUser` data from a cookie. Consequently:
+Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
+
+This method relies on authed user data from a cookie rather than verify or refresh a Firebase ID token. Consequently:
 
 - It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
 - It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
