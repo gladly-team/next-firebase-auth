@@ -20,29 +20,32 @@ const defaultTokenChangedHandler = async (authUser) => {
     // place we use this logic.
     logDebug('[withAuthUser] Calling the login endpoint.')
     const userToken = await authUser.getIdToken()
-    response = await fetch(loginAPIEndpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: userToken,
-      },
-      credentials: 'include',
-    })
-    if (!response.ok) {
-      const responseJSON = await response.json()
-      logDebug(
-        `[withAuthUser] The call to the login endpoint failed with status ${
-          response.status
-        } and response: ${JSON.stringify(responseJSON)}`
-      )
+    try {
+      response = await fetch(loginAPIEndpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: userToken,
+        },
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        logDebug(
+          `[withAuthUser] The call to the login endpoint failed with status ${
+            response.status
+          } and response: ${JSON.stringify(responseJSON)}`
+        )
 
-      // If the developer provided a handler for login errors,
-      // call it and don't throw.
-      // https://github.com/gladly-team/next-firebase-auth/issues/367
-      const err = new Error(
-        `Received ${
-          response.status
-        } response from login API endpoint: ${JSON.stringify(responseJSON)}`
-      )
+        // If the developer provided a handler for login errors,
+        // call it and don't throw.
+        // https://github.com/gladly-team/next-firebase-auth/issues/367
+        throw new Error(
+          `Received ${
+            response.status
+          } response from login API endpoint: ${JSON.stringify(responseJSON)}`
+        )
+      }
+    } catch (err) {
       if (onLoginRequestError) {
         await onLoginRequestError(err)
       } else {
@@ -52,26 +55,29 @@ const defaultTokenChangedHandler = async (authUser) => {
   } else {
     // If the user is not authed, call logout to unset the cookie.
     logDebug('[withAuthUser] Calling the logout endpoint.')
-    response = await fetch(logoutAPIEndpoint, {
-      method: 'POST',
-      credentials: 'include',
-    })
-    if (!response.ok) {
-      const responseJSON = await response.json()
-      logDebug(
-        `[withAuthUser] The call to the logout endpoint failed with status ${
-          response.status
-        } and response: ${JSON.stringify(responseJSON)}`
-      )
+    try {
+      response = await fetch(logoutAPIEndpoint, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        logDebug(
+          `[withAuthUser] The call to the logout endpoint failed with status ${
+            response.status
+          } and response: ${JSON.stringify(responseJSON)}`
+        )
 
-      // If the developer provided a handler for logout errors,
-      // call it and don't throw.
-      // https://github.com/gladly-team/next-firebase-auth/issues/367
-      const err = new Error(
-        `Received ${
-          response.status
-        } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
-      )
+        // If the developer provided a handler for logout errors,
+        // call it and don't throw.
+        // https://github.com/gladly-team/next-firebase-auth/issues/367
+        throw new Error(
+          `Received ${
+            response.status
+          } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
+        )
+      }
+    } catch (err) {
       if (onLogoutRequestError) {
         await onLogoutRequestError(err)
       } else {
