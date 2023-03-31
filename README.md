@@ -1142,6 +1142,14 @@ describe('UserDisplayName', () => {
 
 _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/discussions) or open your own Q&A discussion describing what you've already tried._
 
+#### Something's not working.
+
+Here are some initial steps you can take to debug problems:
+1. Define `onVerifyTokenError` and `onTokenRefreshError` in your config and check for any error logs.
+2. Set `debug: true` in your config and read through server-side and client-side debug logs for any helpful messages.
+3. Try the [example app](https://github.com/gladly-team/next-firebase-auth/tree/v1.x/example) with your own Firebase credentials.
+4. Read through other troubleshooting tips below!
+
 #### I get the error "[Some setting] should not be available on the client side."
 
 We expect certain sensitive config values to be falsy on the client side (see the [config validation code](https://github.com/gladly-team/next-firebase-auth/blob/main/src/config.js)). This is a precaution to make sure developers aren't accidentally bundling something like their Firebase private key with client JS.
