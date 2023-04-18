@@ -80,7 +80,7 @@ interface InitConfig {
       clientEmail: string
       privateKey: string
     }
-    databaseURL: string
+    databaseURL?: string
   }
   firebaseAuthEmulatorHost?: string
   firebaseClientInitConfig: {
