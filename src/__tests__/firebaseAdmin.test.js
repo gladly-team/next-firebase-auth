@@ -593,6 +593,32 @@ describe('getCustomIdAndRefreshTokens', () => {
     )
   })
 
+  it('changes auth instace if there is a tenant', async () => {
+    expect.assertions(2)
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    const mockTenant = 'test-tenant'
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK({
+      tenant: mockTenant,
+    })
+    const admin = getFirebaseAdminApp()
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin
+      .auth()
+      .tenantManager()
+      .authForTenant(mockTenant)
+      .createCustomToken.mockResolvedValue('my-custom-token')
+
+    await getCustomIdAndRefreshTokens('some-token')
+    expect(admin.auth().createCustomToken).toHaveBeenCalledWith(
+      mockFirebaseUser.uid
+    )
+
+    expect(admin.auth().tenantManager().authForTenant).toHaveBeenCalledWith(
+      mockTenant
+    )
+  })
+
   it('calls the public google endpoint if the firebaseAuthEmulatorHost is not set to get a custom token, including the public Firebase API key as a URL parameter', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')

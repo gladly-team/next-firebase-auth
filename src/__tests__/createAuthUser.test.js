@@ -21,6 +21,7 @@ describe('createAuthUser: basic tests', () => {
       clientInitialized: false,
       email: null,
       emailVerified: false,
+      tenantId: null,
       phoneNumber: null,
       displayName: null,
       photoURL: null,
