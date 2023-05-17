@@ -108,7 +108,7 @@ const initAuth = () => {
       authDomain: 'my-example-app.firebaseapp.com',
       databaseURL: 'https://my-example-app.firebaseio.com',
       projectId: 'my-example-app-id',
-      tenantId: 'example-tenant-id', // Optional, only necessery in multi-tenant configuration
+      // tenantId: 'example-tenant-id', // Optional, only necessary in multi-tenant configuration
     },
     cookies: {
       name: 'ExampleApp', // required
