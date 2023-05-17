@@ -161,7 +161,7 @@ const createAuthUser = ({
     phoneNumber = deserializedUser.phoneNumber
     displayName = deserializedUser.displayName
     photoURL = deserializedUser.photoURL
-    tenantId = deserializedUser.tenant
+    tenantId = deserializedUser.tenantId
     getIdTokenFunc = async () => deserializedUser._token || null
     tokenString = deserializedUser._token
   }
