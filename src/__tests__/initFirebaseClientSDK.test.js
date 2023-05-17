@@ -99,4 +99,35 @@ describe('initFirebaseClientSDK', () => {
     initFirebaseClientSDK()
     expect(useEmulator).not.toHaveBeenCalled()
   })
+
+  it('sets the tenantId if config.firebaseClientInitConfig.tenantId is set', () => {
+    expect.assertions(1)
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        tenantId: 'my-tenant-id',
+      },
+    })
+    firebase.apps = []
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+
+    // Mocking the getter and setter for firebase.auth().tenantId
+    const mockAuth = {
+      mockTenantId: 'test',
+      get tenantId() {
+        return this.mockTenantId
+      },
+      set tenantId(value) {
+        this.mockTenantId = value
+      },
+    }
+
+    // Mocking the firebase.auth() function
+    jest.spyOn(firebase, 'auth').mockReturnValue(mockAuth)
+
+    initFirebaseClientSDK()
+    expect(firebase.auth().tenantId).toEqual('my-tenant-id')
+  })
 })

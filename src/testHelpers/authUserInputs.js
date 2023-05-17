@@ -1,4 +1,4 @@
-export const createMockFirebaseUserClientSDK = () => ({
+export const createMockFirebaseUserClientSDK = ({ tenantId } = {}) => ({
   uid: 'abc-123',
   email: 'abc@example.com',
   emailVerified: true,
@@ -7,6 +7,7 @@ export const createMockFirebaseUserClientSDK = () => ({
   photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
   getIdToken: async () => 'my-id-token-abc-123',
   claims: {},
+  tenantId,
   // ... other properties
 })
 
@@ -42,7 +43,7 @@ export const createMockIdTokenResult = ({ claims = {} } = {}) => ({
   token: 'my-id-token-ghb-231',
 })
 
-export const createMockSerializedAuthUser = ({ claims = {} } = {}) =>
+export const createMockSerializedAuthUser = ({ claims = {}, tenantId } = {}) =>
   JSON.stringify({
     id: 'ghi-789',
     claims,
@@ -53,4 +54,5 @@ export const createMockSerializedAuthUser = ({ claims = {} } = {}) =>
     photoURL: 'https://ghi.googleusercontent.com/jkl/profile_photo.png',
     clientInitialized: false,
     _token: 'my-id-token-ghi-789',
+    tenantId,
   })

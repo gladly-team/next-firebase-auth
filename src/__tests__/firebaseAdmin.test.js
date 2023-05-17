@@ -593,7 +593,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     )
   })
 
-  it('changes auth instace if there is a tenant', async () => {
+  it('changes auth instance if there is a tenant', async () => {
     expect.assertions(2)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
