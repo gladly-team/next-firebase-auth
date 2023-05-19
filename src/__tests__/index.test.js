@@ -177,24 +177,6 @@ describe('index.js: verifyIdToken', () => {
   })
 })
 
-describe('index.js: getFirebaseAdmin', () => {
-  it('exports getFirebaseAdmin', () => {
-    expect.assertions(2)
-    const index = require('src/index').default
-    expect(index.getFirebaseAdmin).toBeDefined()
-    expect(index.getFirebaseAdmin).toEqual(expect.any(Function))
-  })
-
-  it('throws if called on the client side', () => {
-    expect.assertions(1)
-    isClientSide.mockReturnValue(true)
-    const index = require('src/index').default
-    expect(() => {
-      index.getFirebaseAdmin()
-    }).toThrow('"getFirebaseAdmin" can only be called server-side.')
-  })
-})
-
 describe('index.js: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
@@ -206,5 +188,23 @@ describe('index.js: AuthAction', () => {
       REDIRECT_TO_LOGIN: 'redirectToLogin',
       REDIRECT_TO_APP: 'redirectToApp',
     })
+  })
+})
+
+describe('index.js: getUserFromCookies', () => {
+  it('exports getUserFromCookies', () => {
+    expect.assertions(2)
+    const index = require('src/index').default
+    expect(index.getUserFromCookies).toBeDefined()
+    expect(index.getUserFromCookies).toEqual(expect.any(Function))
+  })
+
+  it('throws if called on the client side', () => {
+    expect.assertions(1)
+    isClientSide.mockReturnValue(true)
+    const index = require('src/index').default
+    expect(() => {
+      index.getUserFromCookies()
+    }).toThrow('"getUserFromCookies" can only be called server-side.')
   })
 })

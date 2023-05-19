@@ -1,4 +1,4 @@
-import firebase from 'firebase/app'
+import { signOut } from 'firebase/auth'
 import {
   createMockFirebaseUserClientSDK,
   createMockFirebaseUserAdminSDK,
@@ -223,7 +223,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
     await AuthUser.signOut()
-    expect(firebase.auth().signOut).toHaveBeenCalled()
+    expect(signOut).toHaveBeenCalled()
   })
 
   it("does not call Firebase's signOut method when we call AuthUser.signOut and the user is unauthed", async () => {
@@ -233,7 +233,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       firebaseUserClientSDK: null,
     })
     await AuthUser.signOut()
-    expect(firebase.auth().signOut).not.toHaveBeenCalled()
+    expect(signOut).not.toHaveBeenCalled()
   })
 })
 
@@ -428,7 +428,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       token: 'my-id-token-def-456',
     })
     await AuthUser.signOut()
-    expect(firebase.auth().signOut).not.toHaveBeenCalled()
+    expect(signOut).not.toHaveBeenCalled()
   })
 })
 
@@ -519,7 +519,7 @@ describe('createAuthUser: serializedAuthUser', () => {
       serializedAuthUser: createMockSerializedAuthUser(),
     })
     await AuthUser.signOut()
-    expect(firebase.auth().signOut).not.toHaveBeenCalled()
+    expect(signOut).not.toHaveBeenCalled()
   })
 
   it('returns expected data when tenantId set in firebaseUserClientSDK', () => {

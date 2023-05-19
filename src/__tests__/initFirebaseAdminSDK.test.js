@@ -1,25 +1,29 @@
 // Allow importing firebase-admin as wildcard.
 /* eslint-disable no-import-assign */
 
-import * as admin from 'firebase-admin'
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
+import logDebug from 'src/logDebug'
 
 jest.mock('firebase-admin')
 jest.mock('src/config')
+jest.mock('src/logDebug')
 
 beforeEach(() => {
   const mockConfig = createMockConfig({ clientSide: false })
   setConfig(mockConfig)
 
-  admin.credential.cert.mockImplementation((obj) => ({
+  getApps.mockReturnValue([])
+  cert.mockImplementation((obj) => ({
     ...obj,
     _mockFirebaseCert: true,
   }))
-  admin.credential.applicationDefault.mockImplementation(() => ({
-    _mockFirebaseDefaultCred: true,
-  }))
-  admin.apps = []
 })
 
 afterEach(() => {
@@ -27,11 +31,11 @@ afterEach(() => {
 })
 
 describe('initFirebaseAdminSDK', () => {
-  it('calls admin.initializeApp with the expected values', () => {
+  it('calls initializeApp with the expected values', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(admin.initializeApp).toHaveBeenCalledWith({
+    expect(initializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseCert: true,
         clientEmail: 'my-example-app@example.com',
@@ -42,7 +46,7 @@ describe('initFirebaseAdminSDK', () => {
     })
   })
 
-  it('calls admin.initializeApp with application default credentials if useFirebaseAdminDefaultCredential set to true', () => {
+  it('calls initializeApp with application default credentials if useFirebaseAdminDefaultCredential set to true', () => {
     expect.assertions(2)
     const mockConfig = createMockConfig({ clientSide: false })
     setConfig({
@@ -51,28 +55,31 @@ describe('initFirebaseAdminSDK', () => {
       useFirebaseAdminDefaultCredential: true,
     })
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    applicationDefault.mockReturnValue({
+      _mockFirebaseDefaultCred: true,
+    })
     initFirebaseAdminSDK()
-    expect(admin.credential.applicationDefault).toHaveBeenCalled()
-    expect(admin.initializeApp).toHaveBeenCalledWith({
+    expect(applicationDefault).toHaveBeenCalled()
+    expect(initializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseDefaultCred: true,
       },
     })
   })
 
-  it('returns the admin app', () => {
+  it('returns undefined', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     const response = initFirebaseAdminSDK()
-    expect(response).toEqual(admin)
+    expect(response).toBeUndefined()
   })
 
-  it('does not call admin.initializeApp if Firebase already has an initialized app', () => {
+  it('does not call initializeApp if Firebase already has an initialized app', () => {
     expect.assertions(1)
-    admin.apps = [{ some: 'app' }]
+    getApps.mockReturnValue([{ some: 'app' }])
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(admin.initializeApp).not.toHaveBeenCalled()
+    expect(initializeApp).not.toHaveBeenCalled()
   })
 
   it('throws if config.firebaseAdminInitConfig is not set and no app is initialized', () => {
@@ -97,10 +104,27 @@ describe('initFirebaseAdminSDK', () => {
       ...mockConfig,
       firebaseAdminInitConfig: undefined,
     })
-    admin.apps = [{ some: 'app' }]
+    getApps.mockReturnValue([{ some: 'app' }])
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     expect(() => {
       initFirebaseAdminSDK()
     }).not.toThrow()
+  })
+
+  it('calls logDebug when initializing the admin app', () => {
+    expect.assertions(1)
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(logDebug).toHaveBeenCalledWith(
+      '[init] Initialized the Firebase admin SDK.'
+    )
+  })
+
+  it('does not call logDebug when not initializing a new app', () => {
+    expect.assertions(1)
+    getApps.mockReturnValue([{ some: 'app' }])
+    const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
+    initFirebaseAdminSDK()
+    expect(logDebug).not.toHaveBeenCalled()
   })
 })

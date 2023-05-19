@@ -1,14 +1,18 @@
 import * as Cookies from 'cookies'
-import type Firebase from 'firebase'
-import * as firebaseAdmin from 'firebase-admin'
+import type { User } from 'firebase/auth'
 import type {
+  GetServerSideProps,
   GetServerSidePropsContext,
   GetServerSidePropsResult,
   NextApiRequest,
   NextApiResponse,
+  PreviewData,
 } from 'next'
 import type { ComponentType } from 'react'
 import type { ParsedUrlQuery } from 'querystring'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Dictionary<T = any> = Record<string, T>
 
 export enum AuthAction {
   RENDER = 'render',
@@ -29,18 +33,20 @@ export interface AuthUser {
   claims: Record<string, string | boolean>
   getIdToken: (forceRefresh?: boolean) => Promise<string | null>
   clientInitialized: boolean
-  firebaseUser: Firebase.User | null
+  firebaseUser: User | null
   signOut: () => Promise<void>
 }
 
-export type SSRPropsContext<Q extends ParsedUrlQuery = ParsedUrlQuery> =
-  GetServerSidePropsContext<Q> & { AuthUser: AuthUser }
+export type SSRPropsContext<
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = GetServerSidePropsContext<Q, D> & { AuthUser: AuthUser }
 
 export type SSRPropGetter<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  P extends { [key: string]: any } = { [key: string]: any },
-  Q extends ParsedUrlQuery = ParsedUrlQuery
-> = (context: SSRPropsContext<Q>) => Promise<GetServerSidePropsResult<P>>
+  P extends Dictionary = Dictionary,
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = (context: SSRPropsContext<Q, D>) => Promise<GetServerSidePropsResult<P>>
 
 interface AuthUserContext extends AuthUser {
   serialize: (opts?: { includeToken?: boolean }) => string
@@ -75,7 +81,7 @@ interface InitConfig {
       clientEmail: string
       privateKey: string
     }
-    databaseURL: string
+    databaseURL?: string
   }
   firebaseAuthEmulatorHost?: string
   firebaseClientInitConfig: {
@@ -103,22 +109,6 @@ interface InitConfig {
 
 export const init: (config: InitConfig) => void
 
-// We construct an interface for the `firebase-admin` module because
-// it's not clear how to get the typing for the top-level admin export.
-// If there's a proper way to get the type, we should use it/
-// https://firebase.google.com/docs/reference/admin/node/admin
-// We extend from the App interface, which is similar but:
-// * it contains a "delete" method
-// * it does not contain an "app" or "credential" property
-// https://firebase.google.com/docs/reference/admin/node/admin.app.App-1
-interface FirebaseAdminType extends firebaseAdmin.app.App {
-  app: firebaseAdmin.app.App
-  delete: undefined
-  credential: firebaseAdmin.credential.Credential
-}
-
-export const getFirebaseAdmin: () => FirebaseAdminType
-
 export const setAuthCookies: (
   req: NextApiRequest,
   res: NextApiResponse
@@ -132,6 +122,13 @@ export const unsetAuthCookies: (
   req: NextApiRequest,
   res: NextApiResponse
 ) => Promise<void>
+
+export const getUserFromCookies: (options: {
+  req?: NextApiRequest
+  includeToken?: boolean
+  authCookieValue?: string
+  authCookieSigValue?: string
+}) => Promise<AuthUser>
 
 export const useAuthUser: () => AuthUserContext
 
@@ -154,16 +151,19 @@ export const withAuthUser: <P = unknown>(options?: {
   LoaderComponent?: ComponentType | null
 }) => (component: ComponentType<P>) => ComponentType<P>
 
-export const withAuthUserTokenSSR: (options?: {
+type GetServerSidePropsAuthWrapper = (options?: {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
   appPageURL?: PageURL
   authPageURL?: PageURL
-}) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
+}) => <
+  P extends Dictionary = Dictionary,
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+>(
+  propGetter?: SSRPropGetter<P, Q, D>
+) => GetServerSideProps<P, Q, D>
 
-export const withAuthUserSSR: (options?: {
-  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
-  whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
-  appPageURL?: PageURL
-  authPageURL?: PageURL
-}) => (propGetter?: SSRPropGetter) => ReturnType<SSRPropGetter>
+export const withAuthUserTokenSSR: GetServerSidePropsAuthWrapper
+
+export const withAuthUserSSR: GetServerSidePropsAuthWrapper

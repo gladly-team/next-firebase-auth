@@ -13,13 +13,36 @@ const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
 
 export const getCookie = (
   name,
-  { req, res },
+  // The request object is mandatory. The response object is optional.
+  {
+    req,
+    // The "cookies" package still interacts with the response object when
+    // initializing. As a convenience, default to a minimal response object
+    // that avoids unhelpful "cookies" errors when a response object is not
+    // provided.
+    // https://github.com/pillarjs/cookies/blob/master/index.js
+    res = {
+      getHeader: () => [],
+      setHeader: () => ({
+        call: () => {},
+      }),
+    },
+  },
   { keys, secure, signed } = {}
 ) => {
-  if (signed && !keys) {
-    throw new Error(
-      'The "keys" value must be provided when using signed cookies.'
-    )
+  if (signed) {
+    const areCookieKeysDefined =
+      keys &&
+      keys.length &&
+      (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+    if (!areCookieKeysDefined) {
+      throw new Error(
+        'The "keys" value must be provided when using signed cookies.'
+      )
+    }
+  }
+  if (!req) {
+    throw new Error('The "req" argument is required when calling `getCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })
@@ -32,6 +55,7 @@ export const getCookie = (
 export const setCookie = (
   name,
   cookieVal,
+  // The response object is mandatory. The request is optional and unused.
   { req, res },
   {
     keys,
@@ -49,6 +73,9 @@ export const setCookie = (
     throw new Error(
       'The "keys" value must be provided when using signed cookies.'
     )
+  }
+  if (!res) {
+    throw new Error('The "res" argument is required when calling `setCookie`.')
   }
 
   const cookies = createCookieMgr({ req, res }, { keys, secure })

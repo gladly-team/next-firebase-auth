@@ -16,7 +16,7 @@ import { filterStandardClaims } from 'src/claims'
  *   a serialized AuthUser, previously returned from an AuthUser instance's
  *   serialize method.
  *
- * @return {Object|null} AuthUser - The user object.
+ * @return {Object} AuthUser - The user object.
  * @return {Boolean} AuthUser.clientInitialized - This will be true if the
  *   Firebase JS SDK has initialized, meaning we know the AuthUser value
  *   is from the source of truth. Defaults to false.
@@ -97,17 +97,19 @@ const createAuthUser = ({
   let getIdTokenFunc = async () => null
 
   // When not on the client side, the "signOut" method is a noop.
-  let firebase
-  if (isClientSide()) {
-    // eslint-disable-next-line global-require
-    require('firebase/auth')
-    // eslint-disable-next-line global-require
-    firebase = require('firebase/app').default
-  }
-  let signOut = async () => {}
+  let signOutFunc = async () => {}
 
   let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
+    if (isClientSide()) {
+      // eslint-disable-next-line global-require
+      const { getApp } = require('firebase/app')
+      // eslint-disable-next-line global-require
+      const { getAuth, signOut } = require('firebase/auth')
+
+      signOutFunc = async () => signOut(getAuth(getApp()))
+    }
+
     /**
      * Claims are injected client side through the onTokenChange Callback
      */
@@ -132,15 +134,14 @@ const createAuthUser = ({
      */
     getIdTokenFunc = async (forceRefresh) =>
       firebaseUserClientSDK.getIdToken(forceRefresh)
-    signOut = async () => firebase.auth().signOut()
     tokenString = null
   } else if (firebaseUserAdminSDK) {
     /**
-     * firebaseUserAdminSDK is a DecodedIDToken obtained from
-     * admin.auth().verifyIdToken which returns all the user's claims
+     * firebaseUserAdminSDK is a DecodedIDToken obtained from the Firebase
+     * admin app's `verifyIdToken`, which returns all the user's claims:
      * https://firebase.google.com/docs/auth/admin/custom-claims
      * In order for the claims to be consistent, we need to pass the
-     * entire adminSDK object as claims
+     * entire object as claims.
      */
     customClaims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid
@@ -190,7 +191,7 @@ const createAuthUser = ({
     // The "signOut" method is a noop when the Firebase JS SDK has not
     // initialized. Otherwise, it is the SDK's "signOut" method:
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signout
-    signOut,
+    signOut: signOutFunc,
     serialize: ({ includeToken = true } = {}) =>
       JSON.stringify({
         id: userId,

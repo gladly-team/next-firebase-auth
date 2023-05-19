@@ -11,8 +11,13 @@ assignees: ''
 
 1. Have you set `onVerifyTokenError` and `onTokenRefreshError` in your config and checked for any helpful errors?
 2. Have you set `debug: true` in your config and read through server-side and client-side debug logs for any helpful messages?
+<<<<<<< HEAD
 3. Have you tried the [example app](https://github.com/gladly-team/next-firebase-auth/tree/main/example) with your own Firebase credentials?
 4. Have you read through the [troubleshooting](https://github.com/gladly-team/next-firebase-auth#troubleshooting) Q&A?
+=======
+3. Have you tried the [example app](https://github.com/gladly-team/next-firebase-auth/tree/v1.x/example) with your own Firebase credentials?
+4. Have you read through the [troubleshooting](https://github.com/gladly-team/next-firebase-auth/tree/v1.x#troubleshooting) Q&A?
+>>>>>>> v1.x
 
 **Describe the bug**
 A clear and concise description of the bug.

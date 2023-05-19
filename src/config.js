@@ -9,11 +9,9 @@ const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 // https://github.com/gladly-team/next-firebase-auth#config
 const defaultConfig = {
   debug: false,
-  // Required string: the API endpoint to call on auth state
-  // change for an authenticated user.
+  // The API endpoint to call on auth state change for an authenticated user.
   loginAPIEndpoint: undefined,
-  // Required string: the API endpoint to call on auth state
-  // change for a signed-out user.
+  // The API endpoint to call on auth state change for a signed-out user.
   logoutAPIEndpoint: undefined,
   // Optional function: handler called if the login API endpoint returns
   // a non-200 response. Not used if a custom "tokenChangedHandler" is
@@ -40,8 +38,8 @@ const defaultConfig = {
   // Optional string: the URL to navigate to when the user
   // is alredy logged in but on an authentication page.
   appPageURL: undefined,
-  // Optional object: the config passed to the Firebase
-  // Node admin SDK's firebaseAdmin.initializeApp.
+  // Optional object: the config passed to the Firebase admin SDK's
+  // `initializeApp`.
   // Not required if the app is initializing the admin SDK
   // elsewhere.
   firebaseAdminInitConfig: undefined,
@@ -59,7 +57,7 @@ const defaultConfig = {
   cookies: {
     // Required string. The base name for the auth cookies.
     name: undefined,
-    // Required string or array.
+    // String or array.
     keys: undefined,
     // Options below are passed to cookies.set:
     // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
@@ -100,13 +98,6 @@ const validateConfig = (mergedConfig) => {
       errorMessages.push(
         'The "onLogoutRequestError" setting should not be set if you are using a "tokenChangedHandler".'
       )
-    }
-  } else {
-    if (!mergedConfig.loginAPIEndpoint) {
-      errorMessages.push('The "loginAPIEndpoint" setting is required.')
-    }
-    if (!mergedConfig.logoutAPIEndpoint) {
-      errorMessages.push('The "logoutAPIEndpoint" setting is required.')
     }
   }
 
@@ -169,6 +160,15 @@ const validateConfig = (mergedConfig) => {
     /**
      * START: config specific to client side
      */
+    if (!mergedConfig.tokenChangedHandler) {
+      if (!mergedConfig.loginAPIEndpoint) {
+        errorMessages.push('The "loginAPIEndpoint" setting is required.')
+      }
+      if (!mergedConfig.logoutAPIEndpoint) {
+        errorMessages.push('The "logoutAPIEndpoint" setting is required.')
+      }
+    }
+
     if (
       mergedConfig.firebaseAdminInitConfig &&
       mergedConfig.firebaseAdminInitConfig.credential &&
@@ -193,11 +193,6 @@ const validateConfig = (mergedConfig) => {
     if (!mergedConfig.cookies.name) {
       errorMessages.push(
         'The "cookies.name" setting is required on the server side.'
-      )
-    }
-    if (mergedConfig.cookies.signed && !areCookieKeysDefined) {
-      errorMessages.push(
-        'The "cookies.keys" setting must be set if "cookies.signed" is true.'
       )
     }
 
@@ -266,7 +261,7 @@ const replacePrivateValues = (unredactedConfig) => {
 
 export const setConfig = (userConfig = {}) => {
   logDebug(
-    'Setting config with provided value:',
+    '[init] Setting config with provided value:',
     replacePrivateValues(userConfig)
   )
 

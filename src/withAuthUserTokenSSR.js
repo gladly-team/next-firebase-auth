@@ -1,13 +1,7 @@
-import createAuthUser from 'src/createAuthUser'
-import { getCookie } from 'src/cookies'
-import { verifyIdToken } from 'src/firebaseAdmin'
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
-import { getConfig } from 'src/config'
+import getUserFromCookies from 'src/getUserFromCookies'
 import AuthAction from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
+import logDebug from 'src/logDebug'
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -44,55 +38,16 @@ const withAuthUserTokenSSR =
   ) =>
   (getServerSidePropsFunc) =>
   async (ctx) => {
-    const { req, res } = ctx
-    const { keys, secure, signed } = getConfig().cookies
-
-    let AuthUser
-
-    // Get the user either from:
-    // * the ID token, refreshing the token as needed (via a network
-    //   request), which will make `AuthUser.getIdToken` resolve to
-    //   a valid ID token value
-    // * the "AuthUser" cookie (no network request), which will make
-    //  `AuthUser.getIdToken` resolve to null
-    if (useToken) {
-      // Get the user's ID token from a cookie, verify it (refreshing
-      // as needed), and return the serialized AuthUser in props.
-      const cookieValStr = getCookie(
-        getAuthUserTokensCookieName(),
-        {
-          req,
-          res,
-        },
-        { keys, secure, signed }
-      )
-      const { idToken, refreshToken } = cookieValStr
-        ? JSON.parse(cookieValStr)
-        : {}
-      if (idToken) {
-        AuthUser = await verifyIdToken(idToken, refreshToken)
-      } else {
-        AuthUser = createAuthUser() // unauthenticated AuthUser
-      }
-    } else {
-      // Get the user's info from a cookie, verify it (refreshing
-      // as needed), and return the serialized AuthUser in props.
-      const cookieValStr = getCookie(
-        getAuthUserCookieName(),
-        {
-          req,
-          res,
-        },
-        { keys, secure, signed }
-      )
-      AuthUser = createAuthUser({
-        serializedAuthUser: cookieValStr,
-      })
-    }
+    logDebug(
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+    )
+    const { req } = ctx
+    const AuthUser = await getUserFromCookies({ req, includeToken: useToken })
     const AuthUserSerialized = AuthUser.serialize()
 
     // If specified, redirect to the login page if the user is unauthed.
     if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
+      logDebug('[withAuthUserSSR] Redirecting to login.')
       const redirect = getLoginRedirectInfo({
         ctx,
         AuthUser,
@@ -106,6 +61,7 @@ const withAuthUserTokenSSR =
 
     // If specified, redirect to the app page if the user is authed.
     if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
+      logDebug('[withAuthUserSSR] Redirecting to app.')
       const redirect = getAppRedirectInfo({
         ctx,
         AuthUser,
@@ -128,13 +84,14 @@ const withAuthUserTokenSSR =
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
         if (composedProps.props) {
-          // If composedProps does have a valid props object, we inject AuthUser in there
+          // If there are composed props, add Authuser to the props.
           returnData = { ...composedProps }
           returnData.props.AuthUserSerialized = AuthUserSerialized
         } else if (composedProps.notFound || composedProps.redirect) {
-          // If composedProps returned a 'notFound' or 'redirect' key
-          // (as per official doc: https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
-          // it means it contains a custom dynamic routing logic that should not be overwritten
+          // If the composed props include a 'notFound' or 'redirect' key,
+          // it means it contains a custom dynamic routing logic that should
+          // not be overwritten:
+          // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
           returnData = { ...composedProps }
         }
       }

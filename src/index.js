@@ -1,16 +1,13 @@
 /* eslint-disable global-require */
-import { setConfig } from 'src/config'
 import withAuthUserModule from 'src/withAuthUser'
 import useAuthUserModule from 'src/useAuthUser'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
-import { setDebugEnabled } from 'src/logDebug'
 import isClientSide from 'src/isClientSide'
 import AuthAction from 'src/AuthAction'
+import initCommon from 'src/initCommon'
 
 const init = (config = {}) => {
-  setDebugEnabled(config.debug === true)
-
-  setConfig(config)
+  initCommon(config)
 
   // On the client side, initialize the Firebase JS SDK.
   if (isClientSide()) {
@@ -42,9 +39,10 @@ const verifyIdToken = () => {
   throw new Error('"verifyIdToken" can only be called server-side.')
 }
 
-const getFirebaseAdmin = () => {
-  throw new Error('"getFirebaseAdmin" can only be called server-side.')
+const getUserFromCookies = () => {
+  throw new Error('"getUserFromCookies" can only be called server-side.')
 }
+
 export default {
   init,
   withAuthUser,
@@ -55,5 +53,5 @@ export default {
   unsetAuthCookies,
   verifyIdToken,
   AuthAction,
-  getFirebaseAdmin,
+  getUserFromCookies,
 }

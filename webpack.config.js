@@ -2,6 +2,7 @@ const path = require('path')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const nodeExternals = require('webpack-node-externals')
 const CopyPlugin = require('copy-webpack-plugin')
+const includeSubdependencies = require('datwd')
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -25,7 +26,10 @@ const sharedConfig = {
   externals: [
     // By default, don't bundle anything from node_modules.
     nodeExternals({
-      allowlist: ['cookies', 'hoist-non-react-statics'],
+      // Using `includeSubdependencies` ensures that dependencies all the way
+      // down the tree are included for these modules:
+      // https://github.com/kmjennison/datwd
+      allowlist: includeSubdependencies(['hoist-non-react-statics', 'cookies']),
     }),
     'fetch',
   ],

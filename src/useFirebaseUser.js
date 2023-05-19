@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import firebase from 'firebase/app'
-import 'firebase/auth'
+import { getApp } from 'firebase/app'
+import { getAuth, getIdTokenResult, onIdTokenChanged } from 'firebase/auth'
 import { getConfig } from 'src/config'
 import createAuthUser from 'src/createAuthUser'
 import { filterStandardClaims } from 'src/claims'
@@ -16,25 +16,36 @@ const defaultTokenChangedHandler = async (authUser) => {
   let response
   // If the user is authed, call login to set a cookie.
   if (authUser.id) {
+    // Prefixing with "[withAuthUser]" because that's currently the only
+    // place we use this logic.
+    logDebug('[withAuthUser] Calling the login endpoint.')
     const userToken = await authUser.getIdToken()
-    response = await fetch(loginAPIEndpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: userToken,
-      },
-      credentials: 'include',
-    })
-    if (!response.ok) {
-      const responseJSON = await response.json()
+    try {
+      response = await fetch(loginAPIEndpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: userToken,
+        },
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        logDebug(
+          `[withAuthUser] The call to the login endpoint failed with status ${
+            response.status
+          } and response: ${JSON.stringify(responseJSON)}`
+        )
 
-      // If the developer provided a handler for login errors,
-      // call it and don't throw.
-      // https://github.com/gladly-team/next-firebase-auth/issues/367
-      const err = new Error(
-        `Received ${
-          response.status
-        } response from login API endpoint: ${JSON.stringify(responseJSON)}`
-      )
+        // If the developer provided a handler for login errors,
+        // call it and don't throw.
+        // https://github.com/gladly-team/next-firebase-auth/issues/367
+        throw new Error(
+          `Received ${
+            response.status
+          } response from login API endpoint: ${JSON.stringify(responseJSON)}`
+        )
+      }
+    } catch (err) {
       if (onLoginRequestError) {
         await onLoginRequestError(err)
       } else {
@@ -43,21 +54,30 @@ const defaultTokenChangedHandler = async (authUser) => {
     }
   } else {
     // If the user is not authed, call logout to unset the cookie.
-    response = await fetch(logoutAPIEndpoint, {
-      method: 'POST',
-      credentials: 'include',
-    })
-    if (!response.ok) {
-      const responseJSON = await response.json()
+    logDebug('[withAuthUser] Calling the logout endpoint.')
+    try {
+      response = await fetch(logoutAPIEndpoint, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        const responseJSON = await response.json()
+        logDebug(
+          `[withAuthUser] The call to the logout endpoint failed with status ${
+            response.status
+          } and response: ${JSON.stringify(responseJSON)}`
+        )
 
-      // If the developer provided a handler for logout errors,
-      // call it and don't throw.
-      // https://github.com/gladly-team/next-firebase-auth/issues/367
-      const err = new Error(
-        `Received ${
-          response.status
-        } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
-      )
+        // If the developer provided a handler for logout errors,
+        // call it and don't throw.
+        // https://github.com/gladly-team/next-firebase-auth/issues/367
+        throw new Error(
+          `Received ${
+            response.status
+          } response from logout API endpoint: ${JSON.stringify(responseJSON)}`
+        )
+      }
+    } catch (err) {
       if (onLogoutRequestError) {
         await onLogoutRequestError(err)
       } else {
@@ -77,6 +97,9 @@ const setAuthCookie = async (firebaseUser) => {
   })
 
   if (tokenChangedHandler) {
+    logDebug(
+      `[withAuthUser] Calling the custom "tokenChangedHandler" provided in the config.`
+    )
     return tokenChangedHandler(authUser)
   }
 
@@ -96,16 +119,19 @@ const useFirebaseUser = () => {
     let isCancelled = false
 
     const onIdTokenChange = async (firebaseUser) => {
-      logDebug('Firebase ID token changed. Firebase user:', firebaseUser)
+      // Prefixing with "[withAuthUser]" because that's currently the only
+      // place we use this hook.
+      logDebug(
+        '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+        firebaseUser
+      )
 
       setIsAuthCookieRequestComplete(false)
       let customClaims = {}
       if (firebaseUser) {
         // Get the user's claims:
         // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
-        const idTokenResult = await firebase
-          .auth()
-          .currentUser.getIdTokenResult()
+        const idTokenResult = await getIdTokenResult(firebaseUser)
         customClaims = filterStandardClaims(idTokenResult.claims)
       }
 
@@ -114,8 +140,6 @@ const useFirebaseUser = () => {
         claims: customClaims,
         initialized: true,
       })
-
-      logDebug('Starting auth API request via tokenChangedHandler.')
 
       await setAuthCookie(firebaseUser)
 
@@ -127,16 +151,16 @@ const useFirebaseUser = () => {
       // "tokenChangedHandler" return an unsubscribe function.
       if (!isCancelled) {
         setIsAuthCookieRequestComplete(true)
-        logDebug('Completed auth API request via tokenChangedHandler.')
+        logDebug('[withAuthUser] Completed the auth API request.')
       } else {
         logDebug(
-          'Component unmounted before completing auth API request via tokenChangedHandler.'
+          '[withAuthUser] Component unmounted before completing the auth API request.'
         )
       }
     }
 
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
-    const unsubscribe = firebase.auth().onIdTokenChanged(onIdTokenChange)
+    const unsubscribe = onIdTokenChanged(getAuth(getApp()), onIdTokenChange)
     return () => {
       unsubscribe()
       isCancelled = true

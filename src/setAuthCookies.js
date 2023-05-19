@@ -5,21 +5,36 @@ import {
   getAuthUserTokensCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
+import logDebug from 'src/logDebug'
+import createAuthUser from 'src/createAuthUser'
 
-const setAuthCookies = async (req, res) => {
-  if (!(req.headers && req.headers.authorization)) {
-    throw new Error('The request is missing an Authorization header value')
-  }
+const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
+  logDebug('[setAuthCookies] Attempting to set auth cookies.')
 
   // This should be the original Firebase ID token from
   // the Firebase JS SDK.
-  const token = req.headers.authorization
+  const token = userProvidedToken || req.headers.authorization
+  if (!token) {
+    throw new Error(
+      'The request must have an Authorization header value, or you should explicitly provide an ID token to "setAuthCookies".'
+    )
+  }
 
-  // Get a custom ID token and refresh token, given a valid
-  // Firebase ID token.
-  const { idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
-    token
-  )
+  // Get a custom ID token and refresh token, given a valid Firebase ID
+  // token. If the token isn't valid, set cookies for an unauthenticated
+  // user.
+  let idToken = null
+  let refreshToken = null
+  let AuthUser = createAuthUser() // default to an unauthed user
+  try {
+    ;({ idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
+      token
+    ))
+  } catch (e) {
+    logDebug(
+      '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
+    )
+  }
 
   // Pick a subset of the config.cookies options to
   // pass to setCookie.
@@ -81,6 +96,14 @@ const setAuthCookies = async (req, res) => {
     },
     cookieOptions
   )
+
+  if (AuthUser.id) {
+    logDebug('[setAuthCookies] Set auth cookies for an authenticated user.')
+  } else {
+    logDebug(
+      '[setAuthCookies] Set auth cookies. The user is not authenticated.'
+    )
+  }
 
   return {
     idToken,
