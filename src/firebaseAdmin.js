@@ -1,11 +1,7 @@
-import { getAuth } from 'firebase-admin/auth'
-import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
+import * as admin from 'firebase-admin'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
-<<<<<<< HEAD
-=======
 import logDebug from 'src/logDebug'
->>>>>>> v1.x
 
 // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
 const getTokenPrefix = () =>
@@ -33,7 +29,6 @@ const throwIfFetchNotDefined = () => {
  * Get the firebase admin TenantAwareAuth or the BasicAuth object needed for the user
  */
 const getAuth = (AuthUser) => {
-  const admin = getFirebaseAdminApp()
   if (AuthUser.tenantId) {
     return admin.auth().tenantManager().authForTenant(AuthUser.tenantId)
   }
@@ -84,11 +79,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
   let firebaseUser
   let newToken = token
-<<<<<<< HEAD
-  const admin = getFirebaseAdminApp()
-=======
   const firebaseAdminAuth = getAuth()
->>>>>>> v1.x
   const { onTokenRefreshError, onVerifyTokenError } = getConfig()
   try {
     firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
@@ -104,22 +95,16 @@ export const verifyIdToken = async (token, refreshToken = null) => {
         // https://github.com/gladly-team/next-firebase-auth/issues/174
         newToken = null
         firebaseUser = null
-<<<<<<< HEAD
-=======
         logDebug(errorMessageVerifyFailed(e.code))
->>>>>>> v1.x
         break
 
       // Errors that might be fixed by refreshing the user's ID token.
       case 'auth/id-token-expired':
       case 'auth/argument-error':
         if (refreshToken) {
-<<<<<<< HEAD
-=======
           logDebug(
             `[verifyIdToken] The ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
           )
->>>>>>> v1.x
           let newTokenFailure = false
           try {
             newToken = await refreshExpiredIdToken(refreshToken)
@@ -131,19 +116,12 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           }
 
           if (!newTokenFailure) {
-<<<<<<< HEAD
-            try {
-              firebaseUser = await admin.auth().verifyIdToken(newToken)
-            } catch (verifyErr) {
-              await onVerifyTokenError(verifyErr)
-=======
             logDebug('[verifyIdToken] Successfully refreshed the ID token.')
             try {
               firebaseUser = await firebaseAdminAuth.verifyIdToken(newToken)
             } catch (verifyErr) {
               await onVerifyTokenError(verifyErr)
               logDebug(errorMessageVerifyFailed(verifyErr.code))
->>>>>>> v1.x
             }
           }
 
@@ -153,19 +131,6 @@ export const verifyIdToken = async (token, refreshToken = null) => {
           if (newTokenFailure) {
             newToken = null
             firebaseUser = null
-<<<<<<< HEAD
-          }
-        } else {
-          // Return an unauthenticated user.
-          newToken = null
-          firebaseUser = null
-        }
-        break
-
-      // Errors we consider unexpected.
-      default:
-        // Return an unauthenticated user for any other error.
-=======
             logDebug(
               '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
             )
@@ -178,7 +143,6 @@ export const verifyIdToken = async (token, refreshToken = null) => {
       // eslint-disable-next-line no-fallthrough
       default:
         // Here, any errors are unexpected. Return an unauthenticated user.
->>>>>>> v1.x
         // Rationale: it's not particularly easy for developers to
         // catch errors in `withAuthUserSSR`, so default to returning
         // an unauthed user and give the developer control over
@@ -189,10 +153,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
         // Call developer-provided error callback.
         await onVerifyTokenError(e)
-<<<<<<< HEAD
-=======
         logDebug(errorMessageVerifyFailed(e.code))
->>>>>>> v1.x
     }
   }
   const AuthUser = createAuthUser({
@@ -226,13 +187,6 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   initFirebaseAdminSDK()
 
   const AuthUser = await verifyIdToken(token)
-<<<<<<< HEAD
-  const auth = getAuth(AuthUser)
-
-  // It's important that we pass the same user ID here, otherwise
-  // Firebase will create a new user.
-  const customToken = await auth.createCustomToken(AuthUser.id)
-=======
   const firebaseAdminAuth = getAuth()
 
   // Ensure a user is authenticated before proceeding:
@@ -248,7 +202,6 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
   const customToken = await firebaseAdminAuth.createCustomToken(AuthUser.id)
->>>>>>> v1.x
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
