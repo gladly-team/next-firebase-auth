@@ -991,10 +991,12 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
 
     // Mock that the ID token is invalid.
-    const expiredTokenErr = new Error('Mock error message.')
+    const expiredTokenErr = new Error('Mock error message. TEST')
     expiredTokenErr.code = 'auth/invalid-user-token'
     const firebaseAdminAuth = getAuth()
-    firebaseAdminAuth.verifyIdToken.mockImplementation(() => expiredTokenErr)
+    firebaseAdminAuth.verifyIdToken.mockImplementation(() => {
+      throw expiredTokenErr
+    })
 
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toThrow(

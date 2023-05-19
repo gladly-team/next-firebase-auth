@@ -1,4 +1,4 @@
-import { getApp, getApps, initializeApp, auth } from 'firebase/app'
+import { getApp, getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -15,7 +15,7 @@ export default function initFirebaseClientSDK() {
 
     initializeApp(firebaseConfig)
     if (tenantId) {
-      auth().tenantId = tenantId
+      getAuth().tenantId = tenantId
     }
     logDebug('[init] Initialized the Firebase JS SDK.')
   } else {
