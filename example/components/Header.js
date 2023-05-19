@@ -6,11 +6,8 @@ const nfaDependencyVersion =
 const nextDependencyVersion = require('../package.json').dependencies.next
 const firebaseDependencyVersion =
   require('../package.json').dependencies.firebase
-<<<<<<< HEAD
-=======
 const firebaseAdminDependencyVersion =
   require('../package.json').dependencies['firebase-admin']
->>>>>>> v1.x
 
 const styles = {
   container: {
@@ -39,16 +36,10 @@ const styles = {
 const Header = ({ email, signOut }) => (
   <div style={styles.container}>
     <div style={styles.versionsContainer}>
-<<<<<<< HEAD
-      <div>v{nfaDependencyVersion}</div>
-      <div>Next.js v{nextDependencyVersion}</div>
-      <div>Firebase v{firebaseDependencyVersion}</div>
-=======
       <div style={styles.nfaVersion}>Version {nfaDependencyVersion}</div>
       <div>Next.js {nextDependencyVersion}</div>
       <div>Firebase {firebaseDependencyVersion}</div>
       <div>firebase-admin {firebaseAdminDependencyVersion}</div>
->>>>>>> v1.x
     </div>
     <div style={styles.loginContainer}>
       {email ? (

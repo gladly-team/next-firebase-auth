@@ -11,13 +11,8 @@ export const createMockFirebaseUserClientSDK = ({ tenantId } = {}) => ({
   // ... other properties
 })
 
-<<<<<<< HEAD
-// https://firebase.google.com/docs/reference/admin/node/admin.auth.DecodedIdToken#uid
-export const createMockFirebaseUserAdminSDK = ({ tenant } = {}) => ({
-=======
 // https://firebase.google.com/docs/reference/admin/node/firebase-admin.auth.decodedidtoken
-export const createMockFirebaseUserAdminSDK = () => ({
->>>>>>> v1.x
+export const createMockFirebaseUserAdminSDK = ({ tenant } = {}) => ({
   uid: 'def-456',
   email: 'def@example.com',
   email_verified: true,

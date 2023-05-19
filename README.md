@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-[![Build Status](https://img.shields.io/github/actions/workflow/status/gladly-team/next-firebase-auth/node.js.yml?branch=main)](https://github.com/gladly-team/next-firebase-auth/actions/workflows/node.js.yml?query=branch%3Amain+)
-[![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/main/graph/badge.svg)](https://codecov.io/gh/gladly-team/next-firebase-auth)
-[![npm](https://img.shields.io/npm/v/next-firebase-auth.svg)](https://www.npmjs.com/package/next-firebase-auth)
-=======
 [![Build Status](https://img.shields.io/github/actions/workflow/status/gladly-team/next-firebase-auth/node.js.yml?branch=v1.x)](https://github.com/gladly-team/next-firebase-auth/actions/workflows/node.js.yml?query=branch%3Av1.x+)
 [![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x/graph/badge.svg)](https://app.codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x)
 [![npm](https://img.shields.io/npm/v/next-firebase-auth/canary)](https://www.npmjs.com/package/next-firebase-auth)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/next-firebase-auth@canary?label=bundle%20size)](https://bundlephobia.com/package/next-firebase-auth@canary)
->>>>>>> v1.x
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](./CODE_OF_CONDUCT.md)
 
 # next-firebase-auth
@@ -56,7 +50,7 @@ Depending on your app's needs, other approaches might work better for you.
    - _Pros:_ It removes this package as a dependency.
    - _Cons:_ You won't have access to the Firebase ID token server side, so you won't be able to access other Firebase services. You'll need to implement the logic for verifying the session and managing the session state.
 
-**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does *not* use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
+**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does _not_ use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
 
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server side.
 
@@ -508,7 +502,6 @@ See the [default handler](https://github.com/gladly-team/next-firebase-auth/blob
 #### firebaseAuthEmulatorHost
 
 `String`
-<<<<<<< HEAD
 
 The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
 
@@ -516,15 +509,6 @@ Must match the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, 
 
 #### firebaseAdminInitConfig
 
-=======
-
-The host and port for the local [Firebase Auth Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks). If this value is set, the auth emulator will be initialized with the provided host and port.
-
-Must match the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable, e.g., `localhost:9099`.
-
-#### firebaseAdminInitConfig
-
->>>>>>> v1.x
 `Object`
 
 Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.google.com/docs/admin/setup#initialize-sdk). It should contain a `credential` property (a plain object) and a `databaseURL` property. **Required** unless you initialize `firebase-admin` yourself before initializing `next-firebase-auth`.
@@ -532,23 +516,6 @@ Configuration passed to `firebase-admin`'s [`initializeApp`](https://firebase.go
 The `firebaseAdminInitConfig.credential.privateKey` cannot be defined on the client side and should live in a secret environment variable.
 
 > ℹ️ Using Vercel? See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) for guidance.
-<<<<<<< HEAD
-
-#### useFirebaseAdminDefaultCredential
-
-`Boolean`
-
-When true, `firebase-admin` will implicitly find your hosting environment service account during `initializeApp`. This is applicable for both [Firebase](https://firebase.google.com/docs/admin/setup#initialize-sdk), and [Google Cloud Platform](https://cloud.google.com/docs/authentication/production), and recommended over adding service account key to the code via file path or direct value.
-
-**Note**: To setup `firebase-admin`, either `firebaseAdminInitConfig` or `useFirebaseAdminDefaultCredential` must be provided. Using the default credentials will override values passed to `firebaseAdminInitConfig.credential` if both are presented.
-
-#### firebaseClientInitConfig
-
-`Object`
-
-Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth`.
-
-=======
 
 #### useFirebaseAdminDefaultCredential
 
@@ -564,7 +531,6 @@ When true, `firebase-admin` will implicitly find your hosting environment servic
 
 Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth` (or, less commonly, if you're running `next-firebase-auth` solely on the server side).
 
->>>>>>> v1.x
 #### cookies
 
 `Object`
@@ -587,11 +553,6 @@ For security, the `maxAge` value must be two weeks or less. Note that `maxAge` i
 
 #### onVerifyTokenError
 
-<<<<<<< HEAD
-_Added in v0.14.0_
-
-=======
->>>>>>> v1.x
 `Function` (optional)
 
 Error handler that will be called if there's an unexpected error while verifying the user's ID token server side. It will receive a [Firebase auth error](https://firebase.google.com/docs/reference/node/firebase.auth.Error).
@@ -600,11 +561,6 @@ This library will **not** throw when it cannot verify an ID token. Instead, it w
 
 #### onTokenRefreshError
 
-<<<<<<< HEAD
-_Added in v0.14.0_
-
-=======
->>>>>>> v1.x
 `Function` (optional)
 
 Error handler that will be called if there's an unexpected error while refreshing the user's ID token server side.
@@ -710,48 +666,6 @@ const redirect = ({ ctx, AuthUser }) => {
 ```
 
 The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server side, or undefined if client side.
-<<<<<<< HEAD
-
-## Examples
-
-- [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
-- [Using the Firebase Apps](#using-the-firebase-apps)
-- [TypeScript](#typescript)
-- [Dynamic Redirects](#dynamic-redirects)
-- [Testing and Mocking with Jest](#testing-and-mocking-with-jest)
-
-### Adding a private key to Vercel
-
-There are various ways to add your Firebase private key as an environment variable to Vercel.
-
-**Vercel console**
-
-In the [Vercel console](https://vercel.com/docs/concepts/projects/environment-variables), add the private key in double quotes (screenshot [here](https://github.com/gladly-team/next-firebase-auth/issues/212)).
-
-Then, use the private key in your `next-firebase-auth` config, in the `firebaseAdminInitConfig.credential.privateKey` property:
-
-```javascript
-privateKey: process.env.FIREBASE_PRIVATE_KEY
-```
-
-**Vercel CLI**
-
-Via the Vercel CLI, add the private key _with double quotes_:
-
-`vercel secrets add firebase-private-key '"my-key-here"'`
-
-Then, use `JSON.parse` in the `firebaseAdminInitConfig.credential.privateKey` property:
-
-```javascript
-privateKey: process.env.FIREBASE_PRIVATE_KEY
-  ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
-  : undefined
-```
-
-**Alternative formatting**
-
-Others have taken different approaches to deal with escaped newline characters in the private key; for example, by [using string replacement](https://stackoverflow.com/a/50376092). This discussion includes other approaches: [discussion #95](https://github.com/gladly-team/next-firebase-auth/discussions/95)
-=======
 
 ## Upgrading to Firebase 9
 
@@ -794,7 +708,6 @@ Here is an example of how the migration might look in your app:
 ```
 
 ## Examples
->>>>>>> v1.x
 
 - [Adding a private key to Vercel](#adding-a-private-key-to-Vercel)
 - [Using the Firebase Apps](#using-the-firebase-apps)
@@ -843,37 +756,20 @@ To use the Firebase admin package or Firebase JS SDK elsewhere in your app, simp
 For example:
 
 ```jsx
-<<<<<<< HEAD
-import firebase from 'firebase/app'
-import 'firebase/firestore'
-=======
 import { getApp } from 'firebase/app'
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
->>>>>>> v1.x
 import { useEffect } from 'react'
 
 const Artists = () => {
   const [artists, setArtists] = useState(artists)
 
   useEffect(() => {
-<<<<<<< HEAD
-    return firebase
-      .firestore()
-      .collection('artists')
-      .onSnapshot((snap) => {
-        if (!snap) {
-          return
-        }
-        setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
-      })
-=======
     return onSnapshot(collection(getFirestore(getApp()), 'artists'), (snap) => {
       if (!snap) {
         return
       }
       setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
     })
->>>>>>> v1.x
   }, [])
 
   return (
@@ -886,8 +782,6 @@ const Artists = () => {
 }
 ```
 
-<<<<<<< HEAD
-=======
 Or for the admin app:
 
 ```js
@@ -904,7 +798,6 @@ const myCode = () => {
   // ...
 }
 ```
-
 
 As a convenience, `next-firebase-auth` initializes the default Firebase admin app and default Firebase JS SDK app if they haven't already been initialized. However, if you prefer, you can choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`.
 
@@ -927,7 +820,6 @@ To do so:
 3. Initialize `next-firebase-auth` as you normally would
    - Ensure your Firebase admin and cookies settings exactly match the settings you're using in Next.js or elsewhere.
 4. All set! Use `verifyIdToken` or `getUserFromCookies` as needed.
-
 
 A small example:
 
@@ -961,7 +853,6 @@ export default myApiHandler
 
 ```
 
->>>>>>> v1.x
 ### TypeScript
 
 When using `withAuthUser` with TypeScript, use [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html). For example:
@@ -1259,6 +1150,7 @@ _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/d
 #### Something's not working.
 
 Here are some initial steps you can take to debug problems:
+
 1. Define `onVerifyTokenError` and `onTokenRefreshError` in your config and check for any error logs.
 2. Set `debug: true` in your config and read through server-side and client-side debug logs for any helpful messages.
 3. Try the [example app](https://github.com/gladly-team/next-firebase-auth/tree/v1.x/example) with your own Firebase credentials.
