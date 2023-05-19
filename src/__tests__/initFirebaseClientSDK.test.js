@@ -126,7 +126,7 @@ describe('initFirebaseClientSDK', () => {
         tenantId: 'my-tenant-id',
       },
     })
-    firebase.apps = []
+    // firebase.apps = []
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
 
     // Mocking the getter and setter for firebase.auth().tenantId
@@ -140,10 +140,12 @@ describe('initFirebaseClientSDK', () => {
       },
     }
 
+    getApps.mockReturnValue([])
+    getAuth.mockReturnValue(mockAuth)
     // Mocking the firebase.auth() function
-    jest.spyOn(firebase, 'auth').mockReturnValue(mockAuth)
+    // jest.spyOn(firebase, 'auth').mockReturnValue(mockAuth)
 
     initFirebaseClientSDK()
-    expect(firebase.auth().tenantId).toEqual('my-tenant-id')
+    expect(getAuth().tenantId).toEqual('my-tenant-id')
   })
 })

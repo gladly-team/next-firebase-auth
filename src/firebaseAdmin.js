@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin'
+import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
