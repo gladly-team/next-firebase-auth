@@ -32,8 +32,6 @@ We treat the Firebase JS SDK as the source of truth for auth status. When the us
 
 ## When (Not) to Use this Package
 
-**This package will likely be helpful** if you're using Firebase authentication and expect to use server-side rendering—especially if you need access to Firebase ID tokens on the server side.
-
 Depending on your app's needs, other approaches might work better for you.
 
 **If your app only uses static pages** or doesn't need the Firebase user for SSR, use the Firebase JS SDK directly to load the user on the client side.
@@ -50,7 +48,7 @@ Depending on your app's needs, other approaches might work better for you.
    - _Pros:_ It removes this package as a dependency.
    - _Cons:_ You won't have access to the Firebase ID token server side, so you won't be able to access other Firebase services. You'll need to implement the logic for verifying the session and managing the session state.
 
-**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does _not_ use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
+**If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does *not* use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
 
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server side.
 
@@ -61,11 +59,7 @@ Depending on your app's needs, other approaches might work better for you.
 
 ## Get Started
 
-**Install:**
-
-Firebase v8: `yarn add next-firebase-auth` or `npm i next-firebase-auth`
-
-Firebase v9+: `yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
+-Install:
 
 `yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
 
@@ -799,6 +793,7 @@ const myCode = () => {
 }
 ```
 
+
 As a convenience, `next-firebase-auth` initializes the default Firebase admin app and default Firebase JS SDK app if they haven't already been initialized. However, if you prefer, you can choose to initialize Firebase yourself _prior_ to initializing `next-firebase-auth`.
 
 ### Getting the user in an API route
@@ -820,6 +815,7 @@ To do so:
 3. Initialize `next-firebase-auth` as you normally would
    - Ensure your Firebase admin and cookies settings exactly match the settings you're using in Next.js or elsewhere.
 4. All set! Use `verifyIdToken` or `getUserFromCookies` as needed.
+
 
 A small example:
 
@@ -1150,7 +1146,6 @@ _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/d
 #### Something's not working.
 
 Here are some initial steps you can take to debug problems:
-
 1. Define `onVerifyTokenError` and `onTokenRefreshError` in your config and check for any error logs.
 2. Set `debug: true` in your config and read through server-side and client-side debug logs for any helpful messages.
 3. Try the [example app](https://github.com/gladly-team/next-firebase-auth/tree/v1.x/example) with your own Firebase credentials.

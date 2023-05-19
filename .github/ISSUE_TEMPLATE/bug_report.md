@@ -4,6 +4,7 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
+
 ---
 
 **When filing a bug report, please confirm you've done the following:**
@@ -18,13 +19,12 @@ A clear and concise description of the bug.
 
 **Versions**
 
-`next-firebase-auth` version:
-Firebase JS SDK:
-Next.js:
+`next-firebase-auth` version: 
+Firebase JS SDK: 
+Next.js: 
 
 **To Reproduce**
 Steps to reproduce the behavior:
-
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
