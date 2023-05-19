@@ -59,7 +59,7 @@ Depending on your app's needs, other approaches might work better for you.
 
 ## Get Started
 
--Install:
+- Install:
 
 `yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
 
