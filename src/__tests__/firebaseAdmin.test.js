@@ -991,7 +991,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
 
     // Mock that the ID token is invalid.
-    const expiredTokenErr = new Error('Mock error message. TEST')
+    const expiredTokenErr = new Error('Mock error message.')
     expiredTokenErr.code = 'auth/invalid-user-token'
     const firebaseAdminAuth = getAuth()
     firebaseAdminAuth.verifyIdToken.mockImplementation(() => {
