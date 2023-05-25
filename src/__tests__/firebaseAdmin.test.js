@@ -1,5 +1,4 @@
 import { getAuth } from 'firebase-admin/auth'
-import * as admin from 'firebase-admin'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
