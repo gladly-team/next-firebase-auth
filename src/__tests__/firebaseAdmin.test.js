@@ -1,4 +1,5 @@
 import { getAuth } from 'firebase-admin/auth'
+import * as admin from 'firebase-admin'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
@@ -1111,6 +1112,41 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toThrow(
       'A `fetch` global is required when using next-firebase-auth. See documentation on setting up a `fetch` polyfill.'
+    )
+  })
+
+  it('changes auth instace if there is a tenant', async () => {
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    const mockTenant = 'test-tenant'
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+        apiKey: 'some-key',
+        tenantId: mockTenant,
+      },
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserAdminSDK({
+      tenant: mockTenant,
+    })
+
+    const firebaseAdminAuth = getAuth()
+    const tenantAuth = firebaseAdminAuth
+      .tenantManager()
+      .authForTenant(mockTenant)
+
+    tenantAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    tenantAuth.createCustomToken.mockResolvedValue('my-custom-token')
+
+    await getCustomIdAndRefreshTokens('some-token')
+    expect(
+      firebaseAdminAuth.tenantManager().authForTenant
+    ).toHaveBeenCalledWith(mockTenant)
+    expect(tenantAuth.createCustomToken).toHaveBeenCalledWith(
+      mockFirebaseUser.uid
     )
   })
 })
