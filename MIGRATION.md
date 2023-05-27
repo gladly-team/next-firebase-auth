@@ -44,7 +44,11 @@ Codemod:
 
 Any function handlers used for `authPageURL` and `appPageUrl` will receive an object with a `user` property rather than an `AuthUser` property.
 
-Codemod: TODO
+#### The `setAuthCookies` return data property `AuthUser` has become `user`
+
+Codemod:
+
+`npx -p next-firebase-auth codemod rename-authuser-setauthcookies .`
 
 ### Breaking Changes: Peer Dependencies
 
