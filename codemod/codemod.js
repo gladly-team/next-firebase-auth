@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 
 // Adapted from:
 // https://github.com/mui/material-ui/blob/master/packages/mui-codemod/codemod.js
@@ -16,66 +18,83 @@ const jscodeshiftExecutable = path.join(
 )
 
 async function runTransform(transform, files, flags, codemodFlags) {
-  const transformerSrcPath = path.resolve(__dirname, `${transform}.js`)
-  const transformerBuildPath = path.resolve(
-    __dirname,
-    './node',
-    `${transform}.js`
-  )
-  let transformerPath
-  try {
-    await fs.stat(transformerSrcPath)
-    transformerPath = transformerSrcPath
-  } catch (srcPathError) {
+  let transforms = [transform]
+  if (transform === 'all-v1') {
+    transforms = [
+      'rename-authuser-withauthusertokenssr',
+      'rename-authuser-withauthuserssr',
+      'withauthuser-to-withuser',
+      'withauthusertokenssr-to-withusertokenssr',
+      'withauthuserssr-to-withuserssr',
+      'useauthuser-to-useuser',
+      'rename-authuser-setauthcookies',
+    ]
+  }
+  const transformerPaths = []
+  for (const transformName of transforms) {
+    const transformerSrcPath = path.resolve(__dirname, `${transformName}.js`)
+    const transformerBuildPath = path.resolve(
+      __dirname,
+      './node',
+      `${transform}.js`
+    )
+    let transformerPath
     try {
-      await fs.stat(transformerBuildPath)
-      transformerPath = transformerBuildPath
-    } catch (buildPathError) {
-      if (buildPathError.code === 'ENOENT') {
-        throw new Error(
-          `Transform '${transform}' not found. Check out ${path.resolve(
-            __dirname,
-            './MIGRATION.md for a list of available codemods.'
-          )}`
-        )
+      await fs.stat(transformerSrcPath)
+      transformerPath = transformerSrcPath
+    } catch (srcPathError) {
+      try {
+        await fs.stat(transformerBuildPath)
+        transformerPath = transformerBuildPath
+      } catch (buildPathError) {
+        if (buildPathError.code === 'ENOENT') {
+          throw new Error(
+            `Transform '${transform}' not found. Check out ${path.resolve(
+              __dirname,
+              './MIGRATION.md for a list of available codemods.'
+            )}`
+          )
+        }
+        throw buildPathError
       }
-      throw buildPathError
     }
+    transformerPaths.push(transformerPath)
   }
 
-  const args = [
-    jscodeshiftExecutable,
-    '--transform',
-    transformerPath,
-    ...codemodFlags,
-    '--extensions',
-    'js,ts,jsx,tsx',
-    '--parser',
-    flags.parser || 'tsx',
-    '--ignore-pattern',
-    '**/node_modules/**',
-  ]
+  for (const transformerPath of transformerPaths) {
+    const args = [
+      jscodeshiftExecutable,
+      '--transform',
+      transformerPath,
+      ...codemodFlags,
+      '--extensions',
+      'js,ts,jsx,tsx',
+      '--parser',
+      flags.parser || 'tsx',
+      '--ignore-pattern',
+      '**/node_modules/**',
+    ]
 
-  if (flags.dry) {
-    args.push('--dry')
-  }
-  if (flags.print) {
-    args.push('--print')
-  }
-  if (flags.jscodeshift) {
-    args.push(flags.jscodeshift)
-  }
+    if (flags.dry) {
+      args.push('--dry')
+    }
+    if (flags.print) {
+      args.push('--print')
+    }
+    if (flags.jscodeshift) {
+      args.push(flags.jscodeshift)
+    }
 
-  args.push(...files)
+    args.push(...files)
+    // eslint-disable-next-line no-console -- debug information
+    console.log(`Executing command: jscodeshift ${args.join(' ')}`)
+    const jscodeshiftProcess = childProcess.spawnSync('node', args, {
+      stdio: 'inherit',
+    })
 
-  // eslint-disable-next-line no-console -- debug information
-  console.log(`Executing command: jscodeshift ${args.join(' ')}`)
-  const jscodeshiftProcess = childProcess.spawnSync('node', args, {
-    stdio: 'inherit',
-  })
-
-  if (jscodeshiftProcess.error) {
-    throw jscodeshiftProcess.error
+    if (jscodeshiftProcess.error) {
+      throw jscodeshiftProcess.error
+    }
   }
 }
 
