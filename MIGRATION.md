@@ -16,35 +16,47 @@ The `withAuthUserTokenSSR` and `withAuthUserSSR` functions will receive an objec
 
 Codemod #1:
 
-`npx -p next-firebase-auth codemod rename-authuser-withauthusertokenssr .`
+```bash
+npx -p next-firebase-auth codemod rename-authuser-withauthusertokenssr .
+```
 
 Codemod #2:
 
-`npx -p next-firebase-auth codemod rename-authuser-withauthuserssr .`
+```bash
+npx -p next-firebase-auth codemod rename-authuser-withauthuserssr .
+```
 
 #### `withAuthUser` has become `withUser`
 
 Codemod:
 
-`npx -p next-firebase-auth codemod withauthuser-to-withuser .`
+```bash
+npx -p next-firebase-auth codemod withauthuser-to-withuser .
+```
 
 #### `withAuthUserTokenSSR` has become `withUserTokenSSR`
 
 Codemod:
 
-`npx -p next-firebase-auth codemod withauthusertokenssr-to-withusertokenssr .`
+```bash
+npx -p next-firebase-auth codemod withauthusertokenssr-to-withusertokenssr .
+```
 
 #### `withAuthUserSSR` has become `withUserSSR`
 
 Codemod:
 
-`npx -p next-firebase-auth codemod withauthuserssr-to-withuserssr .`
+```bash
+npx -p next-firebase-auth codemod withauthuserssr-to-withuserssr .
+```
 
 #### `useAuthUser` has become `useAuthUser`
 
 Codemod:
 
-`npx -p next-firebase-auth codemod useauthuser-to-useuser .`
+```bash
+npx -p next-firebase-auth codemod useauthuser-to-useuser .
+```
 
 #### The redirect function property `AuthUser` has become `user`
 
@@ -54,7 +66,9 @@ Any function handlers used for `authPageURL` and `appPageUrl` will receive an ob
 
 Codemod:
 
-`npx -p next-firebase-auth codemod rename-authuser-setauthcookies .`
+```bash
+npx -p next-firebase-auth codemod rename-authuser-setauthcookies .
+```
 
 ### Breaking Changes: Peer Dependencies
 
