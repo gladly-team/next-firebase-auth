@@ -37,7 +37,6 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     expect(actual).toEqual(expected)
   })
 
-  // TODO
   it('works with a promise variable not immediately awaited', () => {
     const actual = transform(
       {
@@ -64,7 +63,6 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     expect(actual).toEqual(expected)
   })
 
-  // TODO
   it('works when using promise syntax with an arrow function', () => {
     const actual = transform(
       {
@@ -91,7 +89,6 @@ describe('setAuthCookies return property change: AuthUser -> user', () => {
     expect(actual).toEqual(expected)
   })
 
-  // TODO
   it('works when using promise syntax with a function expression', () => {
     const actual = transform(
       {

@@ -18,6 +18,17 @@ const findParentVarDeclaratorPath = (path) => {
   return findParentVarDeclaratorPath(path.parentPath)
 }
 
+const findFirstUseOfVariableInPath = (jscodeshift, path, identifierName) => {
+  const identifiers = jscodeshift(path).find(jscodeshift.Identifier)
+  let varNode
+  identifiers.forEach((node) => {
+    if (get(node, 'value.loc.identifierName') === identifierName) {
+      varNode = node
+    }
+  })
+  return varNode
+}
+
 const findResultingVarObjPath = (jscodeshift, path) => {
   const { type } = path.value.id || {}
   if (!type) {
@@ -29,15 +40,11 @@ const findResultingVarObjPath = (jscodeshift, path) => {
   if (type === 'Identifier') {
     // Find the usage of the return value variable
     const varName = path.value.id.loc.identifierName
-    const identifiers = jscodeshift(path.parentPath.parentPath.parentPath).find(
-      jscodeshift.Identifier
+    const varNode = findFirstUseOfVariableInPath(
+      jscodeshift,
+      path.parentPath.parentPath.parentPath,
+      varName
     )
-    let varNode
-    identifiers.forEach((node) => {
-      if (get(node, 'value.loc.identifierName') === varName) {
-        varNode = node
-      }
-    })
     return findResultingVarObjPath(
       jscodeshift,
       findParentVarDeclaratorPath(varNode.parentPath)
@@ -71,8 +78,6 @@ export default function transformer(file, api, options) {
     return root
       .find(jscodeshift.CallExpression, { callee: { name: funcName } })
       .forEach((path) => {
-        let varPath
-
         // Determine if the call uses promise or await syntax.
         const possiblePromiseFunc = get(
           path,
@@ -84,20 +89,23 @@ export default function transformer(file, api, options) {
             possiblePromiseFunc.type
           )
         )
+
+        let pathToVarAssignment = path
         if (hasPromiseFunc) {
           // Promise syntax
-          const returnValVarName = possiblePromiseFunc.params[0]
-
-          // TODO: find any destructuring from this variable
-          console.log(returnValVarName)
-        } else {
-          // Await syntax
-          const varDeclaratorPath = findParentVarDeclaratorPath(path)
-          if (!varDeclaratorPath) {
-            return
-          }
-          varPath = findResultingVarObjPath(jscodeshift, varDeclaratorPath)
+          const promiseArgNode = possiblePromiseFunc.params[0]
+          pathToVarAssignment = findFirstUseOfVariableInPath(
+            jscodeshift,
+            possiblePromiseFunc.body,
+            promiseArgNode.loc.identifierName
+          )
         }
+        const varDeclaratorPath =
+          findParentVarDeclaratorPath(pathToVarAssignment)
+        if (!varDeclaratorPath) {
+          return
+        }
+        const varPath = findResultingVarObjPath(jscodeshift, varDeclaratorPath)
         if (!varPath || !varPath.value) {
           return
         }
