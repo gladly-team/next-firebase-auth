@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/github/workflow/status/gladly-team/next-firebase-auth/Unit%20test,%20log%20code%20coverage,%20and%20build/v1.x)](https://github.com/gladly-team/next-firebase-auth/actions?query=workflow%3A%22Unit+test%2C+log+code+coverage%2C+and+build%22+branch%3Av1.x)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/gladly-team/next-firebase-auth/node.js.yml?branch=v1.x)](https://github.com/gladly-team/next-firebase-auth/actions/workflows/node.js.yml?query=branch%3Av1.x+)
 [![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x/graph/badge.svg)](https://app.codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x)
 [![npm](https://img.shields.io/npm/v/next-firebase-auth/canary)](https://www.npmjs.com/package/next-firebase-auth)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/next-firebase-auth@canary?label=bundle%20size)](https://bundlephobia.com/package/next-firebase-auth@canary)
@@ -61,11 +61,9 @@ Depending on your app's needs, other approaches might work better for you.
 
 Install:
 
-Firebase v8: `yarn add next-firebase-auth` or `npm i next-firebase-auth`
+`yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
 
-Firebase v9+: `yarn add next-firebase-auth@canary` or `npm i next-firebase-auth@canary`
-
-> ⚠️ If you're using v9 of the Firebase JS SDK, use `next-firebase-auth@canary`. This is an unstable v1 prerelease. Track progress on v1 [in this issue](https://github.com/gladly-team/next-firebase-auth/issues/265).
+> ⚠️ If you're using Firebase JS SDK v8 or below, use `next-firebase-auth@^0.15.0`.
 
 Make sure peer dependencies are also installed:
 
@@ -305,7 +303,11 @@ It accepts the following options:
 For example, this page will SSR for authenticated users, fetching props using their Firebase ID token, and will server-side redirect to the login page if the user is not authenticated:
 
 ```jsx
-import { withAuthUser, AuthAction } from 'next-firebase-auth'
+import {
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from 'next-firebase-auth'
 
 const DemoPage = ({ thing }) => <div>The thing is: {thing}</div>
 
@@ -333,7 +335,9 @@ export default withAuthUser()(DemoPage)
 
 #### `withAuthUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
-Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: it does not validate an ID token. Instead, it simply uses the `AuthUser` data from a cookie. Consequently:
+Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
+
+This method relies on authed user data from a cookie rather than verify or refresh a Firebase ID token. Consequently:
 
 - It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
 - It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
@@ -1137,6 +1141,14 @@ describe('UserDisplayName', () => {
 ## Troubleshooting
 
 _Stuck? Search [discussions](https://github.com/gladly-team/next-firebase-auth/discussions) or open your own Q&A discussion describing what you've already tried._
+
+#### Something's not working.
+
+Here are some initial steps you can take to debug problems:
+1. Define `onVerifyTokenError` and `onTokenRefreshError` in your config and check for any error logs.
+2. Set `debug: true` in your config and read through server-side and client-side debug logs for any helpful messages.
+3. Try the [example app](https://github.com/gladly-team/next-firebase-auth/tree/v1.x/example) with your own Firebase credentials.
+4. Read through other troubleshooting tips below!
 
 #### I get the error "[Some setting] should not be available on the client side."
 
