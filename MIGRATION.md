@@ -14,7 +14,13 @@ TODO
 
 The `withAuthUserTokenSSR` and `withAuthUserSSR` functions will receive an object with a `user` property rather than an `AuthUser` property.
 
-Codemod: TODO
+Codemod #1:
+
+`npx -p next-firebase-auth codemod rename-authuser-withauthusertokenssr .`
+
+Codemod #2:
+
+`npx -p next-firebase-auth codemod rename-authuser-withauthuserssr .`
 
 #### `withAuthUser` has become `withUser`
 
