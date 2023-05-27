@@ -118,7 +118,7 @@ export default function transformer(file, api, options) {
           return
         }
         authUserProp.key.name = newPropertyName
-        authUserProp.value.shorthand = true // assign to AuthUser variable
+        authUserProp.shorthand = false // assign to AuthUser variable
       })
       .toSource(options.printOptions)
   }
