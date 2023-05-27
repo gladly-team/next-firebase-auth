@@ -1,3 +1,5 @@
+// FIXME: not working on example app
+
 import { get } from 'lodash/object'
 
 const funcName = 'withAuthUserTokenSSR'
