@@ -18,14 +18,30 @@ const findParentVarDeclaratorPath = (path) => {
   return findParentVarDeclaratorPath(path.parentPath)
 }
 
-const findResultingVarObjPath = (path) => {
-  const { type } = path.value.id
+const findResultingVarObjPath = (jscodeshift, path) => {
+  const { type } = path.value.id || {}
+  if (!type) {
+    return null
+  }
   if (type === 'ObjectPattern') {
     return path
   }
   if (type === 'Identifier') {
-    // Search for variable usage
-    throw new Error('TODO: implement me')
+    // Find the usage of the return value variable
+    const varName = path.value.id.loc.identifierName
+    const identifiers = jscodeshift(path.parentPath.parentPath.parentPath).find(
+      jscodeshift.Identifier
+    )
+    let varNode
+    identifiers.forEach((node) => {
+      if (get(node, 'value.loc.identifierName') === varName) {
+        varNode = node
+      }
+    })
+    return findResultingVarObjPath(
+      jscodeshift,
+      findParentVarDeclaratorPath(varNode.parentPath)
+    )
   }
   return null
 }
@@ -80,7 +96,7 @@ export default function transformer(file, api, options) {
           if (!varDeclaratorPath) {
             return
           }
-          varPath = findResultingVarObjPath(varDeclaratorPath)
+          varPath = findResultingVarObjPath(jscodeshift, varDeclaratorPath)
         }
         if (!varPath || !varPath.value) {
           return
