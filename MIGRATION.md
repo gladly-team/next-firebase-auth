@@ -20,25 +20,25 @@ Codemod: TODO
 
 Codemod:
 
-`withauthuser-to-withuser`
+`npx -p next-firebase-auth codemod withauthuser-to-withuser .`
 
 #### `withAuthUserTokenSSR` has become `withUserTokenSSR`
 
 Codemod:
 
-`withauthusertokenssr-to-withusertokenssr`
+`npx -p next-firebase-auth codemod withauthusertokenssr-to-withusertokenssr .`
 
 #### `withAuthUserSSR` has become `withUserSSR`
 
 Codemod:
 
-`withauthuserssr-to-withuserssr`
+`npx -p next-firebase-auth codemod withauthuserssr-to-withuserssr .`
 
 #### `useAuthUser` has become `useAuthUser`
 
 Codemod:
 
-`useauthuser-to-useuser`
+`npx -p next-firebase-auth codemod useauthuser-to-useuser .`
 
 #### The redirect function property `AuthUser` has become `user`
 

@@ -13,6 +13,9 @@
   "browser": "build/index.browser.js",
   "main": "build/index.node.js",
   "types": "build/index.d.ts",
+  "bin": {
+    "codemod": "./codemod/codemod.js"
+  },
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
   "author": "Gladly Team",
   "license": "MIT",
@@ -86,7 +89,8 @@
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.10.0",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "yargs": "^17.7.2"
   },
   "peerDependencies": {
     "firebase": "^9.0.0",
