@@ -35,7 +35,7 @@ async function runTransform(transform, files, flags, codemodFlags) {
         throw new Error(
           `Transform '${transform}' not found. Check out ${path.resolve(
             __dirname,
-            './README.md for a list of available codemods.'
+            './MIGRATION.md for a list of available codemods.'
           )}`
         )
       }
