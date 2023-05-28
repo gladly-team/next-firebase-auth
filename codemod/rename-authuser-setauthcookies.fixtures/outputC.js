@@ -1,16 +1,12 @@
+/* eslint-disable import/no-unresolved */
 import { setAuthCookies } from 'next-firebase-auth'
-import initAuth from '../../utils/initAuth'
-
-initAuth()
 
 const handler = async (req, res) => {
   try {
-    // Including unused return value to demonstrate codemod
+    const prom = setAuthCookies(req, res)
     // eslint-disable-next-line no-unused-vars
-    const { AuthUser } = await setAuthCookies(req, res)
+    const { user: AuthUser } = await prom
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e)
     return res.status(500).json({ error: 'Unexpected error.' })
   }
   return res.status(200).json({ status: true })
