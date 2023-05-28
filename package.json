@@ -14,7 +14,7 @@
   "main": "build/index.node.js",
   "types": "build/index.d.ts",
   "bin": {
-    "codemod": "./codemod/codemod.js"
+    "codemod": "./build/codemod/codemod.js"
   },
   "repository": "git@github.com:gladly-team/next-firebase-auth.git",
   "author": "Gladly Team",
