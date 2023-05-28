@@ -1,4 +1,4 @@
-import renameImport from 'codemod/util/renameImport'
+import renameImport from './util/renameImport'
 
 const originalAPIName = 'withAuthUser'
 const newAPIName = 'withUser'

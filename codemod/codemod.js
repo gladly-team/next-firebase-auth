@@ -17,9 +17,9 @@ const jscodeshiftExecutable = path.join(
   jscodeshiftPackage.bin.jscodeshift
 )
 
-async function runTransform(transform, files, flags, codemodFlags) {
-  let transforms = [transform]
-  if (transform === 'all-v1') {
+async function runTransform(_transform, files, flags, codemodFlags) {
+  let transforms = [_transform]
+  if (_transform === 'all-v1') {
     transforms = [
       'rename-authuser-withauthusertokenssr',
       'rename-authuser-withauthuserssr',
@@ -33,11 +33,7 @@ async function runTransform(transform, files, flags, codemodFlags) {
   const transformerPaths = []
   for (const transformName of transforms) {
     const transformerSrcPath = path.resolve(__dirname, `${transformName}.js`)
-    const transformerBuildPath = path.resolve(
-      __dirname,
-      './node',
-      `${transform}.js`
-    )
+    const transformerBuildPath = path.resolve(__dirname, `${transformName}.js`)
     let transformerPath
     try {
       await fs.stat(transformerSrcPath)
@@ -49,7 +45,7 @@ async function runTransform(transform, files, flags, codemodFlags) {
       } catch (buildPathError) {
         if (buildPathError.code === 'ENOENT') {
           throw new Error(
-            `Transform '${transform}' not found. Check out ${path.resolve(
+            `Transform '${transformName}' not found. Check out ${path.resolve(
               __dirname,
               './MIGRATION.md for a list of available codemods.'
             )}`
@@ -87,7 +83,6 @@ async function runTransform(transform, files, flags, codemodFlags) {
 
     args.push(...files)
     // eslint-disable-next-line no-console -- debug information
-    console.log(`Executing command: jscodeshift ${args.join(' ')}`)
     const jscodeshiftProcess = childProcess.spawnSync('node', args, {
       stdio: 'inherit',
     })
@@ -102,7 +97,6 @@ function run(argv) {
   const { codemod, paths, ...flags } = argv
 
   // eslint-disable-next-line no-console -- debug information
-  console.log(`Running codemod ${codemod} on files at path ${paths}`)
 
   return runTransform(
     codemod,
