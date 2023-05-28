@@ -41,6 +41,5 @@
     "**/*.test.*",
     "**/testHelpers/",
     "**/__mocks__/",
-  ],
-  "preset": "ts-jest"
+  ]
 }

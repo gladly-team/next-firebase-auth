@@ -2,10 +2,12 @@ module.exports = {
   extends: [
     'airbnb',
     'prettier',
-    'plugin:import/recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:import/typescript',
   ],
-  plugins: ['prettier', 'react-hooks'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['prettier', 'react-hooks', '@typescript-eslint'],
+  root: true,
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': 0,
@@ -31,6 +33,12 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
+    'no-shadow': 0,
+    '@typescript-eslint/no-shadow': 'error',
+    // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error'],
     'import/no-unresolved': 'error',
     'import/extensions': [
       'error',
@@ -47,7 +55,12 @@ module.exports = {
     // Set Jest rules only for test files.
     // https://stackoverflow.com/a/49211283
     {
-      files: ['**/*.test.js', '**/__mocks__/**/*.js'],
+      files: [
+        '**/*.test.ts',
+        '**/__mocks__/**/*.ts',
+        '**/*.test.js',
+        '**/__mocks__/**/*.js',
+      ],
       extends: ['plugin:jest/recommended'],
       env: {
         jest: true,
@@ -62,21 +75,6 @@ module.exports = {
       files: ['./codemod/**'],
       rules: {
         'import/no-extraneous-dependencies': 0,
-      },
-    },
-    // Handle TypeScript separately.
-    {
-      files: ['**/*.ts', '**/*.tsx'],
-      extends: ['plugin:@typescript-eslint/recommended'],
-      plugins: ['@typescript-eslint'],
-      parser: '@typescript-eslint/parser',
-      rules: {
-        // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
-        'no-shadow': 0,
-        '@typescript-eslint/no-shadow': 'error',
-        // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
-        'no-use-before-define': 'off',
-        '@typescript-eslint/no-use-before-define': ['error'],
       },
     },
     {
@@ -103,7 +101,9 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
     'import/resolver': {
-      typescript: true,
+      typescript: {
+        alwaysTryTypes: true,
+      },
       node: true,
     },
   },

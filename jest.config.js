@@ -18,4 +18,5 @@ module.exports = {
     '/.yalc/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  preset: 'ts-jest',
 }
