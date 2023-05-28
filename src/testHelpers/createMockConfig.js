@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 const createMockConfig = ({ clientSide } = {}) => {
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const isClientSide = require('src/isClientSide').default
   const useClientSideConfig =
     typeof clientSide === 'undefined' ? isClientSide() : clientSide

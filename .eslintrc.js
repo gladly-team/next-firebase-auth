@@ -1,6 +1,13 @@
 module.exports = {
-  extends: ['airbnb', 'prettier'],
-  plugins: ['prettier', 'react-hooks'],
+  extends: [
+    'airbnb',
+    'prettier',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/typescript',
+  ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['prettier', 'react-hooks', '@typescript-eslint'],
+  root: true,
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': 0,
@@ -26,12 +33,36 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
+    'no-shadow': 0,
+    '@typescript-eslint/no-shadow': 'error',
+    // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error'],
+    // Let eslint manage semicolons
+    '@typescript-eslint/no-extra-semi': 0,
+    'import/no-unresolved': 'error',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
   },
   overrides: [
     // Set Jest rules only for test files.
     // https://stackoverflow.com/a/49211283
     {
-      files: ['**/*.test.js', '**/__mocks__/**/*.js'],
+      files: [
+        '**/*.test.ts',
+        '**/__mocks__/**/*.ts',
+        '**/*.test.js',
+        '**/__mocks__/**/*.js',
+      ],
       extends: ['plugin:jest/recommended'],
       env: {
         jest: true,
@@ -40,33 +71,21 @@ module.exports = {
       rules: {
         'global-require': 0,
         'react/jsx-props-no-spreading': 0,
+        '@typescript-eslint/no-var-requires': 0,
+        '@typescript-eslint/no-empty-function': 0,
       },
     },
     {
       files: ['./codemod/**'],
       rules: {
         'import/no-extraneous-dependencies': 0,
+        '@typescript-eslint/no-var-requires': 0,
       },
     },
-    // Handle TypeScript separately.
     {
-      files: ['**/*.ts', '**/*.tsx'],
-      extends: ['plugin:@typescript-eslint/recommended'],
-      plugins: ['@typescript-eslint'],
-      parser: '@typescript-eslint/parser',
-      settings: {
-        'import/resolver': {
-          // enable `eslint-import-resolver-typescript`
-          typescript: {},
-        },
-      },
+      files: ['./codemod/**/*.fixtures/*'],
       rules: {
-        // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
-        'no-shadow': 0,
-        '@typescript-eslint/no-shadow': 'error',
-        // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
-        'no-use-before-define': 'off',
-        '@typescript-eslint/no-use-before-define': ['error'],
+        '@typescript-eslint/no-unused-vars': 0,
       },
     },
     {
@@ -89,11 +108,14 @@ module.exports = {
   },
   settings: {
     // Handle linting for absolute imports.
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
     'import/resolver': {
-      alias: [
-        ['codemod', './codemod'],
-        ['src', './src'],
-      ],
+      typescript: {
+        alwaysTryTypes: true,
+      },
+      node: true,
     },
   },
 }
