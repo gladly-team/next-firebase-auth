@@ -26,6 +26,16 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
   },
   overrides: [
     // Set Jest rules only for test files.

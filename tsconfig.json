@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
     "lib": [
       "dom",
@@ -25,6 +26,16 @@
   ],
   "exclude": [
     "node_modules",
-    "example"
-  ]
+    "example",
+    "**/*.test.*",
+    "**/testHelpers/",
+    "**/__mocks__/",
+  ],
+  "outDir": "./build",
+  "paths": {
+    "src": [
+      "src/*"
+    ]
+  },
+  "preset": "ts-jest"
 }
