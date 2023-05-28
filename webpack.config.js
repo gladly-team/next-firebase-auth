@@ -45,7 +45,7 @@ const sharedConfig = {
           to: './codemod',
           globOptions: {
             gitignore: true,
-            ignore: ['**/*.fixtures/**'],
+            ignore: ['**/*.test.*/**', '**/*.fixtures/**'],
           },
         },
       ],
