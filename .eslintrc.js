@@ -1,5 +1,10 @@
 module.exports = {
-  extends: ['airbnb', 'prettier'],
+  extends: [
+    'airbnb',
+    'prettier',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+  ],
   plugins: ['prettier', 'react-hooks'],
   rules: {
     'prettier/prettier': 'error',
@@ -26,6 +31,7 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'import/no-unresolved': 'error',
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -64,12 +70,6 @@ module.exports = {
       extends: ['plugin:@typescript-eslint/recommended'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
-      settings: {
-        'import/resolver': {
-          // enable `eslint-import-resolver-typescript`
-          typescript: {},
-        },
-      },
       rules: {
         // https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#i-am-using-a-rule-from-eslint-core-and-it-doesnt-work-correctly-with-typescript-code
         'no-shadow': 0,
@@ -99,11 +99,12 @@ module.exports = {
   },
   settings: {
     // Handle linting for absolute imports.
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
     'import/resolver': {
-      alias: [
-        ['codemod', './codemod'],
-        ['src', './src'],
-      ],
+      typescript: true,
+      node: true,
     },
   },
 }

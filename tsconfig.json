@@ -1,6 +1,15 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "outDir": "./build",
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ],
+      "codemod/*": [
+        "./codemod/*"
+      ]
+    },
     "target": "es5",
     "lib": [
       "dom",
@@ -21,8 +30,10 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
   ],
   "exclude": [
     "node_modules",
@@ -31,11 +42,5 @@
     "**/testHelpers/",
     "**/__mocks__/",
   ],
-  "outDir": "./build",
-  "paths": {
-    "src": [
-      "src/*"
-    ]
-  },
   "preset": "ts-jest"
 }
