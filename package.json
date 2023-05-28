@@ -23,7 +23,7 @@
     "build": "npm-run-all -s build:clean build:src",
     "build:clean": "rm -rf ./build",
     "build:src": "NODE_ENV=production webpack",
-    "lint": "tsc && eslint ./",
+    "lint": "tsc --noEmit && eslint ./",
     "bundlesize": "npm-run-all -s build bundlesize:no-build",
     "bundlesize:no-build": "bundlesize",
     "test": "npm-run-all -s install-example-deps lint test:coverage",
