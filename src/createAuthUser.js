@@ -97,7 +97,7 @@ const createAuthUser = ({
 
   // When not on the client side, the "signOut" method is a noop.
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  let signOutFunc = async () => { }
+  let signOutFunc = async () => {}
 
   let tokenString = null // used for serialization
   if (firebaseUserClientSDK) {
