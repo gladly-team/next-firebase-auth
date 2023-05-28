@@ -29,17 +29,12 @@
     "jsx": "preserve"
   },
   "include": [
-    "next-env.d.ts",
-    "src/**/*.js",
-    "src/**/*.jsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "**/*"
   ],
   "exclude": [
-    "node_modules",
+    "build",
+    "coverage",
     "example",
-    "**/*.test.*",
-    "**/testHelpers/",
-    "**/__mocks__/",
+    "node_modules"
   ]
 }
