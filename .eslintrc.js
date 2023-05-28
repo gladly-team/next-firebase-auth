@@ -39,6 +39,8 @@ module.exports = {
     // https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-defsine.md
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
+    // Let eslint manage semicolons
+    '@typescript-eslint/no-extra-semi': 0,
     'import/no-unresolved': 'error',
     'import/extensions': [
       'error',
@@ -69,12 +71,21 @@ module.exports = {
       rules: {
         'global-require': 0,
         'react/jsx-props-no-spreading': 0,
+        '@typescript-eslint/no-var-requires': 0,
+        '@typescript-eslint/no-empty-function': 0,
       },
     },
     {
       files: ['./codemod/**'],
       rules: {
         'import/no-extraneous-dependencies': 0,
+        '@typescript-eslint/no-var-requires': 0,
+      },
+    },
+    {
+      files: ['./codemod/**/*.fixtures/*'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 0,
       },
     },
     {

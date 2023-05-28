@@ -24,7 +24,8 @@ export const getCookie = (
     res = {
       getHeader: () => [],
       setHeader: () => ({
-        call: () => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        call: () => { },
       }),
     },
   },

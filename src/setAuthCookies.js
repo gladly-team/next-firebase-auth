@@ -27,7 +27,7 @@ const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
   let refreshToken = null
   let AuthUser = createAuthUser() // default to an unauthed user
   try {
-    ;({ idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
+    ; ({ idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
       token
     ))
   } catch (e) {
