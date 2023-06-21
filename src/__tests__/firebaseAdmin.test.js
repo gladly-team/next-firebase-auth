@@ -1,4 +1,7 @@
-import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
+import {
+  createMockFirebaseUserAdminSDK,
+  createMockFirebaseUserRecord
+} from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createAuthUser'
 import { setConfig, getConfig } from 'src/config'
@@ -584,12 +587,14 @@ describe('getCustomIdAndRefreshTokens', () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord();
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
     expect(admin.auth().createCustomToken).toHaveBeenCalledWith(
-      mockFirebaseUser.uid
+      mockFirebaseUser.uid, mockUserRecord.customClaims
     )
   })
 
@@ -608,8 +613,10 @@ describe('getCustomIdAndRefreshTokens', () => {
       },
     })
 
+    const mockUserRecord = createMockFirebaseUserRecord();
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
@@ -639,7 +646,9 @@ describe('getCustomIdAndRefreshTokens', () => {
     const authEmulatorEndpoint =
       'http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken'
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord();
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
@@ -652,7 +661,9 @@ describe('getCustomIdAndRefreshTokens', () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord();
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
@@ -681,7 +692,9 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
 
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord();
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     const response = await getCustomIdAndRefreshTokens('some-token')
@@ -690,6 +703,34 @@ describe('getCustomIdAndRefreshTokens', () => {
       idToken: 'the-id-token',
       refreshToken: 'the-refresh-token',
     })
+  })
+
+  it('returns the expected AuthUser with claims', async () => {
+    expect.assertions(1)
+    const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
+
+    // Mock the behavior of getting a custom token.
+    global.fetch.mockReturnValue({
+      ...createMockFetchResponse(),
+      json: () =>
+        Promise.resolve({
+          idToken: 'the-id-token',
+          refreshToken: 'the-refresh-token',
+        }),
+    })
+
+    const mockFirebaseUser = createMockFirebaseUserRecord()
+    const mockUserRecord = createMockFirebaseUserRecord()
+    mockUserRecord.customClaims = { foo: "bar" };
+
+    const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
+    admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
+    admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
+    await getCustomIdAndRefreshTokens('some-token')
+    expect(admin.auth().createCustomToken).toHaveBeenCalledWith(
+      mockFirebaseUser.uid, mockUserRecord.customClaims
+    )
   })
 
   it('returns the expected AuthUser value', async () => {
@@ -707,10 +748,12 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
 
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord()
     const expectedAuthUser = createAuthUser({
       firebaseUserAdminSDK: mockFirebaseUser,
     })
     const admin = getFirebaseAdminApp()
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     const response = await getCustomIdAndRefreshTokens('some-token')
@@ -739,7 +782,10 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
 
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
+    const mockUserRecord = createMockFirebaseUserRecord()
     const admin = getFirebaseAdminApp()
+    console.log(admin.auth());
+    admin.auth().getUser.mockResolvedValue(mockUserRecord)
     admin.auth().verifyIdToken.mockResolvedValue(mockFirebaseUser)
     admin.auth().createCustomToken.mockResolvedValue('my-custom-token')
     await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toEqual(

@@ -145,7 +145,6 @@ export const getCustomIdAndRefreshTokens = async (token) => {
   const admin = getFirebaseAdminApp()
 
   const auth = admin.auth()
-
   const user = await auth.getUser(AuthUser.id)
 
   // It's important that we pass the same user ID here, otherwise
