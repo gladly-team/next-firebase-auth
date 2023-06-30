@@ -28,9 +28,11 @@ const defaultConfig = {
   tokenChangedHandler: undefined,
   // Optional function: handler called if there are unexpected errors while
   // verifying the user's ID token server-side.
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onVerifyTokenError: () => {},
   // Optional function: handler called if there are unexpected errors while
   // refreshing the user's ID token server-side.
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTokenRefreshError: () => {},
   // Optional string: the URL to navigate to when the user
   // needs to log in.

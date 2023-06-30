@@ -1,4 +1,4 @@
-/* eslint-disable global-require */
+/* eslint-disable global-require, @typescript-eslint/no-var-requires */
 
 import initCommon from 'src/initCommon'
 import AuthAction from 'src/AuthAction'
