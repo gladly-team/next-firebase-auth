@@ -131,7 +131,7 @@ export interface ConfigInput {
   debug?: boolean
 }
 
-let config: ConfigInput
+let config: ConfigMerged
 
 const ONE_WEEK_IN_MS = 7 * 60 * 60 * 24 * 1000
 const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000

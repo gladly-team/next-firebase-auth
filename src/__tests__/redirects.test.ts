@@ -1,17 +1,24 @@
-import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
+import { GetServerSidePropsContext } from 'next'
+import type { ParsedUrlQuery } from 'querystring'
+import {
+  getLoginRedirectInfo,
+  getAppRedirectInfo,
+  RedirectInput,
+} from 'src/redirects'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { setConfig } from 'src/config'
+import { AuthUser as AuthUserType } from 'src/createAuthUser'
 
 describe('redirects', () => {
   const redirectOperations = [
-    ({
+    {
       redirectConfigName: 'authPageURL',
       redirectFunc: getLoginRedirectInfo,
     },
     {
       redirectConfigName: 'appPageURL',
       redirectFunc: getAppRedirectInfo,
-    }),
+    },
   ]
 
   redirectOperations.forEach(({ redirectConfigName, redirectFunc }) => {
@@ -65,6 +72,7 @@ describe('redirects', () => {
             redirectURL: {
               destination: '/',
               basePath: false,
+              permanent: false,
             },
           })
 
@@ -90,10 +98,14 @@ describe('redirects', () => {
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with a computed "destination"', () => {
           const result = redirectFunc({
             redirectURL: ({ ctx, AuthUser }) => ({
-              destination: `/${ctx.id}/${AuthUser.id}`,
+              basePath: true,
+              destination: `/${ctx?.query.id}/${AuthUser?.id}`,
+              permanent: false,
             }),
-            ctx: { id: 'context-id' },
-            AuthUser: { id: 'user-id' },
+            ctx: {
+              query: { id: 'context-id' },
+            } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
+            AuthUser: { id: 'user-id' } as AuthUserType,
           })
 
           expect(result).toEqual({
@@ -108,6 +120,7 @@ describe('redirects', () => {
             redirectURL: () => ({
               destination: '/',
               basePath: false,
+              permanent: false,
               anotherProp: true,
             }),
           })
@@ -122,8 +135,10 @@ describe('redirects', () => {
 
         it('returns a redirect object when defaults are overridden', () => {
           const result = redirectFunc({
-            ctx: { id: 'context-id' },
-            AuthUser: { id: 'user-id' },
+            ctx: {
+              id: 'context-id',
+            } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
+            AuthUser: { id: 'user-id' } as AuthUserType,
             redirectURL: () => ({
               destination: `/`,
               basePath: false,
@@ -157,9 +172,7 @@ describe('redirects', () => {
         it('throws when "destination" is an empty string', () => {
           expect(() =>
             redirectFunc({
-              options: {
-                [redirectConfigName]: '',
-              },
+              redirectURL: '',
             })
           ).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
@@ -169,10 +182,8 @@ describe('redirects', () => {
         it('throws when "destination" is a number', () => {
           expect(() =>
             redirectFunc({
-              options: {
-                [redirectConfigName]: 42,
-              },
-            })
+              redirectURL: 42,
+            } as unknown as RedirectInput)
           ).toThrow(
             `The "${redirectConfigName}" must be set to a non-empty string, an object literal containing "destination", or a function that returns either.`
           )

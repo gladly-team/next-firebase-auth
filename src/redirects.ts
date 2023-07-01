@@ -1,3 +1,7 @@
+import type { GetServerSidePropsContext } from 'next'
+import type { ParsedUrlQuery } from 'querystring'
+
+import { AuthUser as AuthUserType } from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 
 const REDIRECT_DEFAULTS = {
@@ -5,7 +9,40 @@ const REDIRECT_DEFAULTS = {
   permanent: false,
 }
 
-const getDestination = ({ ctx, AuthUser, redirectDestination }) => {
+type URLResolveFunction = (obj: {
+  ctx?: GetServerSidePropsContext<ParsedUrlQuery>
+  AuthUser?: AuthUserType
+}) => string | RedirectObject
+
+type RedirectObject = {
+  destination: string | URLResolveFunction
+  basePath: boolean
+  permanent: boolean
+}
+
+type PageURL = string | RedirectObject | URLResolveFunction
+
+export interface RedirectInput {
+  ctx?: GetServerSidePropsContext<ParsedUrlQuery>
+  AuthUser?: AuthUserType
+  redirectURL?: PageURL
+}
+
+type RedirectConfigName = string
+
+interface RedirectConfig extends RedirectInput {
+  redirectConfigName: RedirectConfigName
+}
+
+const getDestination = ({
+  ctx,
+  AuthUser,
+  redirectDestination,
+}: {
+  ctx?: GetServerSidePropsContext
+  AuthUser?: AuthUserType
+  redirectDestination: PageURL
+}): RedirectObject | undefined => {
   if (typeof redirectDestination === 'function') {
     const destination = redirectDestination({ ctx, AuthUser })
     return getDestination({ ctx, AuthUser, redirectDestination: destination })
@@ -24,11 +61,13 @@ const getDestination = ({ ctx, AuthUser, redirectDestination }) => {
       ...redirectDestination,
     }
   }
-
-  return null
+  return undefined
 }
 
-const throwWhenInvalid = (redirectConfigName, redirectURL) => {
+const throwWhenInvalid = (
+  redirectConfigName: RedirectConfigName,
+  redirectURL?: RedirectObject
+) => {
   const isValid =
     redirectURL &&
     (typeof redirectURL === 'string' ||
@@ -43,14 +82,17 @@ const throwWhenInvalid = (redirectConfigName, redirectURL) => {
   return redirectURL
 }
 
-const getRedirectByUrlConfigName = (redirectConfig) => {
+const getRedirectByUrlConfigName = (redirectConfig: RedirectConfig) => {
   const { redirectConfigName, redirectURL, ctx, AuthUser } = redirectConfig
+  const redirectDestination =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    redirectURL || ((getConfig() as any)[redirectConfigName] as PageURL)
   return throwWhenInvalid(
     redirectConfigName,
     getDestination({
       ctx,
       AuthUser,
-      redirectDestination: redirectURL || getConfig()[redirectConfigName],
+      redirectDestination,
     })
   )
 }
@@ -64,7 +106,11 @@ const getRedirectByUrlConfigName = (redirectConfig) => {
  * @param {Object} LoginRedirectProps.AuthUser - An instance of AuthUser
  * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
  */
-export const getLoginRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
+export const getLoginRedirectInfo = ({
+  redirectURL,
+  AuthUser,
+  ctx,
+}: RedirectInput) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'authPageURL',
     redirectURL,
@@ -81,7 +127,11 @@ export const getLoginRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
  * @param {Object} LoginRedirectProps.AuthUser - An instance of AuthUser
  * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
  */
-export const getAppRedirectInfo = ({ redirectURL, AuthUser, ctx }) =>
+export const getAppRedirectInfo = ({
+  redirectURL,
+  AuthUser,
+  ctx,
+}: RedirectInput) =>
   getRedirectByUrlConfigName({
     redirectConfigName: 'appPageURL',
     redirectURL,

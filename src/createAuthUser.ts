@@ -27,6 +27,20 @@ interface CreateAuthUserInput {
 
 type getIdToken = (forceRefresh?: boolean) => Promise<string | null>
 
+export interface AuthUser {
+  id: string | null
+  email: string | null
+  emailVerified: boolean
+  phoneNumber: string | null
+  displayName: string | null
+  photoURL: string | null
+  claims: Record<string, string | boolean>
+  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
+  clientInitialized: boolean
+  firebaseUser: User | null
+  signOut: () => Promise<void>
+}
+
 /**
  * Take a representation of a Firebase user from a maximum of one of:
  * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
