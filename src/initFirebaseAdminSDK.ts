@@ -25,7 +25,7 @@ const initFirebaseAdminSDK = () => {
       credential: useFirebaseAdminDefaultCredential
         ? applicationDefault()
         : cert({
-            ...firebaseAdminInitConfig.credential,
+            ...firebaseAdminInitConfig?.credential,
           }),
     })
     logDebug('[init] Initialized the Firebase admin SDK.')

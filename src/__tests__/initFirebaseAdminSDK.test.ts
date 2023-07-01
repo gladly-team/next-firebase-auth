@@ -15,12 +15,17 @@ jest.mock('firebase-admin')
 jest.mock('src/config')
 jest.mock('src/logDebug')
 
+const mockApplicationDefault = applicationDefault as jest.Mock
+const mockCert = cert as jest.Mock
+const mockGetApps = getApps as jest.Mock
+const mockInitializeApp = initializeApp as jest.Mock
+
 beforeEach(() => {
   const mockConfig = createMockConfig({ clientSide: false })
   setConfig(mockConfig)
 
-  getApps.mockReturnValue([])
-  cert.mockImplementation((obj) => ({
+  mockGetApps.mockReturnValue([])
+  mockCert.mockImplementation((obj) => ({
     ...obj,
     _mockFirebaseCert: true,
   }))
@@ -35,7 +40,7 @@ describe('initFirebaseAdminSDK', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(initializeApp).toHaveBeenCalledWith({
+    expect(mockInitializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseCert: true,
         clientEmail: 'my-example-app@example.com',
@@ -55,12 +60,12 @@ describe('initFirebaseAdminSDK', () => {
       useFirebaseAdminDefaultCredential: true,
     })
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
-    applicationDefault.mockReturnValue({
+    mockApplicationDefault.mockReturnValue({
       _mockFirebaseDefaultCred: true,
     })
     initFirebaseAdminSDK()
     expect(applicationDefault).toHaveBeenCalled()
-    expect(initializeApp).toHaveBeenCalledWith({
+    expect(mockInitializeApp).toHaveBeenCalledWith({
       credential: {
         _mockFirebaseDefaultCred: true,
       },
@@ -76,10 +81,10 @@ describe('initFirebaseAdminSDK', () => {
 
   it('does not call initializeApp if Firebase already has an initialized app', () => {
     expect.assertions(1)
-    getApps.mockReturnValue([{ some: 'app' }])
+    mockGetApps.mockReturnValue([{ some: 'app' }])
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
-    expect(initializeApp).not.toHaveBeenCalled()
+    expect(mockInitializeApp).not.toHaveBeenCalled()
   })
 
   it('throws if config.firebaseAdminInitConfig is not set and no app is initialized', () => {
@@ -104,7 +109,7 @@ describe('initFirebaseAdminSDK', () => {
       ...mockConfig,
       firebaseAdminInitConfig: undefined,
     })
-    getApps.mockReturnValue([{ some: 'app' }])
+    mockGetApps.mockReturnValue([{ some: 'app' }])
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     expect(() => {
       initFirebaseAdminSDK()
@@ -122,7 +127,7 @@ describe('initFirebaseAdminSDK', () => {
 
   it('does not call logDebug when not initializing a new app', () => {
     expect.assertions(1)
-    getApps.mockReturnValue([{ some: 'app' }])
+    mockGetApps.mockReturnValue([{ some: 'app' }])
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
     expect(logDebug).not.toHaveBeenCalled()
