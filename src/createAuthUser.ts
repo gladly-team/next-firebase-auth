@@ -18,7 +18,7 @@ interface DeserializedAuthUser {
 
 interface CreateAuthUserInput {
   firebaseUserClientSDK?: User
-  firebaseUserAdminSDK?: DecodedIdToken
+  firebaseUserAdminSDK?: Omit<DecodedIdToken, 'firebase'>
   serializedAuthUser?: string
   clientInitialized?: boolean
   token?: string | null

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-const createMockConfig = ({ clientSide } = {}) => {
+const createMockConfig = ({ clientSide }: { clientSide?: boolean } = {}) => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const isClientSide = require('src/isClientSide').default
   const useClientSideConfig =
@@ -13,14 +13,16 @@ const createMockConfig = ({ clientSide } = {}) => {
     onTokenRefreshError: jest.fn(),
     authPageURL: '/login',
     appPageURL: '/',
-    firebaseAdminInitConfig: {
-      credential: {
-        projectId: 'my-example-app',
-        clientEmail: 'my-example-app@example.com',
-        privateKey: useClientSideConfig ? undefined : 'fakePrivateKey123',
-      },
-      databaseURL: 'https://my-example-app.firebaseio.com',
-    },
+    firebaseAdminInitConfig: useClientSideConfig
+      ? undefined
+      : {
+          credential: {
+            projectId: 'my-example-app',
+            clientEmail: 'my-example-app@example.com',
+            privateKey: 'fakePrivateKey123',
+          },
+          databaseURL: 'https://my-example-app.firebaseio.com',
+        },
     firebaseClientInitConfig: {
       apiKey: 'fakeAPIKey123',
       authDomain: 'my-example-app.firebaseapp.com',

@@ -899,7 +899,7 @@ describe('config: debug logging', () => {
       firebaseAdminInitConfig: {
         ...mockConfig.firebaseAdminInitConfig,
         credential: {
-          ...mockConfig.firebaseAdminInitConfig.credential,
+          ...mockConfig.firebaseAdminInitConfig?.credential,
           privateKey: 'hidden',
           clientEmail: 'hidden',
         },
