@@ -1,33 +1,42 @@
-export const createMockFirebaseUserClientSDK = () => ({
-  uid: 'abc-123',
-  email: 'abc@example.com',
-  emailVerified: true,
-  phoneNumber: '+1800-123-4567',
-  displayName: 'Abc Cdf',
-  photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
-  getIdToken: async () => 'my-id-token-abc-123',
-  claims: {},
-  // ... other properties
-})
+import { DecodedIdToken } from 'firebase-admin/auth'
+import { User } from 'firebase/auth'
+
+export const createMockFirebaseUserClientSDK = () => {
+  const mockUser = {
+    uid: 'abc-123',
+    email: 'abc@example.com',
+    emailVerified: true,
+    phoneNumber: '+1800-123-4567',
+    displayName: 'Abc Cdf',
+    photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
+    getIdToken: async () => 'my-id-token-abc-123',
+    claims: {},
+    // ... other properties
+  } as unknown as User
+  return mockUser
+}
 
 // https://firebase.google.com/docs/reference/admin/node/firebase-admin.auth.decodedidtoken
-export const createMockFirebaseUserAdminSDK = () => ({
-  uid: 'def-456',
-  email: 'def@example.com',
-  email_verified: true,
-  phone_number: '+1800-234-5678',
-  name: 'Def Ghi',
-  picture: 'https://def.googleusercontent.com/ghi/profile_photo.png',
-  iss: 'https://securetoken.google.com/my-cool-app',
-  aud: 'my-cool-app',
-  auth_time: 1540000000,
-  user_id: 'def-456',
-  sub: 'def-456',
-  iat: 1540000000,
-  exp: 1540000000,
-  firebase: {},
-  // ... other properties
-})
+export const createMockFirebaseUserAdminSDK = () => {
+  const mockUser = {
+    uid: 'def-456',
+    email: 'def@example.com',
+    email_verified: true,
+    phone_number: '+1800-234-5678',
+    name: 'Def Ghi',
+    picture: 'https://def.googleusercontent.com/ghi/profile_photo.png',
+    iss: 'https://securetoken.google.com/my-cool-app',
+    aud: 'my-cool-app',
+    auth_time: 1540000000,
+    user_id: 'def-456',
+    sub: 'def-456',
+    iat: 1540000000,
+    exp: 1540000000,
+    firebase: {},
+    // ... other properties
+  } as unknown as DecodedIdToken
+  return mockUser
+}
 
 // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
 export const createMockIdTokenResult = ({ claims = {} } = {}) => ({

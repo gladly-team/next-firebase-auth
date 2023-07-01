@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 import { getApp } from 'firebase/app'
-import { getAuth, getIdTokenResult, onIdTokenChanged } from 'firebase/auth'
+import {
+  User,
+  getAuth,
+  getIdTokenResult,
+  onIdTokenChanged,
+} from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createAuthUser from 'src/createAuthUser'
-import { filterStandardClaims } from 'src/claims'
+import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
+import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 
-const defaultTokenChangedHandler = async (authUser) => {
+const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
   const {
     loginAPIEndpoint,
     logoutAPIEndpoint,
@@ -20,12 +25,15 @@ const defaultTokenChangedHandler = async (authUser) => {
     // place we use this logic.
     logDebug('[withAuthUser] Calling the login endpoint.')
     const userToken = await authUser.getIdToken()
+    if (!loginAPIEndpoint) {
+      throw new Error('Invalid config.')
+    }
     try {
       response = await fetch(loginAPIEndpoint, {
         method: 'POST',
         headers: {
-          Authorization: userToken,
-        },
+          Authorization: userToken || undefined,
+        } as HeadersInit,
         credentials: 'include',
       })
       if (!response.ok) {
@@ -46,7 +54,7 @@ const defaultTokenChangedHandler = async (authUser) => {
         )
       }
     } catch (err) {
-      if (onLoginRequestError) {
+      if (onLoginRequestError && err instanceof Error) {
         await onLoginRequestError(err)
       } else {
         throw err
@@ -55,6 +63,9 @@ const defaultTokenChangedHandler = async (authUser) => {
   } else {
     // If the user is not authed, call logout to unset the cookie.
     logDebug('[withAuthUser] Calling the logout endpoint.')
+    if (!logoutAPIEndpoint) {
+      throw new Error('Invalid config.')
+    }
     try {
       response = await fetch(logoutAPIEndpoint, {
         method: 'POST',
@@ -78,7 +89,7 @@ const defaultTokenChangedHandler = async (authUser) => {
         )
       }
     } catch (err) {
-      if (onLogoutRequestError) {
+      if (onLogoutRequestError && err instanceof Error) {
         await onLogoutRequestError(err)
       } else {
         throw err
@@ -88,7 +99,7 @@ const defaultTokenChangedHandler = async (authUser) => {
   return response
 }
 
-const setAuthCookie = async (firebaseUser) => {
+const setAuthCookie = async (firebaseUser?: User) => {
   const { tokenChangedHandler } = getConfig()
 
   const authUser = createAuthUser({
@@ -107,8 +118,12 @@ const setAuthCookie = async (firebaseUser) => {
 }
 
 const useFirebaseUser = () => {
-  const [userInfo, setUserInfo] = useState({
-    user: undefined, // unmodified Firebase user, undefined if not authed
+  const [userInfo, setUserInfo] = useState<{
+    user: User | null
+    claims?: Claims
+    initialized: boolean
+  }>({
+    user: null, // unmodified Firebase user, undefined if not authed
     claims: {},
     initialized: false,
   })
@@ -118,7 +133,7 @@ const useFirebaseUser = () => {
   useEffect(() => {
     let isCancelled = false
 
-    const onIdTokenChange = async (firebaseUser) => {
+    const onIdTokenChange = async (firebaseUser: User | null) => {
       // Prefixing with "[withAuthUser]" because that's currently the only
       // place we use this hook.
       logDebug(
@@ -141,7 +156,7 @@ const useFirebaseUser = () => {
         initialized: true,
       })
 
-      await setAuthCookie(firebaseUser)
+      await setAuthCookie(firebaseUser || undefined)
 
       // Cancel state updates if the component has unmounted. We could abort
       // fetches, but that would not currently support any async logic in the
