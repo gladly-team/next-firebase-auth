@@ -13,6 +13,10 @@ interface ReqResOptionalObj {
   res?: NextApiResponse
 }
 
+type CookieOptions = Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {
+  sameSite?: string
+}
+
 const createCookieMgr = (
   { req, res }: ReqResObj,
   {
@@ -80,7 +84,7 @@ export const getCookie = (
 
 export const setCookie = (
   name: string,
-  cookieVal: object | undefined,
+  cookieVal: string | undefined,
   // The response object is mandatory. The request is optional and unused.
   { req, res }: ReqResObj,
   {
@@ -93,7 +97,7 @@ export const setCookie = (
     sameSite,
     secure,
     signed,
-  }: Cookies.SetOption & Cookies.Option = {}
+  }: CookieOptions = {}
 ) => {
   if (signed && !keys) {
     throw new Error(
@@ -117,7 +121,8 @@ export const setCookie = (
     maxAge,
     overwrite,
     path,
-    sameSite,
+    // Prefer explicit sameSite string instead of boolean.
+    sameSite: sameSite as Cookies.SetOption['sameSite'],
     secure,
     signed,
   })
@@ -128,7 +133,7 @@ export const setCookie = (
 export const deleteCookie = (
   name: string,
   reqResObj: ReqResObj,
-  options: Cookies.SetOption
+  options: CookieOptions
 ) => {
   // "If the value is omitted, an outbound header with an expired
   // date is used to delete the cookie."

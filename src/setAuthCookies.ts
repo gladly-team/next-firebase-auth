@@ -7,8 +7,13 @@ import {
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import createAuthUser from 'src/createAuthUser'
+import { NextApiRequest, NextApiResponse } from 'next'
 
-const setAuthCookies = async (req, res, { token: userProvidedToken } = {}) => {
+const setAuthCookies = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  { token: userProvidedToken }: { token?: string } = {}
+) => {
   logDebug('[setAuthCookies] Attempting to set auth cookies.')
 
   // This should be the original Firebase ID token from

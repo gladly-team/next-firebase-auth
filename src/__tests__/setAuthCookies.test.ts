@@ -10,6 +10,7 @@ import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
 import logDebug from 'src/logDebug'
 import createAuthUser from 'src/createAuthUser'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 jest.mock('src/config')
 jest.mock('src/firebaseAdmin')
@@ -17,18 +18,25 @@ jest.mock('src/authCookies')
 jest.mock('src/cookies')
 jest.mock('src/logDebug')
 
+const mockSetConfig = jest.mocked(setConfig)
+const mockGetCustomIdAndRefreshTokens = getCustomIdAndRefreshTokens as jest.Mock
+const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
+const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockSetCookie = jest.mocked(setCookie)
+const mockLogDebug = jest.mocked(logDebug)
+
 beforeEach(() => {
   const mockAuthUser = createMockAuthUser()
-  getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
-  getCustomIdAndRefreshTokens.mockResolvedValue({
+  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetCustomIdAndRefreshTokens.mockResolvedValue({
     idToken: 'fake-custom-id-token-here',
     refreshToken: 'fake-refresh-token-here',
     AuthUser: mockAuthUser,
   })
 
   const mockConfig = createMockConfig()
-  setConfig({
+  mockSetConfig({
     ...mockConfig,
     cookies: {
       ...mockConfig.cookies,
@@ -102,7 +110,7 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith(
+        expect(mockGetCustomIdAndRefreshTokens).toHaveBeenCalledWith(
           'some-token-here'
         )
       },
@@ -119,7 +127,9 @@ describe('setAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch() // no Authorization header
-        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith('a-cool-token')
+        expect(mockGetCustomIdAndRefreshTokens).toHaveBeenCalledWith(
+          'a-cool-token'
+        )
       },
     })
   })
@@ -138,7 +148,7 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(getCustomIdAndRefreshTokens).toHaveBeenCalledWith(
+        expect(mockGetCustomIdAndRefreshTokens).toHaveBeenCalledWith(
           'another-token-here'
         )
       },
@@ -149,8 +159,8 @@ describe('setAuthCookies', () => {
     expect.assertions(1)
     const mockAuthUser = createMockAuthUser()
     const setAuthCookies = require('src/setAuthCookies').default
-    let mockReq
-    let mockRes
+    let mockReq: NextApiRequest
+    let mockRes: NextApiResponse
     await testApiHandler({
       handler: async (req, res) => {
         // Store the req/res to use in the test assertion.
@@ -165,7 +175,7 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(setCookie).toHaveBeenCalledWith(
+        expect(mockSetCookie).toHaveBeenCalledWith(
           'SomeName.AuthUser',
           mockAuthUser.serialize({ includeToken: false }),
           { req: mockReq, res: mockRes },
@@ -189,8 +199,8 @@ describe('setAuthCookies', () => {
   it('sets the AuthUserTokens cookie as expected', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    let mockReq
-    let mockRes
+    let mockReq: NextApiRequest
+    let mockRes: NextApiResponse
     await testApiHandler({
       handler: async (req, res) => {
         // Store the req/res to use in the test assertion.
@@ -205,7 +215,7 @@ describe('setAuthCookies', () => {
             authorization: 'some-token-here',
           },
         })
-        expect(setCookie).toHaveBeenCalledWith(
+        expect(mockSetCookie).toHaveBeenCalledWith(
           'SomeName.AuthUserTokens',
           JSON.stringify({
             idToken: 'fake-custom-id-token-here',
@@ -258,7 +268,7 @@ describe('setAuthCookies', () => {
   it('returns the expected values when getCustomIdAndRefreshTokens throws', async () => {
     expect.assertions(1)
     const setAuthCookies = require('src/setAuthCookies').default
-    getCustomIdAndRefreshTokens.mockRejectedValue(
+    mockGetCustomIdAndRefreshTokens.mockRejectedValue(
       new Error(
         '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
       )
@@ -276,7 +286,7 @@ describe('setAuthCookies', () => {
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
-        logDebug.mockClear()
+        mockLogDebug.mockClear()
         await fetch({
           headers: {
             authorization: 'some-token-here',
@@ -295,19 +305,19 @@ describe('setAuthCookies', () => {
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
-        logDebug.mockClear()
+        mockLogDebug.mockClear()
         await fetch({
           headers: {
             authorization: 'some-token-here',
           },
         })
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Attempting to set auth cookies.'
         )
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Set auth cookies for an authenticated user.'
         )
-        expect(logDebug).toHaveBeenCalledTimes(2)
+        expect(mockLogDebug).toHaveBeenCalledTimes(2)
       },
     })
   })
@@ -316,7 +326,7 @@ describe('setAuthCookies', () => {
     expect.assertions(3)
     const setAuthCookies = require('src/setAuthCookies').default
 
-    getCustomIdAndRefreshTokens.mockResolvedValue({
+    mockGetCustomIdAndRefreshTokens.mockResolvedValue({
       idToken: null,
       refreshToken: null,
       AuthUser: createAuthUser(), // unauthenticated
@@ -327,19 +337,19 @@ describe('setAuthCookies', () => {
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
-        logDebug.mockClear()
+        mockLogDebug.mockClear()
         await fetch({
           headers: {
             authorization: 'some-token-here',
           },
         })
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Attempting to set auth cookies.'
         )
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Set auth cookies. The user is not authenticated.'
         )
-        expect(logDebug).toHaveBeenCalledTimes(2)
+        expect(mockLogDebug).toHaveBeenCalledTimes(2)
       },
     })
   })
@@ -347,7 +357,7 @@ describe('setAuthCookies', () => {
   it('logs expected debug logs when getCustomIdAndRefreshTokens throws', async () => {
     expect.assertions(4)
     const setAuthCookies = require('src/setAuthCookies').default
-    getCustomIdAndRefreshTokens.mockRejectedValue(
+    mockGetCustomIdAndRefreshTokens.mockRejectedValue(
       new Error('Failed to verify the ID token.')
     )
     await testApiHandler({
@@ -356,22 +366,22 @@ describe('setAuthCookies', () => {
         return res.status(200).end()
       },
       test: async ({ fetch }) => {
-        logDebug.mockClear()
+        mockLogDebug.mockClear()
         await fetch({
           headers: {
             authorization: 'some-token-here',
           },
         })
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Attempting to set auth cookies.'
         )
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
         )
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[setAuthCookies] Set auth cookies. The user is not authenticated.'
         )
-        expect(logDebug).toHaveBeenCalledTimes(3)
+        expect(mockLogDebug).toHaveBeenCalledTimes(3)
       },
     })
   })
