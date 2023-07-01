@@ -9,14 +9,10 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
-import {
-  PageURL,
-  RedirectDestination,
-  getAppRedirectInfo,
-  getLoginRedirectInfo,
-} from 'src/redirects'
+import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
+import { PageURL } from './redirectTypes'
 
-interface WithAuthUserOptions {
+interface Options {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenAuthedBeforeRedirect?:
     | AuthAction.RENDER
@@ -76,8 +72,8 @@ const withAuthUser =
     appPageURL,
     authPageURL,
     LoaderComponent = null,
-  }: WithAuthUserOptions = {}) =>
-  (ChildComponent: React.ComponentType) => {
+  }: Options = {}) =>
+  (ChildComponent: ComponentType) => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
 
     // Some dependencies are optional. Throw if they aren't installed
