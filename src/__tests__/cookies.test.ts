@@ -73,7 +73,7 @@ const createDeleteCookieOptions = createSetCookieOptions
 /**
  * START: getCookie tests
  */
-describe('cookies.js: getCookie', () => {
+describe('cookies: getCookie', () => {
   it('returns the expected cookie value [unsigned]', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
@@ -491,7 +491,7 @@ describe('cookies.js: getCookie', () => {
 /**
  * START: setCookie tests
  */
-describe('cookies.js: setCookie', () => {
+describe('cookies: setCookie', () => {
   it('sets the expected base64-encoded cookie value', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
@@ -1300,7 +1300,7 @@ describe('cookies.js: setCookie', () => {
 /**
  * START: deleteCookie tests
  */
-describe('cookies.js: deleteCookie', () => {
+describe('cookies: deleteCookie', () => {
   it('sets the expected expired date', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
