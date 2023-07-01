@@ -39,6 +39,7 @@ export interface AuthUser {
   clientInitialized: boolean
   firebaseUser: User | null
   signOut: () => Promise<void>
+  serialize: (a?: { includeToken?: boolean }) => string
 }
 
 /**
@@ -85,7 +86,7 @@ const createAuthUser = ({
   clientInitialized = false,
   token = null,
   claims,
-}: CreateAuthUserInput = {}) => {
+}: CreateAuthUserInput = {}): AuthUser => {
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,
