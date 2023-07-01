@@ -36,7 +36,7 @@ type PageURL = string | RedirectObject | URLResolveFunction
 type OnErrorHandler = (error: Error) => void
 
 // https://github.com/gladly-team/next-firebase-auth#config
-interface ConfigInput {
+export interface ConfigInput {
   /**
    * The redirect destination URL when redirecting to the login page.
    */
@@ -263,15 +263,12 @@ const validateConfig = (mergedConfig: ConfigMerged) => {
   }
 
   // We consider cookie keys undefined if the keys are an empty string,
-  // empty array, or array oxf only undefined values.
+  // empty array, or array of only undefined values.
   const { keys } = mergedConfig.cookies
-  const areCookieKeysDefined =
-    (Array.isArray(keys) &&
-      keys.length &&
-      (keys.filter
-        ? keys.filter((item) => item !== undefined).length
-        : true)) ||
-    !!keys // Keygrip object
+  const areCookieKeysDefined = Array.isArray(keys)
+    ? keys.length &&
+      (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+    : !!keys
 
   // Validate config values that differ between client and server context.
   if (isClientSide()) {

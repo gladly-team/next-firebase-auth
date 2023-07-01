@@ -1,10 +1,12 @@
+// TODO: TS
+import { ConfigInput } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('src/isClientSide')
 jest.mock('src/logDebug')
 
 // stash and restore the system env vars
-let env = null
+let env: typeof process.env
 
 beforeEach(() => {
   // Default to client side context.
@@ -16,7 +18,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.resetModules()
   process.env = env
-  env = null
+  env = { NODE_ENV: 'test' }
 })
 
 // Create duplicate tests for behavior we want to test on both the client
@@ -254,7 +256,7 @@ describe('config: server side', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -269,7 +271,7 @@ describe('config: server side', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -287,7 +289,7 @@ describe('config: server side', () => {
       loginAPIEndpoint: undefined,
       logoutAPIEndpoint: undefined,
       onLoginRequestError: () => {},
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -305,7 +307,7 @@ describe('config: server side', () => {
       loginAPIEndpoint: undefined,
       logoutAPIEndpoint: undefined,
       onLogoutRequestError: () => {},
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -375,9 +377,9 @@ describe('config: server side', () => {
   it('defaults onVerifyTokenError to a function', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfigDefault = createMockConfig()
-    delete mockConfigDefault.onVerifyTokenError
-    setConfig(mockConfigDefault)
+    const mockUserConfig: ConfigInput = createMockConfig() as ConfigInput
+    delete mockUserConfig.onVerifyTokenError
+    setConfig(mockUserConfig)
     const config = getConfig()
     expect(typeof config.onVerifyTokenError).toEqual('function')
   })
@@ -413,9 +415,9 @@ describe('config: server side', () => {
   it('defaults onTokenRefreshError to a function', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfigDefault = createMockConfig()
-    delete mockConfigDefault.onTokenRefreshError
-    setConfig(mockConfigDefault)
+    const mockUserConfig: ConfigInput = createMockConfig() as ConfigInput
+    delete mockUserConfig.onTokenRefreshError
+    setConfig(mockUserConfig)
     const config = getConfig()
     expect(typeof config.onTokenRefreshError).toEqual('function')
   })
@@ -693,7 +695,7 @@ describe('config: client side', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -708,7 +710,7 @@ describe('config: client side', () => {
     const mockConfigDefault = createMockConfig()
     const mockConfig = {
       ...mockConfigDefault,
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -726,7 +728,7 @@ describe('config: client side', () => {
       loginAPIEndpoint: undefined,
       logoutAPIEndpoint: undefined,
       onLoginRequestError: () => {},
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -744,7 +746,7 @@ describe('config: client side', () => {
       loginAPIEndpoint: undefined,
       logoutAPIEndpoint: undefined,
       onLogoutRequestError: () => {},
-      tokenChangedHandler: async (token) => token,
+      tokenChangedHandler: async () => undefined,
     }
     expect(() => {
       setConfig(mockConfig)
@@ -814,9 +816,9 @@ describe('config: client side', () => {
   it('defaults onVerifyTokenError to a function', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfigDefault = createMockConfig()
-    delete mockConfigDefault.onVerifyTokenError
-    setConfig(mockConfigDefault)
+    const mockUserConfig: ConfigInput = createMockConfig() as ConfigInput
+    delete mockUserConfig.onVerifyTokenError
+    setConfig(mockUserConfig)
     const config = getConfig()
     expect(typeof config.onVerifyTokenError).toEqual('function')
   })
@@ -852,9 +854,9 @@ describe('config: client side', () => {
   it('defaults onTokenRefreshError to a function', () => {
     expect.assertions(1)
     const { getConfig, setConfig } = require('src/config')
-    const mockConfigDefault = createMockConfig()
-    delete mockConfigDefault.onTokenRefreshError
-    setConfig(mockConfigDefault)
+    const mockUserConfig: ConfigInput = createMockConfig() as ConfigInput
+    delete mockUserConfig.onTokenRefreshError
+    setConfig(mockUserConfig)
     const config = getConfig()
     expect(typeof config.onTokenRefreshError).toEqual('function')
   })

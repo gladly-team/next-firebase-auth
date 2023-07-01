@@ -1,3 +1,6 @@
+// eslint-disable-next-line jest/no-export
+export {}
+
 describe('encoding', () => {
   it('returns the expected encoded value', () => {
     expect.assertions(1)

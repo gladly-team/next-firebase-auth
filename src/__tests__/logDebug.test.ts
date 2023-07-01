@@ -1,4 +1,7 @@
 /* eslint no-console: 0 */
+// eslint-disable-next-line jest/no-export
+export {}
+
 jest.mock('src/isClientSide')
 
 beforeEach(() => {
