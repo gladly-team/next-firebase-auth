@@ -63,7 +63,7 @@ const refreshExpiredIdToken = async (refreshToken: string) => {
  * is provided.
  * @return {Object} An AuthUser instance
  */
-export const verifyIdToken = async (token: string, refreshToken = null) => {
+export const verifyIdToken = async (token: string, refreshToken?: string) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
 

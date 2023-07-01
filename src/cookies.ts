@@ -8,6 +8,11 @@ interface ReqResObj {
   res: NextApiResponse
 }
 
+interface ReqResOptionalObj {
+  req: NextApiRequest
+  res?: NextApiResponse
+}
+
 const createCookieMgr = (
   { req, res }: ReqResObj,
   {
@@ -40,7 +45,7 @@ export const getCookie = (
         call: () => {},
       }),
     } as unknown as NextApiResponse,
-  }: ReqResObj,
+  }: ReqResOptionalObj,
   {
     keys,
     secure,

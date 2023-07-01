@@ -10,6 +10,7 @@ import {
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
+import { NextApiRequest } from 'next'
 
 /**
  * Given a request object or cookie values, verify and return
@@ -39,6 +40,11 @@ const getUserFromCookies = async ({
   includeToken = true,
   authCookieValue,
   authCookieSigValue,
+}: {
+  req?: NextApiRequest
+  includeToken?: boolean
+  authCookieValue?: string
+  authCookieSigValue?: string
 }) => {
   const { keys, secure, signed } = getConfig().cookies
   let user
@@ -70,7 +76,16 @@ const getUserFromCookies = async ({
       headers: {
         cookie: cookieStr,
       },
-    }
+      // Map onto IncomingMessage type, assuming other req properties are unused.
+    } as NextApiRequest
+  }
+
+  if (!req) {
+    // This shouldn't happen, as req assignment is handled above. This is
+    // to force `req` typing to be defined.
+    throw new Error(
+      'When "authCookieValue" is not provided, "req" must be defined.'
+    )
   }
 
   // Get the user either from:
@@ -92,7 +107,10 @@ const getUserFromCookies = async ({
       },
       { keys, secure, signed }
     )
-    const { idToken, refreshToken } = cookieValStr
+    const {
+      idToken,
+      refreshToken,
+    }: { idToken?: string; refreshToken?: string } = cookieValStr
       ? JSON.parse(cookieValStr)
       : {}
     if (idToken) {

@@ -13,6 +13,7 @@ import {
   getAuthUserTokensSigCookieName,
 } from 'src/authCookies'
 import logDebug from 'src/logDebug'
+import { NextApiRequest } from 'next'
 
 /**
  * We intentionally don't mock a few modules whose behavior we want to
@@ -26,16 +27,26 @@ jest.mock('src/authCookies')
 jest.mock('src/isClientSide')
 jest.mock('src/logDebug')
 
+const mockGetCookie = jest.mocked(getCookie)
+const mockVerifyIdToken = verifyIdToken as jest.Mock
+const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
+const mockGetAuthUserSigCookieName = jest.mocked(getAuthUserSigCookieName)
+const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockGetAuthUserTokensSigCookieName = jest.mocked(
+  getAuthUserTokensSigCookieName
+)
+const mockLogDebug = jest.mocked(logDebug)
+
 beforeEach(() => {
   // This is always called server-side.
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
 
-  getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   // Default to an authed user.
-  getCookie.mockImplementation((cookieName) => {
+  mockGetCookie.mockImplementation((cookieName) => {
     if (cookieName === 'SomeName.AuthUserTokens') {
       return JSON.stringify({
         idToken: 'some-id-token',
@@ -67,7 +78,7 @@ describe('getUserFromCookies: with ID token', () => {
   it('returns an authenticated user', async () => {
     expect.assertions(1)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -88,15 +99,15 @@ describe('getUserFromCookies: with ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq })
     expect(user).toEqual(expectedUser)
   })
 
   it('uses the ID token, not the auth info cookie, when "includeToken" is true', async () => {
     expect.assertions(1)
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -118,15 +129,15 @@ describe('getUserFromCookies: with ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq, includeToken: true })
     expect(user).toEqual(expectedUser)
   })
 
   it('returns an unauthed user object when no user exists', async () => {
     expect.assertions(1)
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -140,11 +151,11 @@ describe('getUserFromCookies: with ID token', () => {
       }
       return undefined
     })
-    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
-    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
     const expectedUser = createAuthUser()
-    const mockReq = {}
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq })
     expect(user).toEqual({
       ...expectedUser,
@@ -156,7 +167,7 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -168,9 +179,9 @@ describe('getUserFromCookies: with ID token', () => {
         signed: true,
       },
     })
-    const mockReq = {}
+    const mockReq = {} as NextApiRequest
     await getUserFromCookies({ req: mockReq })
-    expect(getCookie).toHaveBeenCalledWith(
+    expect(mockGetCookie).toHaveBeenCalledWith(
       'MyCookie.AuthUserTokens',
       {
         req: mockReq,
@@ -181,7 +192,7 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the idToken and refreshToken from the auth cookie to verifyIdToken', async () => {
     expect.assertions(1)
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token-24680',
@@ -200,10 +211,10 @@ describe('getUserFromCookies: with ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     await getUserFromCookies({ req: mockReq })
-    expect(verifyIdToken).toHaveBeenCalledWith(
+    expect(mockVerifyIdToken).toHaveBeenCalledWith(
       'some-id-token-24680',
       'some-refresh-token-13579'
     )
@@ -211,7 +222,7 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('throws if verifyIdToken throws', async () => {
     expect.assertions(1)
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -226,8 +237,8 @@ describe('getUserFromCookies: with ID token', () => {
       return undefined
     })
     const mockErr = new Error('Invalid thing.')
-    verifyIdToken.mockImplementationOnce(() => Promise.reject(mockErr))
-    const mockReq = {}
+    mockVerifyIdToken.mockImplementationOnce(() => Promise.reject(mockErr))
+    const mockReq = {} as NextApiRequest
     await expect(getUserFromCookies({ req: mockReq })).rejects.toEqual(mockErr)
   })
 
@@ -236,7 +247,7 @@ describe('getUserFromCookies: with ID token', () => {
     await testApiHandler({
       handler: async (req, res) => {
         await getUserFromCookies({ req, includeToken: true })
-        const { req: passedReq } = getCookie.mock.calls[0][1]
+        const { req: passedReq } = mockGetCookie.mock.calls[0][1]
         expect(passedReq).toEqual(req)
         expect(passedReq.headers.cookie).toEqual('someStuff=foo;')
         return res.status(200).end()
@@ -254,10 +265,10 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    getAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetAuthUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -273,16 +284,16 @@ describe('getUserFromCookies: with ID token', () => {
           'MyCookie.AuthUserTokens=thequickbrownfox; MyCookie.AuthUserTokens.sig=1q2w3e4r;',
       },
     }
-    const { req: passedReq } = getCookie.mock.calls[0][1]
+    const { req: passedReq } = mockGetCookie.mock.calls[0][1]
     expect(passedReq).toEqual(expectedReqObj)
   })
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (*not* incl. signed cookie)', async () => {
     expect.assertions(1)
-    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    getAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetAuthUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -297,7 +308,7 @@ describe('getUserFromCookies: with ID token', () => {
         cookie: 'MyCookie.AuthUserTokens=thequickbrownfox;',
       },
     }
-    const { req: passedReq } = getCookie.mock.calls[0][1]
+    const { req: passedReq } = mockGetCookie.mock.calls[0][1]
     expect(passedReq).toEqual(expectedReqObj)
   })
 
@@ -316,7 +327,7 @@ describe('getUserFromCookies: with ID token', () => {
   it('logs expected debug logs for an authenticated user', async () => {
     expect.assertions(3)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -337,23 +348,23 @@ describe('getUserFromCookies: with ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for a user without valid auth cookie values', async () => {
     expect.assertions(3)
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -367,26 +378,26 @@ describe('getUserFromCookies: with ID token', () => {
       }
       return undefined
     })
-    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
-    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    const mockReq = {} as NextApiRequest
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for a user whose ID token is not successfully verified', async () => {
     expect.assertions(3)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -403,18 +414,18 @@ describe('getUserFromCookies: with ID token', () => {
 
     // Mock the Firebase admin user verification.
     const expectedUser = createAuthUser() // unauthenticated user!
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getUserFromCookies({ req: mockReq })
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the ID token from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 })
 /**
@@ -428,7 +439,7 @@ describe('getUserFromCookies: *without* ID token', () => {
   it('returns an authenticated user', async () => {
     expect.assertions(1)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -449,8 +460,8 @@ describe('getUserFromCookies: *without* ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(user).toEqual({
       ...expectedUser,
@@ -469,7 +480,7 @@ describe('getUserFromCookies: *without* ID token', () => {
         email: 'some-different-email@example.com', // differs from token result
       },
     })
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -488,8 +499,8 @@ describe('getUserFromCookies: *without* ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(mockUserWithToken)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(mockUserWithToken)
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(user).toEqual({
       ...mockUserNoToken,
@@ -501,11 +512,11 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('returns an unauthed user object when no user exists', async () => {
     expect.assertions(1)
-    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
-    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
     const expectedUser = createAuthUser()
-    const mockReq = {}
+    const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(user).toEqual({
       ...expectedUser,
@@ -517,7 +528,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -530,9 +541,9 @@ describe('getUserFromCookies: *without* ID token', () => {
       },
     })
 
-    const mockReq = {}
+    const mockReq = {} as NextApiRequest
     await getUserFromCookies({ req: mockReq, includeToken: false })
-    expect(getCookie).toHaveBeenCalledWith(
+    expect(mockGetCookie).toHaveBeenCalledWith(
       'MyCookie.AuthUser',
       {
         req: mockReq,
@@ -544,7 +555,7 @@ describe('getUserFromCookies: *without* ID token', () => {
   it('does not call verifyIdToken when not using an ID token', async () => {
     expect.assertions(1)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token-24680',
@@ -563,10 +574,10 @@ describe('getUserFromCookies: *without* ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     await getUserFromCookies({ req: mockReq, includeToken: false })
-    expect(verifyIdToken).not.toHaveBeenCalled()
+    expect(mockVerifyIdToken).not.toHaveBeenCalled()
   })
 
   // https://github.com/gladly-team/next-firebase-auth/issues/195
@@ -582,7 +593,7 @@ describe('getUserFromCookies: *without* ID token', () => {
       },
     })
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -601,8 +612,8 @@ describe('getUserFromCookies: *without* ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
     const expectedErr = new Error(
       'Cookies must be signed when using withAuthUserSSR.'
     )
@@ -616,7 +627,7 @@ describe('getUserFromCookies: *without* ID token', () => {
     await testApiHandler({
       handler: async (req, res) => {
         await getUserFromCookies({ req, includeToken: false })
-        const { req: passedReq } = getCookie.mock.calls[0][1]
+        const { req: passedReq } = mockGetCookie.mock.calls[0][1]
         expect(passedReq).toEqual(req)
         expect(passedReq.headers.cookie).toEqual('someStuff=foo;')
         return res.status(200).end()
@@ -634,10 +645,10 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    getAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetAuthUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -653,16 +664,16 @@ describe('getUserFromCookies: *without* ID token', () => {
           'MyCookie.AuthUser=thequickbrownfox; MyCookie.AuthUser.sig=1q2w3e4r;',
       },
     }
-    const { req: passedReq } = getCookie.mock.calls[0][1]
+    const { req: passedReq } = mockGetCookie.mock.calls[0][1]
     expect(passedReq).toEqual(expectedReqObj)
   })
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (not incl. signed cookie)', async () => {
     expect.assertions(1)
-    getAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    getAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    getAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    getAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetAuthUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -677,7 +688,7 @@ describe('getUserFromCookies: *without* ID token', () => {
         cookie: 'MyCookie.AuthUser=thequickbrownfox;',
       },
     }
-    const { req: passedReq } = getCookie.mock.calls[0][1]
+    const { req: passedReq } = mockGetCookie.mock.calls[0][1]
     expect(passedReq).toEqual(expectedReqObj)
   })
 
@@ -696,7 +707,7 @@ describe('getUserFromCookies: *without* ID token', () => {
   it('logs expected debug logs for an authenticated user', async () => {
     expect.assertions(3)
 
-    getCookie.mockImplementation((cookieName) => {
+    mockGetCookie.mockImplementation((cookieName) => {
       if (cookieName === 'SomeName.AuthUserTokens') {
         return JSON.stringify({
           idToken: 'some-id-token',
@@ -717,36 +728,36 @@ describe('getUserFromCookies: *without* ID token', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    verifyIdToken.mockResolvedValue(expectedUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(expectedUser)
+    const mockReq = {} as NextApiRequest
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getUserFromCookies({ req: mockReq, includeToken: false })
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Successfully retrieved the user info from cookies.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs expected debug logs for an unauthenticated user', async () => {
     expect.assertions(3)
-    getCookie.mockReturnValue(undefined) // the user has no auth cookies
+    mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
-    verifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
-    const mockReq = {}
+    mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
+    const mockReq = {} as NextApiRequest
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getUserFromCookies({ req: mockReq, includeToken: false })
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 })
 /**
