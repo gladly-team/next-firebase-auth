@@ -1,42 +1,18 @@
 import type { GetServerSidePropsContext } from 'next'
-import type { ParsedUrlQuery } from 'querystring'
 
 import { AuthUser as AuthUserType } from 'src/createAuthUser'
 import { getConfig } from 'src/config'
+import {
+  PageURL,
+  RedirectConfig,
+  RedirectConfigName,
+  RedirectInput,
+  RedirectObject,
+} from './redirectTypes'
 
 const REDIRECT_DEFAULTS = {
   basePath: true,
   permanent: false,
-}
-
-type URLResolveFunction = (obj: {
-  ctx?: GetServerSidePropsContext<ParsedUrlQuery>
-  AuthUser?: AuthUserType
-}) => string | RedirectObject
-
-type RedirectObject = {
-  destination: string | URLResolveFunction
-  basePath: boolean
-  permanent?: boolean
-}
-
-export type PageURL = string | RedirectObject | URLResolveFunction
-
-export interface RedirectInput {
-  ctx?: GetServerSidePropsContext<ParsedUrlQuery>
-  AuthUser?: AuthUserType
-  redirectURL?: PageURL
-}
-
-type RedirectConfigName = string
-
-interface RedirectConfig extends RedirectInput {
-  redirectConfigName: RedirectConfigName
-}
-export interface RedirectDestination {
-  destination: string
-  basePath: boolean
-  permanent?: boolean
 }
 
 const getDestination = ({

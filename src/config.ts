@@ -1,37 +1,9 @@
 import * as Cookies from 'cookies'
-import type { User } from 'firebase/auth'
-import type { ParsedUrlQuery } from 'querystring'
 
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
-import type { GetServerSidePropsContext } from 'next'
-
-// TODO: move these types to other modules
-interface AuthUser {
-  id: string | null
-  email: string | null
-  emailVerified: boolean
-  phoneNumber: string | null
-  displayName: string | null
-  photoURL: string | null
-  claims: Record<string, string | boolean>
-  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
-  clientInitialized: boolean
-  firebaseUser: User | null
-  signOut: () => Promise<void>
-}
-
-type URLResolveFunction = (obj: {
-  ctx: GetServerSidePropsContext<ParsedUrlQuery>
-  AuthUser: AuthUser
-}) => string | RedirectObject
-
-type RedirectObject = {
-  destination: string | URLResolveFunction
-  basePath: boolean
-}
-
-type PageURL = string | RedirectObject | URLResolveFunction
+import { PageURL } from './redirectTypes'
+import { AuthUser } from './createAuthUser'
 
 type OnErrorHandler = (error: Error) => void
 
