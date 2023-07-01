@@ -36,7 +36,7 @@ jest.mock('src/config')
 const mockNow = '2020-10-15T18:00:00.000Z'
 
 beforeEach(() => {
-  MockDate.set(moment(mockNow))
+  MockDate.set(moment(mockNow) as unknown as Date)
 })
 
 afterEach(() => {
@@ -45,7 +45,7 @@ afterEach(() => {
 
 // Handles splitting cookies set in a single "set-cookie" header.
 // https://github.com/nfriedly/set-cookie-parser#usage-in-react-native
-const parseCookies = (headerVal) => {
+const parseCookies = (headerVal: string) => {
   const splitCookieHeaders = setCookieParser.splitCookiesString(headerVal)
   return setCookieParser.parse(splitCookieHeaders)
 }
@@ -77,7 +77,7 @@ describe('cookies.js: getCookie', () => {
   it('returns the expected cookie value [unsigned]', async () => {
     expect.assertions(1)
     const MOCK_COOKIE_NAME = 'myStuff'
-    const MOCK_COOKIE_VAL = {
+    const MOCK_COOKIE_VAL: object = {
       my: ['data', 'here'],
     }
     await testApiHandler({
@@ -518,7 +518,7 @@ describe('cookies.js: setCookie', () => {
         const expectedVal = encodeBase64(MOCK_COOKIE_VALUE)
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .value
+            ?.value
         ).toEqual(expectedVal)
       },
     })
@@ -592,7 +592,7 @@ describe('cookies.js: setCookie', () => {
         expect(
           setCookiesParsed.find(
             (cookie) => cookie.name === `${MOCK_COOKIE_NAME}.sig` // note .sig
-          ).value
+          )?.value
         ).toEqual(expectedVal)
         expect(setCookiesParsed.length).toBe(2)
       },
@@ -748,7 +748,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .domain
+            ?.domain
         ).toEqual('example.com')
       },
     })
@@ -782,7 +782,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .httpOnly
+            ?.httpOnly
         ).toBe(true)
       },
     })
@@ -816,7 +816,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .httpOnly
+            ?.httpOnly
         ).toBeUndefined()
       },
     })
@@ -866,7 +866,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .value
+            ?.value
         ).toEqual(encodeBase64(MOCK_COOKIE_NEW_VALUE))
       },
     })
@@ -916,7 +916,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .value
+            ?.value
         ).toEqual(encodeBase64(MOCK_COOKIE_ORIGINAL_VALUE))
       },
     })
@@ -950,7 +950,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .path
+            ?.path
         ).toEqual('/some/path')
       },
     })
@@ -984,7 +984,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .sameSite
+            ?.sameSite
         ).toEqual('strict')
       },
     })
@@ -1018,7 +1018,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .sameSite
+            ?.sameSite
         ).toEqual('strict')
       },
     })
@@ -1052,7 +1052,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .sameSite
+            ?.sameSite
         ).toEqual('lax')
       },
     })
@@ -1086,7 +1086,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .sameSite
+            ?.sameSite
         ).toEqual('none')
       },
     })
@@ -1120,7 +1120,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .secure
+            ?.secure
         ).toBe(true)
       },
     })
@@ -1154,7 +1154,7 @@ describe('cookies.js: setCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .secure
+            ?.secure
         ).toBeUndefined()
       },
     })
@@ -1189,7 +1189,7 @@ describe('cookies.js: setCookie', () => {
         const setCookieVal = setCookiesParsed.find(
           (cookie) => cookie.name === MOCK_COOKIE_NAME
         )
-        const { expires } = setCookieVal
+        const { expires } = setCookieVal || {}
         expect(moment(expires).toISOString()).toEqual(
           moment(mockNow).add(4, 'minutes').toISOString()
         )
@@ -1226,7 +1226,7 @@ describe('cookies.js: setCookie', () => {
         const setCookieVal = setCookiesParsed.find(
           (cookie) => cookie.name === MOCK_COOKIE_NAME
         )
-        const { expires } = setCookieVal
+        const { expires } = setCookieVal || {}
         expect(moment(expires).toISOString()).toEqual(
           moment(mockNow).add(368, 'days').toISOString()
         )
@@ -1324,7 +1324,7 @@ describe('cookies.js: deleteCookie', () => {
         )
         const expiresAt = setCookiesParsed.find(
           (cookie) => cookie.name === MOCK_COOKIE_NAME
-        ).expires
+        )?.expires
         expect(moment(expiresAt).toISOString()).toEqual(
           moment('1970-01-01T00:00:00.000Z').toISOString()
         )
@@ -1355,7 +1355,7 @@ describe('cookies.js: deleteCookie', () => {
         )
         expect(
           setCookiesParsed.find((cookie) => cookie.name === MOCK_COOKIE_NAME)
-            .value
+            ?.value
         ).toEqual('')
       },
     })

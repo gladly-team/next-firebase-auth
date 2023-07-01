@@ -1,6 +1,31 @@
 /* eslint no-underscore-dangle: 0 */
+import { User } from 'firebase/auth'
+import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
-import { filterStandardClaims } from 'src/claims'
+import { Claims, filterStandardClaims } from 'src/claims'
+
+interface DeserializedAuthUser {
+  id?: string
+  claims?: object
+  email?: string
+  emailVerified: boolean
+  phoneNumber?: string
+  displayName?: string
+  photoURL?: string
+  clientInitialized: boolean
+  _token?: string
+}
+
+interface CreateAuthUserInput {
+  firebaseUserClientSDK?: User
+  firebaseUserAdminSDK?: DecodedIdToken
+  serializedAuthUser?: string
+  clientInitialized?: boolean
+  token?: string | null
+  claims?: Claims
+}
+
+type getIdToken = (forceRefresh?: boolean) => Promise<string | null>
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -46,7 +71,7 @@ const createAuthUser = ({
   clientInitialized = false,
   token = null,
   claims,
-} = {}) => {
+}: CreateAuthUserInput = {}) => {
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,
@@ -87,19 +112,19 @@ const createAuthUser = ({
   }
 
   let customClaims = {}
-  let userId = null
-  let email = null
+  let userId: string | null = null
+  let email: string | null = null
   let emailVerified = false
-  let phoneNumber = null
-  let displayName = null
-  let photoURL = null
-  let getIdTokenFunc = async () => null
+  let phoneNumber: string | null = null
+  let displayName: string | null = null
+  let photoURL: string | null = null
+  let getIdTokenFunc: getIdToken = async () => null
 
   // When not on the client side, the "signOut" method is a noop.
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let signOutFunc = async () => {}
 
-  let tokenString = null // used for serialization
+  let tokenString: string | null = null // used for serialization
   if (firebaseUserClientSDK) {
     if (isClientSide()) {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -131,7 +156,7 @@ const createAuthUser = ({
      * @param forceRefresh Force refresh regardless of token
      *     expiration.
      */
-    getIdTokenFunc = async (forceRefresh) =>
+    getIdTokenFunc = async (forceRefresh?: boolean): Promise<string | null> =>
       firebaseUserClientSDK.getIdToken(forceRefresh)
     tokenString = null
   } else if (firebaseUserAdminSDK) {
@@ -144,24 +169,26 @@ const createAuthUser = ({
      */
     customClaims = filterStandardClaims(firebaseUserAdminSDK)
     userId = firebaseUserAdminSDK.uid
-    email = firebaseUserAdminSDK.email
-    emailVerified = firebaseUserAdminSDK.email_verified
-    phoneNumber = firebaseUserAdminSDK.phone_number
+    email = firebaseUserAdminSDK.email || null
+    emailVerified = firebaseUserAdminSDK.email_verified || false
+    phoneNumber = firebaseUserAdminSDK.phone_number || null
     displayName = firebaseUserAdminSDK.name
-    photoURL = firebaseUserAdminSDK.picture
+    photoURL = firebaseUserAdminSDK.picture || null
     getIdTokenFunc = async () => token
     tokenString = token
   } else if (serializedAuthUser) {
-    const deserializedUser = JSON.parse(serializedAuthUser)
-    customClaims = deserializedUser.claims
-    userId = deserializedUser.id
-    email = deserializedUser.email
+    const deserializedUser: DeserializedAuthUser = JSON.parse(
+      serializedAuthUser
+    ) as DeserializedAuthUser
+    customClaims = deserializedUser.claims || {}
+    userId = deserializedUser.id || null
+    email = deserializedUser.email || null
     emailVerified = deserializedUser.emailVerified
-    phoneNumber = deserializedUser.phoneNumber
-    displayName = deserializedUser.displayName
-    photoURL = deserializedUser.photoURL
+    phoneNumber = deserializedUser.phoneNumber || null
+    displayName = deserializedUser.displayName || null
+    photoURL = deserializedUser.photoURL || null
     getIdTokenFunc = async () => deserializedUser._token || null
-    tokenString = deserializedUser._token
+    tokenString = deserializedUser._token || null
   }
   return {
     id: userId,

@@ -19,7 +19,7 @@ export const STANDARD_CLAIMS = [
   'user_id', // not listed in the decodedIDtoken reference but it appears in tokens
 ]
 
-interface Claims {
+export interface Claims {
   [key: string]: string
 }
 /**

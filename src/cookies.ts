@@ -1,8 +1,20 @@
 // https://github.com/pillarjs/cookies
 import Cookies from 'cookies'
+import { NextApiRequest, NextApiResponse } from 'next'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
-const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
+interface ReqResObj {
+  req: NextApiRequest
+  res: NextApiResponse
+}
+
+const createCookieMgr = (
+  { req, res }: ReqResObj,
+  {
+    keys,
+    secure,
+  }: { keys?: Cookies.Option['keys']; secure?: Cookies.Option['secure'] } = {}
+) => {
   // https://github.com/pillarjs/cookies
   const cookies = Cookies(req, res, {
     keys,
@@ -12,7 +24,7 @@ const createCookieMgr = ({ req, res }, { keys, secure } = {}) => {
 }
 
 export const getCookie = (
-  name,
+  name: string,
   // The request object is mandatory. The response object is optional.
   {
     req,
@@ -27,15 +39,23 @@ export const getCookie = (
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         call: () => {},
       }),
-    },
-  },
-  { keys, secure, signed } = {}
+    } as unknown as NextApiResponse,
+  }: ReqResObj,
+  {
+    keys,
+    secure,
+    signed = true,
+  }: {
+    keys?: Cookies.Option['keys']
+    secure?: Cookies.Option['secure']
+    signed?: Cookies.SetOption['signed']
+  } = {}
 ) => {
   if (signed) {
-    const areCookieKeysDefined =
-      keys &&
-      keys.length &&
-      (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+    const areCookieKeysDefined = Array.isArray(keys)
+      ? keys.length &&
+        (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+      : !!keys
     if (!areCookieKeysDefined) {
       throw new Error(
         'The "keys" value must be provided when using signed cookies.'
@@ -54,10 +74,10 @@ export const getCookie = (
 }
 
 export const setCookie = (
-  name,
-  cookieVal,
+  name: string,
+  cookieVal: object | undefined,
   // The response object is mandatory. The request is optional and unused.
-  { req, res },
+  { req, res }: ReqResObj,
   {
     keys,
     domain,
@@ -68,7 +88,7 @@ export const setCookie = (
     sameSite,
     secure,
     signed,
-  } = {}
+  }: Cookies.SetOption & Cookies.Option = {}
 ) => {
   if (signed && !keys) {
     throw new Error(
@@ -100,7 +120,11 @@ export const setCookie = (
 
 // Some options, like path and domain, must match those used when setting
 // the cookie.
-export const deleteCookie = (name, reqResObj, options) => {
+export const deleteCookie = (
+  name: string,
+  reqResObj: ReqResObj,
+  options: Cookies.SetOption
+) => {
   // "If the value is omitted, an outbound header with an expired
   // date is used to delete the cookie."
   // https://github.com/pillarjs/cookies#cookiesset-name--value---options--

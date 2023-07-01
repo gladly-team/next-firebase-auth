@@ -16,7 +16,7 @@ export const decodeBase64 = (str: string) => {
  * @return {String}
  * @private
  */
-export const encodeBase64 = (obj: object) => {
+export const encodeBase64 = (obj: object | string) => {
   const str = JSON.stringify(obj)
   return Buffer.from(str).toString('base64')
 }
