@@ -1,4 +1,5 @@
-import { ConfigInput, setConfig } from 'src/config'
+import { setConfig } from 'src/config'
+import { ConfigInput } from 'src/configTypes'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 
 jest.mock('src/config')

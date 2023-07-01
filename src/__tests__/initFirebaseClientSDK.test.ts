@@ -1,8 +1,9 @@
 import { getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
-import { setConfig, ConfigInput } from 'src/config'
+import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import logDebug from 'src/logDebug'
+import { ConfigInput } from 'src/configTypes'
 
 jest.mock('firebase/app')
 jest.mock('firebase/auth')

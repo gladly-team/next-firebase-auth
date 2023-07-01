@@ -1,6 +1,7 @@
 // Different behaviors when the user's auth status is pending
 // or mismatches the page requirements.
-const enum AuthAction {
+
+enum AuthAction {
   RENDER = 'render',
   SHOW_LOADER = 'showLoader',
   RETURN_NULL = 'returnNull',
