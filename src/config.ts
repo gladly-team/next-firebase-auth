@@ -1,70 +1,150 @@
+import * as Cookies from 'cookies'
+import type { User } from 'firebase/auth'
+import type { ParsedUrlQuery } from 'querystring'
+
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
+import type { GetServerSidePropsContext } from 'next'
 
-let config
+// TODO: move these types to other modules
+interface AuthUser {
+  id: string | null
+  email: string | null
+  emailVerified: boolean
+  phoneNumber: string | null
+  displayName: string | null
+  photoURL: string | null
+  claims: Record<string, string | boolean>
+  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
+  clientInitialized: boolean
+  firebaseUser: User | null
+  signOut: () => Promise<void>
+}
+
+type URLResolveFunction = (obj: {
+  ctx: GetServerSidePropsContext<ParsedUrlQuery>
+  AuthUser: AuthUser
+}) => string | RedirectObject
+
+type RedirectObject = {
+  destination: string | URLResolveFunction
+  basePath: boolean
+}
+
+type PageURL = string | RedirectObject | URLResolveFunction
+
+type OnErrorHandler = (error: Error) => void
+
+// https://github.com/gladly-team/next-firebase-auth#config
+interface ConfigInput {
+  /**
+   * The redirect destination URL when redirecting to the login page.
+   */
+  authPageURL?: PageURL
+  /**
+   * The redirect destination URL when redirecting to the app.
+   */
+  appPageURL?: PageURL
+  /**
+   * The API endpoint to call on auth state change for an authenticated user.
+   */
+  loginAPIEndpoint?: string
+  /**
+   * The API endpoint to call on auth state change for a signed-out user.
+   */
+  logoutAPIEndpoint?: string
+  /**
+   * Handler called if there are unexpected errors while verifying the user's
+   * ID token server-side.
+   */
+  onVerifyTokenError?: OnErrorHandler
+  /**
+   * Handler called if there are unexpected errors while refreshing the
+   * user's ID token server-side.
+   */
+  onTokenRefreshError?: OnErrorHandler
+  /**
+   * A handler to call on auth state changes. More info:
+   * https://github.com/gladly-team/next-firebase-auth#tokenchangedhandler
+   */
+  tokenChangedHandler?: (user: AuthUser) => void
+  /**
+   * Handler called if the login API endpoint returns a non-200 response.
+   * Not used if a custom "tokenChangedHandler" is defined. If a handler is
+   * not defined, this library will throw on any non-200 responses.
+   */
+  onLoginRequestError?: OnErrorHandler
+  /**
+   * Handler called if the logout API endpoint returns a non-200 response. Not
+   * used if a custom "tokenChangedHandler" is defined. If a handler is not
+   * defined, this library will throw on any non-200 responses.
+   */
+  onLogoutRequestError?: OnErrorHandler
+  /**
+   * Whether to use application default credentials with firebase-admin.
+   */
+  useFirebaseAdminDefaultCredential?: boolean
+  /**
+   * The config passed to the Firebase admin SDK's `initializeApp`. Not
+   * required if your app manually is initializing the admin SDK elsewhere.
+   */
+  firebaseAdminInitConfig?: {
+    credential: {
+      projectId: string
+      clientEmail: string
+      privateKey: string
+    }
+    databaseURL?: string
+  }
+  /**
+   * The Firebase auth emulator host address on the user's machine. Must match
+   * the value of the `FIREBASE_AUTH_EMULATOR_HOST` environment variable.
+   * https://firebase.google.com/docs/emulator-suite/connect_auth
+   */
+  firebaseAuthEmulatorHost?: string
+  /**
+   * The config passed to the Firebase client JS SDK's `initializeApp`.
+   */
+  firebaseClientInitConfig: {
+    apiKey: string
+    projectId?: string
+    appId?: string
+    // "PROJECT_ID.firebaseapp.com"
+    authDomain?: string
+    // "https://PROJECT_ID.firebaseio.com"
+    databaseURL?: string
+    // "PROJECT_ID.appspot.com"
+    storageBucket?: string
+    // "SENDER_ID"
+    messagingSenderId?: string
+    // "G-MEASUREMENT_ID"
+    measurementId?: string
+  }
+  cookies: Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {
+    // The base name for the auth cookies.
+    name: string
+    sameSite: string
+  }
+  /**
+   * When true, will log events.
+   */
+  debug?: boolean
+}
+
+let config: ConfigInput
 
 const ONE_WEEK_IN_MS = 7 * 60 * 60 * 24 * 1000
 const TWO_WEEKS_IN_MS = 14 * 60 * 60 * 24 * 1000
 
-// https://github.com/gladly-team/next-firebase-auth#config
 const defaultConfig = {
   debug: false,
-  // The API endpoint to call on auth state change for an authenticated user.
-  loginAPIEndpoint: undefined,
-  // The API endpoint to call on auth state change for a signed-out user.
-  logoutAPIEndpoint: undefined,
-  // Optional function: handler called if the login API endpoint returns
-  // a non-200 response. Not used if a custom "tokenChangedHandler" is
-  // defined. If a handler is not defined, this library will throw on any
-  // non-200 responses.
-  onLoginRequestError: undefined,
-  // Optional function: handler called if the logout API endpoint returns
-  // a non-200 response. Not used if a custom "tokenChangedHandler" is
-  // defined. If a handler is not defined, this library will throw on any
-  // non-200 responses.
-  onLogoutRequestError: undefined,
-  // Optional function: a handler to call on auth state changes. More info:
-  // https://github.com/gladly-team/next-firebase-auth#tokenchangedhandler
-  tokenChangedHandler: undefined,
-  // Optional function: handler called if there are unexpected errors while
-  // verifying the user's ID token server-side.
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onVerifyTokenError: () => {},
-  // Optional function: handler called if there are unexpected errors while
-  // refreshing the user's ID token server-side.
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onTokenRefreshError: () => {},
-  // Optional string: the URL to navigate to when the user
-  // needs to log in.
-  authPageURL: undefined,
-  // Optional string: the URL to navigate to when the user
-  // is alredy logged in but on an authentication page.
-  appPageURL: undefined,
-  // Optional object: the config passed to the Firebase admin SDK's
-  // `initializeApp`.
-  // Not required if the app is initializing the admin SDK
-  // elsewhere.
-  firebaseAdminInitConfig: undefined,
-  // Required object: the config passed to the Firebase
-  // client JS SDK firebase.initializeApp.
-  // The "firebaseClientInitConfig.apiKey" value is always
-  // required, but other options are optional if the app
-  // initializes the admin SDK manually.
-  firebaseClientInitConfig: undefined,
-  // Optional object: the firebase auth emulator host address
-  // on the user's machine. Should be set to 'localhost:9099' in order
-  // to match the FIREBASE_AUTH_EMULATOR_HOST variable on the server
-  // see https://firebase.google.com/docs/emulator-suite/connect_auth
-  firebaseAuthEmulatorHost: undefined,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+  onVerifyTokenError: (_err: Error) => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+  onTokenRefreshError: (_err: Error) => {},
   cookies: {
-    // Required string. The base name for the auth cookies.
-    name: undefined,
-    // String or array.
-    keys: undefined,
-    // Options below are passed to cookies.set:
-    // https://github.com/pillarjs/cookies#cookiesset-name--value---options--
-    // We'll default to stricter, more secure options.
-    domain: undefined,
+    // Required to be provided by the user.
+    // name: undefined,
     httpOnly: true,
     maxAge: ONE_WEEK_IN_MS,
     overwrite: true,
@@ -75,7 +155,40 @@ const defaultConfig = {
   },
 }
 
-const validateConfig = (mergedConfig) => {
+type ConfigDefault = typeof defaultConfig
+
+// TODO: move to helper module
+
+// Spread operator for types
+// https://stackoverflow.com/a/49683575/1332513
+type OptionalPropertyNames<T> = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  [K in keyof T]-?: {} extends { [P in K]: T[K] } ? K : never
+}[keyof T]
+
+type SpreadProperties<L, R, K extends keyof L & keyof R> = {
+  [P in K]: L[P] | Exclude<R[P], undefined>
+}
+
+type Id<T> = T extends infer U ? { [K in keyof U]: U[K] } : never
+
+type SpreadTwo<L, R> = Id<
+  Pick<L, Exclude<keyof L, keyof R>> &
+    Pick<R, Exclude<keyof R, OptionalPropertyNames<R>>> &
+    Pick<R, Exclude<OptionalPropertyNames<R>, keyof L>> &
+    SpreadProperties<L, R, OptionalPropertyNames<R> & keyof L>
+>
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Spread<A extends readonly [...any]> = A extends [infer L, ...infer R]
+  ? SpreadTwo<L, Spread<R>>
+  : unknown
+
+type ConfigMerged = Omit<Spread<[ConfigInput, ConfigDefault]>, 'cookies'> & {
+  cookies: Spread<[ConfigInput['cookies'], ConfigDefault['cookies']]>
+}
+
+const validateConfig = (mergedConfig: ConfigMerged) => {
   const errorMessages = []
 
   // The config should have *either* a tokenChangedHandler *or* other
@@ -150,12 +263,15 @@ const validateConfig = (mergedConfig) => {
   }
 
   // We consider cookie keys undefined if the keys are an empty string,
-  // empty array, or array of only undefined values.
+  // empty array, or array oxf only undefined values.
   const { keys } = mergedConfig.cookies
   const areCookieKeysDefined =
-    keys &&
-    keys.length &&
-    (keys.filter ? keys.filter((item) => item !== undefined).length : true)
+    (Array.isArray(keys) &&
+      keys.length &&
+      (keys.filter
+        ? keys.filter((item) => item !== undefined).length
+        : true)) ||
+    !!keys // Keygrip object
 
   // Validate config values that differ between client and server context.
   if (isClientSide()) {
@@ -220,7 +336,10 @@ const validateConfig = (mergedConfig) => {
     // https://firebase.google.com/docs/auth/admin/manage-cookies
     // By default, the cookie will be refreshed each time the user loads
     // the client-side app.
-    if (mergedConfig.cookies.maxAge > TWO_WEEKS_IN_MS) {
+    if (
+      !mergedConfig.cookies.maxAge ||
+      mergedConfig.cookies.maxAge > TWO_WEEKS_IN_MS
+    ) {
       errorMessages.push(
         `The "cookies.maxAge" setting must be less than two weeks (${TWO_WEEKS_IN_MS} ms).`
       )
@@ -238,7 +357,7 @@ const validateConfig = (mergedConfig) => {
 
 // Replace private values with "hidden" for safer logging during
 // debugging.
-const replacePrivateValues = (unredactedConfig) => {
+const replacePrivateValues = (unredactedConfig: ConfigInput) => {
   const redactedConfig = {
     ...unredactedConfig,
     cookies: {
@@ -261,13 +380,13 @@ const replacePrivateValues = (unredactedConfig) => {
   return redactedConfig
 }
 
-export const setConfig = (userConfig = {}) => {
+export const setConfig = (userConfig: ConfigInput) => {
   logDebug(
     '[init] Setting config with provided value:',
     replacePrivateValues(userConfig)
   )
 
-  const { cookies: cookieOptions = {}, ...otherUserConfig } = userConfig
+  const { cookies: cookieOptions, ...otherUserConfig } = userConfig
 
   // Merge the user's config with the default config, validate it,
   // and set it.
@@ -276,7 +395,7 @@ export const setConfig = (userConfig = {}) => {
     ...otherUserConfig,
     cookies: {
       ...defaultConfig.cookies,
-      ...cookieOptions,
+      ...(cookieOptions || {}),
     },
   }
   const { isValid, errors } = validateConfig(mergedConfig)

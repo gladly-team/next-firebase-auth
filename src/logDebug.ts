@@ -2,7 +2,7 @@ import isClientSide from 'src/isClientSide'
 
 let isDebugEnabled = false
 
-const logDebug = (...args) => {
+const logDebug = (...args: unknown[]) => {
   if (!isDebugEnabled) {
     return
   }
@@ -19,7 +19,7 @@ const logDebug = (...args) => {
   console.log(...prefix, ...args)
 }
 
-export const setDebugEnabled = (isEnabled) => {
+export const setDebugEnabled = (isEnabled: boolean) => {
   isDebugEnabled = isEnabled
 }
 

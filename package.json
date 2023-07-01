@@ -46,6 +46,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@types/cookies": "^0.7.7",
     "@types/jest": "^28",
+    "@types/keygrip": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
     "babel-jest": "^28.1.3",

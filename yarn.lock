@@ -2374,7 +2374,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/keygrip@*":
+"@types/keygrip@*", "@types/keygrip@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/keygrip/-/keygrip-1.0.2.tgz#513abfd256d7ad0bf1ee1873606317b33b1b2a72"
   integrity sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==
