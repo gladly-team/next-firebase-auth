@@ -10,7 +10,7 @@ import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
-import { PageURL } from './redirectTypes'
+import { PageURL, RedirectDestination } from './redirectTypes'
 
 interface Options {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
