@@ -4,6 +4,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const nodeExternals = require('webpack-node-externals')
 const CopyPlugin = require('copy-webpack-plugin')
 const includeSubdependencies = require('datwd')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -16,6 +17,7 @@ const sharedConfig = {
     libraryExport: 'default',
   },
   resolve: {
+    plugins: [new TsconfigPathsPlugin({})],
     extensions: ['.js', '.jx', '.ts', '.tsx'],
   },
   module: {
