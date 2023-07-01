@@ -7,18 +7,25 @@ import { testApiHandler } from 'next-test-api-route-handler'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import logDebug from 'src/logDebug'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 jest.mock('src/config')
 jest.mock('src/authCookies')
 jest.mock('src/cookies')
 jest.mock('src/logDebug')
 
+const mockSetConfig = jest.mocked(setConfig)
+const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
+const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockDeleteCookie = jest.mocked(deleteCookie)
+const mockLogDebug = jest.mocked(logDebug)
+
 beforeEach(() => {
-  getAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  getAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   const mockConfig = createMockConfig()
-  setConfig({
+  mockSetConfig({
     ...mockConfig,
     cookies: {
       ...mockConfig.cookies,
@@ -44,8 +51,8 @@ describe('unsetAuthCookies', () => {
   it('calls deleteCookie for the AuthUser cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
-    let mockReq
-    let mockRes
+    let mockReq: NextApiRequest
+    let mockRes: NextApiResponse
     await testApiHandler({
       handler: async (req, res) => {
         // Store the req/res to use in the test assertion.
@@ -56,7 +63,7 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(deleteCookie).toHaveBeenCalledWith(
+        expect(mockDeleteCookie).toHaveBeenCalledWith(
           'SomeName.AuthUser',
           {
             req: mockReq,
@@ -82,8 +89,8 @@ describe('unsetAuthCookies', () => {
   it('calls deleteCookie for the AuthUserTokens cookie', async () => {
     expect.assertions(1)
     const unsetAuthCookies = require('src/unsetAuthCookies').default
-    let mockReq
-    let mockRes
+    let mockReq: NextApiRequest
+    let mockRes: NextApiResponse
     await testApiHandler({
       handler: async (req, res) => {
         // Store the req/res to use in the test assertion.
@@ -94,7 +101,7 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(deleteCookie).toHaveBeenCalledWith(
+        expect(mockDeleteCookie).toHaveBeenCalledWith(
           'SomeName.AuthUserTokens',
           {
             req: mockReq,
@@ -127,7 +134,7 @@ describe('unsetAuthCookies', () => {
       },
       test: async ({ fetch }) => {
         await fetch()
-        expect(logDebug).toHaveBeenCalledWith(
+        expect(mockLogDebug).toHaveBeenCalledWith(
           '[unsetAuthCookies] Unset auth cookies.'
         )
       },

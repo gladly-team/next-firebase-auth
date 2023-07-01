@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import {
   getAuthUserCookieName,
   getAuthUserTokensCookieName,
@@ -6,7 +7,7 @@ import { getConfig } from 'src/config'
 import { deleteCookie } from 'src/cookies'
 import logDebug from 'src/logDebug'
 
-const unsetAuthCookies = async (req, res) => {
+const unsetAuthCookies = async (req: NextApiRequest, res: NextApiResponse) => {
   // Pick a subset of the config.cookies options to
   // pass to deleteCookie.
   const cookieOptions = (({

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
 import React from 'react'
 import { render } from '@testing-library/react'
 
