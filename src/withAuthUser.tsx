@@ -1,5 +1,7 @@
+/* eslint-disable block-scoped-var */
 /* globals window */
 import hoistNonReactStatics from 'hoist-non-react-statics'
+import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
 import createAuthUser from 'src/createAuthUser'
@@ -7,7 +9,29 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
-import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
+import {
+  PageURL,
+  RedirectDestination,
+  getAppRedirectInfo,
+  getLoginRedirectInfo,
+} from 'src/redirects'
+
+interface WithAuthUserOptions {
+  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
+  whenAuthedBeforeRedirect?:
+    | AuthAction.RENDER
+    | AuthAction.SHOW_LOADER
+    | AuthAction.RETURN_NULL
+  whenUnauthedBeforeInit?:
+    | AuthAction.RENDER
+    | AuthAction.REDIRECT_TO_LOGIN
+    | AuthAction.SHOW_LOADER
+    | AuthAction.RETURN_NULL
+  whenUnauthedAfterInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
+  appPageURL?: PageURL
+  authPageURL?: PageURL
+  LoaderComponent?: ComponentType | null
+}
 
 /**
  * A higher-order component that provides pages with the
@@ -49,30 +73,25 @@ const withAuthUser =
     whenUnauthedBeforeInit = AuthAction.RENDER,
     whenUnauthedAfterInit = AuthAction.RENDER,
     whenAuthedBeforeRedirect = AuthAction.RETURN_NULL,
-    appPageURL = null,
-    authPageURL = null,
+    appPageURL,
+    authPageURL,
     LoaderComponent = null,
-  } = {}) =>
-  (ChildComponent) => {
+  }: WithAuthUserOptions = {}) =>
+  (ChildComponent: React.ComponentType) => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
 
     // Some dependencies are optional. Throw if they aren't installed
     // when calling this API.
     // https://github.com/gladly-team/next-firebase-auth/issues/502
-    let React
-    let useEffect
-    let useCallback
-    let useMemo
-    let useRouter
-    let AuthUserContext
     try {
-      /* eslint-disable global-require */
-      React = require('react')
-      ;({ useEffect, useCallback, useMemo } = require('react'))
-      ;({ useRouter } = require('next/router'))
-      ;({ AuthUserContext } = require('src/useAuthUser'))
-      /* eslint-enable global-require */
-    } catch (e) {
+      /* eslint-disable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
+      var React = require('react')
+      var { useEffect, useCallback, useMemo } = require('react')
+      var { useRouter } = require('next/router')
+      var { AuthUserContext } = require('src/useAuthUser')
+      /* eslint-enable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
       if (e.code === MODULE_NOT_FOUND) {
         throw new Error(
           'The dependencies "react" and "next" are required when calling `withAuthUser`.'
@@ -82,7 +101,8 @@ const withAuthUser =
       }
     }
 
-    const WithAuthUserHOC = (props) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const WithAuthUserHOC = (props: any) => {
       const { AuthUserSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
         () =>
@@ -101,7 +121,7 @@ const withAuthUser =
       const AuthUserFromClient = useMemo(
         () =>
           createAuthUser({
-            firebaseUserClientSDK: firebaseUser,
+            firebaseUserClientSDK: firebaseUser || undefined,
             clientInitialized: firebaseInitialized,
             claims,
           }),
@@ -127,7 +147,7 @@ const withAuthUser =
       const willRedirectToApp =
         isAuthed && whenAuthed === AuthAction.REDIRECT_TO_APP
       const shouldRedirectToApp =
-        willRedirectToApp && isClientSide && authRequestCompleted
+        willRedirectToApp && isClientSide() && authRequestCompleted
 
       // Redirect to the login page if the user is not authed and one of these
       // is true:
@@ -144,7 +164,7 @@ const withAuthUser =
             whenUnauthedAfterInit === AuthAction.REDIRECT_TO_LOGIN))
       const shouldRedirectToLogin =
         willRedirectToLogin &&
-        isClientSide &&
+        isClientSide() &&
         // We don't have to wait for an auth request if we should redirect
         // before Firebase initializes.
         (whenUnauthedBeforeInit !== AuthAction.REDIRECT_TO_LOGIN
@@ -153,7 +173,7 @@ const withAuthUser =
 
       const router = useRouter()
       const routeToDestination = useCallback(
-        ({ basePath, destination }) => {
+        ({ basePath, destination }: RedirectDestination) => {
           if (basePath === false) {
             window.location.replace(destination)
           } else {

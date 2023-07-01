@@ -17,10 +17,10 @@ type URLResolveFunction = (obj: {
 type RedirectObject = {
   destination: string | URLResolveFunction
   basePath: boolean
-  permanent: boolean
+  permanent?: boolean
 }
 
-type PageURL = string | RedirectObject | URLResolveFunction
+export type PageURL = string | RedirectObject | URLResolveFunction
 
 export interface RedirectInput {
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>
@@ -32,6 +32,11 @@ type RedirectConfigName = string
 
 interface RedirectConfig extends RedirectInput {
   redirectConfigName: RedirectConfigName
+}
+export interface RedirectDestination {
+  destination: string
+  basePath: boolean
+  permanent?: boolean
 }
 
 const getDestination = ({
