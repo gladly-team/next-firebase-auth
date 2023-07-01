@@ -5,14 +5,14 @@ import createAuthUser from 'src/createAuthUser'
 import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import logDebug from 'src/logDebug'
+import mockLogDebug from 'src/logDebug'
 
 jest.mock('firebase-admin/auth')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/logDebug')
 
 // stash and restore the system env vars
-let env = null
+let env: ProcessEnv
 
 beforeEach(() => {
   // `fetch` is polyfilled by Next.js.
@@ -617,12 +617,12 @@ describe('verifyIdToken', () => {
     const firebaseAdminAuth = getAuth()
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/invalid-user-token', async () => {
@@ -640,12 +640,12 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Error verifying the ID token: auth/invalid-user-token. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/user-token-expired', async () => {
@@ -663,12 +663,12 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Error verifying the ID token: auth/user-token-expired. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected if verifying the token fails with auth/user-disabled', async () => {
@@ -686,12 +686,12 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Error verifying the ID token: auth/user-disabled. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs debugging logs as expected when the token is successfully refreshed because of a Firebase auth/argument-error error', async () => {
@@ -724,18 +724,18 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] The ID token is expired (error code auth/argument-error). Attempting to refresh the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Successfully refreshed the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 
   it('logs debugging logs as expected when there is an error refreshing the token', async () => {
@@ -760,15 +760,15 @@ describe('verifyIdToken', () => {
         return mockFirebaseUser
       }
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] The ID token is expired (error code auth/id-token-expired). Attempting to refresh the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })
 
   it("logs debugging logs as expected when Firebase admin's verifyIdToken throws an unhandled error code", async () => {
@@ -790,12 +790,12 @@ describe('verifyIdToken', () => {
     firebaseAdminAuth.verifyIdToken.mockImplementation(async () => {
       throw otherErr
     })
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await verifyIdToken('some-token', 'my-refresh-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Error verifying the ID token: auth/some-unexpected-error. The user will be unauthenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('throws a helpful error if `fetch` is not defined', async () => {
@@ -1046,15 +1046,15 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await getCustomIdAndRefreshTokens('some-token')
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[setAuthCookies] Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs debugging logs as expected when failing to get a refresh token', async () => {
@@ -1077,23 +1077,23 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
 
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     try {
       await getCustomIdAndRefreshTokens('some-token')
 
       // We expect this to throw.
       // eslint-disable-next-line no-empty
     } catch (e) {}
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[setAuthCookies] Getting a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[verifyIdToken] Successfully verified the ID token. The user is authenticated.'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[setAuthCookies] Failed to get a refresh token from the ID token.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(3)
+    expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
 
   it('throws a helpful error if `fetch` is not defined', async () => {

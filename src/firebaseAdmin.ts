@@ -3,6 +3,7 @@ import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
+import { FirebaseError } from 'firebase/app'
 
 // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
 const getTokenPrefix = () =>
@@ -15,7 +16,7 @@ const getFirebasePublicAPIKey = () => {
   return config.firebaseClientInitConfig.apiKey
 }
 
-const errorMessageVerifyFailed = (errCode) =>
+const errorMessageVerifyFailed = (errCode: string) =>
   `[verifyIdToken] Error verifying the ID token: ${errCode}. The user will be unauthenticated.`
 
 const throwIfFetchNotDefined = () => {
@@ -31,7 +32,7 @@ const throwIfFetchNotDefined = () => {
  * the Firebase ID token has expired.
  * @return {String} The new ID token
  */
-const refreshExpiredIdToken = async (refreshToken) => {
+const refreshExpiredIdToken = async (refreshToken: string) => {
   if (!refreshToken) {
     throw new Error('The "refreshToken" argument is required.')
   }
@@ -62,89 +63,102 @@ const refreshExpiredIdToken = async (refreshToken) => {
  * is provided.
  * @return {Object} An AuthUser instance
  */
-export const verifyIdToken = async (token, refreshToken = null) => {
+export const verifyIdToken = async (token: string, refreshToken = null) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
 
   initFirebaseAdminSDK()
 
   let firebaseUser
-  let newToken = token
+  let newToken: string | null = token
   const firebaseAdminAuth = getAuth()
   const { onTokenRefreshError, onVerifyTokenError } = getConfig()
   try {
     firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
   } catch (e) {
-    // https://firebase.google.com/docs/reference/node/firebase.auth.Error
-    switch (e.code) {
-      // Errors we consider expected and which should result in an
-      // unauthenticated user.
-      case 'auth/invalid-user-token':
-      case 'auth/user-token-expired':
-      case 'auth/user-disabled':
-        // Return an unauthenticated user.
-        // https://github.com/gladly-team/next-firebase-auth/issues/174
-        newToken = null
-        firebaseUser = null
-        logDebug(errorMessageVerifyFailed(e.code))
-        break
-
-      // Errors that might be fixed by refreshing the user's ID token.
-      case 'auth/id-token-expired':
-      case 'auth/argument-error':
-        if (refreshToken) {
-          logDebug(
-            `[verifyIdToken] The ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
-          )
-          let newTokenFailure = false
-          try {
-            newToken = await refreshExpiredIdToken(refreshToken)
-          } catch (refreshErr) {
-            newTokenFailure = true
-
-            // Call developer-provided error callback.
-            await onTokenRefreshError(refreshErr)
-          }
-
-          if (!newTokenFailure) {
-            logDebug('[verifyIdToken] Successfully refreshed the ID token.')
-            try {
-              firebaseUser = await firebaseAdminAuth.verifyIdToken(newToken)
-            } catch (verifyErr) {
-              await onVerifyTokenError(verifyErr)
-              logDebug(errorMessageVerifyFailed(verifyErr.code))
-            }
-          }
-
-          // If either token refreshing or validation failed, return an
-          // unauthenticated user.
-          // https://github.com/gladly-team/next-firebase-auth/issues/366
-          if (newTokenFailure) {
-            newToken = null
-            firebaseUser = null
-            logDebug(
-              '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
-            )
-          }
+    if (e instanceof FirebaseError) {
+      // https://firebase.google.com/docs/reference/node/firebase.auth.Error
+      switch (e.code) {
+        // Errors we consider expected and which should result in an
+        // unauthenticated user.
+        case 'auth/invalid-user-token':
+        case 'auth/user-token-expired':
+        case 'auth/user-disabled':
+          // Return an unauthenticated user.
+          // https://github.com/gladly-team/next-firebase-auth/issues/174
+          newToken = null
+          firebaseUser = undefined
+          logDebug(errorMessageVerifyFailed(e.code))
           break
-        }
 
-      // Fall through here if there is no refresh token. Without a refresh
-      // token, an expired ID token is not resolvable.
-      // eslint-disable-next-line no-fallthrough
-      default:
-        // Here, any errors are unexpected. Return an unauthenticated user.
-        // Rationale: it's not particularly easy for developers to
-        // catch errors in `withAuthUserSSR`, so default to returning
-        // an unauthed user and give the developer control over
-        // handling the error.
-        // https://github.com/gladly-team/next-firebase-auth/issues/366
-        newToken = null
-        firebaseUser = null
+        // Errors that might be fixed by refreshing the user's ID token.
+        case 'auth/id-token-expired':
+        case 'auth/argument-error':
+          if (refreshToken) {
+            logDebug(
+              `[verifyIdToken] The ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
+            )
+            let newTokenFailure = false
+            try {
+              newToken = await refreshExpiredIdToken(refreshToken)
+            } catch (refreshErr) {
+              newTokenFailure = true
 
-        // Call developer-provided error callback.
-        await onVerifyTokenError(e)
-        logDebug(errorMessageVerifyFailed(e.code))
+              // Call developer-provided error callback.
+              if (onTokenRefreshError && refreshErr instanceof FirebaseError) {
+                await onTokenRefreshError(refreshErr)
+              }
+            }
+
+            if (!newTokenFailure) {
+              logDebug('[verifyIdToken] Successfully refreshed the ID token.')
+              try {
+                firebaseUser = await firebaseAdminAuth.verifyIdToken(
+                  // Assume new token is set and catch any errors.
+                  newToken as string
+                )
+              } catch (verifyErr) {
+                if (onVerifyTokenError && verifyErr instanceof FirebaseError) {
+                  await onVerifyTokenError(verifyErr)
+                  logDebug(errorMessageVerifyFailed(verifyErr.code))
+                }
+              }
+            }
+
+            // If either token refreshing or validation failed, return an
+            // unauthenticated user.
+            // https://github.com/gladly-team/next-firebase-auth/issues/366
+            if (newTokenFailure) {
+              newToken = null
+              firebaseUser = undefined
+              logDebug(
+                '[verifyIdToken] Failed to refresh the ID token. The user will be unauthenticated.'
+              )
+            }
+            break
+          }
+
+        // Fall through here if there is no refresh token. Without a refresh
+        // token, an expired ID token is not resolvable.
+        // eslint-disable-next-line no-fallthrough
+        default:
+          // Here, any errors are unexpected. Return an unauthenticated user.
+          // Rationale: it's not particularly easy for developers to
+          // catch errors in `withAuthUserSSR`, so default to returning
+          // an unauthed user and give the developer control over
+          // handling the error.
+          // https://github.com/gladly-team/next-firebase-auth/issues/366
+          newToken = null
+          firebaseUser = undefined
+
+          // Call developer-provided error callback.
+          if (onVerifyTokenError) {
+            await onVerifyTokenError(e)
+          }
+          logDebug(errorMessageVerifyFailed(e.code))
+      }
+    } else {
+      logDebug(e)
     }
   }
   const AuthUser = createAuthUser({
@@ -171,7 +185,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
  * @return {String} response.refreshToken - The user's refresh token
  * @return {Object} response.AuthUser - An AuthUser instance
  */
-export const getCustomIdAndRefreshTokens = async (token) => {
+export const getCustomIdAndRefreshTokens = async (token: string) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
 
