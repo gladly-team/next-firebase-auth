@@ -60,9 +60,13 @@ module.exports = {
     {
       files: [
         '**/*.test.ts',
+        '**/*.test.tsx',
         '**/__mocks__/**/*.ts',
+        '**/__mocks__/**/*.tsx',
         '**/*.test.js',
+        '**/*.test.jsx',
         '**/__mocks__/**/*.js',
+        '**/__mocks__/**/*.jsx',
       ],
       extends: ['plugin:jest/recommended'],
       env: {

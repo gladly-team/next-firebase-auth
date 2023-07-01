@@ -2,6 +2,9 @@
 // modules between tests. Most tests should reside in
 // withAuthUser.test.js.
 
+// eslint-disable-next-line jest/no-export
+export {}
+
 // Allow using the name "mockModuleNotFoundError".
 /* eslint-disable new-cap */
 jest.mock('react')
