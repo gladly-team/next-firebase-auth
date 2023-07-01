@@ -1,3 +1,5 @@
+export {}
+
 const { Auth } = require('firebase-admin/auth')
 
 const firebaseAdminAuthMock: jest.Mocked<typeof Auth> =
@@ -10,4 +12,4 @@ const auth = {
 
 firebaseAdminAuthMock.getAuth = jest.fn(() => auth)
 
-export default firebaseAdminAuthMock
+module.exports = firebaseAdminAuthMock

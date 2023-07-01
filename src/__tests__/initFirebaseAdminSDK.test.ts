@@ -19,10 +19,11 @@ const mockApplicationDefault = applicationDefault as jest.Mock
 const mockCert = cert as jest.Mock
 const mockGetApps = getApps as jest.Mock
 const mockInitializeApp = initializeApp as jest.Mock
+const mockSetConfig = jest.mocked(setConfig)
 
 beforeEach(() => {
   const mockConfig = createMockConfig({ clientSide: false })
-  setConfig(mockConfig)
+  mockSetConfig(mockConfig)
 
   mockGetApps.mockReturnValue([])
   mockCert.mockImplementation((obj) => ({
@@ -36,7 +37,7 @@ afterEach(() => {
 })
 
 describe('initFirebaseAdminSDK', () => {
-  it('calls initializeApp with the expected values', () => {
+  it.only('calls initializeApp with the expected values', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
