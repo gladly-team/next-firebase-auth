@@ -44,8 +44,9 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  process.env = env
   env = { NODE_ENV: 'test' }
+  process.env = env
+  global.fetch = jest.fn()
   jest.clearAllMocks()
 })
 

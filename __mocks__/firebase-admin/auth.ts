@@ -1,6 +1,6 @@
 export {}
 
-const { Auth } = require('firebase-admin/auth')
+const { Auth } = jest.requireActual('firebase-admin/auth')
 
 const firebaseAdminAuthMock: jest.Mocked<typeof Auth> =
   jest.createMockFromModule('firebase-admin/auth')
