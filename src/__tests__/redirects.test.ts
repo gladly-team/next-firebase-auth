@@ -22,16 +22,16 @@ describe('redirects', () => {
     describe(`${redirectFunc.name} : ${redirectConfigName} tests`, () => {
       describe('with global config', () => {
         it('returns a redirect object when "redirectDestination" is set to a string and it is provided by the global config', () => {
-          setConfig(getMockConfig())
-          const result = redirectFunc({})
           const mockConfig = getMockConfig()
           setConfig({
             ...mockConfig,
-            authPageURL: '/',
+            appPageURL: '/foo',
+            authPageURL: '/foo',
           })
+          const result = redirectFunc({})
 
           expect(result).toEqual({
-            destination: '/',
+            destination: '/foo',
             basePath: true,
             permanent: false,
           })
@@ -40,13 +40,13 @@ describe('redirects', () => {
 
       describe('with config specified in "redirectURL"', () => {
         it('returns a redirect object when "redirectDestination" set to a string', () => {
-          const redirectURL = '/'
+          const redirectURL = '/example'
           const result = redirectFunc({
             redirectURL,
           })
 
           expect(result).toEqual({
-            destination: '/',
+            destination: '/example',
             basePath: true,
             permanent: false,
           })
@@ -54,11 +54,11 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a minimally valid object', () => {
           const result = redirectFunc({
-            redirectURL: '/', // Only required field
+            redirectURL: '/abc', // Only required field
           })
 
           expect(result).toEqual({
-            destination: '/',
+            destination: '/abc',
             basePath: true,
             permanent: false,
           })
@@ -82,11 +82,11 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a string', () => {
           const result = redirectFunc({
-            redirectURL: () => '/',
+            redirectURL: () => '/blah',
           })
 
           expect(result).toEqual({
-            destination: '/',
+            destination: '/blah',
             basePath: true,
             permanent: false,
           })
@@ -137,14 +137,14 @@ describe('redirects', () => {
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
             AuthUser: { id: 'user-id' } as AuthUserType,
             redirectURL: () => ({
-              destination: `/`,
+              destination: `/hello`,
               basePath: false,
               permanent: true,
             }),
           })
 
           expect(result).toEqual({
-            destination: '/',
+            destination: '/hello',
             basePath: false,
             permanent: true,
           })
