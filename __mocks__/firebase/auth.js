@@ -1,3 +1,5 @@
+export {}
+
 const firebaseAuthMock = jest.createMockFromModule('firebase/auth')
 
 const mockOnIdTokenChangedUnsubscribe = jest.fn()

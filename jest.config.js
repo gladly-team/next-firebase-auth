@@ -13,13 +13,19 @@ module.exports = {
   // Support absolute imports; e.g. from 'src/*'
   // https://stackoverflow.com/a/72437265/1332513
   moduleDirectories: ['node_modules', '<rootDir>'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/', '/.yalc/', '/.git/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '/.yalc/',
+    '/.git/',
+    'build/',
+  ],
   transform: {
     '^.+\\.(js|jsx)$': '<rootDir>/node_modules/babel-jest',
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(firebase|@firebase)/)',
+    '/node_modules/(?!(firebase|@firebase|jose)/)',
     '/.yalc/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
