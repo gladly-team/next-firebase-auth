@@ -79,7 +79,7 @@ const withAuthUser =
     authPageURL,
     LoaderComponent = null,
   }: Options = {}) =>
-  <ComponentProps = unknown,>(
+  <ComponentProps extends object>(
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
@@ -227,8 +227,11 @@ const withAuthUser =
       const loaderComp = LoaderComponent ? <LoaderComponent /> : null
       const comps = (
         <AuthUserContext.Provider value={AuthUser}>
+          {/**
+           * https://github.com/Microsoft/TypeScript/issues/28938#issuecomment-450636046
+           * */}
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <ChildComponent {...otherProps} />
+          <ChildComponent {...(otherProps as ComponentProps)} />
         </AuthUserContext.Provider>
       )
       if (willRedirectToApp) {
