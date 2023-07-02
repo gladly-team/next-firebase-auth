@@ -23,8 +23,9 @@ const mockLogDebug = jest.mocked(logDebug)
 let fetchSpy: jest.SpyInstance
 
 // https://github.com/firebase/firebase-admin-node/issues/1666
-class FirebaseError implements FirebaseErrorType {
+class FirebaseError extends Error implements FirebaseErrorType {
   constructor(code: string, message: string) {
+    super(message)
     this.code = code
     this.message = message
   }
@@ -35,7 +36,7 @@ class FirebaseError implements FirebaseErrorType {
 
   // Just matching FirebaseErrorType
   toJSON(): object {
-    return this
+    return { error: this.message }
   }
 }
 
@@ -406,8 +407,7 @@ describe('verifyIdToken', () => {
     await expect(
       verifyIdToken('some-token', 'my-refresh-token')
     ).resolves.not.toThrow()
-    const expectedErr = new FirebaseError(
-      'some-error',
+    const expectedErr = new Error(
       'Problem refreshing token: {"error":"Something happened, sorry."}'
     )
     expect(onTokenRefreshError).toHaveBeenCalledWith(expectedErr)
@@ -1139,10 +1139,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await expect(getCustomIdAndRefreshTokens('some-token')).rejects.toEqual(
-      new FirebaseError(
-        'some-error',
-        'Problem getting a refresh token: {"error":"Oh no."}'
-      )
+      new Error('Problem getting a refresh token: {"error":"Oh no."}')
     )
   })
 
