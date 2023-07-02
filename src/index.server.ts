@@ -10,6 +10,7 @@ import { verifyIdToken } from 'src/firebaseAdmin'
 import getUserFromCookies from 'src/getUserFromCookies'
 import { ConfigInput } from './configTypes'
 import { WithAuthUserOptions } from './withAuthUser'
+import { WithAuthUserSSROptions } from './withAuthUserTokenSSR'
 
 const init = (config: ConfigInput) => {
   initCommon(config)
@@ -42,14 +43,12 @@ const useAuthUser = () => {
   return useAuthUserModule()
 }
 
-// TODO
-const withAuthUserSSR = (options: any) => {
+const withAuthUserSSR = (options: WithAuthUserSSROptions) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: false })
 }
 
-// TODO
-const withAuthUserTokenSSR = (options: any) => {
+const withAuthUserTokenSSR = (options: WithAuthUserSSROptions) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: true })
 }

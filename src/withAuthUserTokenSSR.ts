@@ -12,7 +12,7 @@ import logDebug from 'src/logDebug'
 import { AuthUser as AuthUserType } from './createAuthUser'
 import { PageURL } from './redirectTypes'
 
-interface WithAuthUserSSROptions {
+export interface WithAuthUserSSROptions {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
   appPageURL?: PageURL
