@@ -7,8 +7,8 @@ import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import AuthAction from 'src/AuthAction'
 import getUserFromCookies from 'src/getUserFromCookies'
 import logDebug from 'src/logDebug'
-import { PageURL } from 'index'
 import { ConfigInput } from 'src/configTypes'
+import { PageURL } from 'src/redirectTypes'
 
 /**
  * We intentionally don't mock a few modules whose behavior we want to
