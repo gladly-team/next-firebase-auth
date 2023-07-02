@@ -3813,6 +3813,14 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
+dts-bundle-generator@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/dts-bundle-generator/-/dts-bundle-generator-8.0.1.tgz#faa34f8325d65a960696df20fe7ef0b46ab2dc4e"
+  integrity sha512-9JVw78/OXdKfq+RUrmpLm6WAUJp+aOUGEHimVqIlOEH2VugRt1I8CVIoQZlirWZko+/SVZkNgpWCyZubUuzzPA==
+  dependencies:
+    typescript ">=5.0.2"
+    yargs "^17.6.0"
+
 duplexer@^0.1.1, duplexer@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
@@ -8011,6 +8019,11 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
+typescript@>=5.0.2:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
+  integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
+
 typescript@^4.7.4:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
@@ -8448,7 +8461,7 @@ yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yargs@^17.3.1, yargs@^17.7.2:
+yargs@^17.3.1, yargs@^17.6.0, yargs@^17.7.2:
   version "17.7.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
   integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==

@@ -51,10 +51,6 @@ const sharedConfig = {
     new CopyPlugin({
       patterns: [
         {
-          from: './index.d.ts',
-          to: './index.d.ts',
-        },
-        {
           from: './codemod',
           to: './codemod',
           globOptions: {
