@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
@@ -6,6 +7,8 @@ import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import AuthAction from 'src/AuthAction'
 import getUserFromCookies from 'src/getUserFromCookies'
 import logDebug from 'src/logDebug'
+import { PageURL } from 'index'
+import { ConfigInput } from 'src/configTypes'
 
 /**
  * We intentionally don't mock a few modules whose behavior we want to
@@ -17,9 +20,12 @@ jest.mock('src/cookies')
 jest.mock('src/getUserFromCookies')
 jest.mock('src/logDebug')
 
+const mockGetUserFromCookies = jest.mocked(getUserFromCookies)
+const mockLogDebug = jest.mocked(logDebug)
+
 beforeEach(() => {
   // Default to an unauthed user.
-  getUserFromCookies.mockResolvedValue(createAuthUser())
+  mockGetUserFromCookies.mockResolvedValue(createAuthUser())
 })
 
 afterEach(() => {
@@ -36,14 +42,14 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    getUserFromCookies.mockResolvedValue(user)
+    mockGetUserFromCookies.mockResolvedValue(user)
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const ctx = createMockNextContext()
     await func(ctx)
-    expect(getUserFromCookies).toHaveBeenCalledWith({
+    expect(mockGetUserFromCookies).toHaveBeenCalledWith({
       req: ctx.req,
       includeToken: true,
     })
@@ -58,14 +64,14 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    getUserFromCookies.mockResolvedValue(user)
+    mockGetUserFromCookies.mockResolvedValue(user)
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({}, { useToken: false })(mockGetSSPFunc)
     const ctx = createMockNextContext()
     await func(ctx)
-    expect(getUserFromCookies).toHaveBeenCalledWith({
+    expect(mockGetUserFromCookies).toHaveBeenCalledWith({
       req: ctx.req,
       includeToken: false,
     })
@@ -80,7 +86,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    getUserFromCookies.mockResolvedValue(user)
+    mockGetUserFromCookies.mockResolvedValue(user)
 
     const expectedAuthUserProp = user.serialize()
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
@@ -92,10 +98,10 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     })
   })
 
-  it('passes an empty serialized AuthUser prop when the user no cookie auth and auth is *not* required', async () => {
+  it('passes an empty serialized AuthUser prop when the user has no cookie auth and auth is *not* required', async () => {
     expect.assertions(1)
     const unauthedUser = createAuthUser()
-    getUserFromCookies.mockResolvedValue(unauthedUser)
+    mockGetUserFromCookies.mockResolvedValue(unauthedUser)
     const expectedAuthUserProp = unauthedUser.serialize() // empty auth
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -132,7 +138,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-      authPageURL: ({ ctx }) => `/my-login?next=${ctx.pathname}`,
+      authPageURL: ({ ctx }: { ctx: GetServerSidePropsContext }) =>
+        `/my-login?next=${ctx.query.pathname}`,
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
@@ -151,8 +158,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-      authPageURL: ({ ctx }) => ({
-        destination: `/my-login?next=${ctx.pathname}`,
+      authPageURL: ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+        destination: `/my-login?next=${ctx.query.pathname}`,
         basePath: false,
       }),
     })(mockGetSSPFunc)
@@ -173,8 +180,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-      authPageURL: ({ ctx }) => ({
-        destination: `/my-login?next=${ctx.pathname}`,
+      authPageURL: ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+        destination: `/my-login?next=${ctx.query.pathname}`,
         basePath: true,
       }),
     })(mockGetSSPFunc)
@@ -241,8 +248,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      authPageURL: () => undefined, // no auth page default defined
-    })
+      authPageURL: () => undefined as unknown as PageURL, // no auth page default defined
+    } as unknown as ConfigInput)
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -262,7 +269,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -290,7 +297,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -322,7 +329,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -333,7 +340,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
-      appPageURL: ({ ctx }) => `/my-app?next=${ctx.pathname}`,
+      appPageURL: ({ ctx }: { ctx: GetServerSidePropsContext }) =>
+        `/my-app?next=${ctx.query.pathname}`,
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
@@ -348,7 +356,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('redirects to the config\'s default app URL when no app URL is provided, the user is authed, and "whenAuthed" is set to AuthAction.REDIRECT_TO_APP', async () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -382,7 +390,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -413,7 +421,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -423,8 +431,8 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
-      appPageURL: () => undefined, // no default defined
-    })
+      appPageURL: () => undefined as unknown as PageURL, // no default defined
+    } as unknown as ConfigInput)
 
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
@@ -442,7 +450,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it("includes the composed getServerSideProps's props, passing it the context with a defined AuthUser", async () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -473,7 +481,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it("includes only the composed getServerSideProps's custom 'redirect' logic", async () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -499,7 +507,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it("includes only the composed getServerSideProps's custom 'notFound' logic", async () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -519,16 +527,16 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
-    getUserFromCookies.mockResolvedValue(user)
+    mockGetUserFromCookies.mockResolvedValue(user)
     const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
-    expect(logDebug).toHaveBeenCalledTimes(1)
+    expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
 
   it('logs expected debug logs when redirecting to the login URL', async () => {
@@ -540,15 +548,15 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: '/my-login',
     })(mockGetSSPFunc)
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUserSSR] Redirecting to login.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })
 
   it('logs expected debug logs when redirecting to the app URL', async () => {
@@ -556,7 +564,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    getUserFromCookies.mockResolvedValue(
+    mockGetUserFromCookies.mockResolvedValue(
       createAuthUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
@@ -569,14 +577,14 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       appPageURL: '/my-app',
     })(mockGetSSPFunc)
-    logDebug.mockClear()
+    mockLogDebug.mockClear()
     await func(createMockNextContext())
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
-    expect(logDebug).toHaveBeenCalledWith(
+    expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUserSSR] Redirecting to app.'
     )
-    expect(logDebug).toHaveBeenCalledTimes(2)
+    expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })
 })

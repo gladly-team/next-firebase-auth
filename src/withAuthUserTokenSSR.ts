@@ -1,7 +1,41 @@
+import type { ParsedUrlQuery } from 'querystring'
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  PreviewData,
+} from 'next'
+
 import getUserFromCookies from 'src/getUserFromCookies'
 import AuthAction from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import logDebug from 'src/logDebug'
+import { AuthUser as AuthUserType } from './createAuthUser'
+import { PageURL } from './redirectTypes'
+
+interface WithAuthUserSSROptions {
+  whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
+  whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
+  appPageURL?: PageURL
+  authPageURL?: PageURL
+}
+
+type GetSSRResult<P> = GetServerSidePropsResult<
+  P & { AuthUserSerialized?: string }
+>
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Dictionary<T = any> = Record<string, T>
+
+type SSRPropsContext<
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = GetServerSidePropsContext<Q, D> & { AuthUser: AuthUserType }
+
+type SSRPropsGetter<
+  P extends Dictionary = Dictionary,
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = (context: SSRPropsContext<Q, D>) => Promise<GetSSRResult<P>>
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -31,13 +65,19 @@ const withAuthUserTokenSSR =
     {
       whenAuthed = AuthAction.RENDER,
       whenUnauthed = AuthAction.RENDER,
-      appPageURL = null,
-      authPageURL = null,
-    } = {},
+      appPageURL = undefined,
+      authPageURL = undefined,
+    }: WithAuthUserSSROptions = {},
     { useToken = true } = {}
   ) =>
-  (getServerSidePropsFunc) =>
-  async (ctx) => {
+  <
+    P extends Dictionary = Dictionary,
+    Q extends ParsedUrlQuery = ParsedUrlQuery,
+    D extends PreviewData = PreviewData
+  >(
+    getServerSidePropsFunc?: SSRPropsGetter<P, Q, D>
+  ) =>
+  async (ctx: SSRPropsContext<Q, D>) => {
     logDebug(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
@@ -73,9 +113,6 @@ const withAuthUserTokenSSR =
       }
     }
 
-    // Prepare return data
-    let returnData = { props: { AuthUserSerialized } }
-
     // Evaluate the composed getServerSideProps().
     if (getServerSidePropsFunc) {
       // Add the AuthUser to Next.js context so pages can use
@@ -83,21 +120,30 @@ const withAuthUserTokenSSR =
       ctx.AuthUser = AuthUser
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
-        if (composedProps.props) {
+        if ('props' in composedProps) {
           // If there are composed props, add Authuser to the props.
-          returnData = { ...composedProps }
-          returnData.props.AuthUserSerialized = AuthUserSerialized
-        } else if (composedProps.notFound || composedProps.redirect) {
+          return {
+            ...composedProps,
+            props: {
+              ...(composedProps.props || {}),
+              AuthUserSerialized,
+            },
+          }
+        }
+        if ('notFound' in composedProps || 'redirect' in composedProps) {
           // If the composed props include a 'notFound' or 'redirect' key,
           // it means it contains a custom dynamic routing logic that should
           // not be overwritten:
           // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
-          returnData = { ...composedProps }
+          return { ...composedProps }
         }
       }
     }
-
-    return returnData
+    return {
+      props: {
+        AuthUserSerialized,
+      },
+    }
   }
 
 export default withAuthUserTokenSSR
