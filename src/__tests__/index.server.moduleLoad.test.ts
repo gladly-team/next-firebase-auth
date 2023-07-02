@@ -1,4 +1,4 @@
-// Tests for index.server.js that require resetting all
+// Tests for index.server.ts that require resetting all
 // modules between tests. Most tests should reside in
 // index.server.test.js.
 // eslint-disable-next-line jest/no-export
@@ -10,7 +10,7 @@ afterEach(() => {
   jest.resetModules()
 })
 
-describe('index.server.js (resetting modules)', () => {
+describe('index.server.ts (resetting modules)', () => {
   it('imports without error when missing optional dependencies', () => {
     expect.assertions(0)
 
@@ -44,7 +44,7 @@ describe('index.server.js (resetting modules)', () => {
     })
 
     // eslint-disable-next-line no-unused-expressions
-    require('src/index.server').default
+    require('src/index.server')
   })
 
   it('throws an error when calling useAuthUser without react installed', () => {
@@ -59,7 +59,7 @@ describe('index.server.js (resetting modules)', () => {
         moduleName: 'react',
       })
     })
-    const { useAuthUser } = require('src/index.server').default
+    const { useAuthUser } = require('src/index.server')
     expect(() => {
       useAuthUser()
     }).toThrow(expectedErr)

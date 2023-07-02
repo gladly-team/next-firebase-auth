@@ -21,35 +21,35 @@ afterEach(() => {
 describe('index.ts: init', () => {
   it('exports init', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.init).toBeDefined()
     expect(index.init).toEqual(expect.any(Function))
   })
 
   it('calls setDebugEnabled with true if config.debug is true', () => {
     expect.assertions(1)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init({ debug: true })
     expect(setDebugEnabled).toHaveBeenCalledWith(true)
   })
 
   it('calls setDebugEnabled with false if config.debug is truthy but non-true', () => {
     expect.assertions(1)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init({ debug: 'yes' })
     expect(setDebugEnabled).toHaveBeenCalledWith(false)
   })
 
   it('calls setDebugEnabled with false if config.debug is false', () => {
     expect.assertions(1)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init({ debug: false })
     expect(setDebugEnabled).toHaveBeenCalledWith(false)
   })
 
   it('calls setConfig with the provided config', () => {
     expect.assertions(1)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init({ some: 'config' })
     expect(setConfig).toHaveBeenCalledWith({ some: 'config' })
   })
@@ -57,7 +57,7 @@ describe('index.ts: init', () => {
   it('calls initFirebaseClientSDK if on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init()
     expect(initFirebaseClientSDK).toHaveBeenCalled()
   })
@@ -65,7 +65,7 @@ describe('index.ts: init', () => {
   it('does not call initFirebaseClientSDK if on the server side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(false)
-    const index = require('src/index').default
+    const index = require('src/index')
     index.init()
     expect(initFirebaseClientSDK).not.toHaveBeenCalled()
   })
@@ -74,7 +74,7 @@ describe('index.ts: init', () => {
 describe('index.ts: withAuthUser', () => {
   it('exports withAuthUser', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.withAuthUser).toBeDefined()
     expect(index.withAuthUser).toEqual(expect.any(Function))
   })
@@ -83,7 +83,7 @@ describe('index.ts: withAuthUser', () => {
 describe('index.ts: useAuthUser', () => {
   it('exports useAuthUser', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.useAuthUser).toBeDefined()
     expect(index.useAuthUser).toEqual(expect.any(Function))
   })
@@ -92,7 +92,7 @@ describe('index.ts: useAuthUser', () => {
 describe('index.ts: withAuthUserSSR', () => {
   it('exports withAuthUserSSR', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.withAuthUserSSR).toBeDefined()
     expect(index.withAuthUserSSR).toEqual(expect.any(Function))
   })
@@ -100,7 +100,7 @@ describe('index.ts: withAuthUserSSR', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.withAuthUserSSR()
     }).toThrow('"withAuthUserSSR" can only be called server-side.')
@@ -110,7 +110,7 @@ describe('index.ts: withAuthUserSSR', () => {
 describe('index.ts: withAuthUserTokenSSR', () => {
   it('exports withAuthUserTokenSSR', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.withAuthUserTokenSSR).toBeDefined()
     expect(index.withAuthUserTokenSSR).toEqual(expect.any(Function))
   })
@@ -118,7 +118,7 @@ describe('index.ts: withAuthUserTokenSSR', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.withAuthUserTokenSSR()
     }).toThrow('"withAuthUserTokenSSR" can only be called server-side.')
@@ -128,7 +128,7 @@ describe('index.ts: withAuthUserTokenSSR', () => {
 describe('index.ts: setAuthCookies', () => {
   it('exports setAuthCookies', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.setAuthCookies).toBeDefined()
     expect(index.setAuthCookies).toEqual(expect.any(Function))
   })
@@ -136,7 +136,7 @@ describe('index.ts: setAuthCookies', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.setAuthCookies()
     }).toThrow('"setAuthCookies" can only be called server-side.')
@@ -146,7 +146,7 @@ describe('index.ts: setAuthCookies', () => {
 describe('index.ts: unsetAuthCookies', () => {
   it('exports unsetAuthCookies', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.unsetAuthCookies).toBeDefined()
     expect(index.unsetAuthCookies).toEqual(expect.any(Function))
   })
@@ -154,7 +154,7 @@ describe('index.ts: unsetAuthCookies', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.unsetAuthCookies()
     }).toThrow('"unsetAuthCookies" can only be called server-side.')
@@ -164,7 +164,7 @@ describe('index.ts: unsetAuthCookies', () => {
 describe('index.ts: verifyIdToken', () => {
   it('exports verifyIdToken', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.verifyIdToken).toBeDefined()
     expect(index.verifyIdToken).toEqual(expect.any(Function))
   })
@@ -172,7 +172,7 @@ describe('index.ts: verifyIdToken', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.verifyIdToken()
     }).toThrow('"verifyIdToken" can only be called server-side.')
@@ -182,7 +182,7 @@ describe('index.ts: verifyIdToken', () => {
 describe('index.ts: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.AuthAction).toEqual({
       RENDER: 'render',
       SHOW_LOADER: 'showLoader',
@@ -196,7 +196,7 @@ describe('index.ts: AuthAction', () => {
 describe('index.ts: getUserFromCookies', () => {
   it('exports getUserFromCookies', () => {
     expect.assertions(2)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(index.getUserFromCookies).toBeDefined()
     expect(index.getUserFromCookies).toEqual(expect.any(Function))
   })
@@ -204,7 +204,7 @@ describe('index.ts: getUserFromCookies', () => {
   it('throws if called on the client side', () => {
     expect.assertions(1)
     mockIsClientSide.mockReturnValue(true)
-    const index = require('src/index').default
+    const index = require('src/index')
     expect(() => {
       index.getUserFromCookies()
     }).toThrow('"getUserFromCookies" can only be called server-side.')
