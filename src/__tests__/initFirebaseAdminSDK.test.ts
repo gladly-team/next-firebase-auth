@@ -37,7 +37,7 @@ afterEach(() => {
 })
 
 describe('initFirebaseAdminSDK', () => {
-  it.only('calls initializeApp with the expected values', () => {
+  it('calls initializeApp with the expected values', () => {
     expect.assertions(1)
     const initFirebaseAdminSDK = require('src/initFirebaseAdminSDK').default
     initFirebaseAdminSDK()
