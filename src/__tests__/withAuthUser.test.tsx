@@ -37,8 +37,16 @@ const getUseFirebaseUserResponse = () => ({
   authRequestCompleted: false,
 })
 
+const originalWindowLocation = window.location
+
 beforeEach(() => {
-  window.location.replace = jest.fn()
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    enumerable: true,
+    value: {
+      replace: jest.fn(),
+    },
+  })
 
   // Default to client side context.
   const isClientSide = require('src/isClientSide').default
@@ -50,6 +58,12 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    enumerable: true,
+    value: originalWindowLocation,
+  })
+
   jest.clearAllMocks()
 })
 
