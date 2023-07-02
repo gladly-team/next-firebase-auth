@@ -18,7 +18,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('index.js: init', () => {
+describe('index.ts: init', () => {
   it('exports init', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -71,7 +71,7 @@ describe('index.js: init', () => {
   })
 })
 
-describe('index.js: withAuthUser', () => {
+describe('index.ts: withAuthUser', () => {
   it('exports withAuthUser', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -80,7 +80,7 @@ describe('index.js: withAuthUser', () => {
   })
 })
 
-describe('index.js: useAuthUser', () => {
+describe('index.ts: useAuthUser', () => {
   it('exports useAuthUser', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -89,7 +89,7 @@ describe('index.js: useAuthUser', () => {
   })
 })
 
-describe('index.js: withAuthUserSSR', () => {
+describe('index.ts: withAuthUserSSR', () => {
   it('exports withAuthUserSSR', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -107,7 +107,7 @@ describe('index.js: withAuthUserSSR', () => {
   })
 })
 
-describe('index.js: withAuthUserTokenSSR', () => {
+describe('index.ts: withAuthUserTokenSSR', () => {
   it('exports withAuthUserTokenSSR', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -125,7 +125,7 @@ describe('index.js: withAuthUserTokenSSR', () => {
   })
 })
 
-describe('index.js: setAuthCookies', () => {
+describe('index.ts: setAuthCookies', () => {
   it('exports setAuthCookies', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -143,7 +143,7 @@ describe('index.js: setAuthCookies', () => {
   })
 })
 
-describe('index.js: unsetAuthCookies', () => {
+describe('index.ts: unsetAuthCookies', () => {
   it('exports unsetAuthCookies', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -161,7 +161,7 @@ describe('index.js: unsetAuthCookies', () => {
   })
 })
 
-describe('index.js: verifyIdToken', () => {
+describe('index.ts: verifyIdToken', () => {
   it('exports verifyIdToken', () => {
     expect.assertions(2)
     const index = require('src/index').default
@@ -179,7 +179,7 @@ describe('index.js: verifyIdToken', () => {
   })
 })
 
-describe('index.js: AuthAction', () => {
+describe('index.ts: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
     const index = require('src/index').default
@@ -193,7 +193,7 @@ describe('index.js: AuthAction', () => {
   })
 })
 
-describe('index.js: getUserFromCookies', () => {
+describe('index.ts: getUserFromCookies', () => {
   it('exports getUserFromCookies', () => {
     expect.assertions(2)
     const index = require('src/index').default

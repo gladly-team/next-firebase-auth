@@ -1,7 +1,7 @@
 // eslint-disable-next-line jest/no-export
 export {}
 
-describe('index.js: AuthAction', () => {
+describe('index.ts: AuthAction', () => {
   it('defines the expected constants', () => {
     expect.assertions(1)
     const AuthAction = require('src/AuthAction').default

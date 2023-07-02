@@ -69,7 +69,7 @@ const sharedConfig = {
 
 const serverConfig = {
   ...sharedConfig,
-  entry: './src/index.server.js',
+  entry: './src/index.server.ts',
   target: 'node',
   output: {
     ...sharedConfig.output,
@@ -87,7 +87,7 @@ const serverConfig = {
 
 const clientConfig = {
   ...sharedConfig,
-  entry: './src/index.js',
+  entry: './src/index.ts',
   target: 'web',
   output: {
     ...sharedConfig.output,
