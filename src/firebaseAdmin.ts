@@ -105,8 +105,12 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
               newTokenFailure = true
 
               // Call developer-provided error callback.
-              if (onTokenRefreshError && refreshErr instanceof FirebaseError) {
-                await onTokenRefreshError(refreshErr)
+              if (refreshErr instanceof Error) {
+                if (onTokenRefreshError) {
+                  await onTokenRefreshError(refreshErr)
+                }
+              } else {
+                logDebug(refreshErr)
               }
             }
 
@@ -118,9 +122,15 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
                   newToken as string
                 )
               } catch (verifyErr) {
-                if (onVerifyTokenError && verifyErr instanceof FirebaseError) {
-                  await onVerifyTokenError(verifyErr)
-                  logDebug(errorMessageVerifyFailed(verifyErr.code))
+                if (verifyErr instanceof Error) {
+                  if (onVerifyTokenError) {
+                    await onVerifyTokenError(verifyErr)
+                  }
+                  if (verifyErr instanceof FirebaseError) {
+                    logDebug(errorMessageVerifyFailed(verifyErr.code))
+                  }
+                } else {
+                  logDebug(verifyErr)
                 }
               }
             }
@@ -158,6 +168,10 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
           logDebug(errorMessageVerifyFailed(e.code))
       }
     } else {
+      // This should never happen because all errors should be instances of
+      // FirebaseError.
+      newToken = null
+      firebaseUser = undefined
       logDebug(e)
     }
   }
