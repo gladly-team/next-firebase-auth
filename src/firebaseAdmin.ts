@@ -3,7 +3,7 @@ import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import createAuthUser from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
-import { FirebaseError } from 'firebase/app'
+import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
 
 // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
 const getTokenPrefix = () =>
@@ -76,9 +76,12 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
   try {
     firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
   } catch (e) {
-    if (e instanceof FirebaseError) {
+    // FirebaseError isn't exported, so let's assume.
+    // https://github.com/firebase/firebase-admin-node/issues/1666
+    const firebaseErr: FirebaseErrorType = e as FirebaseErrorType
+    if (firebaseErr.code) {
       // https://firebase.google.com/docs/reference/node/firebase.auth.Error
-      switch (e.code) {
+      switch (firebaseErr.code) {
         // Errors we consider expected and which should result in an
         // unauthenticated user.
         case 'auth/invalid-user-token':
@@ -88,7 +91,7 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
           // https://github.com/gladly-team/next-firebase-auth/issues/174
           newToken = null
           firebaseUser = undefined
-          logDebug(errorMessageVerifyFailed(e.code))
+          logDebug(errorMessageVerifyFailed(firebaseErr.code))
           break
 
         // Errors that might be fixed by refreshing the user's ID token.
@@ -96,7 +99,7 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
         case 'auth/argument-error':
           if (refreshToken) {
             logDebug(
-              `[verifyIdToken] The ID token is expired (error code ${e.code}). Attempting to refresh the ID token.`
+              `[verifyIdToken] The ID token is expired (error code ${firebaseErr.code}). Attempting to refresh the ID token.`
             )
             let newTokenFailure = false
             try {
@@ -126,8 +129,14 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
                   if (onVerifyTokenError) {
                     await onVerifyTokenError(verifyErr)
                   }
-                  if (verifyErr instanceof FirebaseError) {
-                    logDebug(errorMessageVerifyFailed(verifyErr.code))
+                  // FirebaseError isn't exported, so let's assume.
+                  // https://github.com/firebase/firebase-admin-node/issues/1666
+                  const verifyErrFromFirebase: FirebaseErrorType =
+                    verifyErr as unknown as FirebaseErrorType
+                  if (verifyErrFromFirebase.code) {
+                    logDebug(
+                      errorMessageVerifyFailed(verifyErrFromFirebase.code)
+                    )
                   }
                 } else {
                   logDebug(verifyErr)
@@ -163,9 +172,9 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
 
           // Call developer-provided error callback.
           if (onVerifyTokenError) {
-            await onVerifyTokenError(e)
+            await onVerifyTokenError(firebaseErr as unknown as Error)
           }
-          logDebug(errorMessageVerifyFailed(e.code))
+          logDebug(errorMessageVerifyFailed(firebaseErr.code))
       }
     } else {
       // This should never happen because all errors should be instances of

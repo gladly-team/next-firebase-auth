@@ -1,9 +1,8 @@
 // Tests for index.server.js that require resetting all
 // modules between tests. Most tests should reside in
 // index.server.test.js.
-
-// Allow using the name "mockModuleNotFoundError".
-/* eslint-disable new-cap */
+// eslint-disable-next-line jest/no-export
+export {}
 
 jest.mock('react')
 
@@ -12,7 +11,7 @@ afterEach(() => {
 })
 
 describe('index.server.js (resetting modules)', () => {
-  it.only('imports without error when missing optional dependencies', () => {
+  it('imports without error when missing optional dependencies', () => {
     expect.assertions(0)
 
     // Fake that all optional dependencies are not installed.

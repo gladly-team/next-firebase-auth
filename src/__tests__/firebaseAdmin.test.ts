@@ -10,7 +10,7 @@ import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import logDebug from 'src/logDebug'
-import { FirebaseError } from 'firebase/app'
+import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
 
 jest.mock('firebase-admin/auth')
 jest.mock('src/initFirebaseAdminSDK')
@@ -21,6 +21,23 @@ const mockInitFirebaseAdminSDK = jest.mocked(initFirebaseAdminSDK)
 const mockLogDebug = jest.mocked(logDebug)
 
 let fetchSpy: jest.SpyInstance
+
+// https://github.com/firebase/firebase-admin-node/issues/1666
+class FirebaseError implements FirebaseErrorType {
+  constructor(code: string, message: string) {
+    this.code = code
+    this.message = message
+  }
+
+  code: string
+
+  message: string
+
+  // Just matching FirebaseErrorType
+  toJSON(): object {
+    return this
+  }
+}
 
 // stash and restore the system env vars
 let env: typeof process.env
