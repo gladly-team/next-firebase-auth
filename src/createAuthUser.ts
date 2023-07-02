@@ -16,10 +16,12 @@ interface DeserializedAuthUser {
   _token?: string
 }
 
+export type AuthUserSerialized = string
+
 interface CreateAuthUserInput {
   firebaseUserClientSDK?: User
   firebaseUserAdminSDK?: Omit<DecodedIdToken, 'firebase'>
-  serializedAuthUser?: string
+  serializedAuthUser?: AuthUserSerialized
   clientInitialized?: boolean
   token?: string | null
   claims?: Claims

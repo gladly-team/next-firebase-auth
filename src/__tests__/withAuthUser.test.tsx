@@ -189,12 +189,11 @@ describe('withAuthUser: rendering/redirecting', () => {
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
-      redirectIfAuthed: true,
       LoaderComponent: MyLoader,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -212,12 +211,11 @@ describe('withAuthUser: rendering/redirecting', () => {
     const MockCompWithUser = withAuthUser({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
-      redirectIfAuthed: true,
       LoaderComponent: undefined, // none defined
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -247,7 +245,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -277,7 +275,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -307,7 +305,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { rerender } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -320,7 +318,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -333,7 +331,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -365,7 +363,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -403,7 +401,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          serializedAuthUser={MockSerializedAuthUser}
+          AuthUserSerialized={MockSerializedAuthUser}
           message="How are you?"
         />
       )
@@ -442,7 +440,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() =>
       render(
         <MockCompWithUser
-          serializedAuthUser={MockSerializedAuthUser}
+          AuthUserSerialized={MockSerializedAuthUser}
           message="How are you?"
         />
       )
@@ -477,7 +475,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -508,7 +506,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { rerender } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -522,7 +520,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -536,7 +534,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -565,7 +563,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -596,7 +594,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -634,7 +632,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          serializedAuthUser={MockSerializedAuthUser}
+          AuthUserSerialized={MockSerializedAuthUser}
           message="How are you?"
         />
       )
@@ -674,7 +672,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          serializedAuthUser={MockSerializedAuthUser}
+          AuthUserSerialized={MockSerializedAuthUser}
           message="How are you?"
         />
       )
@@ -708,7 +706,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -734,7 +732,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -759,7 +757,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -782,7 +780,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -805,7 +803,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -827,7 +825,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -851,7 +849,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -874,7 +872,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -911,7 +909,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -946,7 +944,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -979,7 +977,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )
@@ -1011,7 +1009,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        serializedAuthUser={MockSerializedAuthUser}
+        AuthUserSerialized={MockSerializedAuthUser}
         message="How are you?"
       />
     )

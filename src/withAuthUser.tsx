@@ -4,7 +4,9 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser, {
+  AuthUserSerialized as AuthUserSerializedType,
+} from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import AuthAction from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
@@ -27,6 +29,10 @@ interface Options {
   appPageURL?: PageURL
   authPageURL?: PageURL
   LoaderComponent?: ComponentType | null
+}
+
+interface HOCProps {
+  AuthUserSerialized?: AuthUserSerializedType
 }
 
 /**
@@ -73,7 +79,9 @@ const withAuthUser =
     authPageURL,
     LoaderComponent = null,
   }: Options = {}) =>
-  (ChildComponent: ComponentType) => {
+  <ComponentProps = unknown,>(
+    ChildComponent: ComponentType<ComponentProps>
+  ): ComponentType<ComponentProps & HOCProps> => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
 
     // Some dependencies are optional. Throw if they aren't installed
@@ -97,8 +105,7 @@ const withAuthUser =
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const WithAuthUserHOC = (props: any) => {
+    const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
       const { AuthUserSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
         () =>
