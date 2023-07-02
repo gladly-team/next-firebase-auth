@@ -12,34 +12,34 @@ afterEach(() => {
 })
 
 describe('index.server.js (resetting modules)', () => {
-  it('imports without error when missing optional dependencies', () => {
+  it.only('imports without error when missing optional dependencies', () => {
     expect.assertions(0)
 
     // Fake that all optional dependencies are not installed.
-    const mockModuleNotFoundError =
+    const MockModuleNotFoundError =
       require('src/testHelpers/mockModuleNotFoundError').default
     jest.mock('firebase/app', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'firebase/app',
       })
     })
     jest.mock('firebase/auth', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'firebase/auth',
       })
     })
     jest.mock('next', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'next',
       })
     })
     jest.mock('react', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'react',
       })
     })
     jest.mock('react-dom', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'react-dom',
       })
     })
@@ -53,10 +53,10 @@ describe('index.server.js (resetting modules)', () => {
     const expectedErr = new Error(
       'The dependency "react" is required when calling `useAuthUser`.'
     )
-    const mockModuleNotFoundError =
+    const MockModuleNotFoundError =
       require('src/testHelpers/mockModuleNotFoundError').default
     jest.mock('react', () => {
-      throw new mockModuleNotFoundError({
+      throw new MockModuleNotFoundError({
         moduleName: 'react',
       })
     })
