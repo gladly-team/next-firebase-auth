@@ -15,4 +15,5 @@ function ModuleNotFoundError(
 }
 ModuleNotFoundError.prototype = Error.prototype
 
-export default ModuleNotFoundError
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default ModuleNotFoundError as any
