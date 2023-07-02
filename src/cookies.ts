@@ -53,7 +53,7 @@ export const getCookie = (
   {
     keys,
     secure,
-    signed = true,
+    signed = false,
   }: {
     keys?: Cookies.Option['keys']
     secure?: Cookies.Option['secure']
