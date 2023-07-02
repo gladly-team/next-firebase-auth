@@ -8,8 +8,10 @@ jest.mock('src/logDebug')
 jest.mock('src/initFirebaseClientSDK')
 jest.mock('src/isClientSide')
 
+const mockIsClientSide = jest.mocked(isClientSide)
+
 beforeEach(() => {
-  isClientSide.mockReturnValue(true)
+  mockIsClientSide.mockReturnValue(true)
 })
 
 afterEach(() => {
@@ -54,7 +56,7 @@ describe('index.js: init', () => {
 
   it('calls initFirebaseClientSDK if on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     index.init()
     expect(initFirebaseClientSDK).toHaveBeenCalled()
@@ -62,7 +64,7 @@ describe('index.js: init', () => {
 
   it('does not call initFirebaseClientSDK if on the server side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(false)
+    mockIsClientSide.mockReturnValue(false)
     const index = require('src/index').default
     index.init()
     expect(initFirebaseClientSDK).not.toHaveBeenCalled()
@@ -97,7 +99,7 @@ describe('index.js: withAuthUserSSR', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.withAuthUserSSR()
@@ -115,7 +117,7 @@ describe('index.js: withAuthUserTokenSSR', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.withAuthUserTokenSSR()
@@ -133,7 +135,7 @@ describe('index.js: setAuthCookies', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.setAuthCookies()
@@ -151,7 +153,7 @@ describe('index.js: unsetAuthCookies', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.unsetAuthCookies()
@@ -169,7 +171,7 @@ describe('index.js: verifyIdToken', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.verifyIdToken()
@@ -201,7 +203,7 @@ describe('index.js: getUserFromCookies', () => {
 
   it('throws if called on the client side', () => {
     expect.assertions(1)
-    isClientSide.mockReturnValue(true)
+    mockIsClientSide.mockReturnValue(true)
     const index = require('src/index').default
     expect(() => {
       index.getUserFromCookies()

@@ -1,5 +1,3 @@
-// FIXME: remove "any" types
-
 /* eslint-disable global-require, @typescript-eslint/no-var-requires */
 
 import initCommon from 'src/initCommon'
@@ -11,6 +9,7 @@ import unsetAuthCookies from 'src/unsetAuthCookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import getUserFromCookies from 'src/getUserFromCookies'
 import { ConfigInput } from './configTypes'
+import { WithAuthUserOptions } from './withAuthUser'
 
 const init = (config: ConfigInput) => {
   initCommon(config)
@@ -19,15 +18,15 @@ const init = (config: ConfigInput) => {
   // https://github.com/gladly-team/next-firebase-auth/issues/70
 }
 
-const withAuthUser = (...args: any) => {
+const withAuthUser = (options: WithAuthUserOptions) => {
   // Require rather than import the module to support optional
   // peer dependencies. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/502
   const withAuthUserModule = require('src/withAuthUser').default
-  return withAuthUserModule(...args)
+  return withAuthUserModule(options)
 }
 
-const useAuthUser = (...args: any) => {
+const useAuthUser = () => {
   // Some dependencies are optional. Throw if they aren't installed
   // when calling this API.
   // https://github.com/gladly-team/next-firebase-auth/issues/502
@@ -40,14 +39,16 @@ const useAuthUser = (...args: any) => {
     )
   }
   const useAuthUserModule = require('src/useAuthUser').default
-  return useAuthUserModule(...args)
+  return useAuthUserModule()
 }
 
+// TODO
 const withAuthUserSSR = (options: any) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: false })
 }
 
+// TODO
 const withAuthUserTokenSSR = (options: any) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: true })

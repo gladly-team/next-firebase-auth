@@ -14,7 +14,7 @@ import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 import { PageURL, RedirectDestination } from './redirectTypes'
 
-interface Options {
+export interface WithAuthUserOptions {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
   whenAuthedBeforeRedirect?:
     | AuthAction.RENDER
@@ -78,7 +78,7 @@ const withAuthUser =
     appPageURL,
     authPageURL,
     LoaderComponent = null,
-  }: Options = {}) =>
+  }: WithAuthUserOptions = {}) =>
   <ComponentProps extends object>(
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {

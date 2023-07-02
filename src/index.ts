@@ -5,8 +5,9 @@ import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import isClientSide from 'src/isClientSide'
 import AuthAction from 'src/AuthAction'
 import initCommon from 'src/initCommon'
+import { ConfigInput } from './configTypes'
 
-const init = (config = {}) => {
+const init = (config: ConfigInput) => {
   initCommon(config)
 
   // On the client side, initialize the Firebase JS SDK.
