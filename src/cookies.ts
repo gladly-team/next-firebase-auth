@@ -1,16 +1,20 @@
 // https://github.com/pillarjs/cookies
 import Cookies from 'cookies'
-import { NextApiRequest, NextApiResponse } from 'next'
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from 'next'
 import { encodeBase64, decodeBase64 } from 'src/encoding'
 
 interface ReqResObj {
-  req: NextApiRequest
-  res: NextApiResponse
+  req: NextApiRequest | GetServerSidePropsContext['req']
+  res: NextApiResponse | GetServerSidePropsContext['res']
 }
 
 interface ReqResOptionalObj {
-  req: NextApiRequest
-  res?: NextApiResponse
+  req: NextApiRequest | GetServerSidePropsContext['req']
+  res?: NextApiResponse | GetServerSidePropsContext['res']
 }
 
 type CookieOptions = Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {

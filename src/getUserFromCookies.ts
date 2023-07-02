@@ -10,7 +10,7 @@ import {
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import { NextApiRequest } from 'next'
+import { GetServerSidePropsContext, NextApiRequest } from 'next'
 
 /**
  * Given a request object or cookie values, verify and return
@@ -41,7 +41,7 @@ const getUserFromCookies = async ({
   authCookieValue,
   authCookieSigValue,
 }: {
-  req?: NextApiRequest
+  req?: NextApiRequest | GetServerSidePropsContext['req']
   includeToken?: boolean
   authCookieValue?: string
   authCookieSigValue?: string
