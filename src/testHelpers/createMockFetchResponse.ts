@@ -7,7 +7,7 @@ const createMockFetchResponse = () =>
     clone: () => null,
     formData: '',
     headers: {} as Headers,
-    json: () => Promise.resolve(),
+    json: () => Promise.resolve({}),
     ok: true,
     redirected: false,
     status: 200,

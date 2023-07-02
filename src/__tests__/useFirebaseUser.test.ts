@@ -24,15 +24,14 @@ const mockLogDebug = jest.mocked(logDebug)
 type OnIdTokenChangeCallback = (firebaseUser: User | null) => Promise<void>
 type PromiseResolver = (value: unknown) => void
 
-const mockFetch = jest.fn(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (input: RequestInfo | URL, init?: RequestInit | undefined) =>
-    Promise.resolve(createMockFetchResponse())
-)
+let fetchSpy: jest.SpyInstance
 
 beforeEach(() => {
-  // `fetch` is polyfilled by Next.js.
-  global.fetch = mockFetch
+  fetchSpy = jest
+    .spyOn(window, 'fetch')
+    .mockImplementation(
+      jest.fn(() => Promise.resolve(createMockFetchResponse())) as jest.Mock
+    )
 
   mockSetConfig({
     ...createMockConfig(),
@@ -46,11 +45,11 @@ afterEach(() => {
 })
 
 describe('useFirebaseUser', () => {
-  it('returns an undefined user and initialized=false before the Firebase JS SDK has initialized', () => {
+  it('returns a null user and initialized=false before the Firebase JS SDK has initialized', () => {
     expect.assertions(1)
     const { result } = renderHook(() => useFirebaseUser())
     expect(result.current).toEqual({
-      user: undefined,
+      user: null,
       claims: {},
       initialized: false,
       authRequestCompleted: false,
@@ -88,7 +87,7 @@ describe('useFirebaseUser', () => {
     })
   })
 
-  it('return an undefined user and initialized=true if the Firebase JS SDK calls `onIdTokenChanged` with no Firebase user', async () => {
+  it('return a null user and initialized=true if the Firebase JS SDK calls `onIdTokenChanged` with no Firebase user', async () => {
     expect.assertions(1)
 
     const mockFirebaseUser = null // not signed in
@@ -111,7 +110,7 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(result.current).toEqual({
-      user: undefined,
+      user: null,
       claims: {},
       initialized: true,
       authRequestCompleted: true,
@@ -241,7 +240,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -276,7 +275,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -306,7 +305,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockRejectedValue(new Error('Could not fetch.'))
+    fetchSpy.mockRejectedValue(new Error('Could not fetch.'))
 
     await act(async () => {
       await expect(onIdTokenChangedCallback(mockFirebaseUser)).rejects.toThrow(
@@ -329,7 +328,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -361,7 +360,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -391,7 +390,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockRejectedValue(new Error('Could not fetch.'))
+    fetchSpy.mockRejectedValue(new Error('Could not fetch.'))
 
     await act(async () => {
       await expect(onIdTokenChangedCallback(mockFirebaseUser)).rejects.toThrow(
@@ -721,7 +720,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -771,7 +770,7 @@ describe('useFirebaseUser', () => {
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUser] The Firebase ID token changed. New Firebase user:',
-      undefined
+      null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUser] Calling the logout endpoint.'
@@ -796,7 +795,7 @@ describe('useFirebaseUser', () => {
     renderHook(() => useFirebaseUser())
 
     // Mock that `fetch` returns a non-OK response.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -813,7 +812,7 @@ describe('useFirebaseUser', () => {
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUser] The Firebase ID token changed. New Firebase user:',
-      undefined
+      null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
       '[withAuthUser] Calling the logout endpoint.'

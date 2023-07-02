@@ -14,7 +14,7 @@ describe('useAuthUser', () => {
     jest.spyOn(React, 'createContext')
     // eslint-disable-next-line no-unused-expressions
     require('src/useAuthUser').default
-    expect(React.createContext).toHaveBeenCalledWith()
+    expect(React.createContext).toHaveBeenCalledWith(undefined)
   })
 
   test('defining the AuthUser context value changes the useAuthUser value', () => {

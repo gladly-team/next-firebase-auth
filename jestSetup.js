@@ -1,3 +1,4 @@
+/* globals jest */
 /* eslint-disable import/no-extraneous-dependencies */
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
@@ -11,3 +12,6 @@ console.error = function (message, ...args) {
   error.apply(console, args) // keep default behaviour
   throw message instanceof Error ? message : new Error(message)
 }
+
+// Next.js polyfills fetch
+global.fetch = jest.fn()
