@@ -19,7 +19,7 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(firebase|@firebase)/)',
+    '/node_modules/(?!(firebase|@firebase|jose)/)',
     '/.yalc/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
