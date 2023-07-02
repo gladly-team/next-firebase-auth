@@ -20,23 +20,17 @@ const mockGetAuth = getAuth as jest.Mock
 const mockInitFirebaseAdminSDK = jest.mocked(initFirebaseAdminSDK)
 const mockLogDebug = jest.mocked(logDebug)
 
-const mockFetch = jest.fn(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (input: RequestInfo | URL, init?: RequestInit | undefined) =>
-    Promise.resolve(createMockFetchResponse())
-)
-// const mockFetch = jest.mocked(fakeFetch)
+let fetchSpy: jest.SpyInstance
 
 // stash and restore the system env vars
 let env: typeof process.env
 
-// declare global {
-//   var fetch: typeof mockFetch
-// }
-
 beforeEach(() => {
-  // `fetch` is polyfilled by Next.js.
-  global.fetch = mockFetch
+  fetchSpy = jest
+    .spyOn(global, 'fetch')
+    .mockImplementation(
+      jest.fn(() => Promise.resolve(createMockFetchResponse())) as jest.Mock
+    )
 
   const mockConfig = createMockConfig()
   setConfig({
@@ -106,7 +100,7 @@ describe('verifyIdToken', () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -146,7 +140,7 @@ describe('verifyIdToken', () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -230,7 +224,7 @@ describe('verifyIdToken', () => {
       }
     )
     await verifyIdToken('some-token', 'my-refresh-token')
-    const calledEndpoint = (mockFetch.mock.calls[0] as string[])[0]
+    const calledEndpoint = (fetchSpy.mock.calls[0] as string[])[0]
     const keyParam = new URL(calledEndpoint).searchParams.get('key')
     expect(keyParam).toEqual('the-expected-api-key')
   })
@@ -256,7 +250,7 @@ describe('verifyIdToken', () => {
       }
     )
     await verifyIdToken('some-token', 'my-refresh-token')
-    const fetchOptions = (mockFetch.mock.calls[0] as object[])[1]
+    const fetchOptions = (fetchSpy.mock.calls[0] as object[])[1]
     expect(fetchOptions).toEqual({
       body: 'grant_type=refresh_token&refresh_token=my-refresh-token',
       headers: {
@@ -370,7 +364,7 @@ describe('verifyIdToken', () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const { onTokenRefreshError } = getConfig()
-    mockFetch.mockImplementation(async () => ({
+    fetchSpy.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -422,7 +416,7 @@ describe('verifyIdToken', () => {
     })
 
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async () => ({
+    fetchSpy.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -458,7 +452,7 @@ describe('verifyIdToken', () => {
   it('returns an unauthenticated AuthUser if there is an error refreshing the token', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async () => ({
+    fetchSpy.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -489,7 +483,7 @@ describe('verifyIdToken', () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const { onVerifyTokenError } = getConfig()
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -538,7 +532,7 @@ describe('verifyIdToken', () => {
     })
 
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -574,7 +568,7 @@ describe('verifyIdToken', () => {
   it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -788,7 +782,7 @@ describe('verifyIdToken', () => {
     const { verifyIdToken } = require('src/firebaseAdmin')
 
     // Mock the behavior of refreshing the token.
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -835,7 +829,7 @@ describe('verifyIdToken', () => {
   it('logs debugging logs as expected when there is an error refreshing the token', async () => {
     expect.assertions(3)
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async () => ({
+    fetchSpy.mockImplementation(async () => ({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -870,7 +864,7 @@ describe('verifyIdToken', () => {
   it("logs debugging logs as expected when Firebase admin's verifyIdToken throws an unhandled error code", async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
-    mockFetch.mockImplementation(async (endpoint) => {
+    fetchSpy.mockImplementation(async (endpoint) => {
       if (
         endpoint instanceof String &&
         endpoint.indexOf(googleRefreshTokenEndpoint) === 0
@@ -918,7 +912,7 @@ describe('getCustomIdAndRefreshTokens', () => {
   it('calls initFirebaseAdminSDK', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       json: () =>
         Promise.resolve({
@@ -968,7 +962,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
 
-    const endpoint = mockFetch.mock.calls[0][0]
+    const endpoint = fetchSpy.mock.calls[0][0]
     expect(endpoint).toEqual(
       `${googleCustomTokenEndpoint}?key=${expectedAPIKey}`
     )
@@ -998,7 +992,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
 
-    const endpoint = mockFetch.mock.calls[0][0]
+    const endpoint = fetchSpy.mock.calls[0][0]
     expect(endpoint).toEqual(`${authEmulatorEndpoint}?key=${expectedAPIKey}`)
   })
 
@@ -1010,7 +1004,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     await getCustomIdAndRefreshTokens('some-token')
-    const options = mockFetch.mock.calls[0][1]
+    const options = fetchSpy.mock.calls[0][1]
     expect(options).toEqual({
       body: '{"token":"my-custom-token","returnSecureToken":true}',
       headers: {
@@ -1025,7 +1019,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       json: () =>
         Promise.resolve({
@@ -1051,7 +1045,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       json: () =>
         Promise.resolve({
@@ -1082,7 +1076,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       json: () =>
         Promise.resolve({
@@ -1111,7 +1105,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
@@ -1135,7 +1129,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       json: () =>
         Promise.resolve({
@@ -1165,7 +1159,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     // Mock the behavior of getting a custom token.
-    mockFetch.mockResolvedValue({
+    fetchSpy.mockResolvedValue({
       ...createMockFetchResponse(),
       ok: false,
       status: 500,
