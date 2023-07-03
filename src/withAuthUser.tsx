@@ -35,7 +35,9 @@ interface HOCProps {
 
 export type WithAuthUser = <ComponentProps extends object>(
   options?: WithAuthUserOptions
-) => (component: ComponentType<ComponentProps>) => ComponentType<ComponentProps>
+) => (
+  component: ComponentType<ComponentProps>
+) => ComponentType<ComponentProps & HOCProps>
 
 /**
  * A higher-order component that provides pages with the

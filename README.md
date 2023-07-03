@@ -645,7 +645,7 @@ Or an object:
 ```javascript
 {
   destination: '/my-url/here/', // Required string: the URL destination of a redirect
-  basePath: true, // Optional boolean (defaults to true): whether to use the Next.js base path.
+  basePath: false, // whether to use the Next.js base path.
 }
 ```
 
