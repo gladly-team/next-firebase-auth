@@ -14,7 +14,6 @@ const sharedConfig = {
     // filename set in individual configs below.
     path: path.resolve(__dirname, 'build'),
     libraryTarget: 'commonjs2',
-    libraryExport: 'default',
   },
   resolve: {
     plugins: [new TsconfigPathsPlugin({})],
@@ -50,10 +49,6 @@ const sharedConfig = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        {
-          from: './index.d.ts',
-          to: './index.d.ts',
-        },
         {
           from: './codemod',
           to: './codemod',

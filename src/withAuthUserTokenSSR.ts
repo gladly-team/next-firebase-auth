@@ -6,7 +6,7 @@ import {
 } from 'next'
 
 import getUserFromCookies from 'src/getUserFromCookies'
-import AuthAction from 'src/AuthAction'
+import { AuthAction } from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import logDebug from 'src/logDebug'
 import { AuthUser as AuthUserType } from './createAuthUser'
