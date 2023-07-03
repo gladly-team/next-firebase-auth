@@ -8,6 +8,7 @@ const firebaseAdminAuthMock: jest.Mocked<typeof Auth> =
 const auth = {
   createCustomToken: jest.fn(async () => null) as jest.Mock,
   verifyIdToken: jest.fn(async () => null) as jest.Mock,
+  getUser: jest.fn(() => Promise.resolve(null)) as jest.Mock,
 }
 
 firebaseAdminAuthMock.getAuth = jest.fn(() => auth)
