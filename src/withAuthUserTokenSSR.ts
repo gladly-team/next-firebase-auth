@@ -45,7 +45,7 @@ type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
   context: SSRPropsContext<Q, D>
 ) => Promise<GetSSRResult<P>>
 
-type WithAuthUserSSR = (
+export type WithAuthUserSSR = (
   options?: WithAuthUserSSROptions
 ) => <
   P extends Dictionary = Dictionary,

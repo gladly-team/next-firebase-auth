@@ -9,7 +9,7 @@ import { verifyIdToken as verifyIdTokenExport } from 'src/firebaseAdmin'
 import getUserFromCookiesExport from 'src/getUserFromCookies'
 import { ConfigInput } from './configTypes'
 import { WithAuthUser } from './withAuthUser'
-import { WithAuthUserSSROptions } from './withAuthUserTokenSSR'
+import { WithAuthUserSSR, WithAuthUserSSROptions } from './withAuthUserTokenSSR'
 
 // enum: AuthAction
 export * from 'src/AuthAction'
@@ -53,12 +53,16 @@ export const withAuthUser: WithAuthUser = (options) => {
   return withAuthUserModule(options)
 }
 
-export const withAuthUserSSR = (options: WithAuthUserSSROptions) => {
+export const withAuthUserSSR: WithAuthUserSSR = (
+  options?: WithAuthUserSSROptions
+) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: false })
 }
 
-export const withAuthUserTokenSSR = (options: WithAuthUserSSROptions) => {
+export const withAuthUserTokenSSR: WithAuthUserSSR = (
+  options?: WithAuthUserSSROptions
+) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: true })
 }
