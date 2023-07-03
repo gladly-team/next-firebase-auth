@@ -6,22 +6,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.x
-    - name: Install dependencies
-      run: yarn install
-    # Build before running unit tests so that built types are updated before
-    # running types unit tests (`tsc`).
-    - name: Build
-      run: yarn run build
-    - name: Run tests
-      run: yarn test # generates coverage
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-    - name: Check bundle sizes
-      run: yarn run bundlesize:no-build
-      env:
-        BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Set up node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: yarn install
+      # Build before running unit tests so that built types are updated before
+      # running types unit tests (`tsc`).
+      - name: Build
+        run: yarn run build
+      - name: Run tests
+        run: yarn test # generates coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+      - name: Check bundle sizes
+        run: yarn run bundlesize:no-build
+        env:
+          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
