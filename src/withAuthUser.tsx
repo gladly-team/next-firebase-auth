@@ -4,9 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createAuthUser, {
-  AuthUserSerialized as AuthUserSerializedType,
-} from 'src/createAuthUser'
+import createAuthUser, { AuthUserSerialized } from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
@@ -32,8 +30,12 @@ export interface WithAuthUserOptions {
 }
 
 interface HOCProps {
-  AuthUserSerialized?: AuthUserSerializedType
+  AuthUserSerialized?: AuthUserSerialized
 }
+
+export type WithAuthUser = <ComponentProps extends object>(
+  options?: WithAuthUserOptions
+) => (component: ComponentType<ComponentProps>) => ComponentType<ComponentProps>
 
 /**
  * A higher-order component that provides pages with the
@@ -69,8 +71,8 @@ interface HOCProps {
  *   `AuthAction.SHOW_LOADER`.
  * @return {Function} A function that takes a child component
  */
-const withAuthUser =
-  ({
+const withAuthUser: WithAuthUser =
+  <ComponentProps extends object>({
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
     whenUnauthedAfterInit = AuthAction.RENDER,
@@ -79,7 +81,7 @@ const withAuthUser =
     authPageURL,
     LoaderComponent = null,
   }: WithAuthUserOptions = {}) =>
-  <ComponentProps extends object>(
+  (
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
@@ -106,13 +108,13 @@ const withAuthUser =
     }
 
     const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
-      const { AuthUserSerialized, ...otherProps } = props
+      const { AuthUserSerialized: userSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
         () =>
           createAuthUser({
-            serializedAuthUser: AuthUserSerialized,
+            serializedAuthUser: userSerialized,
           }),
-        [AuthUserSerialized]
+        [userSerialized]
       )
 
       const {

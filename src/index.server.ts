@@ -8,7 +8,7 @@ import unsetAuthCookiesExport from 'src/unsetAuthCookies'
 import { verifyIdToken as verifyIdTokenExport } from 'src/firebaseAdmin'
 import getUserFromCookiesExport from 'src/getUserFromCookies'
 import { ConfigInput } from './configTypes'
-import { WithAuthUserOptions } from './withAuthUser'
+import { WithAuthUser } from './withAuthUser'
 import { WithAuthUserSSROptions } from './withAuthUserTokenSSR'
 
 // enum: AuthAction
@@ -45,7 +45,7 @@ export const useAuthUser = () => {
 
 export const verifyIdToken = verifyIdTokenExport
 
-export const withAuthUser = (options: WithAuthUserOptions) => {
+export const withAuthUser: WithAuthUser = (options) => {
   // Require rather than import the module to support optional
   // peer dependencies. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/502
