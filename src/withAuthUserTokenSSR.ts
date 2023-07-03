@@ -52,8 +52,8 @@ export type WithAuthUserSSR = (
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData
 >(
-  propGetter?: GetServerSideProps<P, Q, D>
-) => SSRPropsGetter<P, Q, D>
+  propGetter?: SSRPropsGetter<P, Q, D>
+) => GetServerSideProps<P, Q, D>
 
 /**
  * An wrapper for a page's exported getServerSideProps that
