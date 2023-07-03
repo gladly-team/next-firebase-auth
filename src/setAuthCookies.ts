@@ -6,10 +6,20 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser, { AuthUser } from 'src/createAuthUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const setAuthCookies = async (
+export type SetAuthCookies = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  options: { token?: string }
+) => Promise<{
+  idToken: string | null
+  refreshToken: string | null
+  AuthUser: AuthUser
+}>
+
+const setAuthCookies: SetAuthCookies = async (
   req: NextApiRequest,
   res: NextApiResponse,
   { token: userProvidedToken }: { token?: string } = {}
@@ -30,11 +40,13 @@ const setAuthCookies = async (
   // user.
   let idToken = null
   let refreshToken = null
-  let AuthUser = createAuthUser() // default to an unauthed user
+  let user = createAuthUser() // default to an unauthed user
   try {
-    ;({ idToken, refreshToken, AuthUser } = await getCustomIdAndRefreshTokens(
-      token
-    ))
+    ;({
+      idToken,
+      refreshToken,
+      AuthUser: user,
+    } = await getCustomIdAndRefreshTokens(token))
   } catch (e) {
     logDebug(
       '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
@@ -94,7 +106,7 @@ const setAuthCookies = async (
     // the token should only be used from the "AuthUserTokens"
     // cookie. Here, it is redundant information, and we don't
     // want the token to be used if it's expired.
-    AuthUser.serialize({ includeToken: false }),
+    user.serialize({ includeToken: false }),
     {
       req,
       res,
@@ -102,7 +114,7 @@ const setAuthCookies = async (
     cookieOptions
   )
 
-  if (AuthUser.id) {
+  if (user.id) {
     logDebug('[setAuthCookies] Set auth cookies for an authenticated user.')
   } else {
     logDebug(
@@ -113,7 +125,7 @@ const setAuthCookies = async (
   return {
     idToken,
     refreshToken,
-    AuthUser,
+    AuthUser: user,
   }
 }
 

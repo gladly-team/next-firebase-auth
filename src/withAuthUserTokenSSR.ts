@@ -14,9 +14,21 @@ import { AuthUser } from './createAuthUser'
 import { PageURL } from './redirectTypes'
 
 export interface WithAuthUserSSROptions {
+  /**
+   * The behavior to take if the user is authenticated.
+   */
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
+  /**
+   * The behavior to take if the user is not authenticated.
+   */
   whenUnauthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
+  /**
+   * The redirect destination URL when redirecting to the app.
+   */
   appPageURL?: PageURL
+  /**
+   * The redirect destination URL when redirecting to the login page.
+   */
   authPageURL?: PageURL
 }
 
@@ -45,6 +57,14 @@ type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
   context: SSRPropsContext<Q, D>
 ) => Promise<GetSSRResult<P>>
 
+/**
+ * An wrapper for a page's exported getServerSideProps that provides the authed
+ * user's info as a prop. Optionally, this handles redirects based on auth
+ * status.
+ * See this discussion on how best to use `getServerSideProps` with a
+ * a higher-order component pattern:
+ * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
+ */
 export type WithAuthUserSSR = (
   options?: WithAuthUserSSROptions
 ) => <
@@ -55,29 +75,6 @@ export type WithAuthUserSSR = (
   propGetter?: SSRPropsGetter<P, Q, D>
 ) => GetServerSideProps<P, Q, D>
 
-/**
- * An wrapper for a page's exported getServerSideProps that
- * provides the authed user's info as a prop. Optionally,
- * this handles redirects based on auth status.
- * See this discussion on how best to use getServerSideProps
- * with a higher-order component pattern:
- * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
- * @param {String} whenAuthed - The behavior to take if the user
- *   *is* authenticated. One of AuthAction.RENDER or
- *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
- * @param {String} whenUnauthed - The behavior to take if the user
- *   is not authenticated. One of AuthAction.RENDER or
- *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
- * @param {String|Function} appPageURL - The redirect destination URL when
- *   we redirect to the app. Can either be a string or a function
- *   that accepts ({ctx, AuthUser}) as args and returns a string.
- * @param {String|Function} authPageURL - The redirect destination URL when
- *   we redirect to the login page. Can either be a string or a function
- *   that accepts ({ctx, AuthUser}) as args and returns a string.
- * @return {Object} response
- * @return {Object} response.props - The server-side props
- * @return {Object} response.props.AuthUser
- */
 const withAuthUserTokenSSR: WithAuthUserSSR =
   (
     {
