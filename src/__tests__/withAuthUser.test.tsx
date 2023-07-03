@@ -10,7 +10,7 @@ import {
 import useAuthUser from 'src/useAuthUser'
 import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-import AuthAction from 'src/AuthAction'
+import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'
 import withAuthUser from 'src/withAuthUser'
 

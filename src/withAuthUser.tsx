@@ -8,7 +8,7 @@ import createAuthUser, {
   AuthUserSerialized as AuthUserSerializedType,
 } from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
-import AuthAction from 'src/AuthAction'
+import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'

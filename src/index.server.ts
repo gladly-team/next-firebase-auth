@@ -1,7 +1,6 @@
 /* eslint-disable global-require, @typescript-eslint/no-var-requires */
 
 import initCommon from 'src/initCommon'
-import AuthActionExport from 'src/AuthAction'
 
 // These are exclusively for server-side use.
 import setAuthCookiesExport from 'src/setAuthCookies'
@@ -12,7 +11,8 @@ import { ConfigInput } from './configTypes'
 import { WithAuthUserOptions } from './withAuthUser'
 import { WithAuthUserSSROptions } from './withAuthUserTokenSSR'
 
-export const AuthAction = AuthActionExport
+// enum: AuthAction
+export * from 'src/AuthAction'
 
 export const init = (config: ConfigInput) => {
   initCommon(config)

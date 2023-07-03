@@ -3,11 +3,11 @@ import withAuthUserModule from 'src/withAuthUser'
 import useAuthUserModule from 'src/useAuthUser'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import isClientSide from 'src/isClientSide'
-import AuthActionExport from 'src/AuthAction'
 import initCommon from 'src/initCommon'
 import { ConfigInput } from './configTypes'
 
-export const AuthAction = AuthActionExport
+// enum: AuthAction
+export * from 'src/AuthAction'
 
 export const init = (config: ConfigInput) => {
   initCommon(config)
