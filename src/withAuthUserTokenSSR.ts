@@ -2,7 +2,6 @@ import type { ParsedUrlQuery } from 'querystring'
 import {
   GetServerSideProps,
   GetServerSidePropsContext,
-  GetServerSidePropsResult,
   PreviewData,
   Redirect,
 } from 'next'
@@ -89,8 +88,10 @@ const withAuthUserTokenSSR: WithAuthUserSSR =
     }: WithAuthUserSSROptions = {},
     { useToken = true } = {}
   ) =>
-  (getServerSidePropsFunc?) =>
-  async (ctx) => {
+  <P extends Dictionary, Q extends ParsedUrlQuery, D extends PreviewData>(
+    getServerSidePropsFunc?: GetServerSideProps<P, Q, D>
+  ) =>
+  async (ctx: SSRPropsContext<Q, D>) => {
     logDebug(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
@@ -138,7 +139,7 @@ const withAuthUserTokenSSR: WithAuthUserSSR =
           return {
             ...composedProps,
             props: {
-              ...(composedProps.props || {}),
+              ...((composedProps.props || {}) as P),
               AuthUserSerialized: userSerialized,
             },
           }
@@ -155,7 +156,7 @@ const withAuthUserTokenSSR: WithAuthUserSSR =
     return {
       props: {
         AuthUserSerialized: userSerialized,
-      },
+      } as unknown as P,
     }
   }
 
