@@ -10,7 +10,7 @@ import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
-import { PageURL, RedirectDestination } from './redirectTypes'
+import { PageURL, RedirectObject } from './redirectTypes'
 
 export interface WithAuthUserOptions {
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
@@ -178,7 +178,7 @@ const withAuthUser: WithAuthUser =
 
       const router = useRouter()
       const routeToDestination = useCallback(
-        ({ basePath, destination }: RedirectDestination) => {
+        ({ basePath, destination }: RedirectObject) => {
           if (basePath === false) {
             window.location.replace(destination)
           } else {
