@@ -4,35 +4,54 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createAuthUser, {
-  AuthUserSerialized as AuthUserSerializedType,
-} from 'src/createAuthUser'
+import createAuthUser, { AuthUserSerialized } from 'src/createAuthUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
-import { PageURL, RedirectDestination } from './redirectTypes'
+import { PageURL, RedirectObject } from './redirectTypes'
 
 export interface WithAuthUserOptions {
+  /**
+   * The behavior to take if the user is authenticated.
+   */
   whenAuthed?: AuthAction.RENDER | AuthAction.REDIRECT_TO_APP
+  /**
+   * The behavior to take if the user is authenticated and whenAuthed is set
+   * to `AuthAction.REDIRECT_TO_APP`.
+   */
   whenAuthedBeforeRedirect?:
     | AuthAction.RENDER
     | AuthAction.SHOW_LOADER
     | AuthAction.RETURN_NULL
+  /**
+   * The behavior to take if the user is not authenticated but the Firebase
+   * client JS SDK has not initialized.
+   */
   whenUnauthedBeforeInit?:
     | AuthAction.RENDER
     | AuthAction.REDIRECT_TO_LOGIN
     | AuthAction.SHOW_LOADER
     | AuthAction.RETURN_NULL
   whenUnauthedAfterInit?: AuthAction.RENDER | AuthAction.REDIRECT_TO_LOGIN
+  /**
+   * The redirect destination URL when redirecting to the app.
+   */
   appPageURL?: PageURL
+  /**
+   * The redirect destination URL when redirecting to the login page.
+   */
   authPageURL?: PageURL
+  /**
+   * The React component to show when the user is unauthed and
+   * `whenUnauthedBeforeInit` is set to `AuthAction.SHOW_LOADER`.
+   */
   LoaderComponent?: ComponentType | null
 }
 
 interface HOCProps {
-  AuthUserSerialized?: AuthUserSerializedType
+  AuthUserSerialized?: AuthUserSerialized
 }
 
 /**
@@ -41,36 +60,15 @@ interface HOCProps {
  * children based on the user's current auth state.
  * To access the user from SSR, this should be paired with
  * `withAuthUserSSR` or `withAuthUserTokenSSR`.
- * @param {String} whenAuthed - The behavior to take if the user
- *   *is* authenticated. One of AuthAction.RENDER or
- *   AuthAction.REDIRECT_TO_APP. Defaults to AuthAction.RENDER.
- * @param {String} whenAuthedBeforeRedirect - The behavior to take
- *   if the user is authenticated and
- *   whenAuthed is set to AuthAction.REDIRECT_TO_APP.
- *   One of: AuthAction.RENDER, AuthAction.SHOW_LOADER, AuthAction.RETURN_NULL.
- *   Defaults to AuthAction.RETURN_NULL.
- * @param {String} whenUnauthedBeforeInit - The behavior to take
- *   if the user is not authenticated but the Firebase client JS
- *   SDK has not initialized. One of: AuthAction.RENDER,
- *   AuthAction.REDIRECT_TO_LOGIN, AuthAction.SHOW_LOADER,
- *   AuthAction.RETURN_NULL. Defaults to AuthAction.RENDER.
- * @param {String} whenUnauthedAfterInit - The behavior to take
- *   if the user is not authenticated and the Firebase client JS
- *   SDK has already initialized. One of: AuthAction.RENDER,
- *   AuthAction.REDIRECT_TO_LOGIN. Defaults to AuthAction.RENDER.
- * @param {String|Function} appPageURL - The redirect destination URL when
- *   we redirect to the app. Can either be a string or a function
- *   that accepts ({ctx, AuthUser}) as args and returns a string.
- * @param {String|Function} authPageURL - The redirect destination URL when
- *   we redirect to the login page. Can either be a string or a function
- *   that accepts ({ctx, AuthUser}) as args and returns a string.
- * @param {Function} Loader - The React component to show when the
- *   user is unauthed and `whenUnauthedBeforeInit` is set to
- *   `AuthAction.SHOW_LOADER`.
- * @return {Function} A function that takes a child component
  */
-const withAuthUser =
-  ({
+export type WithAuthUser = <ComponentProps extends object>(
+  options?: WithAuthUserOptions
+) => (
+  component: ComponentType<ComponentProps>
+) => ComponentType<ComponentProps & HOCProps>
+
+const withAuthUser: WithAuthUser =
+  <ComponentProps extends object>({
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
     whenUnauthedAfterInit = AuthAction.RENDER,
@@ -79,7 +77,7 @@ const withAuthUser =
     authPageURL,
     LoaderComponent = null,
   }: WithAuthUserOptions = {}) =>
-  <ComponentProps extends object>(
+  (
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
     logDebug('[withAuthUser] Calling "withAuthUser".')
@@ -106,13 +104,13 @@ const withAuthUser =
     }
 
     const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
-      const { AuthUserSerialized, ...otherProps } = props
+      const { AuthUserSerialized: userSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
         () =>
           createAuthUser({
-            serializedAuthUser: AuthUserSerialized,
+            serializedAuthUser: userSerialized,
           }),
-        [AuthUserSerialized]
+        [userSerialized]
       )
 
       const {
@@ -176,7 +174,7 @@ const withAuthUser =
 
       const router = useRouter()
       const routeToDestination = useCallback(
-        ({ basePath, destination }: RedirectDestination) => {
+        ({ basePath, destination }: RedirectObject) => {
           if (basePath === false) {
             window.location.replace(destination)
           } else {

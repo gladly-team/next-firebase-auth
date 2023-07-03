@@ -1,4 +1,4 @@
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser, { AuthUser } from 'src/createAuthUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
@@ -12,40 +12,47 @@ import logDebug from 'src/logDebug'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 
+export type GetUserFromCookiesOptions = {
+  /**
+   * An HTTP request object (for example `context.req` from the Next.js
+   * `context` object). It should contain the "cookie" header value.
+   */
+  req?: NextApiRequest | GetServerSidePropsContext['req']
+  /**
+   * Whether or not the returned user should include a Firebase ID token. When
+   * true, the behavior follows `withAuthUserTokenSSR`; when false, it follows
+   * `withAuthUserSSR`. Defaults to true. Read more about the distinction in
+   * the docs for `withAuthUserSSR` here:
+   * https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
+   */
+  includeToken?: boolean
+  /**
+   * The value of the `next-firebase-auth` auth cookie from which to get the
+   * user. This is an alternative to passing the request object.
+   */
+  authCookieValue?: string
+  /**
+   * The `next-firebase-auth` auth cookie signature value, if using signed
+   * cookies. This is an alternative to passing the request object.
+   */
+  authCookieSigValue?: string
+}
+
 /**
  * Given a request object or cookie values, verify and return
  * the user. See:
  * https://github.com/gladly-team/next-firebase-auth/issues/223
- *
- * @param {Object} params
- * @param {Object} params.req - An HTTP request object (for example
- *   `context.req` from the Next.js `context` object). It should contain
- *   the "cookie" header value.
- * @param {Boolean} includeToken - Whether or not the returned user
- *   should include a Firebase ID token. When true, the behavior follows
- *   `withAuthUserTokenSSR`; when false, it follows `withAuthUserSSR`.
- *   Defaults to true. Read more about the distinction in the docs for
- *   `withAuthUserSSR` here:
- *   https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
- * @param {String} params.authCookieValue - The value of the
- *   `next-firebase-auth` auth cookie from which to get the user. This is an
- *   alternative to passing the request object.
- * @param {String} params.authCookieSigValue - The `next-firebase-auth` auth
- *   cookie signature value, if using signed cookies. This is an alternative
- *   to passing the request object.
- * @return {Object} An AuthUser instance
  */
-const getUserFromCookies = async ({
+export type GetUserFromCookies = (
+  options: GetUserFromCookiesOptions
+) => Promise<AuthUser>
+
+const getUserFromCookies: GetUserFromCookies = async ({
   req: initialReq,
   includeToken = true,
   authCookieValue,
   authCookieSigValue,
-}: {
-  req?: NextApiRequest | GetServerSidePropsContext['req']
-  includeToken?: boolean
-  authCookieValue?: string
-  authCookieSigValue?: string
-}) => {
+}: GetUserFromCookiesOptions) => {
   const { keys, secure, signed } = getConfig().cookies
   let user
 

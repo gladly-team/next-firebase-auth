@@ -12,7 +12,9 @@ type AuthUserContext =
 // https://github.com/gladly-team/next-firebase-auth/issues/155
 export const AuthUserContext = createContext<AuthUserContext>(undefined)
 
-const useAuthUser = () => {
+export type UseAuthUser = () => AuthUser
+
+const useAuthUser: UseAuthUser = () => {
   const authUser = useContext<AuthUserContext>(AuthUserContext)
   if (!authUser) {
     throw new Error(

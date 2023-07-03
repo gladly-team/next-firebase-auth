@@ -126,7 +126,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/my-login',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -146,7 +146,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/my-login?next=/my-path',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -182,7 +182,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
       authPageURL: ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
         destination: `/my-login?next=${ctx.query.pathname}`,
-        basePath: true,
+        basePath: undefined,
       }),
     })(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -190,7 +190,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/my-login?next=/my-path',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -215,7 +215,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/log-in-here',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -287,7 +287,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/my-app',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -348,7 +348,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/my-app?next=/my-path',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })
@@ -380,7 +380,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       redirect: {
         destination: '/default-app-homepage',
         permanent: false,
-        basePath: true,
+        basePath: undefined,
       },
     })
   })

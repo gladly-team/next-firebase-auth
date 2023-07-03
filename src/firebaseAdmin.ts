@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser, { AuthUser } from 'src/createAuthUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
@@ -57,13 +57,21 @@ const refreshExpiredIdToken = async (refreshToken: string) => {
   return idToken
 }
 
+export type VerifyIdToken = (
+  token: string,
+  refreshToken?: string
+) => Promise<AuthUser>
+
 /**
  * Verify the Firebase ID token and return the Firebase user.
  * If the ID token has expired, refresh it if a refreshToken
  * is provided.
  * @return {Object} An AuthUser instance
  */
-export const verifyIdToken = async (token: string, refreshToken?: string) => {
+export const verifyIdToken: VerifyIdToken = async (
+  token: string,
+  refreshToken?: string
+) => {
   // Ensure `fetch` is defined.
   throwIfFetchNotDefined()
 
@@ -184,16 +192,16 @@ export const verifyIdToken = async (token: string, refreshToken?: string) => {
       logDebug(e)
     }
   }
-  const AuthUser = createAuthUser({
+  const user = createAuthUser({
     firebaseUserAdminSDK: firebaseUser,
     token: newToken,
   })
-  if (AuthUser.id) {
+  if (user.id) {
     logDebug(
       `[verifyIdToken] Successfully verified the ID token. The user is authenticated.`
     )
   }
-  return AuthUser
+  return user
 }
 
 /**
@@ -214,12 +222,12 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
 
   initFirebaseAdminSDK()
 
-  const AuthUser = await verifyIdToken(token)
+  const user = await verifyIdToken(token)
   const firebaseAdminAuth = getAuth()
 
   // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531
-  if (!AuthUser.id) {
+  if (!user.id) {
     throw new Error('Failed to verify the ID token.')
   }
 
@@ -229,7 +237,7 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
-  const customToken = await firebaseAdminAuth.createCustomToken(AuthUser.id)
+  const customToken = await firebaseAdminAuth.createCustomToken(user.id)
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()
@@ -259,6 +267,6 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   return {
     idToken,
     refreshToken,
-    AuthUser,
+    AuthUser: user,
   }
 }

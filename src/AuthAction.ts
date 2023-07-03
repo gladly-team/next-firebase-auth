@@ -1,6 +1,7 @@
-// Different behaviors when the user's auth status is pending
-// or mismatches the page requirements.
-
+/**
+ * App behavior options for when the user's auth status is pending or does not
+ * match the page requirements.
+ */
 export enum AuthAction {
   RENDER = 'render',
   SHOW_LOADER = 'showLoader',
