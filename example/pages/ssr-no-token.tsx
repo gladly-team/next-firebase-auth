@@ -55,8 +55,6 @@ Demo.defaultProps = defaultProps
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore: TODO: fix after upgrading NFA
 })(async (ctx) => {
   const { AuthUser: user, req } = ctx
   // The ID token will be null, because `withAuthUserSSR` does not
@@ -88,8 +86,6 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: TODO: fix after upgrading NFA
 export default withAuthUser<DataType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)
