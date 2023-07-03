@@ -1,15 +1,17 @@
 import type { ParsedUrlQuery } from 'querystring'
 import {
+  GetServerSideProps,
   GetServerSidePropsContext,
   GetServerSidePropsResult,
   PreviewData,
+  Redirect,
 } from 'next'
 
 import getUserFromCookies from 'src/getUserFromCookies'
 import { AuthAction } from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import logDebug from 'src/logDebug'
-import { AuthUser as AuthUserType } from './createAuthUser'
+import { AuthUser } from './createAuthUser'
 import { PageURL } from './redirectTypes'
 
 export interface WithAuthUserSSROptions {
@@ -19,23 +21,40 @@ export interface WithAuthUserSSROptions {
   authPageURL?: PageURL
 }
 
-type GetSSRResult<P> = GetServerSidePropsResult<
-  P & { AuthUserSerialized?: string }
->
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Dictionary<T = any> = Record<string, T>
+
+type GetSSRProps<P> = P & { AuthUserSerialized?: string }
+
+type GetSSRResult<P> =
+  | {
+      redirect: Redirect
+    }
+  | {
+      notFound: true
+    }
+  | {
+      props: GetSSRProps<P>
+    }
 
 type SSRPropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData
-> = GetServerSidePropsContext<Q, D> & { AuthUser: AuthUserType }
+> = GetServerSidePropsContext<Q, D> & { AuthUser?: AuthUser }
 
-type SSRPropsGetter<
+type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
+  context: SSRPropsContext<Q, D>
+) => Promise<GetSSRResult<P>>
+
+type WithAuthUserSSR = (
+  options?: WithAuthUserSSROptions
+) => <
   P extends Dictionary = Dictionary,
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData
-> = (context: SSRPropsContext<Q, D>) => Promise<GetSSRResult<P>>
+>(
+  propGetter?: GetServerSideProps<P, Q, D>
+) => SSRPropsGetter<P, Q, D>
 
 /**
  * An wrapper for a page's exported getServerSideProps that
@@ -60,7 +79,7 @@ type SSRPropsGetter<
  * @return {Object} response.props - The server-side props
  * @return {Object} response.props.AuthUser
  */
-const withAuthUserTokenSSR =
+const withAuthUserTokenSSR: WithAuthUserSSR =
   (
     {
       whenAuthed = AuthAction.RENDER,
@@ -70,27 +89,21 @@ const withAuthUserTokenSSR =
     }: WithAuthUserSSROptions = {},
     { useToken = true } = {}
   ) =>
-  <
-    P extends Dictionary = Dictionary,
-    Q extends ParsedUrlQuery = ParsedUrlQuery,
-    D extends PreviewData = PreviewData
-  >(
-    getServerSidePropsFunc?: SSRPropsGetter<P, Q, D>
-  ) =>
-  async (ctx: SSRPropsContext<Q, D>) => {
+  (getServerSidePropsFunc?) =>
+  async (ctx) => {
     logDebug(
       '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
     )
     const { req } = ctx
-    const AuthUser = await getUserFromCookies({ req, includeToken: useToken })
-    const AuthUserSerialized = AuthUser.serialize()
+    const user = await getUserFromCookies({ req, includeToken: useToken })
+    const userSerialized = user.serialize()
 
     // If specified, redirect to the login page if the user is unauthed.
-    if (!AuthUser.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
+    if (!user.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
       logDebug('[withAuthUserSSR] Redirecting to login.')
       const redirect = getLoginRedirectInfo({
         ctx,
-        AuthUser,
+        AuthUser: user,
         redirectURL: authPageURL,
       })
 
@@ -100,11 +113,11 @@ const withAuthUserTokenSSR =
     }
 
     // If specified, redirect to the app page if the user is authed.
-    if (AuthUser.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
+    if (user.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
       logDebug('[withAuthUserSSR] Redirecting to app.')
       const redirect = getAppRedirectInfo({
         ctx,
-        AuthUser,
+        AuthUser: user,
         redirectURL: appPageURL,
       })
 
@@ -117,7 +130,7 @@ const withAuthUserTokenSSR =
     if (getServerSidePropsFunc) {
       // Add the AuthUser to Next.js context so pages can use
       // it in `getServerSideProps`, if needed.
-      ctx.AuthUser = AuthUser
+      ctx.AuthUser = user
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
         if ('props' in composedProps) {
@@ -126,7 +139,7 @@ const withAuthUserTokenSSR =
             ...composedProps,
             props: {
               ...(composedProps.props || {}),
-              AuthUserSerialized,
+              AuthUserSerialized: userSerialized,
             },
           }
         }
@@ -141,7 +154,7 @@ const withAuthUserTokenSSR =
     }
     return {
       props: {
-        AuthUserSerialized,
+        AuthUserSerialized: userSerialized,
       },
     }
   }
