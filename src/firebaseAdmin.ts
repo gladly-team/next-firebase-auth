@@ -231,13 +231,27 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
     throw new Error('Failed to verify the ID token.')
   }
 
+  // To ensure we get the latest custom claims, we need to get the user record.
+  logDebug('[setAuthCookies] Getting the Firebase user record.')
+  const { customClaims } = await firebaseAdminAuth
+    .getUser(user.id)
+    .catch((e) => {
+      logDebug('[setAuthCookies] Failed to get the Firebase user record.')
+      return {
+        customClaims: {},
+      }
+    })
+
   // Prefixing with "[setAuthCookies]" because that's currently the only
   // use case for using getCustomIdAndRefreshTokens.
   logDebug('[setAuthCookies] Getting a refresh token from the ID token.')
 
   // It's important that we pass the same user ID here, otherwise
   // Firebase will create a new user.
-  const customToken = await firebaseAdminAuth.createCustomToken(user.id)
+  const customToken = await firebaseAdminAuth.createCustomToken(
+    user.id,
+    customClaims
+  )
 
   // https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
   const firebasePublicAPIKey = getFirebasePublicAPIKey()

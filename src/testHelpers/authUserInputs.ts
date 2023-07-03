@@ -38,6 +38,25 @@ export const createMockFirebaseUserAdminSDK = () => {
   return mockUser
 }
 
+// https://firebase.google.com/docs/reference/admin/node/firebase-admin.auth.userrecord
+export const createMockFirebaseUserRecord = () => ({
+  customClaims: {},
+  disabled: false,
+  displayName: 'Ghi Jkl',
+  email: '',
+  emailVerified: false,
+  metadata: {
+    creationTime: '2019-01-01T00:00:00.000Z',
+    lastSignInTime: '2019-01-01T00:00:00.000Z',
+  },
+  phoneNumber: '',
+  photoURL: '',
+  providerData: [],
+  tokensValidAfterTime: '2019-01-01T00:00:00.000Z',
+  uid: 'ghi-789',
+  // ... other properties
+})
+
 // https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
 export const createMockIdTokenResult = ({ claims = {} } = {}) => ({
   authTime: 1540000000,
