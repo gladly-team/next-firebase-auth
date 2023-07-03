@@ -32,7 +32,7 @@ describe('redirects', () => {
 
           expect(result).toEqual({
             destination: '/foo',
-            basePath: true,
+            basePath: undefined,
             permanent: false,
           })
         })
@@ -47,7 +47,7 @@ describe('redirects', () => {
 
           expect(result).toEqual({
             destination: '/example',
-            basePath: true,
+            basePath: undefined,
             permanent: false,
           })
         })
@@ -59,7 +59,7 @@ describe('redirects', () => {
 
           expect(result).toEqual({
             destination: '/abc',
-            basePath: true,
+            basePath: undefined,
             permanent: false,
           })
         })
@@ -87,7 +87,7 @@ describe('redirects', () => {
 
           expect(result).toEqual({
             destination: '/blah',
-            basePath: true,
+            basePath: undefined,
             permanent: false,
           })
         })
@@ -95,7 +95,7 @@ describe('redirects', () => {
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with a computed "destination"', () => {
           const result = redirectFunc({
             redirectURL: ({ ctx, AuthUser }) => ({
-              basePath: true,
+              basePath: undefined,
               destination: `/${ctx?.query.id}/${AuthUser?.id}`,
               permanent: false,
             }),
@@ -107,7 +107,7 @@ describe('redirects', () => {
 
           expect(result).toEqual({
             destination: '/context-id/user-id',
-            basePath: true,
+            basePath: undefined,
             permanent: false,
           })
         })

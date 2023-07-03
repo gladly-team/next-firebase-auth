@@ -10,11 +10,6 @@ import {
   RedirectObject,
 } from './redirectTypes'
 
-const REDIRECT_DEFAULTS = {
-  basePath: true,
-  permanent: false,
-}
-
 const getDestination = ({
   ctx,
   AuthUser,
@@ -31,14 +26,14 @@ const getDestination = ({
 
   if (typeof redirectDestination === 'string') {
     return {
-      ...REDIRECT_DEFAULTS,
       destination: redirectDestination,
+      permanent: false,
     }
   }
 
   if (typeof redirectDestination === 'object') {
     return {
-      ...REDIRECT_DEFAULTS,
+      permanent: false,
       ...redirectDestination,
     }
   }

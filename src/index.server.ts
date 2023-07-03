@@ -1,15 +1,15 @@
 /* eslint-disable global-require, @typescript-eslint/no-var-requires */
 
+// Shared with client-side init code.
 import initCommon from 'src/initCommon'
 
-// These are exclusively for server-side use.
-import setAuthCookiesExport from 'src/setAuthCookies'
-import unsetAuthCookiesExport from 'src/unsetAuthCookies'
-import { verifyIdToken as verifyIdTokenExport } from 'src/firebaseAdmin'
-import getUserFromCookiesExport from 'src/getUserFromCookies'
-import { ConfigInput } from './configTypes'
-import { WithAuthUserOptions } from './withAuthUser'
-import { WithAuthUserSSROptions } from './withAuthUserTokenSSR'
+import type { ConfigInput } from './configTypes'
+import type { WithAuthUser } from './withAuthUser'
+import type {
+  WithAuthUserSSR,
+  WithAuthUserSSROptions,
+} from './withAuthUserTokenSSR'
+import type { UseAuthUser } from './useAuthUser'
 
 // enum: AuthAction
 export * from 'src/AuthAction'
@@ -21,13 +21,13 @@ export const init = (config: ConfigInput) => {
   // https://github.com/gladly-team/next-firebase-auth/issues/70
 }
 
-export const getUserFromCookies = getUserFromCookiesExport
+export { default as getUserFromCookies } from 'src/getUserFromCookies'
 
-export const setAuthCookies = setAuthCookiesExport
+export { default as setAuthCookies } from 'src/setAuthCookies'
 
-export const unsetAuthCookies = unsetAuthCookiesExport
+export { default as unsetAuthCookies } from 'src/unsetAuthCookies'
 
-export const useAuthUser = () => {
+export const useAuthUser: UseAuthUser = () => {
   // Some dependencies are optional. Throw if they aren't installed
   // when calling this API.
   // https://github.com/gladly-team/next-firebase-auth/issues/502
@@ -43,9 +43,9 @@ export const useAuthUser = () => {
   return useAuthUserModule()
 }
 
-export const verifyIdToken = verifyIdTokenExport
+export { verifyIdToken } from 'src/firebaseAdmin'
 
-export const withAuthUser = (options: WithAuthUserOptions) => {
+export const withAuthUser: WithAuthUser = (options) => {
   // Require rather than import the module to support optional
   // peer dependencies. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/502
@@ -53,12 +53,16 @@ export const withAuthUser = (options: WithAuthUserOptions) => {
   return withAuthUserModule(options)
 }
 
-export const withAuthUserSSR = (options: WithAuthUserSSROptions) => {
+export const withAuthUserSSR: WithAuthUserSSR = (
+  options?: WithAuthUserSSROptions
+) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: false })
 }
 
-export const withAuthUserTokenSSR = (options: WithAuthUserSSROptions) => {
+export const withAuthUserTokenSSR: WithAuthUserSSR = (
+  options?: WithAuthUserSSROptions
+) => {
   const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
   return withAuthUserTokenSSRModule(options, { useToken: true })
 }

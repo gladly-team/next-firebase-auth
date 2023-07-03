@@ -26,9 +26,15 @@ jest.mock('src/logDebug')
 
 const mockUseFirebaseUser = jest.mocked(useFirebaseUser)
 
-const MockComponent = ({ message }: { message: string }) => (
+interface MockComponentProps {
+  message?: string
+}
+const MockComponent = ({ message = '' }: MockComponentProps) => (
   <div>Hello! {message}</div>
 )
+MockComponent.defaultProps = {
+  message: 'How are you?',
+}
 
 const getUseFirebaseUserResponse = () => ({
   user: null,
@@ -75,7 +81,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser()(MockComponent)
+    const MockCompWithUser = withAuthUser<MockComponentProps>()(MockComponent)
     const { queryByText } = render(<MockCompWithUser message="How are you?" />)
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
@@ -87,7 +93,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -103,7 +109,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -120,7 +126,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: false, // not yet initialized
     })
     const MockSerializedAuthUser = createMockSerializedAuthUser()
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -143,7 +149,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -160,7 +166,7 @@ describe('withAuthUser: rendering/redirecting', () => {
   it('renders the child component when there is a client-side user after Firebase initializes (but no server-side user) and rendering without a user should return null', () => {
     expect.assertions(2)
     const MockSerializedAuthUser = undefined // no server-side user
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -200,7 +206,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: false,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       LoaderComponent: MyLoader,
@@ -222,7 +228,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       LoaderComponent: undefined, // none defined
@@ -250,7 +256,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -280,7 +286,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -312,7 +318,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/some-auth-page', // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -368,7 +374,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -398,7 +404,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: undefined, // needs to be set
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -438,7 +444,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: () => undefined as unknown as string, // should be set
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -482,7 +488,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         return `/some-auth-page`
       }, // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -513,7 +519,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -570,7 +576,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -601,7 +607,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -629,7 +635,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: undefined, // should be set
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -669,7 +675,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: () => undefined as unknown as string, // should be set
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -713,7 +719,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         return `/my-app/here/?email=${AuthUser?.email}` // custom app page
       },
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -739,7 +745,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true, // already initialized
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -763,7 +769,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: true,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -787,7 +793,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true, // already initialized
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -810,7 +816,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -833,7 +839,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenAuthedBeforeRedirect: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
@@ -856,7 +862,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: true,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenAuthedBeforeRedirect: AuthAction.SHOW_LOADER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       LoaderComponent: MyLoader,
@@ -879,7 +885,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       initialized: true,
       authRequestCompleted: false, // waiting
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -916,7 +922,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         }
       }, // custom auth page
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -951,7 +957,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         basePath: false,
       }),
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -984,7 +990,7 @@ describe('withAuthUser: rendering/redirecting', () => {
         basePath: false,
       },
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -1013,10 +1019,11 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: {
         destination: '/my-app/here/', // custom app page
-        basePath: true,
+        permanent: false,
+        // basePath is not false
       },
     })
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -1054,7 +1061,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1087,7 +1094,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1124,7 +1131,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1162,7 +1169,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1198,7 +1205,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1236,7 +1243,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1274,7 +1281,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1319,7 +1326,7 @@ describe('withAuthUser: AuthUser context', () => {
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1350,7 +1357,7 @@ describe('withAuthUser: AuthUser context', () => {
     }
 
     const AnotherMockComponent = () => <div>hi!</div>
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -1380,7 +1387,7 @@ describe('withAuthUser: AuthUser context', () => {
       authUsers.push(authUser)
       return <div>hi!</div>
     }
-    const MockCompWithUser = withAuthUser({
+    const MockCompWithUser = withAuthUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,

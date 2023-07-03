@@ -1,4 +1,4 @@
-import React, { VFC } from 'react'
+import React from 'react'
 import {
   useAuthUser,
   withAuthUser,
@@ -26,12 +26,12 @@ const defaultProps = {
   favoriteColor: undefined,
 }
 
-const Demo: VFC<DataType> = (props: DataType) => {
+const Demo = (props: DataType) => {
   const { favoriteColor } = props
-  const AuthUser = useAuthUser()
+  const user = useAuthUser()
   return (
     <div>
-      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+      <Header email={user.email} signOut={user.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
           <h3>Example: SSR + no ID token</h3>
@@ -55,11 +55,14 @@ Demo.defaultProps = defaultProps
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(async ({ AuthUser, req }) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore: TODO: fix after upgrading NFA
+})(async (ctx) => {
+  const { AuthUser: user, req } = ctx
   // The ID token will be null, because `withAuthUserSSR` does not
   // include one. If you need a server-side token, use
   // `withAuthUserTokenSSR`.
-  const token = await AuthUser.getIdToken()
+  const token = await user?.getIdToken()
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: Don't worry about type definitions in this example app.
@@ -85,6 +88,8 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: TODO: fix after upgrading NFA
 export default withAuthUser<DataType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)
