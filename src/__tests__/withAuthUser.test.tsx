@@ -1019,8 +1019,8 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: {
         destination: '/my-app/here/', // custom app page
-        basePath: false,
         permanent: false,
+        // basePath is not false
       },
     })
     const MockCompWithUser = withAuthUser<MockComponentProps>({

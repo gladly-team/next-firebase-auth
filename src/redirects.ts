@@ -33,6 +33,7 @@ const getDestination = ({
 
   if (typeof redirectDestination === 'object') {
     return {
+      permanent: false,
       ...redirectDestination,
     }
   }
