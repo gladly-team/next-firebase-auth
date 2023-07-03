@@ -3,6 +3,7 @@ const firebaseAdminMock = jest.createMockFromModule('firebase-admin')
 const mockAuthValue = {
   createCustomToken: jest.fn(() => Promise.resolve(null)),
   verifyIdToken: jest.fn(() => Promise.resolve(null)),
+  getUser: jest.fn(() => Promise.resolve(null)),
 }
 firebaseAdminMock.auth = jest.fn(() => mockAuthValue)
 
