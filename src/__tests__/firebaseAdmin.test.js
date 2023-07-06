@@ -1114,7 +1114,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     )
   })
 
-  it('changes auth instace if there is a tenant', async () => {
+  it('changes auth instance if there is a tenant', async () => {
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
     const mockTenant = 'test-tenant'
@@ -1124,8 +1124,8 @@ describe('getCustomIdAndRefreshTokens', () => {
       firebaseClientInitConfig: {
         ...mockConfig.firebaseClientInitConfig,
         apiKey: 'some-key',
-        tenantId: mockTenant,
       },
+      tenantId: mockTenant,
     })
 
     const mockFirebaseUser = createMockFirebaseUserAdminSDK({

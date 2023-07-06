@@ -80,9 +80,7 @@ export const verifyIdToken = async (token, refreshToken = null) => {
 
   let firebaseUser
   let newToken = token
-  const { onTokenRefreshError, onVerifyTokenError, firebaseClientInitConfig } =
-    getConfig()
-  const { tenantId } = firebaseClientInitConfig
+  const { onTokenRefreshError, onVerifyTokenError, tenantId } = getConfig()
   const firebaseAdminAuth = getAuth(tenantId)
   try {
     firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
