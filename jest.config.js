@@ -1,3 +1,4 @@
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
@@ -9,13 +10,18 @@ module.exports = {
   ],
   coverageDirectory: './coverage/',
   setupFilesAfterEnv: ['<rootDir>/jestSetup.js'],
+  // Support absolute imports; e.g. from 'src/*'
+  // https://stackoverflow.com/a/72437265/1332513
+  moduleDirectories: ['node_modules', '<rootDir>'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/', '/.yalc/', '/.git/'],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
+    '^.+\\.(js|jsx)$': '<rootDir>/node_modules/babel-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   transformIgnorePatterns: [
     '/node_modules/(?!(firebase|@firebase)/)',
     '/.yalc/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  testEnvironment: 'node',
 }

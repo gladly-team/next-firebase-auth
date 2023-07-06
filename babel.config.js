@@ -17,6 +17,7 @@ module.exports = {
       {
         root: ['./'],
         alias: {
+          codemod: './codemod',
           src: './src',
         },
       },
