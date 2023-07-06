@@ -1,3 +1,5 @@
+export {}
+
 const firebaseAdminApp = jest.createMockFromModule('firebase-admin/app')
 
 firebaseAdminApp.getApps = jest.fn(() => [])

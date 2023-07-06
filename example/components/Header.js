@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 const nfaDependencyVersion =
   require('../package.json').dependencies['next-firebase-auth']
 const nextDependencyVersion = require('../package.json').dependencies.next
@@ -8,6 +9,7 @@ const firebaseDependencyVersion =
   require('../package.json').dependencies.firebase
 const firebaseAdminDependencyVersion =
   require('../package.json').dependencies['firebase-admin']
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 const styles = {
   container: {
@@ -62,11 +64,9 @@ const Header = ({ email, signOut }) => (
           <p>You are not signed in.</p>
           <div>
             <Link href="/auth">
-              <a>
-                <button type="button" style={styles.button}>
-                  Sign in
-                </button>
-              </a>
+              <button type="button" style={styles.button}>
+                Sign in
+              </button>
             </Link>
           </div>
         </>
