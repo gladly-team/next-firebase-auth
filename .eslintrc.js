@@ -2,6 +2,7 @@ module.exports = {
   extends: [
     'airbnb',
     'prettier',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:import/typescript',
   ],
@@ -42,6 +43,7 @@ module.exports = {
     // Let eslint manage semicolons
     '@typescript-eslint/no-extra-semi': 0,
     'import/no-unresolved': 'error',
+    'import/prefer-default-export': 0,
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -59,9 +61,13 @@ module.exports = {
     {
       files: [
         '**/*.test.ts',
+        '**/*.test.tsx',
         '**/__mocks__/**/*.ts',
+        '**/__mocks__/**/*.tsx',
         '**/*.test.js',
+        '**/*.test.jsx',
         '**/__mocks__/**/*.js',
+        '**/__mocks__/**/*.jsx',
       ],
       extends: ['plugin:jest/recommended'],
       env: {

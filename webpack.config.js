@@ -4,6 +4,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const nodeExternals = require('webpack-node-externals')
 const CopyPlugin = require('copy-webpack-plugin')
 const includeSubdependencies = require('datwd')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -13,9 +14,9 @@ const sharedConfig = {
     // filename set in individual configs below.
     path: path.resolve(__dirname, 'build'),
     libraryTarget: 'commonjs2',
-    libraryExport: 'default',
   },
   resolve: {
+    plugins: [new TsconfigPathsPlugin({})],
     extensions: ['.js', '.jx', '.ts', '.tsx'],
   },
   module: {
@@ -49,10 +50,6 @@ const sharedConfig = {
     new CopyPlugin({
       patterns: [
         {
-          from: './index.d.ts',
-          to: './index.d.ts',
-        },
-        {
           from: './codemod',
           to: './codemod',
           globOptions: {
@@ -67,7 +64,7 @@ const sharedConfig = {
 
 const serverConfig = {
   ...sharedConfig,
-  entry: './src/index.server.js',
+  entry: './src/index.server.ts',
   target: 'node',
   output: {
     ...sharedConfig.output,
@@ -85,7 +82,7 @@ const serverConfig = {
 
 const clientConfig = {
   ...sharedConfig,
-  entry: './src/index.js',
+  entry: './src/index.ts',
   target: 'web',
   output: {
     ...sharedConfig.output,
