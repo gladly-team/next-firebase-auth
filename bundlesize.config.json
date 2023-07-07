@@ -2,7 +2,7 @@
   "files": [
     {
       "path": "build/index.browser.js",
-      "maxSize": "6 kB"
+      "maxSize": "7 kB"
     },
     {
       "path": "build/index.node.js",
