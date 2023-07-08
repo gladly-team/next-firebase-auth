@@ -2,10 +2,10 @@ import createUser, { User } from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
-  getAuthUserCookieName,
-  getAuthUserSigCookieName,
-  getAuthUserTokensCookieName,
-  getAuthUserTokensSigCookieName,
+  getUserCookieName,
+  getUserSigCookieName,
+  getUserTokensCookieName,
+  getUserTokensSigCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -68,11 +68,11 @@ const getUserFromCookies: GetUserFromCookies = async ({
       throw new Error('Either "req" or "authCookieValue" must be provided.')
     }
     const cookieName = includeToken
-      ? getAuthUserTokensCookieName()
-      : getAuthUserCookieName()
+      ? getUserTokensCookieName()
+      : getUserCookieName()
     const cookieSigName = includeToken
-      ? getAuthUserTokensSigCookieName()
-      : getAuthUserSigCookieName()
+      ? getUserTokensSigCookieName()
+      : getUserSigCookieName()
     const sigCookieStr = authCookieSigValue
       ? `${cookieSigName}=${authCookieSigValue};`
       : ''
@@ -108,7 +108,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     const cookieValStr = getCookie(
-      getAuthUserTokensCookieName(),
+      getUserTokensCookieName(),
       {
         req,
       },
@@ -145,7 +145,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
       '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
     const cookieValStr = getCookie(
-      getAuthUserCookieName(),
+      getUserCookieName(),
       {
         req,
       },

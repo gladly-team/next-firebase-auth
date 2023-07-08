@@ -1,9 +1,6 @@
 import { getCustomIdAndRefreshTokens } from 'src/firebaseAdmin'
 import { setCookie } from 'src/cookies'
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
+import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import createUser, { User } from 'src/createUser'
@@ -82,7 +79,7 @@ const setAuthCookies: SetAuthCookies = async (
   // providing a valid Firebase ID token (refreshed as needed)
   // for server-side rendering.
   setCookie(
-    getAuthUserTokensCookieName(),
+    getUserTokensCookieName(),
     // Note: any change to cookie data structure needs to be
     // backwards-compatible.
     JSON.stringify({
@@ -99,7 +96,7 @@ const setAuthCookies: SetAuthCookies = async (
   // expired, but provides the AuthUser data without any
   // additional server-side requests.
   setCookie(
-    getAuthUserCookieName(),
+    getUserCookieName(),
     // Note: any change to cookie data structure needs to be
     // backwards-compatible.
     // Don't include the token in the "AuthUser" cookie, because

@@ -1,8 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
+import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import { deleteCookie } from 'src/cookies'
 import logDebug from 'src/logDebug'
@@ -39,9 +36,9 @@ const unsetAuthCookies: UnsetAuthCookies = async (
     secure,
     signed,
   }))(getConfig().cookies)
-  deleteCookie(getAuthUserTokensCookieName(), { req, res }, cookieOptions)
+  deleteCookie(getUserTokensCookieName(), { req, res }, cookieOptions)
   deleteCookie(
-    getAuthUserCookieName(),
+    getUserCookieName(),
     {
       req,
       res,

@@ -1,10 +1,7 @@
 import { testApiHandler } from 'next-test-api-route-handler'
 import { getCustomIdAndRefreshTokens } from 'src/firebaseAdmin'
 import { setCookie } from 'src/cookies'
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
+import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockUser from 'src/testHelpers/createMockUser'
@@ -20,8 +17,8 @@ jest.mock('src/logDebug')
 
 const mockSetConfig = jest.mocked(setConfig)
 const mockGetCustomIdAndRefreshTokens = getCustomIdAndRefreshTokens as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockGetAuthUserCookieName = jest.mocked(getUserCookieName)
+const mockGetAuthUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockSetCookie = jest.mocked(setCookie)
 const mockLogDebug = jest.mocked(logDebug)
 

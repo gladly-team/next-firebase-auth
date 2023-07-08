@@ -7,10 +7,10 @@ import createUser from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
-  getAuthUserCookieName,
-  getAuthUserSigCookieName,
-  getAuthUserTokensCookieName,
-  getAuthUserTokensSigCookieName,
+  getUserCookieName,
+  getUserSigCookieName,
+  getUserTokensCookieName,
+  getUserTokensSigCookieName,
 } from 'src/authCookies'
 import logDebug from 'src/logDebug'
 import { NextApiRequest } from 'next'
@@ -29,11 +29,11 @@ jest.mock('src/logDebug')
 
 const mockGetCookie = jest.mocked(getCookie)
 const mockVerifyIdToken = verifyIdToken as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
-const mockGetAuthUserSigCookieName = jest.mocked(getAuthUserSigCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockGetAuthUserCookieName = jest.mocked(getUserCookieName)
+const mockGetAuthUserSigCookieName = jest.mocked(getUserSigCookieName)
+const mockGetAuthUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockGetAuthUserTokensSigCookieName = jest.mocked(
-  getAuthUserTokensSigCookieName
+  getUserTokensSigCookieName
 )
 const mockLogDebug = jest.mocked(logDebug)
 
