@@ -22,7 +22,7 @@ export type UserSerialized = string
 interface CreateUserInput {
   firebaseUserClientSDK?: FirebaseUser
   firebaseUserAdminSDK?: DecodedIdToken
-  serializedAuthUser?: UserSerialized
+  serializedUser?: UserSerialized
   clientInitialized?: boolean
   token?: string | null
   claims?: Claims
@@ -54,7 +54,7 @@ export interface User {
 const createUser = ({
   firebaseUserClientSDK,
   firebaseUserAdminSDK,
-  serializedAuthUser,
+  serializedUser,
   clientInitialized = false,
   token = null,
   claims,
@@ -63,7 +63,7 @@ const createUser = ({
   const numUserInputsDefined = [
     firebaseUserClientSDK,
     firebaseUserAdminSDK,
-    serializedAuthUser,
+    serializedUser,
   ].reduce((acc, item) => {
     if (item) {
       return acc + 1
@@ -72,12 +72,12 @@ const createUser = ({
   }, 0)
   if (numUserInputsDefined > 1) {
     throw new Error(
-      'createUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
+      'createUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedUser"'
     )
   }
 
   // The clientInitialized value should not be set server-side.
-  if (clientInitialized && (firebaseUserAdminSDK || serializedAuthUser)) {
+  if (clientInitialized && (firebaseUserAdminSDK || serializedUser)) {
     throw new Error(
       'The "clientInitialized" value can only be true when called with the "firebaseUserClientSDK" property or no user.'
     )
@@ -85,7 +85,7 @@ const createUser = ({
 
   // The "claims" input should only be provided on the client side.
   // On the server side, we will get the claims from the user object.
-  if (claims && (firebaseUserAdminSDK || serializedAuthUser)) {
+  if (claims && (firebaseUserAdminSDK || serializedUser)) {
     throw new Error(
       'The "claims" value can only be set in conjunction with the "firebaseUserClientSDK" property.'
     )
@@ -168,9 +168,9 @@ const createUser = ({
     photoURL = firebaseUserAdminSDK.picture || null
     getIdTokenFunc = async () => token
     tokenString = token
-  } else if (serializedAuthUser) {
+  } else if (serializedUser) {
     const deserializedUser: UserDeserialized = JSON.parse(
-      serializedAuthUser
+      serializedUser
     ) as UserDeserialized
     customClaims = deserializedUser.claims || {}
     userId = deserializedUser.id || null

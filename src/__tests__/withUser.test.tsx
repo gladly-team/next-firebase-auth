@@ -1073,7 +1073,7 @@ describe('withUser: AuthUser context', () => {
     const MockSerializedAuthUser = createMockSerializedUser()
     const expectedAuthUser = {
       ...createUser({
-        serializedAuthUser: MockSerializedAuthUser,
+        serializedUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
@@ -1189,7 +1189,7 @@ describe('withUser: AuthUser context', () => {
     // yet initialized.
     const expectedAuthUser = {
       ...createUser({
-        serializedAuthUser: MockSerializedAuthUser,
+        serializedUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
@@ -1257,7 +1257,7 @@ describe('withUser: AuthUser context', () => {
     })
     const expectedAuthUser = {
       ...createUser({
-        serializedAuthUser: MockSerializedAuthUser,
+        serializedUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),

@@ -108,7 +108,7 @@ const withUser: WithUser =
       const AuthUserFromServer = useMemo(
         () =>
           createUser({
-            serializedAuthUser: userSerialized,
+            serializedUser: userSerialized,
           }),
         [userSerialized]
       )

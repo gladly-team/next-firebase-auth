@@ -161,7 +161,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
       )
     }
     user = createUser({
-      serializedAuthUser: cookieValStr,
+      serializedUser: cookieValStr,
     })
   }
   return user
