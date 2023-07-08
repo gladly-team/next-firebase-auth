@@ -207,10 +207,10 @@ import {
 } from 'next-firebase-auth'
 
 const Demo = () => {
-  const AuthUser = useUser()
+  const user = useUser()
   return (
     <div>
-      <p>Your email is {AuthUser.email ? AuthUser.email : 'unknown'}.</p>
+      <p>Your email is {user.email ? user.email : 'unknown'}.</p>
     </div>
   )
 }
@@ -224,10 +224,10 @@ export default withUser()(Demo)
 ## API
 
 - [init](#initconfig)
-- [withUser](#withauthuser-options-pagecomponent)
-- [withUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
-- [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
-- [useUser](#useauthuser)
+- [withUser](#withuser-options-pagecomponent)
+- [withUserTokenSSR](#withusertokenssr-options-getserversidepropsfunc---authuser---)
+- [withUserSSR](#withuserssr-options-getserversidepropsfunc---authuser---)
+- [useUser](#useuser)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
@@ -242,7 +242,7 @@ Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be c
 
 #### `withUser({ ...options })(PageComponent)`
 
-A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the [`useUser`](#useauthuser) hook. Optionally, it can client-side redirect based on the user's auth status.
+A higher-order function to provide the `User` context to a component. Use this with any Next.js page that will access the authed user via the [`useUser`](#useuser) hook. Optionally, it can client-side redirect based on the user's auth status.
 
 It accepts the following options:
 
@@ -288,9 +288,9 @@ export default withUser({
 
 For TypeScript usage, take a look [here](#typescript).
 
-#### `withUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
+#### `withUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ user }) => {})`
 
-A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an [`AuthUser`](#authuser) property.
+A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `User` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an [`user`](#user) property.
 
 It accepts the following options:
 
@@ -314,9 +314,9 @@ const DemoPage = ({ thing }) => <div>The thing is: {thing}</div>
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(async ({ AuthUser }) => {
+})(async ({ user }) => {
   // Optionally, get other props.
-  const token = await AuthUser.getIdToken()
+  const token = await user.getIdToken()
   const response = await fetch('/api/my-endpoint', {
     method: 'GET',
     headers: {
@@ -334,13 +334,13 @@ export const getServerSideProps = withUserTokenSSR({
 export default withUser()(DemoPage)
 ```
 
-#### `withUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
+#### `withUserSSR({ ...options })(getServerSidePropsFunc = ({ user }) => {})`
 
-Behaves nearly identically to `withUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
+Behaves nearly identically to `withUserTokenSSR`, with one key difference: the `user` will not contain an ID token.
 
 This method relies on authed user data from a cookie rather than verify or refresh a Firebase ID token. Consequently:
 
-- It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
+- It does not provide an ID token on the server side. The `user` provided via context will resolve to null when you call `user.getIdToken()`.
 - It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withUserTokenSSR`.
 - It does _not_ check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withUserTokenSSR`.
 
@@ -350,7 +350,7 @@ This takes the same options as `withUserTokenSSR`.
 
 #### `useUser()`
 
-A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withUser`. If the user is not authenticated, `useUser` will return an `AuthUser` instance with a null `id`.
+A hook that returns the current [`user`](#user). To use this, the Next.js page must be wrapped in `withUser`. If the user is not authenticated, `useUser` will return a `User` instance with a null `id`.
 
 For example:
 
@@ -358,10 +358,10 @@ For example:
 import { useUser, withUser } from 'next-firebase-auth'
 
 const Demo = () => {
-  const AuthUser = useUser()
+  const user = useUser()
   return (
     <div>
-      <p>Your email is {AuthUser.email ? AuthUser.email : 'unknown'}.</p>
+      <p>Your email is {user.email ? user.email : 'unknown'}.</p>
     </div>
   )
 }
@@ -387,15 +387,15 @@ The `req` argument should be an `IncomingMessage` / Next.js request object. The 
 
 This can only be called on the server side.
 
-#### `verifyIdToken(token) => Promise<AuthUser>`
+#### `verifyIdToken(token) => Promise<User>`
 
-Verifies a Firebase ID token and resolves to an [`AuthUser`](#authuser) instance. This serves a similar purpose as Firebase admin SDK's [verifyIdToken](https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_the_firebase_admin_sdk).
+Verifies a Firebase ID token and resolves to an [`User`](#user) instance. This serves a similar purpose as Firebase admin SDK's [verifyIdToken](https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_the_firebase_admin_sdk).
 
 #### `getUserFromCookies({ ...options })`
 
 _Added in v1_
 
-Verifies and returns the [`AuthUser`](#authuser) from auth cookies. This is an alternative to `verifyIdToken`, which verifies the user from an ID token.
+Verifies and returns the [`user`](#user) from auth cookies. This is an alternative to `verifyIdToken`, which verifies the user from an ID token.
 
 In general, we recommend that API endpoints use an ID token rather than cookies to identify the user, which avoids some potential CSRF vulnerabilities. However, this method will be helpful for endpoints must rely exclusively on cookie values to identify the user.
 
@@ -415,7 +415,7 @@ A request object whose `cookie` header value will be used to verify a user. Eith
 
 `Boolean`
 
-Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withUserSSR`. Read more about the distinction in the docs for [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withUserSSR`. Read more about the distinction in the docs for [withUserSSR](#withuserssr-options-getserversidepropsfunc---authuser---).
 
 #### authCookieValue
 
@@ -483,7 +483,7 @@ Not used or allowed if a custom `tokenChangedHandler` is set.
 
 `Function`
 
-A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives an `AuthUser` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
+A callback that runs when the auth state changes for a particular user. Use this if you want to customize how your client-side app calls your login/logout API endpoints (for example, to use a custom fetcher or add custom headers). `tokenChangedHandler` receives a `User` as an argument and is called when the user's ID token changes, similarly to Firebase's `onIdTokenChanged` event.
 
 If this callback is specified, user is responsible for:
 
@@ -577,9 +577,9 @@ Defines actions to take depending on a user's auth status, using the following c
 
 **`AuthAction.REDIRECT_TO_APP`**: redirect to the app
 
-### AuthUser
+### User
 
-The auth user object is used across server-side and client-side contexts. This is a normalized representation of a Firebase user.
+The user object is used across server-side and client-side contexts. This is a normalized representation of a Firebase user.
 
 **id** - `String|null`
 
@@ -650,12 +650,12 @@ Or an object:
 }
 ```
 
-Or a function that receives `{ ctx, AuthUser }` and returns a string or RedirectObject:
+Or a function that receives `{ ctx, user }` and returns a string or RedirectObject:
 
 ```javascript
-const redirect = ({ ctx, AuthUser }) => {
+const redirect = ({ ctx, user }) => {
   // any custom logic here
-  return `/my-url/here/?username=${AuthUser.displayName}`
+  return `/my-url/here/?username=${user.displayName}`
 }
 ```
 
@@ -976,7 +976,7 @@ module.exports = {
   // `withUser`.
   withUser: jest.fn(() => (wrappedComponent) => wrappedComponent),
   useUser: jest.fn(() => ({
-    // ... you could return a default AuthUser here
+    // ... you could return a default user here
   }),
   AuthAction,
 }
@@ -984,7 +984,7 @@ module.exports = {
 
 See our implementation of this in our [tab-web repository](https://github.com/gladly-team/tab-web/tree/master/__mocks__/next-firebase-auth) for a more robust example.
 
-You will also likely want to have a utility to mock the `AuthUser` object that is passed around via the hooks and higher-order functions in `next-firebase-auth`. You might put this in a `utils` folder in your app.
+You will also likely want to have a utility to mock the `user` object that is passed around via the hooks and higher-order functions in `next-firebase-auth`. You might put this in a `utils` folder in your app.
 
 ```javascript
 // Create a mock FirebaseUser instance with the fields that you use.
@@ -994,12 +994,12 @@ const mockFirebaseUser = {
 }
 
 /**
- * Build and return a dummy AuthUser instance to use in tests.
+ * Build and return a dummy User instance to use in tests.
  *
  * @arg {boolean} isLoggedIn - Pass `false` to mimic a logged out user.
- * @returns {UserContext} - A mocked AuthUser instance, with 'serialize' added.
+ * @returns {UserContext} - A mocked User instance, with 'serialize' added.
  */
-const getMockAuthUser = (isLoggedIn = true) => ({
+const getMockUser = (isLoggedIn = true) => ({
   id: isLoggedIn ? 'abcd1234' : null,
   email: isLoggedIn ? 'banana@banana.com' : null,
   emailVerified: isLoggedIn,
@@ -1010,7 +1010,7 @@ const getMockAuthUser = (isLoggedIn = true) => ({
   serialize: jest.fn(() => 'serialized_auth_user'),
 })
 
-export default getMockAuthUser
+export default getMockUser
 ```
 
 Now, you can use and customize the mock behavior in your tests.
@@ -1024,8 +1024,8 @@ import React from 'react'
 import { useUser, withUser } from 'next-firebase-auth'
 
 function UserDisplayName() {
-  const AuthUser = useUser()
-  const { displayName = 'anonymous' } = AuthUser.firebaseUser
+  const user = useUser()
+  const { displayName = 'anonymous' } = user.firebaseUser
   return <span>{displayName}</span>
 }
 
@@ -1042,8 +1042,8 @@ import { render, screen } from '@testing-library/react'
 // function within this test suite.
 import { useUser, withUser } from 'next-firebase-auth'
 
-// Import your mock AuthUser generator
-import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
+// Import your mock User generator
+import getMockUser from '../../utils/test-utils/get-mock-auth-user'
 
 // Mock all of `next-firebase-auth`. This is *not* necessary if you set up manual mocks,
 // because Jest will automatically mock the module in every test.
@@ -1056,7 +1056,7 @@ describe('UserDisplayName', () => {
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    useUser.mockReturnValue(getMockAuthUser())
+    useUser.mockReturnValue(getMockUser())
     withUser.mockImplementation(() => (wrappedComponent) => wrappedComponent))
     UserDisplayName = require('./').default
   })
@@ -1071,13 +1071,13 @@ describe('UserDisplayName', () => {
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
     render(<UserDisplayName />)
-    expect(screen.queryByTest(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument()
+    expect(screen.queryByTest(getMockUser().firebaseUser.displayName)).toBeInTheDocument()
   })
 
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
-    // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    useUser.mockReturnValue(getMockAuthUser(false))
+    // passing a falsy value to `getMockUser`, which will return a logged out user.
+    useUser.mockReturnValue(getMockUser(false))
     render(<Header />)
     expect(screen.getByText('anonymous')).toBeInTheDocument()
   })
@@ -1097,8 +1097,8 @@ import { render, screen } from '@testing-library/react'
 // function within this test suite.
 import { useUser, withUser } from 'next-firebase-auth'
 
-// Import your mock AuthUser generator
-import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
+// Import your mock User generator
+import getMockUser from '../../utils/test-utils/get-mock-auth-user'
 
 // Mock all of `next-firebase-auth`. This is *not* necessary if you set up manual mocks,
 // because Jest will automatically mock the module
@@ -1111,7 +1111,7 @@ describe('UserDisplayName', () => {
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    (useUser as jest.Mock).mockReturnValue(getMockAuthUser())
+    (useUser as jest.Mock).mockReturnValue(getMockUser())
     (withUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType))
     UserDisplayName = require('./').default as ComponentType
   })
@@ -1126,13 +1126,13 @@ describe('UserDisplayName', () => {
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
     render(<UserDisplayName />)
-    expect(screen.getByText(getMockAuthUser().firebaseUser.displayName)).toBeInTheDocument()
+    expect(screen.getByText(getMockUser().firebaseUser.displayName)).toBeInTheDocument()
   })
 
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
-    // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    (useUser as jest.Mock).mockReturnValue(getMockAuthUser(false))
+    // passing a falsy value to `getMockUser`, which will return a logged out user.
+    (useUser as jest.Mock).mockReturnValue(getMockUser(false))
     render(<Header />)
     expect(screen.getByText('anonymous')).toBeInTheDocument()
   })
@@ -1192,7 +1192,7 @@ See [adding a private key to Vercel](#adding-a-private-key-to-Vercel) and [this 
 
 We expect some apps will need some features that are not currently available:
 
-- **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep auth user data in server-side session storage.
+- **Supporting custom session logic:** Currently, this package doesn't allow using a custom cookie or session module. Some developers may need this flexibility to, for example, keep user data in server-side session storage.
 - **Setting a single auth cookie:** This package currently sets more than one cookie to store authentication state. It's not currently possible to use a single cookie with a customized name: [#190](https://github.com/gladly-team/next-firebase-auth/issues/190)
 
 We'd love to hear your feedback on these or other features. Please feel free to [open a discussion](https://github.com/gladly-team/next-firebase-auth/discussions)!
