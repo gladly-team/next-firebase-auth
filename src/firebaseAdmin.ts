@@ -1,6 +1,6 @@
 import { getAuth as getAdminAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import createAuthUser, { AuthUser } from 'src/createUser'
+import createUser, { AuthUser } from 'src/createUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
@@ -202,7 +202,7 @@ export const verifyIdToken: VerifyIdToken = async (
       logDebug(e)
     }
   }
-  const user = createAuthUser({
+  const user = createUser({
     firebaseUserAdminSDK: firebaseUser,
     token: newToken,
   })

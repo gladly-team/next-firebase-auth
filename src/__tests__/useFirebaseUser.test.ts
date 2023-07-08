@@ -8,7 +8,7 @@ import {
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
-import createAuthUser from 'src/createUser'
+import createUser from 'src/createUser'
 import logDebug from 'src/logDebug'
 
 jest.mock('firebase/app')
@@ -475,7 +475,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
 
-    const mockAuthUser = createAuthUser({
+    const mockAuthUser = createUser({
       firebaseUserClientSDK: mockFirebaseUser,
       clientInitialized: true,
     })

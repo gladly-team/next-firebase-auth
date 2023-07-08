@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from 'next'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/userInputs'
-import createAuthUser from 'src/createUser'
+import createUser from 'src/createUser'
 import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import { AuthAction } from 'src/AuthAction'
 import getUserFromCookies from 'src/getUserFromCookies'
@@ -25,7 +25,7 @@ const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
   // Default to an unauthed user.
-  mockGetUserFromCookies.mockResolvedValue(createAuthUser())
+  mockGetUserFromCookies.mockResolvedValue(createUser())
 })
 
 afterEach(() => {
@@ -38,7 +38,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock the authenticated user.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const user = createAuthUser({
+    const user = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -60,7 +60,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock the authenticated user.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const user = createAuthUser({
+    const user = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -82,7 +82,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
 
     // Mock the authenticated user.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const user = createAuthUser({
+    const user = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -100,7 +100,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
 
   it('passes an empty serialized AuthUser prop when the user has no cookie auth and auth is *not* required', async () => {
     expect.assertions(1)
-    const unauthedUser = createAuthUser()
+    const unauthedUser = createUser()
     mockGetUserFromCookies.mockResolvedValue(unauthedUser)
     const expectedAuthUserProp = unauthedUser.serialize() // empty auth
     const withUserTokenSSR = require('src/withUserTokenSSR').default
@@ -270,7 +270,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -298,7 +298,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -330,7 +330,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -357,7 +357,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -391,7 +391,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -422,7 +422,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -451,12 +451,12 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
     )
-    const expectedAuthUserProp = createAuthUser({
+    const expectedAuthUserProp = createUser({
       firebaseUserAdminSDK: mockFirebaseAdminUser,
       token: 'a-user-identity-token-abc',
     }).serialize()
@@ -482,7 +482,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -508,7 +508,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
@@ -523,7 +523,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
   it('logs the expected debug logs when not redirecting', async () => {
     expect.assertions(2)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const user = createAuthUser({
+    const user = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -565,7 +565,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     // Mock that the user is authed.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
-      createAuthUser({
+      createUser({
         token: 'a-user-identity-token-abc',
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })

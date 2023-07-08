@@ -6,7 +6,7 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
-import createAuthUser, { AuthUser } from 'src/createUser'
+import createUser, { AuthUser } from 'src/createUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export type SetAuthCookies = (
@@ -40,7 +40,7 @@ const setAuthCookies: SetAuthCookies = async (
   // user.
   let idToken = null
   let refreshToken = null
-  let user = createAuthUser() // default to an unauthed user
+  let user = createUser() // default to an unauthed user
   try {
     ;({
       idToken,

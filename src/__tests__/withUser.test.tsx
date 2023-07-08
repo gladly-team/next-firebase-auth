@@ -8,13 +8,13 @@ import {
   createMockFirebaseUserClientSDK,
 } from 'src/testHelpers/userInputs'
 import userUser from 'src/useUser'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
+import createUser, { AuthUser as AuthUserType } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'
 import withUser from 'src/withUser'
 
-// Note that we don't mock createAuthUser or userUser.
+// Note that we don't mock createUser or userUser.
 const mockRouterPush = jest.fn()
 const mockRouterReplace = jest.fn()
 jest.mock('next/router', () => ({
@@ -1046,7 +1046,7 @@ describe('withUser: AuthUser context', () => {
       initialized: false,
     })
     const expectedAuthUser = {
-      ...createAuthUser(),
+      ...createUser(),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
@@ -1072,7 +1072,7 @@ describe('withUser: AuthUser context', () => {
     expect.assertions(1)
     const MockSerializedAuthUser = createMockSerializedAuthUser()
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         serializedAuthUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
@@ -1113,7 +1113,7 @@ describe('withUser: AuthUser context', () => {
       authRequestCompleted: true,
     })
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1151,7 +1151,7 @@ describe('withUser: AuthUser context', () => {
 
     // Will use the client-side user when both exist.
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1188,7 +1188,7 @@ describe('withUser: AuthUser context', () => {
     // Will use the server-side user when the Firebase JS SDK has not
     // yet initialized.
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         serializedAuthUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
@@ -1227,7 +1227,7 @@ describe('withUser: AuthUser context', () => {
     // case, cookies are set but Firebase JS SDK does not have auth
     // info.
     const expectedAuthUser = {
-      ...createAuthUser(),
+      ...createUser(),
       clientInitialized: true,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
@@ -1256,7 +1256,7 @@ describe('withUser: AuthUser context', () => {
       claims: { my: 'custom claims!' },
     })
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         serializedAuthUser: MockSerializedAuthUser,
       }),
       getIdToken: expect.any(Function),
@@ -1304,7 +1304,7 @@ describe('withUser: AuthUser context', () => {
       authRequestCompleted: true,
     })
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1345,7 +1345,7 @@ describe('withUser: AuthUser context', () => {
     })
 
     const expectedAuthUser = {
-      ...createAuthUser({
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,

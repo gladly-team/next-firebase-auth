@@ -83,7 +83,7 @@ export interface AuthUser {
  *   contexts, it is a noop.
 
  */
-const createAuthUser = ({
+const createUser = ({
   firebaseUserClientSDK,
   firebaseUserAdminSDK,
   serializedAuthUser,
@@ -104,7 +104,7 @@ const createAuthUser = ({
   }, 0)
   if (numUserInputsDefined > 1) {
     throw new Error(
-      'createAuthUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
+      'createUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
     )
   }
 
@@ -257,4 +257,4 @@ const createAuthUser = ({
   }
 }
 
-export default createAuthUser
+export default createUser

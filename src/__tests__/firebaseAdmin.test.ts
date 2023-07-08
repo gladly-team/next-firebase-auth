@@ -8,7 +8,7 @@ import {
   createMockFirebaseUserRecord,
 } from 'src/testHelpers/userInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
-import createAuthUser from 'src/createUser'
+import createUser from 'src/createUser'
 import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
@@ -91,7 +91,7 @@ describe('verifyIdToken', () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    const expectedReturn = createAuthUser({
+    const expectedReturn = createUser({
       firebaseUserAdminSDK: mockFirebaseUser,
       token: 'some-token',
     })
@@ -1091,7 +1091,7 @@ describe('getCustomIdAndRefreshTokens', () => {
 
     const mockUserRecord = createMockFirebaseUserRecord()
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    const expectedAuthUser = createAuthUser({
+    const expectedAuthUser = createUser({
       firebaseUserAdminSDK: mockFirebaseUser,
     })
     const firebaseAdminAuth = mockGetAuth()

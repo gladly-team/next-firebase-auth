@@ -7,7 +7,7 @@ import {
   onIdTokenChanged,
 } from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
+import createUser, { AuthUser as AuthUserType } from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 
@@ -102,7 +102,7 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
 const setAuthCookie = async (firebaseUser?: User) => {
   const { tokenChangedHandler } = getConfig()
 
-  const authUser = createAuthUser({
+  const authUser = createUser({
     firebaseUserClientSDK: firebaseUser,
     clientInitialized: true,
   })

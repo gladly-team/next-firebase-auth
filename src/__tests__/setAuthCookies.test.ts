@@ -9,7 +9,7 @@ import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockUser from 'src/testHelpers/createMockUser'
 import logDebug from 'src/logDebug'
-import createAuthUser from 'src/createUser'
+import createUser from 'src/createUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 jest.mock('src/config')
@@ -280,7 +280,7 @@ describe('setAuthCookies', () => {
           JSON.stringify({
             idToken: null,
             refreshToken: null,
-            AuthUser: createAuthUser(), // unauthed user
+            AuthUser: createUser(), // unauthed user
           })
         )
         return res.status(200).end()
@@ -329,7 +329,7 @@ describe('setAuthCookies', () => {
     mockGetCustomIdAndRefreshTokens.mockResolvedValue({
       idToken: null,
       refreshToken: null,
-      AuthUser: createAuthUser(), // unauthenticated
+      AuthUser: createUser(), // unauthenticated
     })
     await testApiHandler({
       handler: async (req, res) => {

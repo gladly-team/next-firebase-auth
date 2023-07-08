@@ -1,4 +1,4 @@
-import createAuthUser, { AuthUser } from 'src/createUser'
+import createUser, { AuthUser } from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
@@ -131,7 +131,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
       logDebug(
         "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
       )
-      user = createAuthUser() // unauthenticated AuthUser
+      user = createUser() // unauthenticated AuthUser
     }
   } else {
     // https://github.com/gladly-team/next-firebase-auth/issues/195
@@ -160,7 +160,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
         '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
       )
     }
-    user = createAuthUser({
+    user = createUser({
       serializedAuthUser: cookieValStr,
     })
   }
