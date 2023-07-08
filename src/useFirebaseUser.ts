@@ -7,7 +7,7 @@ import {
   onIdTokenChanged,
 } from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
+import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 

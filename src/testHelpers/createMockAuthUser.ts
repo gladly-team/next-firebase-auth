@@ -5,7 +5,7 @@
 
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
 
-const createAuthUser = jest.requireActual('../createAuthUser').default
+const createAuthUser = jest.requireActual('../createUser').default
 
 const createMockAuthUser = () =>
   createAuthUser({ firebaseUserAdminSDK: createMockFirebaseUserAdminSDK() })

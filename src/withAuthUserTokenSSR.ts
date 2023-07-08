@@ -10,7 +10,7 @@ import getUserFromCookies from 'src/getUserFromCookies'
 import { AuthAction } from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import logDebug from 'src/logDebug'
-import { AuthUser } from './createAuthUser'
+import { AuthUser } from './createUser'
 import { PageURL } from './redirectTypes'
 
 export interface WithAuthUserSSROptions {

@@ -9,7 +9,7 @@ import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
 import logDebug from 'src/logDebug'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser from 'src/createUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 jest.mock('src/config')

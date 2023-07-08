@@ -3,7 +3,7 @@ import getUserFromCookies from 'src/getUserFromCookies'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {

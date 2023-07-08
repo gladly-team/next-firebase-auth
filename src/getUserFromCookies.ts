@@ -1,4 +1,4 @@
-import createAuthUser, { AuthUser } from 'src/createAuthUser'
+import createAuthUser, { AuthUser } from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {

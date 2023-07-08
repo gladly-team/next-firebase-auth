@@ -4,7 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createAuthUser, { AuthUserSerialized } from 'src/createAuthUser'
+import createAuthUser, { AuthUserSerialized } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'

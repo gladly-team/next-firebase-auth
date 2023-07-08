@@ -8,7 +8,7 @@ import {
   createMockFirebaseUserClientSDK,
 } from 'src/testHelpers/authUserInputs'
 import useAuthUser from 'src/useAuthUser'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
+import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'

@@ -6,7 +6,7 @@ import {
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
-import createAuthUser, { AuthUser } from 'src/createAuthUser'
+import createAuthUser, { AuthUser } from 'src/createUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export type SetAuthCookies = (

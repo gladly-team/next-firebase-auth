@@ -8,7 +8,7 @@ import {
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser from 'src/createUser'
 import logDebug from 'src/logDebug'
 
 jest.mock('firebase/app')

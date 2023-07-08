@@ -1,6 +1,6 @@
 import type { GetServerSidePropsContext, Redirect } from 'next'
 import type { ParsedUrlQuery } from 'querystring'
-import { AuthUser } from './createAuthUser'
+import { AuthUser } from './createUser'
 
 export type URLResolveFunction = (obj: {
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { AuthUser } from './createAuthUser'
+import { AuthUser } from './createUser'
 
 type AuthUserContext =
   | (AuthUser & {

@@ -8,7 +8,7 @@ import {
   createMockFirebaseUserRecord,
 } from 'src/testHelpers/authUserInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
-import createAuthUser from 'src/createAuthUser'
+import createAuthUser from 'src/createUser'
 import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
