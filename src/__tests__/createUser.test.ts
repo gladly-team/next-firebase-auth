@@ -2,7 +2,7 @@ import { signOut } from 'firebase/auth'
 import {
   createMockFirebaseUserClientSDK,
   createMockFirebaseUserAdminSDK,
-  createMockSerializedAuthUser,
+  createMockSerializedUser,
 } from 'src/testHelpers/userInputs'
 
 jest.mock('firebase/auth')
@@ -40,7 +40,7 @@ describe('createUser: basic tests', () => {
       createUser({
         firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
         firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
-        serializedAuthUser: createMockSerializedAuthUser(),
+        serializedAuthUser: createMockSerializedUser(),
       })
     }).toThrow(
       'createUser cannot receive more than one of the following properties: "firebaseUserClientSDK", "firebaseUserAdminSDK", "serializedAuthUser"'
@@ -79,7 +79,7 @@ describe('createUser: basic tests', () => {
     const createUser = require('src/createUser').default
     expect(() => {
       createUser({
-        serializedAuthUser: createMockSerializedAuthUser(),
+        serializedAuthUser: createMockSerializedUser(),
         clientInitialized: true,
       })
     }).toThrow(
@@ -444,7 +444,7 @@ describe('createUser: serializedAuthUser', () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
     expect(
-      createUser({ serializedAuthUser: createMockSerializedAuthUser() })
+      createUser({ serializedAuthUser: createMockSerializedUser() })
     ).toEqual({
       id: 'ghi-789',
       email: 'ghi@example.com',
@@ -471,7 +471,7 @@ describe('createUser: serializedAuthUser', () => {
       registered: true,
     }
     const createUser = require('src/createUser').default
-    const serializedAuthUser = createMockSerializedAuthUser({
+    const serializedAuthUser = createMockSerializedUser({
       claims: customClaims,
     })
     expect(createUser({ serializedAuthUser })).toEqual({
@@ -496,7 +496,7 @@ describe('createUser: serializedAuthUser', () => {
     const createUser = require('src/createUser').default
     expect(() => {
       createUser({
-        serializedAuthUser: createMockSerializedAuthUser(),
+        serializedAuthUser: createMockSerializedUser(),
         claims: { some: 'stuff' },
       })
     }).toThrow(
@@ -507,7 +507,7 @@ describe('createUser: serializedAuthUser', () => {
   it('returns the original values from serialize and back', async () => {
     expect.assertions(2)
     const createUser = require('src/createUser').default
-    const mockSerializedAuthUser = createMockSerializedAuthUser()
+    const mockSerializedAuthUser = createMockSerializedUser()
     const AuthUser = createUser({
       serializedAuthUser: mockSerializedAuthUser,
     })
@@ -525,7 +525,7 @@ describe('createUser: serializedAuthUser', () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
     const AuthUser = createUser({
-      serializedAuthUser: createMockSerializedAuthUser(),
+      serializedAuthUser: createMockSerializedUser(),
     })
     await AuthUser.signOut()
     expect(signOut).not.toHaveBeenCalled()
@@ -590,7 +590,7 @@ describe('createUser: serializedAuthUser', () => {
     const createUser = require('src/createUser').default
     expect(
       createUser({
-        serializedAuthUser: createMockSerializedAuthUser({
+        serializedAuthUser: createMockSerializedUser({
           tenantId: 'some-tenant-id',
         }),
       })

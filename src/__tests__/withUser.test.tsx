@@ -4,7 +4,7 @@ import { render } from '@testing-library/react'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import {
-  createMockSerializedAuthUser,
+  createMockSerializedUser,
   createMockFirebaseUserClientSDK,
 } from 'src/testHelpers/userInputs'
 import useUser from 'src/useUser'
@@ -125,7 +125,7 @@ describe('withUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
+    const MockSerializedAuthUser = createMockSerializedUser()
     const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
@@ -1070,7 +1070,7 @@ describe('withUser: AuthUser context', () => {
 
   it('sets the AuthUser context using the server-side user (when there is no client-side user)', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
+    const MockSerializedAuthUser = createMockSerializedUser()
     const expectedAuthUser = {
       ...createUser({
         serializedAuthUser: MockSerializedAuthUser,
@@ -1140,7 +1140,7 @@ describe('withUser: AuthUser context', () => {
 
   it('sets the AuthUser context using the client-side user when both client-side and server-side user info exists', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const MockSerializedAuthUser = createMockSerializedUser() // server-side user exists
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
@@ -1178,7 +1178,7 @@ describe('withUser: AuthUser context', () => {
 
   it('sets the AuthUser context using the server-side user when both client-side and server-side user info exists but the Firebase JS SDK has not initialized', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const MockSerializedAuthUser = createMockSerializedUser() // server-side user exists
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null,
@@ -1214,7 +1214,7 @@ describe('withUser: AuthUser context', () => {
 
   it('sets the AuthUser context to an empty AuthUser when the server-side user exists, but the Firebase JS SDK *has* initialized and has no user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const MockSerializedAuthUser = createMockSerializedUser() // server-side user exists
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null,
@@ -1252,7 +1252,7 @@ describe('withUser: AuthUser context', () => {
 
   it('includes custom claims in the AuthUser context when using the server-side user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser({
+    const MockSerializedAuthUser = createMockSerializedUser({
       claims: { my: 'custom claims!' },
     })
     const expectedAuthUser = {
@@ -1335,7 +1335,7 @@ describe('withUser: AuthUser context', () => {
 
   it('logs a debugging message when it renders the AuthUser', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
+    const MockSerializedAuthUser = createMockSerializedUser()
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
@@ -1369,7 +1369,7 @@ describe('withUser: AuthUser context', () => {
 
   it('provides the same AuthUser object reference after "authRequestCompleted" changes (that is, it does not cause a re-render)', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const MockSerializedAuthUser = createMockSerializedUser() // server-side user exists
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     const initialFirebaseUserResponse = {
       ...getUseFirebaseUserResponse(),

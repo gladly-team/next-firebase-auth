@@ -75,7 +75,7 @@ export const createMockIdTokenResult = ({ claims = {} } = {}) => ({
   token: 'my-id-token-ghb-231',
 })
 
-export const createMockSerializedAuthUser = ({
+export const createMockSerializedUser = ({
   claims = {},
   tenantId = null,
 }: { claims?: Record<string, unknown>; tenantId?: string | null } = {}) =>
