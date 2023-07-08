@@ -88,27 +88,27 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     })
     mockGetUserFromCookies.mockResolvedValue(user)
 
-    const expectedAuthUserProp = user.serialize()
+    const expectedUserProp = user.serialize()
     const withUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
-      props: { userSerialized: expectedAuthUserProp },
+      props: { userSerialized: expectedUserProp },
     })
   })
 
-  it('passes an empty serialized AuthUser prop when the user has no cookie auth and auth is *not* required', async () => {
+  it('passes an empty serialized user prop when the user has no cookie auth and auth is *not* required', async () => {
     expect.assertions(1)
     const unauthedUser = createUser()
     mockGetUserFromCookies.mockResolvedValue(unauthedUser)
-    const expectedAuthUserProp = unauthedUser.serialize() // empty auth
+    const expectedUserProp = unauthedUser.serialize() // empty auth
     const withUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
-      props: { userSerialized: expectedAuthUserProp },
+      props: { userSerialized: expectedUserProp },
     })
   })
 
@@ -447,7 +447,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     )
   })
 
-  it("includes the composed getServerSideProps's props, passing it the context with a defined AuthUser", async () => {
+  it("includes the composed getServerSideProps's props, passing it the context with a defined user", async () => {
     expect.assertions(1)
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
     mockGetUserFromCookies.mockResolvedValue(
@@ -456,7 +456,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
     )
-    const expectedAuthUserProp = createUser({
+    const expectedUserProp = createUser({
       firebaseUserAdminSDK: mockFirebaseAdminUser,
       token: 'a-user-identity-token-abc',
     }).serialize()
@@ -464,14 +464,14 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     const mockGetSSPFunc = jest.fn((ctx) => ({
       props: {
         here: ['is', 'a', 'prop'],
-        userEmail: ctx.AuthUser.email,
+        userEmail: ctx.user.email,
       },
     }))
     const func = withUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: {
-        userSerialized: expectedAuthUserProp,
+        userSerialized: expectedUserProp,
         here: ['is', 'a', 'prop'],
         userEmail: 'def@example.com', // from createMockFirebaseUserAdminSDK
       },

@@ -51,7 +51,7 @@ type GetSSRResult<P> =
 type SSRPropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData
-> = GetServerSidePropsContext<Q, D> & { AuthUser?: AuthUser }
+> = GetServerSidePropsContext<Q, D> & { user?: AuthUser }
 
 type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
   context: SSRPropsContext<Q, D>
@@ -126,7 +126,7 @@ const withUserTokenSSR: WithAuthUserSSR =
     if (getServerSidePropsFunc) {
       // Add the AuthUser to Next.js context so pages can use
       // it in `getServerSideProps`, if needed.
-      ctx.AuthUser = user
+      ctx.user = user
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
         if ('props' in composedProps) {
