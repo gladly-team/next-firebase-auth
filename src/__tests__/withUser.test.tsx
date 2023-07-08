@@ -7,14 +7,14 @@ import {
   createMockSerializedAuthUser,
   createMockFirebaseUserClientSDK,
 } from 'src/testHelpers/userInputs'
-import userUser from 'src/useUser'
+import useUser from 'src/useUser'
 import createUser, { AuthUser as AuthUserType } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'
 import withUser from 'src/withUser'
 
-// Note that we don't mock createUser or userUser.
+// Note that we don't mock createUser or useUser.
 const mockRouterPush = jest.fn()
 const mockRouterReplace = jest.fn()
 jest.mock('next/router', () => ({
@@ -1055,7 +1055,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1088,7 +1088,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1125,7 +1125,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1163,7 +1163,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1199,7 +1199,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1237,7 +1237,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1275,7 +1275,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1320,7 +1320,7 @@ describe('withUser: AuthUser context', () => {
     let wrappedCompAuthUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = userUser()
+      wrappedCompAuthUser = useUser()
       return <div>hi!</div>
     }
 
@@ -1381,7 +1381,7 @@ describe('withUser: AuthUser context', () => {
 
     const authUsers: AuthUserType[] = []
     const AnotherMockComponent = () => {
-      const authUser = userUser()
+      const authUser = useUser()
       authUsers.push(authUser)
       return <div>hi!</div>
     }

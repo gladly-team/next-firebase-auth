@@ -90,7 +90,7 @@ const withUser: WithAuthUser =
       var React = require('react')
       var { useEffect, useCallback, useMemo } = require('react')
       var { useRouter } = require('next/router')
-      var { AuthUserContext } = require('src/useUser')
+      var { UserContext } = require('src/useUser')
       /* eslint-enable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
@@ -222,13 +222,13 @@ const withUser: WithAuthUser =
       let returnVal = null
       const loaderComp = LoaderComponent ? <LoaderComponent /> : null
       const comps = (
-        <AuthUserContext.Provider value={user}>
+        <UserContext.Provider value={user}>
           {/**
            * https://github.com/Microsoft/TypeScript/issues/28938#issuecomment-450636046
            * */}
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <ChildComponent {...(otherProps as ComponentProps)} />
-        </AuthUserContext.Provider>
+        </UserContext.Provider>
       )
       if (willRedirectToApp) {
         if (whenAuthedBeforeRedirect === AuthAction.RENDER) {

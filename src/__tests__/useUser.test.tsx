@@ -8,8 +8,8 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('userUser', () => {
-  test('the AuthUser context is created with an undefined default value', () => {
+describe('useUser', () => {
+  test('the user context is created with an undefined default value', () => {
     expect.assertions(1)
     jest.spyOn(React, 'createContext')
     // eslint-disable-next-line no-unused-expressions
@@ -17,33 +17,33 @@ describe('userUser', () => {
     expect(React.createContext).toHaveBeenCalledWith(undefined)
   })
 
-  test('defining the AuthUser context value changes the userUser value', () => {
+  test('defining the user context value changes the useUser value', () => {
     expect.assertions(1)
-    const { AuthUserContext } = require('src/useUser')
-    const userUser = require('src/useUser').default
+    const { UserContext } = require('src/useUser')
+    const useUser = require('src/useUser').default
     let childAuthUserVal
     const TestComp = () => {
-      const authUser = userUser()
-      childAuthUserVal = authUser
+      const user = useUser()
+      childAuthUserVal = user
       return null
     }
     render(
-      <AuthUserContext.Provider value="some fake value">
+      <UserContext.Provider value="some fake value">
         <TestComp />
-      </AuthUserContext.Provider>
+      </UserContext.Provider>
     )
     expect(childAuthUserVal).toEqual('some fake value')
   })
 
-  test('userUser will throw if used without a defined value for AuthUser context', () => {
+  test('useUser will throw if used without a defined value for user context', () => {
     expect.assertions(1)
-    const userUser = require('src/useUser').default
+    const useUser = require('src/useUser').default
     const TestComp = () => {
-      userUser() // should throw
+      useUser() // should throw
       return null
     }
     const err = new Error(
-      'When using `userUser`, the page must be wrapped in `withUser`.'
+      'When using `useUser`, the page must be wrapped in `withUser`.'
     )
     // Suppress expected error logs.
     jest
