@@ -4,7 +4,7 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import {
   createMockFirebaseUserClientSDK,
   createMockIdTokenResult,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'

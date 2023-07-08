@@ -3,7 +3,7 @@ import {
   createMockFirebaseUserClientSDK,
   createMockFirebaseUserAdminSDK,
   createMockSerializedAuthUser,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')

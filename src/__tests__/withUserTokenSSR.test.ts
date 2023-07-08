@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
-import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
+import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/userInputs'
 import createAuthUser from 'src/createUser'
 import createMockNextContext from 'src/testHelpers/createMockNextContext'
 import { AuthAction } from 'src/AuthAction'

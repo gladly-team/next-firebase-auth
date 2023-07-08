@@ -6,7 +6,7 @@ import { getAuth } from 'firebase-admin/auth'
 import {
   createMockFirebaseUserAdminSDK,
   createMockFirebaseUserRecord,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import createAuthUser from 'src/createUser'
 import { setConfig, getConfig } from 'src/config'

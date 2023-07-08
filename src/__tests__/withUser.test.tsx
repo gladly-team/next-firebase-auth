@@ -6,7 +6,7 @@ import getMockConfig from 'src/testHelpers/createMockConfig'
 import {
   createMockSerializedAuthUser,
   createMockFirebaseUserClientSDK,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 import useAuthUser from 'src/useUser'
 import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
