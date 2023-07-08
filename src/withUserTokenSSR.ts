@@ -89,16 +89,14 @@ const withUserTokenSSR: WithAuthUserSSR =
     getServerSidePropsFunc?: GetServerSideProps<P, Q, D>
   ) =>
   async (ctx: SSRPropsContext<Q, D>) => {
-    logDebug(
-      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withUserTokenSSR".'
-    )
+    logDebug('[withUserSSR] Calling "withUserSSR" / "withUserTokenSSR".')
     const { req } = ctx
     const user = await getUserFromCookies({ req, includeToken: useToken })
     const userSerialized = user.serialize()
 
     // If specified, redirect to the login page if the user is unauthed.
     if (!user.id && whenUnauthed === AuthAction.REDIRECT_TO_LOGIN) {
-      logDebug('[withAuthUserSSR] Redirecting to login.')
+      logDebug('[withUserSSR] Redirecting to login.')
       const redirect = getLoginRedirectInfo({
         ctx,
         AuthUser: user,
@@ -112,7 +110,7 @@ const withUserTokenSSR: WithAuthUserSSR =
 
     // If specified, redirect to the app page if the user is authed.
     if (user.id && whenAuthed === AuthAction.REDIRECT_TO_APP) {
-      logDebug('[withAuthUserSSR] Redirecting to app.')
+      logDebug('[withUserSSR] Redirecting to app.')
       const redirect = getAppRedirectInfo({
         ctx,
         AuthUser: user,

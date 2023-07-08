@@ -615,7 +615,7 @@ describe('getUserFromCookies: *without* ID token', () => {
     mockVerifyIdToken.mockResolvedValue(expectedUser)
     const mockReq = {} as NextApiRequest
     const expectedErr = new Error(
-      'Cookies must be signed when using withAuthUserSSR.'
+      'Cookies must be signed when using withUserSSR.'
     )
     await expect(
       getUserFromCookies({ req: mockReq, includeToken: false })

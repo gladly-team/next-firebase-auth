@@ -226,7 +226,7 @@ export default withAuthUser()(Demo)
 - [init](#initconfig)
 - [withAuthUser](#withauthuser-options-pagecomponent)
 - [withUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
-- [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
+- [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
 - [useAuthUser](#useauthuser)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
@@ -334,7 +334,7 @@ export const getServerSideProps = withUserTokenSSR({
 export default withAuthUser()(DemoPage)
 ```
 
-#### `withAuthUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
+#### `withUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
 Behaves nearly identically to `withUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
 
@@ -415,7 +415,7 @@ A request object whose `cookie` header value will be used to verify a user. Eith
 
 `Boolean`
 
-Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withUserSSR`. Read more about the distinction in the docs for [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
 
 #### authCookieValue
 

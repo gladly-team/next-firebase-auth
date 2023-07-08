@@ -21,8 +21,8 @@ export type GetUserFromCookiesOptions = {
   /**
    * Whether or not the returned user should include a Firebase ID token. When
    * true, the behavior follows `withUserTokenSSR`; when false, it follows
-   * `withAuthUserSSR`. Defaults to true. Read more about the distinction in
-   * the docs for `withAuthUserSSR` here:
+   * `withUserSSR`. Defaults to true. Read more about the distinction in
+   * the docs for `withUserSSR` here:
    * https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
    */
   includeToken?: boolean
@@ -136,7 +136,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
   } else {
     // https://github.com/gladly-team/next-firebase-auth/issues/195
     if (!signed) {
-      throw new Error('Cookies must be signed when using withAuthUserSSR.')
+      throw new Error('Cookies must be signed when using withUserSSR.')
     }
 
     // Get the user's info from a cookie, verify it (refreshing

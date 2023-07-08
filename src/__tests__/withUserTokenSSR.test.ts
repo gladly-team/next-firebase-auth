@@ -534,7 +534,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     mockLogDebug.mockClear()
     await func(createMockNextContext())
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withUserTokenSSR".'
+      '[withUserSSR] Calling "withUserSSR" / "withUserTokenSSR".'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(1)
   })
@@ -551,10 +551,10 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     mockLogDebug.mockClear()
     await func(createMockNextContext())
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withUserTokenSSR".'
+      '[withUserSSR] Calling "withUserSSR" / "withUserTokenSSR".'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUserSSR] Redirecting to login.'
+      '[withUserSSR] Redirecting to login.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })
@@ -580,10 +580,10 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     mockLogDebug.mockClear()
     await func(createMockNextContext())
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withUserTokenSSR".'
+      '[withUserSSR] Calling "withUserSSR" / "withUserTokenSSR".'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUserSSR] Redirecting to app.'
+      '[withUserSSR] Redirecting to app.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(2)
   })

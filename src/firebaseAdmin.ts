@@ -181,7 +181,7 @@ export const verifyIdToken: VerifyIdToken = async (
         default:
           // Here, any errors are unexpected. Return an unauthenticated user.
           // Rationale: it's not particularly easy for developers to
-          // catch errors in `withAuthUserSSR`, so default to returning
+          // catch errors in `withUserSSR`, so default to returning
           // an unauthed user and give the developer control over
           // handling the error.
           // https://github.com/gladly-team/next-firebase-auth/issues/366
