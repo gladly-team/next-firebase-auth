@@ -94,15 +94,15 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with a computed "destination"', () => {
           const result = redirectFunc({
-            redirectURL: ({ ctx, AuthUser }) => ({
+            redirectURL: ({ ctx, user }) => ({
               basePath: undefined,
-              destination: `/${ctx?.query.id}/${AuthUser?.id}`,
+              destination: `/${ctx?.query.id}/${user?.id}`,
               permanent: false,
             }),
             ctx: {
               query: { id: 'context-id' },
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            AuthUser: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as AuthUserType,
           })
 
           expect(result).toEqual({
@@ -135,7 +135,7 @@ describe('redirects', () => {
             ctx: {
               id: 'context-id',
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            AuthUser: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as AuthUserType,
             redirectURL: () => ({
               destination: `/hello`,
               basePath: false,

@@ -133,12 +133,10 @@ const withUser: WithAuthUser =
       // once it has initialized. On the server side and before the
       // client-side SDK has initialized, use the AuthUser from the
       // session.
-      const AuthUser = firebaseInitialized
-        ? AuthUserFromClient
-        : AuthUserFromServer
+      const user = firebaseInitialized ? AuthUserFromClient : AuthUserFromServer
 
-      const isAuthed = !!AuthUser.id
-      const isInitialized = AuthUser.clientInitialized
+      const isAuthed = !!user.id
+      const isInitialized = user.clientInitialized
 
       // Redirect to the app if all are true:
       // * the user is authed
@@ -186,21 +184,21 @@ const withUser: WithAuthUser =
       const redirectToApp = useCallback(() => {
         logDebug('[withUser] Redirecting to app.')
         const destination = getAppRedirectInfo({
-          AuthUser,
+          user,
           redirectURL: appPageURL,
         })
 
         routeToDestination(destination)
-      }, [AuthUser, routeToDestination])
+      }, [user, routeToDestination])
       const redirectToLogin = useCallback(() => {
         logDebug('[withUser] Redirecting to login.')
         const destination = getLoginRedirectInfo({
-          AuthUser,
+          user,
           redirectURL: authPageURL,
         })
 
         routeToDestination(destination)
-      }, [AuthUser, routeToDestination])
+      }, [user, routeToDestination])
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
@@ -224,7 +222,7 @@ const withUser: WithAuthUser =
       let returnVal = null
       const loaderComp = LoaderComponent ? <LoaderComponent /> : null
       const comps = (
-        <AuthUserContext.Provider value={AuthUser}>
+        <AuthUserContext.Provider value={user}>
           {/**
            * https://github.com/Microsoft/TypeScript/issues/28938#issuecomment-450636046
            * */}
@@ -260,7 +258,7 @@ const withUser: WithAuthUser =
         returnVal = comps
       }
 
-      logDebug('[withUser] Set AuthUser to:', AuthUser)
+      logDebug('[withUser] Set user to:', user)
 
       return returnVal
     }

@@ -4,7 +4,7 @@ import { AuthUser } from './createUser'
 
 export type URLResolveFunction = (obj: {
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>
-  AuthUser?: AuthUser
+  user?: AuthUser
 }) => string | Redirect
 
 export type RedirectObject = Redirect
@@ -13,7 +13,7 @@ export type PageURL = string | Redirect | URLResolveFunction
 
 export interface RedirectInput {
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>
-  AuthUser?: AuthUser
+  user?: AuthUser
   redirectURL?: PageURL
 }
 

@@ -498,7 +498,7 @@ describe('withUser: rendering/redirecting', () => {
       />
     )
     expect(propsSpy.ctx).toBeUndefined()
-    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(propsSpy.user.id).toBeNull()
     expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
   })
 
@@ -712,9 +712,9 @@ describe('withUser: rendering/redirecting', () => {
     let ctxSpy
     setConfig({
       ...mockConfig,
-      appPageURL: ({ ctx, AuthUser }) => {
+      appPageURL: ({ ctx, user }) => {
         ctxSpy = ctx
-        return `/my-app/here/?email=${AuthUser?.email}` // custom app page
+        return `/my-app/here/?email=${user?.email}` // custom app page
       },
     })
     const MockCompWithUser = withUser<MockComponentProps>({
@@ -932,7 +932,7 @@ describe('withUser: rendering/redirecting', () => {
       />
     )
     expect(propsSpy.ctx).toBeUndefined()
-    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(propsSpy.user.id).toBeNull()
     expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
   })
 
@@ -1362,7 +1362,7 @@ describe('withUser: AuthUser context', () => {
     })(AnotherMockComponent)
     render(<MockCompWithUser userSerialized={MockSerializedAuthUser} />)
     expect(logDebug).toHaveBeenCalledWith(
-      '[withUser] Set AuthUser to:',
+      '[withUser] Set user to:',
       expectedAuthUser
     )
   })

@@ -99,7 +99,7 @@ const withUserTokenSSR: WithAuthUserSSR =
       logDebug('[withUserSSR] Redirecting to login.')
       const redirect = getLoginRedirectInfo({
         ctx,
-        AuthUser: user,
+        user,
         redirectURL: authPageURL,
       })
 
@@ -113,7 +113,7 @@ const withUserTokenSSR: WithAuthUserSSR =
       logDebug('[withUserSSR] Redirecting to app.')
       const redirect = getAppRedirectInfo({
         ctx,
-        AuthUser: user,
+        user,
         redirectURL: appPageURL,
       })
 
