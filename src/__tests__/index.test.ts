@@ -71,30 +71,30 @@ describe('index.ts: init', () => {
   })
 })
 
-describe('index.ts: withAuthUser', () => {
-  it('exports withAuthUser', () => {
+describe('index.ts: withUser', () => {
+  it('exports withUser', () => {
     expect.assertions(2)
     const index = require('src/index')
-    expect(index.withAuthUser).toBeDefined()
-    expect(index.withAuthUser).toEqual(expect.any(Function))
+    expect(index.withUser).toBeDefined()
+    expect(index.withUser).toEqual(expect.any(Function))
   })
 })
 
-describe('index.ts: useAuthUser', () => {
-  it('exports useAuthUser', () => {
+describe('index.ts: useUser', () => {
+  it('exports useUser', () => {
     expect.assertions(2)
     const index = require('src/index')
-    expect(index.useAuthUser).toBeDefined()
-    expect(index.useAuthUser).toEqual(expect.any(Function))
+    expect(index.useUser).toBeDefined()
+    expect(index.useUser).toEqual(expect.any(Function))
   })
 })
 
-describe('index.ts: withAuthUserSSR', () => {
-  it('exports withAuthUserSSR', () => {
+describe('index.ts: withUserSSR', () => {
+  it('exports withUserSSR', () => {
     expect.assertions(2)
     const index = require('src/index')
-    expect(index.withAuthUserSSR).toBeDefined()
-    expect(index.withAuthUserSSR).toEqual(expect.any(Function))
+    expect(index.withUserSSR).toBeDefined()
+    expect(index.withUserSSR).toEqual(expect.any(Function))
   })
 
   it('throws if called on the client side', () => {
@@ -102,17 +102,17 @@ describe('index.ts: withAuthUserSSR', () => {
     mockIsClientSide.mockReturnValue(true)
     const index = require('src/index')
     expect(() => {
-      index.withAuthUserSSR()
-    }).toThrow('"withAuthUserSSR" can only be called server-side.')
+      index.withUserSSR()
+    }).toThrow('"withUserSSR" can only be called server-side.')
   })
 })
 
-describe('index.ts: withAuthUserTokenSSR', () => {
-  it('exports withAuthUserTokenSSR', () => {
+describe('index.ts: withUserTokenSSR', () => {
+  it('exports withUserTokenSSR', () => {
     expect.assertions(2)
     const index = require('src/index')
-    expect(index.withAuthUserTokenSSR).toBeDefined()
-    expect(index.withAuthUserTokenSSR).toEqual(expect.any(Function))
+    expect(index.withUserTokenSSR).toBeDefined()
+    expect(index.withUserTokenSSR).toEqual(expect.any(Function))
   })
 
   it('throws if called on the client side', () => {
@@ -120,8 +120,8 @@ describe('index.ts: withAuthUserTokenSSR', () => {
     mockIsClientSide.mockReturnValue(true)
     const index = require('src/index')
     expect(() => {
-      index.withAuthUserTokenSSR()
-    }).toThrow('"withAuthUserTokenSSR" can only be called server-side.')
+      index.withUserTokenSSR()
+    }).toThrow('"withUserTokenSSR" can only be called server-side.')
   })
 })
 
