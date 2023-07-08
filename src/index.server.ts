@@ -9,7 +9,7 @@ import type {
   WithAuthUserSSR,
   WithAuthUserSSROptions,
 } from './withAuthUserTokenSSR'
-import type { UseAuthUser } from './useAuthUser'
+import type { UseAuthUser } from './useUser'
 
 // enum: AuthAction
 export * from 'src/AuthAction'
@@ -39,7 +39,7 @@ export const useUser: UseAuthUser = () => {
       'The dependency "react" is required when calling `useUser`.'
     )
   }
-  const useUserModule = require('src/useAuthUser').default
+  const useUserModule = require('src/useUser').default
   return useUserModule()
 }
 

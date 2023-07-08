@@ -13,14 +13,14 @@ describe('useAuthUser', () => {
     expect.assertions(1)
     jest.spyOn(React, 'createContext')
     // eslint-disable-next-line no-unused-expressions
-    require('src/useAuthUser').default
+    require('src/useUser').default
     expect(React.createContext).toHaveBeenCalledWith(undefined)
   })
 
   test('defining the AuthUser context value changes the useAuthUser value', () => {
     expect.assertions(1)
-    const { AuthUserContext } = require('src/useAuthUser')
-    const useAuthUser = require('src/useAuthUser').default
+    const { AuthUserContext } = require('src/useUser')
+    const useAuthUser = require('src/useUser').default
     let childAuthUserVal
     const TestComp = () => {
       const authUser = useAuthUser()
@@ -37,7 +37,7 @@ describe('useAuthUser', () => {
 
   test('useAuthUser will throw if used without a defined value for AuthUser context', () => {
     expect.assertions(1)
-    const useAuthUser = require('src/useAuthUser').default
+    const useAuthUser = require('src/useUser').default
     const TestComp = () => {
       useAuthUser() // should throw
       return null

@@ -3,7 +3,7 @@ import { setDebugEnabled } from 'src/logDebug'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
 import withUser from 'src/withUser'
-import useUser from 'src/useAuthUser'
+import useUser from 'src/useUser'
 import withUserTokenSSR from 'src/withAuthUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
@@ -14,7 +14,7 @@ jest.mock('src/logDebug')
 jest.mock('src/setAuthCookies')
 jest.mock('src/unsetAuthCookies')
 jest.mock('src/withUser')
-jest.mock('src/useAuthUser')
+jest.mock('src/useUser')
 jest.mock('src/withAuthUserTokenSSR')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/firebaseAdmin')

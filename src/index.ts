@@ -32,7 +32,7 @@ export const unsetAuthCookies: UnsetAuthCookies = () => {
   throw new Error('"unsetAuthCookies" can only be called server-side.')
 }
 
-export { default as useUser } from 'src/useAuthUser'
+export { default as useUser } from 'src/useUser'
 
 export const verifyIdToken: VerifyIdToken = () => {
   throw new Error('"verifyIdToken" can only be called server-side.')
