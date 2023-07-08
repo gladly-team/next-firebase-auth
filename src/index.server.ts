@@ -8,7 +8,7 @@ import type { WithAuthUser } from './withUser'
 import type {
   WithAuthUserSSR,
   WithAuthUserSSROptions,
-} from './withAuthUserTokenSSR'
+} from './withUserTokenSSR'
 import type { UseAuthUser } from './useUser'
 
 // enum: AuthAction
@@ -56,13 +56,13 @@ export const withUser: WithAuthUser = (options) => {
 export const withUserSSR: WithAuthUserSSR = (
   options?: WithAuthUserSSROptions
 ) => {
-  const withUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
+  const withUserTokenSSRModule = require('src/withUserTokenSSR').default
   return withUserTokenSSRModule(options, { useToken: false })
 }
 
 export const withUserTokenSSR: WithAuthUserSSR = (
   options?: WithAuthUserSSROptions
 ) => {
-  const withUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
+  const withUserTokenSSRModule = require('src/withUserTokenSSR').default
   return withUserTokenSSRModule(options, { useToken: true })
 }

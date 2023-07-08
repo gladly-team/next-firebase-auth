@@ -44,7 +44,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     })
     mockGetUserFromCookies.mockResolvedValue(user)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const ctx = createMockNextContext()
@@ -66,7 +66,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     })
     mockGetUserFromCookies.mockResolvedValue(user)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({}, { useToken: false })(mockGetSSPFunc)
     const ctx = createMockNextContext()
@@ -89,7 +89,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     mockGetUserFromCookies.mockResolvedValue(user)
 
     const expectedAuthUserProp = user.serialize()
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -103,7 +103,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
     const unauthedUser = createAuthUser()
     mockGetUserFromCookies.mockResolvedValue(unauthedUser)
     const expectedAuthUserProp = unauthedUser.serialize() // empty auth
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -115,7 +115,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('redirects to the provided string login URL when the user is not authed and auth *is* required', async () => {
     expect.assertions(1)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -134,7 +134,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('redirects to the provided function login URL when the user is not authed and auth *is* required', async () => {
     expect.assertions(1)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -154,7 +154,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('redirects to the provided object login URL when basePath is false, the user is not authed, and auth *is* required', async () => {
     expect.assertions(1)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -176,7 +176,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('redirects to the provided object login URL when basePath is true, the user is not authed, and auth *is* required', async () => {
     expect.assertions(1)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -204,7 +204,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       authPageURL: '/log-in-here',
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -229,7 +229,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       authPageURL: undefined, // no auth page default defined
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -251,7 +251,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       authPageURL: () => undefined as unknown as PageURL, // no auth page default defined
     } as unknown as ConfigInput)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -276,7 +276,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       })
     )
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -304,7 +304,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       })
     )
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -336,7 +336,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       })
     )
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -369,7 +369,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       appPageURL: '/default-app-homepage',
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -403,7 +403,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       appPageURL: undefined, // no default defined
     })
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -434,7 +434,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       appPageURL: () => undefined as unknown as PageURL, // no default defined
     } as unknown as ConfigInput)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -460,7 +460,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       firebaseUserAdminSDK: mockFirebaseAdminUser,
       token: 'a-user-identity-token-abc',
     }).serialize()
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn((ctx) => ({
       props: {
         here: ['is', 'a', 'prop'],
@@ -487,7 +487,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
     )
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn(() => ({
       redirect: {
         destination: '/some-custom-redirect',
@@ -513,7 +513,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
         firebaseUserAdminSDK: mockFirebaseAdminUser,
       })
     )
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn(() => ({ notFound: true }))
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
@@ -528,7 +528,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
     mockGetUserFromCookies.mockResolvedValue(user)
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR()(mockGetSSPFunc)
     mockLogDebug.mockClear()
@@ -542,7 +542,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
   it('logs expected debug logs when redirecting to the login URL', async () => {
     expect.assertions(3)
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -571,7 +571,7 @@ describe('withAuthUserTokenSSR: authed user cookies and prop', () => {
       })
     )
 
-    const withAuthUserTokenSSR = require('src/withAuthUserTokenSSR').default
+    const withAuthUserTokenSSR = require('src/withUserTokenSSR').default
     const mockGetSSPFunc = jest.fn()
     const func = withAuthUserTokenSSR({
       whenAuthed: AuthAction.REDIRECT_TO_APP,

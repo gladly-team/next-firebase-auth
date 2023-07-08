@@ -6,7 +6,7 @@ import type { GetUserFromCookies } from './getUserFromCookies'
 import type { SetAuthCookies } from './setAuthCookies'
 import type { UnsetAuthCookies } from './unsetAuthCookies'
 import type { VerifyIdToken } from './firebaseAdmin'
-import type { WithAuthUserSSR } from './withAuthUserTokenSSR'
+import type { WithAuthUserSSR } from './withUserTokenSSR'
 
 // AuthAction
 export * from 'src/AuthAction'
