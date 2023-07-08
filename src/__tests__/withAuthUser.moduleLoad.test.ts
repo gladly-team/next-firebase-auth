@@ -26,7 +26,7 @@ afterEach(() => {
 describe('withAuthUser (resetting modules)', () => {
   it('runs without error by default', () => {
     expect.assertions(1)
-    const withAuthUser = require('src/withAuthUser').default
+    const withAuthUser = require('src/withUser').default
     expect(() => {
       withAuthUser()(MockComponent)
     }).not.toThrow()
@@ -45,7 +45,7 @@ describe('withAuthUser (resetting modules)', () => {
     })
 
     // eslint-disable-next-line no-unused-expressions
-    require('src/withAuthUser').default
+    require('src/withUser').default
   })
 
   it('throws the expected error if the "react" package is not importable', () => {
@@ -61,7 +61,7 @@ describe('withAuthUser (resetting modules)', () => {
       })
     })
 
-    const withAuthUser = require('src/withAuthUser').default
+    const withAuthUser = require('src/withUser').default
     expect(() => {
       withAuthUser()(MockComponent)
     }).toThrow(expectedErr)
@@ -80,7 +80,7 @@ describe('withAuthUser (resetting modules)', () => {
       })
     })
 
-    const withAuthUser = require('src/withAuthUser').default
+    const withAuthUser = require('src/withUser').default
     expect(() => {
       withAuthUser()(MockComponent)
     }).toThrow(expectedErr)
@@ -91,7 +91,7 @@ describe('withAuthUser (resetting modules)', () => {
     jest.mock('react', () => {
       throw new Error('Something else.')
     })
-    const withAuthUser = require('src/withAuthUser').default
+    const withAuthUser = require('src/withUser').default
     expect(() => {
       withAuthUser()(MockComponent)
     }).toThrow(new Error('Something else.'))

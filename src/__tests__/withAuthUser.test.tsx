@@ -12,7 +12,7 @@ import createAuthUser, { AuthUser as AuthUserType } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'
-import withAuthUser from 'src/withAuthUser'
+import withAuthUser from 'src/withUser'
 
 // Note that we don't mock createAuthUser or useAuthUser.
 const mockRouterPush = jest.fn()

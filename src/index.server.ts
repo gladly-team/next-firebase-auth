@@ -4,7 +4,7 @@
 import initCommon from 'src/initCommon'
 
 import type { ConfigInput } from './configTypes'
-import type { WithAuthUser } from './withAuthUser'
+import type { WithAuthUser } from './withUser'
 import type {
   WithAuthUserSSR,
   WithAuthUserSSROptions,
@@ -49,7 +49,7 @@ export const withUser: WithAuthUser = (options) => {
   // Require rather than import the module to support optional
   // peer dependencies. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/502
-  const withUserModule = require('src/withAuthUser').default
+  const withUserModule = require('src/withUser').default
   return withUserModule(options)
 }
 

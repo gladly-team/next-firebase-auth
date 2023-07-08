@@ -38,7 +38,7 @@ export const verifyIdToken: VerifyIdToken = () => {
   throw new Error('"verifyIdToken" can only be called server-side.')
 }
 
-export { default as withUser } from 'src/withAuthUser'
+export { default as withUser } from 'src/withUser'
 
 export const withUserSSR: WithAuthUserSSR = () => {
   throw new Error('"withUserSSR" can only be called server-side.')
