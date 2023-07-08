@@ -17,19 +17,19 @@ jest.mock('src/logDebug')
 
 const mockSetConfig = jest.mocked(setConfig)
 const mockGetCustomIdAndRefreshTokens = getCustomIdAndRefreshTokens as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getUserCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getUserTokensCookieName)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockSetCookie = jest.mocked(setCookie)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
   const mockAuthUser = createMockUser()
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
   mockGetCustomIdAndRefreshTokens.mockResolvedValue({
     idToken: 'fake-custom-id-token-here',
     refreshToken: 'fake-refresh-token-here',
-    AuthUser: mockAuthUser,
+    user: mockAuthUser,
   })
 
   const mockConfig = createMockConfig()
@@ -247,7 +247,7 @@ describe('setAuthCookies', () => {
           JSON.stringify({
             idToken: 'fake-custom-id-token-here',
             refreshToken: 'fake-refresh-token-here',
-            AuthUser: mockAuthUser,
+            user: mockAuthUser,
           })
         )
         return res.status(200).end()
@@ -277,7 +277,7 @@ describe('setAuthCookies', () => {
           JSON.stringify({
             idToken: null,
             refreshToken: null,
-            AuthUser: createUser(), // unauthed user
+            user: createUser(), // unauthed user
           })
         )
         return res.status(200).end()
@@ -326,7 +326,7 @@ describe('setAuthCookies', () => {
     mockGetCustomIdAndRefreshTokens.mockResolvedValue({
       idToken: null,
       refreshToken: null,
-      AuthUser: createUser(), // unauthenticated
+      user: createUser(), // unauthenticated
     })
     await testApiHandler({
       handler: async (req, res) => {

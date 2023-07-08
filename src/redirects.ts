@@ -1,6 +1,6 @@
 import type { GetServerSidePropsContext } from 'next'
 
-import { User as AuthUserType } from 'src/createUser'
+import { User } from 'src/createUser'
 import { getConfig } from 'src/config'
 import {
   PageURL,
@@ -16,7 +16,7 @@ const getDestination = ({
   redirectDestination,
 }: {
   ctx?: GetServerSidePropsContext
-  user?: AuthUserType
+  user?: User
   redirectDestination: PageURL
 }): RedirectObject | undefined => {
   if (typeof redirectDestination === 'function') {
@@ -76,11 +76,6 @@ const getRedirectByUrlConfigName = (redirectConfig: RedirectConfig) => {
 /**
  * getLoginRedirectInfo validates and returns the configuration for redirecting to the login page
  * by using the "redirectURL" prop or the "authPageURL" global config setting
- *
- * @param {Object} LoginRedirectProps
- * @param {String|Function|Object} LoginRedirectProps.redirectURL - redirect config for determining the redirect destination
- * @param {Object} LoginRedirectProps.AuthUser - An instance of AuthUser
- * @param {ctx|null} LoginRedirectProps.ctx - Server-side context
  */
 export const getLoginRedirectInfo = ({
   redirectURL,

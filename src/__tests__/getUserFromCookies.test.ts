@@ -29,12 +29,10 @@ jest.mock('src/logDebug')
 
 const mockGetCookie = jest.mocked(getCookie)
 const mockVerifyIdToken = verifyIdToken as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getUserCookieName)
-const mockGetAuthUserSigCookieName = jest.mocked(getUserSigCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getUserTokensCookieName)
-const mockGetAuthUserTokensSigCookieName = jest.mocked(
-  getUserTokensSigCookieName
-)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserSigCookieName = jest.mocked(getUserSigCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
+const mockGetUserTokensSigCookieName = jest.mocked(getUserTokensSigCookieName)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
@@ -42,8 +40,8 @@ beforeEach(() => {
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
 
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   // Default to an authed user.
   mockGetCookie.mockImplementation((cookieName) => {
@@ -167,7 +165,7 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -265,10 +263,10 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -290,10 +288,10 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (*not* incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -528,7 +526,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -645,10 +643,10 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -670,10 +668,10 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (not incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'

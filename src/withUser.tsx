@@ -55,11 +55,10 @@ interface HOCProps {
 }
 
 /**
- * A higher-order component that provides pages with the
- * AuthUser and, optionally, redirects or renders different
- * children based on the user's current auth state.
- * To access the user from SSR, this should be paired with
- * `withUserSSR` or `withUserTokenSSR`.
+ * A higher-order component that provides pages with the user and, optionally,
+ * redirects or renders different children based on the user's current auth
+ * state. To access the user from SSR, this should be paired with `withUserSSR`
+ * or `withUserTokenSSR`.
  */
 export type WithUser = <ComponentProps extends object>(
   options?: WithUserOptions
@@ -103,9 +102,9 @@ const withUser: WithUser =
       }
     }
 
-    const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
+    const WithUserHOC = (props: ComponentProps & HOCProps) => {
       const { userSerialized, ...otherProps } = props
-      const AuthUserFromServer = useMemo(
+      const userFromServer = useMemo(
         () =>
           createUser({
             serializedUser: userSerialized,
@@ -119,7 +118,7 @@ const withUser: WithUser =
         initialized: firebaseInitialized,
         authRequestCompleted,
       } = useFirebaseUser()
-      const AuthUserFromClient = useMemo(
+      const userFromClient = useMemo(
         () =>
           createUser({
             firebaseUserClientSDK: firebaseUser || undefined,
@@ -129,11 +128,11 @@ const withUser: WithUser =
         [firebaseUser, firebaseInitialized, claims]
       )
 
-      // Set the AuthUser to values from the Firebase JS SDK user
+      // Set the user to values from the Firebase JS SDK user
       // once it has initialized. On the server side and before the
-      // client-side SDK has initialized, use the AuthUser from the
+      // client-side SDK has initialized, use the user from the
       // session.
-      const user = firebaseInitialized ? AuthUserFromClient : AuthUserFromServer
+      const user = firebaseInitialized ? userFromClient : userFromServer
 
       const isAuthed = !!user.id
       const isInitialized = user.clientInitialized
@@ -263,9 +262,9 @@ const withUser: WithUser =
       return returnVal
     }
 
-    WithAuthUserHOC.displayName = 'WithAuthUserHOC'
-    hoistNonReactStatics(WithAuthUserHOC, ChildComponent)
-    return WithAuthUserHOC
+    WithUserHOC.displayName = 'WithUserHOC'
+    hoistNonReactStatics(WithUserHOC, ChildComponent)
+    return WithUserHOC
   }
 
 export default withUser

@@ -124,13 +124,13 @@ const withUserTokenSSR: WithUserSSR =
 
     // Evaluate the composed getServerSideProps().
     if (getServerSidePropsFunc) {
-      // Add the AuthUser to Next.js context so pages can use
-      // it in `getServerSideProps`, if needed.
+      // Add the user to Next.js context so pages can use it in
+      // `getServerSideProps`.
       ctx.user = user
       const composedProps = (await getServerSidePropsFunc(ctx)) || {}
       if (composedProps) {
         if ('props' in composedProps) {
-          // If there are composed props, add Authuser to the props.
+          // If there are composed props, add user to the props.
           return {
             ...composedProps,
             props: {

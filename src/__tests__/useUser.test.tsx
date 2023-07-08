@@ -21,10 +21,10 @@ describe('useUser', () => {
     expect.assertions(1)
     const { UserContext } = require('src/useUser')
     const useUser = require('src/useUser').default
-    let childAuthUserVal
+    let childUserVal
     const TestComp = () => {
       const user = useUser()
-      childAuthUserVal = user
+      childUserVal = user
       return null
     }
     render(
@@ -32,7 +32,7 @@ describe('useUser', () => {
         <TestComp />
       </UserContext.Provider>
     )
-    expect(childAuthUserVal).toEqual('some fake value')
+    expect(childUserVal).toEqual('some fake value')
   })
 
   test('useUser will throw if used without a defined value for user context', () => {

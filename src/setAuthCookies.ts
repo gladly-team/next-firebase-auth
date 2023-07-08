@@ -13,7 +13,7 @@ export type SetAuthCookies = (
 ) => Promise<{
   idToken: string | null
   refreshToken: string | null
-  AuthUser: User
+  user: User
 }>
 
 const setAuthCookies: SetAuthCookies = async (
@@ -39,11 +39,9 @@ const setAuthCookies: SetAuthCookies = async (
   let refreshToken = null
   let user = createUser() // default to an unauthed user
   try {
-    ;({
-      idToken,
-      refreshToken,
-      AuthUser: user,
-    } = await getCustomIdAndRefreshTokens(token))
+    ;({ idToken, refreshToken, user } = await getCustomIdAndRefreshTokens(
+      token
+    ))
   } catch (e) {
     logDebug(
       '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
@@ -90,17 +88,17 @@ const setAuthCookies: SetAuthCookies = async (
     cookieOptions
   )
 
-  // Store the AuthUser data. This cookie will be available
+  // Store the user data. This cookie will be available
   // to future requests to pages, providing the user data. It
   // will *not* include a Firebase ID token, because it may have
-  // expired, but provides the AuthUser data without any
+  // expired, but provides the user data without any
   // additional server-side requests.
   setCookie(
     getUserCookieName(),
     // Note: any change to cookie data structure needs to be
     // backwards-compatible.
-    // Don't include the token in the "AuthUser" cookie, because
-    // the token should only be used from the "AuthUserTokens"
+    // Don't include the token in the user cookie, because
+    // the token should only be used from the "userTokens"
     // cookie. Here, it is redundant information, and we don't
     // want the token to be used if it's expired.
     user.serialize({ includeToken: false }),
@@ -122,7 +120,7 @@ const setAuthCookies: SetAuthCookies = async (
   return {
     idToken,
     refreshToken,
-    AuthUser: user,
+    user,
   }
 }
 

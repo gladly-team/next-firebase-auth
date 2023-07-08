@@ -12,14 +12,14 @@ jest.mock('src/cookies')
 jest.mock('src/logDebug')
 
 const mockSetConfig = jest.mocked(setConfig)
-const mockGetAuthUserCookieName = jest.mocked(getUserCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getUserTokensCookieName)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockDeleteCookie = jest.mocked(deleteCookie)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   const mockConfig = createMockConfig()
   mockSetConfig({

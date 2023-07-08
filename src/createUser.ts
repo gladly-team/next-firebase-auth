@@ -193,8 +193,6 @@ const createUser = ({
     photoURL,
     claims: customClaims,
     // We want the "getIdToken" method to be isomorphic.
-    // When `user` is an AuthUserSerializable object, we take the token
-    // value and return it from this method.
     // After the Firebase JS SDK has initialized on the client side, we
     // use the Firebase SDK's getIdToken method, which will handle refreshing
     // the token as needed.

@@ -187,20 +187,20 @@ describe('createUser: firebaseUserClientSDK', () => {
   it('returns the expected value from getIdToken', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
-    const token = await AuthUser.getIdToken()
+    const token = await user.getIdToken()
     expect(token).toEqual('my-id-token-abc-123')
   })
 
   it('returns the expected value from serialize', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
-    const userSerialized = AuthUser.serialize()
+    const userSerialized = user.serialize()
     expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'abc-123',
@@ -217,23 +217,23 @@ describe('createUser: firebaseUserClientSDK', () => {
     )
   })
 
-  it("calls Firebase's signOut method when we call AuthUser.signOut", async () => {
+  it("calls Firebase's signOut method when we call user.signOut", async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
-    await AuthUser.signOut()
+    await user.signOut()
     expect(signOut).toHaveBeenCalled()
   })
 
-  it("does not call Firebase's signOut method when we call AuthUser.signOut and the user is unauthed", async () => {
+  it("does not call Firebase's signOut method when we call user.signOut and the user is unauthed", async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserClientSDK: null,
     })
-    await AuthUser.signOut()
+    await user.signOut()
     expect(signOut).not.toHaveBeenCalled()
   })
 })
@@ -303,33 +303,33 @@ describe('createUser: firebaseUserAdminSDK', () => {
   it('returns the expected value from getIdToken when a token is not provided', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       // token: undefined, // no token
     })
-    const token = await AuthUser.getIdToken()
+    const token = await user.getIdToken()
     expect(token).toBeNull()
   })
 
   it('returns the expected value from getIdToken when a token is provided', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    const token = await AuthUser.getIdToken()
+    const token = await user.getIdToken()
     expect(token).toEqual('my-id-token-def-456')
   })
 
   it('returns the expected value from serialize when a token is not provided', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       // token: undefined, // no token
     })
-    const userSerialized = AuthUser.serialize()
+    const userSerialized = user.serialize()
     expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
@@ -349,11 +349,11 @@ describe('createUser: firebaseUserAdminSDK', () => {
   it('returns the expected value from serialize when a token is provided', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    const userSerialized = AuthUser.serialize()
+    const userSerialized = user.serialize()
     expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
@@ -379,14 +379,14 @@ describe('createUser: firebaseUserAdminSDK', () => {
       likes: 'cats',
       registered: true,
     }
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: {
         ...createMockFirebaseUserAdminSDK(),
         ...customClaims,
       },
       token: 'my-id-token-def-456',
     })
-    const userSerialized = AuthUser.serialize()
+    const userSerialized = user.serialize()
     expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
@@ -406,11 +406,11 @@ describe('createUser: firebaseUserAdminSDK', () => {
   it('excludes the token when serializing and the "includeToken" option is false', async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    const userSerialized = AuthUser.serialize({ includeToken: false })
+    const userSerialized = user.serialize({ includeToken: false })
     expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
@@ -427,14 +427,14 @@ describe('createUser: firebaseUserAdminSDK', () => {
     )
   })
 
-  it("does not call Firebase's signOut method when we call AuthUser.signOut (it should be a noop)", async () => {
+  it("does not call Firebase's signOut method when we call user.signOut (it should be a noop)", async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    await AuthUser.signOut()
+    await user.signOut()
     expect(signOut).not.toHaveBeenCalled()
   })
 })
@@ -506,26 +506,26 @@ describe('createUser: serializedUser', () => {
     expect.assertions(2)
     const createUser = require('src/createUser').default
     const mockserializedUser = createMockSerializedUser()
-    const AuthUser = createUser({
+    const user = createUser({
       serializedUser: mockserializedUser,
     })
-    const userSerialized = AuthUser.serialize()
+    const userSerialized = user.serialize()
     expect(userSerialized).toEqual(mockserializedUser)
     expect(createUser({ serializedUser: userSerialized })).toEqual({
-      ...AuthUser,
+      ...user,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     })
   })
 
-  it("does not call Firebase's signOut method when we call AuthUser.signOut (it should be a noop)", async () => {
+  it("does not call Firebase's signOut method when we call user.signOut (it should be a noop)", async () => {
     expect.assertions(1)
     const createUser = require('src/createUser').default
-    const AuthUser = createUser({
+    const user = createUser({
       serializedUser: createMockSerializedUser(),
     })
-    await AuthUser.signOut()
+    await user.signOut()
     expect(signOut).not.toHaveBeenCalled()
   })
 

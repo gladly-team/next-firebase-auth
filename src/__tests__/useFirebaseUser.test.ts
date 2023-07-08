@@ -453,7 +453,7 @@ describe('useFirebaseUser', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 
-  it('calls "tokenChangedHandler" with AuthUser if it is configured', async () => {
+  it('calls "tokenChangedHandler" with user if it is configured', async () => {
     expect.assertions(4)
     const tokenChangedHandler = jest.fn()
     mockSetConfig({
@@ -475,7 +475,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
 
-    const mockAuthUser = createUser({
+    const mockuser = createUser({
       firebaseUserClientSDK: mockFirebaseUser,
       clientInitialized: true,
     })
@@ -487,13 +487,13 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(fetch).not.toHaveBeenCalled()
-    const authUser = {
-      ...mockAuthUser,
+    const user = {
+      ...mockuser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
-    expect(tokenChangedHandler).toHaveBeenCalledWith(authUser)
+    expect(tokenChangedHandler).toHaveBeenCalledWith(user)
   })
 
   it('returns "setAuthCookieComplete=false" until the fetch in the default token changed handler resolves', async () => {

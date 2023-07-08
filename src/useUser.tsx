@@ -15,13 +15,13 @@ export const UserContext = createContext<UserContext>(undefined)
 export type UseUser = () => User
 
 const useUser: UseUser = () => {
-  const authUser = useContext<UserContext>(UserContext)
-  if (!authUser) {
+  const user = useContext<UserContext>(UserContext)
+  if (!user) {
     throw new Error(
       'When using `useUser`, the page must be wrapped in `withUser`.'
     )
   }
-  return authUser
+  return user
 }
 
 export default useUser

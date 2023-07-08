@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { getApp } from 'firebase/app'
 import {
-  User,
+  User as FirebaseUser,
   getAuth,
   getIdTokenResult,
   onIdTokenChanged,
 } from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createUser, { User as AuthUserType } from 'src/createUser'
+import createUser, { User } from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 
-const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
+const defaultTokenChangedHandler = async (user: User) => {
   const {
     loginAPIEndpoint,
     logoutAPIEndpoint,
@@ -20,11 +20,11 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
   } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
-  if (authUser.id) {
+  if (user.id) {
     // Prefixing with "[withUser]" because that's currently the only
     // place we use this logic.
     logDebug('[withUser] Calling the login endpoint.')
-    const userToken = await authUser.getIdToken()
+    const userToken = await user.getIdToken()
     if (!loginAPIEndpoint) {
       throw new Error('Invalid config.')
     }
@@ -99,10 +99,10 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
   return response
 }
 
-const setAuthCookie = async (firebaseUser?: User) => {
+const setAuthCookie = async (firebaseUser?: FirebaseUser) => {
   const { tokenChangedHandler } = getConfig()
 
-  const authUser = createUser({
+  const user = createUser({
     firebaseUserClientSDK: firebaseUser,
     clientInitialized: true,
   })
@@ -111,15 +111,15 @@ const setAuthCookie = async (firebaseUser?: User) => {
     logDebug(
       `[withUser] Calling the custom "tokenChangedHandler" provided in the config.`
     )
-    return tokenChangedHandler(authUser)
+    return tokenChangedHandler(user)
   }
 
-  return defaultTokenChangedHandler(authUser)
+  return defaultTokenChangedHandler(user)
 }
 
 const useFirebaseUser = () => {
   const [userInfo, setUserInfo] = useState<{
-    user: User | null
+    user: FirebaseUser | null
     claims?: Claims
     initialized: boolean
   }>({
@@ -133,7 +133,7 @@ const useFirebaseUser = () => {
   useEffect(() => {
     let isCancelled = false
 
-    const onIdTokenChange = async (firebaseUser: User | null) => {
+    const onIdTokenChange = async (firebaseUser: FirebaseUser | null) => {
       // Prefixing with "[withUser]" because that's currently the only
       // place we use this hook.
       logDebug(

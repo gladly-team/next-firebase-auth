@@ -23,7 +23,7 @@ export type GetUserFromCookiesOptions = {
    * true, the behavior follows `withUserTokenSSR`; when false, it follows
    * `withUserSSR`. Defaults to true. Read more about the distinction in
    * the docs for `withUserSSR` here:
-   * https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
+   * https://github.com/gladly-team/next-firebase-auth#withuserssr-options-getserversidepropsfunc---user---
    */
   includeToken?: boolean
   /**
@@ -96,14 +96,13 @@ const getUserFromCookies: GetUserFromCookies = async ({
   }
 
   // Get the user either from:
-  // * the ID token, refreshing the token as needed (via a network
-  //   request), which will make `AuthUser.getIdToken` resolve to
-  //   a valid ID token value
-  // * the "AuthUser" cookie (no network request), which will make
-  //  `AuthUser.getIdToken` resolve to null
+  // * the ID token, refreshing the token as needed (via a network request),
+  //   which will make `user.getIdToken` resolve to a valid ID token value.
+  // * the user cookie (no network request), which will make `user.getIdToken`
+  //   resolve to null.
   if (includeToken) {
     // Get the user's ID token from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
+    // as needed), and return the serialized user in props.
     logDebug(
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
@@ -131,7 +130,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
       logDebug(
         "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
       )
-      user = createUser() // unauthenticated AuthUser
+      user = createUser() // unauthenticated user
     }
   } else {
     // https://github.com/gladly-team/next-firebase-auth/issues/195
@@ -140,7 +139,7 @@ const getUserFromCookies: GetUserFromCookies = async ({
     }
 
     // Get the user's info from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
+    // as needed), and return the serialized user in props.
     logDebug(
       '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )

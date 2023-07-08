@@ -1,7 +1,6 @@
 /* eslint-env jest */
 
-// Create a mock AuthUser by passing mock input to the
-// real createUser module.
+// Create a mock user by passing mock input to the real createUser module.
 
 import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/userInputs'
 

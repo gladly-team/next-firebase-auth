@@ -72,12 +72,6 @@ export type VerifyIdToken = (
   refreshToken?: string
 ) => Promise<User>
 
-/**
- * Verify the Firebase ID token and return the Firebase user.
- * If the ID token has expired, refresh it if a refreshToken
- * is provided.
- * @return {Object} An AuthUser instance
- */
 export const verifyIdToken: VerifyIdToken = async (
   token: string,
   refreshToken?: string
@@ -216,15 +210,11 @@ export const verifyIdToken: VerifyIdToken = async (
 
 /**
  * Given a Firebase ID token, return an ID token, refresh token,
- * and AuthUser. We can use the refresh token to refresh expired
+ * and user. We can use the refresh token to refresh expired
  * ID tokens during server-side rendering.
  * See:
  *  https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
  *  https://stackoverflow.com/a/38284384
- * @return {Object} response
- * @return {String} response.idToken - The user's ID token
- * @return {String} response.refreshToken - The user's refresh token
- * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token: string) => {
   // Ensure `fetch` is defined.
@@ -291,6 +281,6 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   return {
     idToken,
     refreshToken,
-    AuthUser: user,
+    user,
   }
 }

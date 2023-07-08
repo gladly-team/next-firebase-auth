@@ -3,7 +3,7 @@ import type { ParsedUrlQuery } from 'querystring'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { setConfig } from 'src/config'
-import { User as AuthUserType } from 'src/createUser'
+import { User } from 'src/createUser'
 import { RedirectInput } from 'src/redirectTypes'
 
 describe('redirects', () => {
@@ -102,7 +102,7 @@ describe('redirects', () => {
             ctx: {
               query: { id: 'context-id' },
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            user: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as User,
           })
 
           expect(result).toEqual({
@@ -135,7 +135,7 @@ describe('redirects', () => {
             ctx: {
               id: 'context-id',
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            user: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as User,
             redirectURL: () => ({
               destination: `/hello`,
               basePath: false,

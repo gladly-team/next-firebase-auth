@@ -16,29 +16,27 @@ beforeEach(() => {
 })
 
 describe('authCookies', () => {
-  it('returns the expected AuthUser cookie name', () => {
+  it('returns the expected user cookie name', () => {
     expect.assertions(1)
     const { getUserCookieName } = require('src/authCookies')
     expect(getUserCookieName()).toEqual('myNeatApp.AuthUser')
   })
 
-  it('returns the expected AuthUserTokens cookie name', () => {
+  it('returns the expected user tokens cookie name', () => {
     expect.assertions(1)
     const { getUserTokensCookieName } = require('src/authCookies')
     expect(getUserTokensCookieName()).toEqual('myNeatApp.AuthUserTokens')
   })
 
-  it('returns the expected AuthUser signature cookie name', () => {
+  it('returns the expected user signature cookie name', () => {
     expect.assertions(1)
     const { getUserSigCookieName } = require('src/authCookies')
     expect(getUserSigCookieName()).toEqual('myNeatApp.AuthUser.sig')
   })
 
-  it('returns the expected AuthUserTokens signature cookie name', () => {
+  it('returns the expected user tokens signature cookie name', () => {
     expect.assertions(1)
     const { getUserTokensSigCookieName } = require('src/authCookies')
-    expect(getUserTokensSigCookieName()).toEqual(
-      'myNeatApp.AuthUserTokens.sig'
-    )
+    expect(getUserTokensSigCookieName()).toEqual('myNeatApp.AuthUserTokens.sig')
   })
 })

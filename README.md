@@ -225,12 +225,12 @@ export default withUser()(Demo)
 
 - [init](#initconfig)
 - [withUser](#withuser-options-pagecomponent)
-- [withUserTokenSSR](#withusertokenssr-options-getserversidepropsfunc---authuser---)
-- [withUserSSR](#withuserssr-options-getserversidepropsfunc---authuser---)
+- [withUserTokenSSR](#withusertokenssr-options-getserversidepropsfunc---user---)
+- [withUserSSR](#withuserssr-options-getserversidepropsfunc---user---)
 - [useUser](#useuser)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
-- [verifyIdToken](#verifyidtokentoken--promiseauthuser)
+- [verifyIdToken](#verifyidtokentoken--promiseuser)
 - [getUserFromCookies](#getuserfromcookies-options-)
 - [AuthAction](#authaction)
 
@@ -415,7 +415,7 @@ A request object whose `cookie` header value will be used to verify a user. Eith
 
 `Boolean`
 
-Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withUserSSR`. Read more about the distinction in the docs for [withUserSSR](#withuserssr-options-getserversidepropsfunc---authuser---).
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withUserSSR`. Read more about the distinction in the docs for [withUserSSR](#withuserssr-options-getserversidepropsfunc---user---).
 
 #### authCookieValue
 
@@ -798,7 +798,7 @@ As a convenience, `next-firebase-auth` initializes the default Firebase admin ap
 
 ### Getting the user in an API route
 
-You can easily get the user in an API route by using [verifyIdToken](#verifyidtokentoken--promiseauthuser) or [getUserFromCookies](#getuserfromcookies-options-). The demo app has an [example API route](https://github.com/gladly-team/next-firebase-auth/blob/v1.x/example/pages/api/example.js).
+You can easily get the user in an API route by using [verifyIdToken](#verifyidtokentoken--promiseuser) or [getUserFromCookies](#getuserfromcookies-options-). The demo app has an [example API route](https://github.com/gladly-team/next-firebase-auth/blob/v1.x/example/pages/api/example.js).
 
 ### Getting the user in a standalone backend environment
 
