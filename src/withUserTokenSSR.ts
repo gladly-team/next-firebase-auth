@@ -75,7 +75,7 @@ export type WithAuthUserSSR = (
   propGetter?: SSRPropsGetter<P, Q, D>
 ) => GetServerSideProps<P, Q, D>
 
-const withAuthUserTokenSSR: WithAuthUserSSR =
+const withUserTokenSSR: WithAuthUserSSR =
   (
     {
       whenAuthed = AuthAction.RENDER,
@@ -90,7 +90,7 @@ const withAuthUserTokenSSR: WithAuthUserSSR =
   ) =>
   async (ctx: SSRPropsContext<Q, D>) => {
     logDebug(
-      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withAuthUserTokenSSR".'
+      '[withAuthUserSSR] Calling "withAuthUserSSR" / "withUserTokenSSR".'
     )
     const { req } = ctx
     const user = await getUserFromCookies({ req, includeToken: useToken })
@@ -157,4 +157,4 @@ const withAuthUserTokenSSR: WithAuthUserSSR =
     }
   }
 
-export default withAuthUserTokenSSR
+export default withUserTokenSSR

@@ -203,7 +203,7 @@ import React from 'react'
 import {
   useAuthUser,
   withAuthUser,
-  withAuthUserTokenSSR,
+  withUserTokenSSR,
 } from 'next-firebase-auth'
 
 const Demo = () => {
@@ -216,7 +216,7 @@ const Demo = () => {
 }
 
 // Note that this is a higher-order function.
-export const getServerSideProps = withAuthUserTokenSSR()()
+export const getServerSideProps = withUserTokenSSR()()
 
 export default withAuthUser()(Demo)
 ```
@@ -225,7 +225,7 @@ export default withAuthUser()(Demo)
 
 - [init](#initconfig)
 - [withAuthUser](#withauthuser-options-pagecomponent)
-- [withAuthUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
+- [withUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
 - [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
 - [useAuthUser](#useauthuser)
 - [setAuthCookies](#setauthcookiesreq-res)
@@ -288,7 +288,7 @@ export default withAuthUser({
 
 For TypeScript usage, take a look [here](#typescript).
 
-#### `withAuthUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
+#### `withUserTokenSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
 A higher-order function that wraps a Next.js pages's `getServerSideProps` function to provide the `AuthUser` context during server-side rendering. Optionally, it can server-side redirect based on the user's auth status. A wrapped function is optional; if provided, it will be called with a `context` object that contains an [`AuthUser`](#authuser) property.
 
@@ -307,12 +307,12 @@ For example, this page will SSR for authenticated users, fetching props using th
 import {
   useAuthUser,
   withAuthUser,
-  withAuthUserTokenSSR,
+  withUserTokenSSR,
 } from 'next-firebase-auth'
 
 const DemoPage = ({ thing }) => <div>The thing is: {thing}</div>
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }) => {
   // Optionally, get other props.
@@ -336,17 +336,17 @@ export default withAuthUser()(DemoPage)
 
 #### `withAuthUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
 
-Behaves nearly identically to `withAuthUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
+Behaves nearly identically to `withUserTokenSSR`, with one key difference: the `AuthUser` will not contain an ID token.
 
 This method relies on authed user data from a cookie rather than verify or refresh a Firebase ID token. Consequently:
 
 - It does not provide an ID token on the server side. The `AuthUser` provided via context will resolve to null when you call `AuthUser.getIdToken()`.
-- It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withAuthUserTokenSSR`.
-- It does _not_ check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withAuthUserTokenSSR`.
+- It does not need to make a network request to refresh an expired ID token, so it will, on average, be faster than `withUserTokenSSR`.
+- It does _not_ check for token revocation. If you need verification that the user's credentials haven't been revoked, you should always use `withUserTokenSSR`.
 
 ⚠️ Do not use this when `cookies.signed` is set to `false`. Doing so is a potential security risk, because the authed user cookie values could be modified by the client.
 
-This takes the same options as `withAuthUserTokenSSR`.
+This takes the same options as `withUserTokenSSR`.
 
 #### `useAuthUser()`
 
@@ -415,7 +415,7 @@ A request object whose `cookie` header value will be used to verify a user. Eith
 
 `Boolean`
 
-Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withAuthUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
+Whether or not the returned user should include a Firebase ID token. Defaults to true. When true, the behavior follows that of `withUserTokenSSR`; when false, it follows that of `withAuthUserSSR`. Read more about the distinction in the docs for [withAuthUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---).
 
 #### authCookieValue
 
@@ -433,7 +433,7 @@ The value of the auth cookie's signature, if using signed cookies. For example, 
 
 #### `AuthAction`
 
-An object that defines rendering/redirecting options for `withAuthUser` and `withAuthUserTokenSSR`. See [AuthAction](#authaction-1).
+An object that defines rendering/redirecting options for `withAuthUser` and `withUserTokenSSR`. See [AuthAction](#authaction-1).
 
 ## Config
 
@@ -443,13 +443,13 @@ See an [example config here](#example-config). Provide the config when you call 
 
 `String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withAuthUser` or `withUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
 `String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withAuthUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withAuthUser` or `withUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 
@@ -1165,7 +1165,7 @@ To fix this, confirm that your `firebaseAdminInitConfig.credential.clientEmail` 
 
 If that doesn't help, try inspecting the custom token to manually validate the values and structure. Some people encounter this problem [when their server time is incorrect](https://github.com/firebase/php-jwt/issues/127#issuecomment-291862337).
 
-#### Server-side auth is not working. The user and token are always null when using `withAuthUserTokenSSR`, but client-side auth works.
+#### Server-side auth is not working. The user and token are always null when using `withUserTokenSSR`, but client-side auth works.
 
 If auth is working on the client side but not on the server side, the auth cookies are most likely not set.
 

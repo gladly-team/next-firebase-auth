@@ -20,7 +20,7 @@ export type GetUserFromCookiesOptions = {
   req?: NextApiRequest | GetServerSidePropsContext['req']
   /**
    * Whether or not the returned user should include a Firebase ID token. When
-   * true, the behavior follows `withAuthUserTokenSSR`; when false, it follows
+   * true, the behavior follows `withUserTokenSSR`; when false, it follows
    * `withAuthUserSSR`. Defaults to true. Read more about the distinction in
    * the docs for `withAuthUserSSR` here:
    * https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---

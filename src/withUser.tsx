@@ -59,7 +59,7 @@ interface HOCProps {
  * AuthUser and, optionally, redirects or renders different
  * children based on the user's current auth state.
  * To access the user from SSR, this should be paired with
- * `withAuthUserSSR` or `withAuthUserTokenSSR`.
+ * `withAuthUserSSR` or `withUserTokenSSR`.
  */
 export type WithAuthUser = <ComponentProps extends object>(
   options?: WithAuthUserOptions
@@ -204,7 +204,7 @@ const withAuthUser: WithAuthUser =
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
-        // use `withAuthUserSSR` or `withAuthUserTokenSSR`.
+        // use `withAuthUserSSR` or `withUserTokenSSR`.
         if (!isClientSide()) {
           return
         }
