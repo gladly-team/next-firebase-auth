@@ -4,14 +4,19 @@ import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 
 export default function initFirebaseClientSDK() {
-  const { firebaseClientInitConfig, firebaseAuthEmulatorHost } = getConfig()
+  const { firebaseClientInitConfig, firebaseAuthEmulatorHost, tenantId } =
+    getConfig()
   if (!getApps().length) {
     if (!firebaseClientInitConfig) {
       throw new Error(
         'If not initializing the Firebase JS SDK elsewhere, you must provide "firebaseClientInitConfig" to next-firebase-auth.'
       )
     }
+
     initializeApp(firebaseClientInitConfig)
+    if (tenantId) {
+      getAuth().tenantId = tenantId
+    }
     logDebug('[init] Initialized the Firebase JS SDK.')
   } else {
     logDebug(

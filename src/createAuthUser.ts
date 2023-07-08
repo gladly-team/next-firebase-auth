@@ -14,13 +14,14 @@ interface DeserializedAuthUser {
   photoURL?: string
   clientInitialized: boolean
   _token?: string
+  tenantId: string
 }
 
 export type AuthUserSerialized = string
 
 interface CreateAuthUserInput {
   firebaseUserClientSDK?: User
-  firebaseUserAdminSDK?: Omit<DecodedIdToken, 'firebase'>
+  firebaseUserAdminSDK?: DecodedIdToken
   serializedAuthUser?: AuthUserSerialized
   clientInitialized?: boolean
   token?: string | null
@@ -37,6 +38,7 @@ export interface AuthUser {
   displayName: string | null
   photoURL: string | null
   claims: Record<string, string | boolean>
+  tenantId: string | null
   getIdToken: (forceRefresh?: boolean) => Promise<string | null>
   clientInitialized: boolean
   firebaseUser: User | null
@@ -132,6 +134,7 @@ const createAuthUser = ({
   let userId: string | null = null
   let email: string | null = null
   let emailVerified = false
+  let tenantId: string | null = null
   let phoneNumber: string | null = null
   let displayName: string | null = null
   let photoURL: string | null = null
@@ -162,6 +165,7 @@ const createAuthUser = ({
     phoneNumber = firebaseUserClientSDK.phoneNumber
     displayName = firebaseUserClientSDK.displayName
     photoURL = firebaseUserClientSDK.photoURL
+    tenantId = firebaseUserClientSDK.tenantId
 
     /**
      * Returns a JSON Web Token (JWT) used to identify the user to a Firebase
@@ -190,6 +194,9 @@ const createAuthUser = ({
     emailVerified = firebaseUserAdminSDK.email_verified || false
     phoneNumber = firebaseUserAdminSDK.phone_number || null
     displayName = firebaseUserAdminSDK.name
+    tenantId = firebaseUserAdminSDK.firebase
+      ? firebaseUserAdminSDK.firebase.tenant || null
+      : null
     photoURL = firebaseUserAdminSDK.picture || null
     getIdTokenFunc = async () => token
     tokenString = token
@@ -201,6 +208,7 @@ const createAuthUser = ({
     userId = deserializedUser.id || null
     email = deserializedUser.email || null
     emailVerified = deserializedUser.emailVerified
+    tenantId = deserializedUser.tenantId || null
     phoneNumber = deserializedUser.phoneNumber || null
     displayName = deserializedUser.displayName || null
     photoURL = deserializedUser.photoURL || null
@@ -211,6 +219,7 @@ const createAuthUser = ({
     id: userId,
     email,
     emailVerified,
+    tenantId,
     phoneNumber,
     displayName,
     photoURL,
@@ -238,6 +247,7 @@ const createAuthUser = ({
         claims: customClaims,
         email,
         emailVerified,
+        tenantId,
         phoneNumber,
         displayName,
         photoURL,

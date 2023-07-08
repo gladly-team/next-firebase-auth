@@ -21,6 +21,7 @@ describe('createAuthUser: basic tests', () => {
       clientInitialized: false,
       email: null,
       emailVerified: false,
+      tenantId: null,
       phoneNumber: null,
       displayName: null,
       photoURL: null,
@@ -125,6 +126,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       email: 'abc@example.com',
       emailVerified: true,
       phoneNumber: '+1800-123-4567',
+      tenantId: null,
       displayName: 'Abc Cdf',
       photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
       clientInitialized: false,
@@ -156,6 +158,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
       email: 'abc@example.com',
       emailVerified: true,
       phoneNumber: '+1800-123-4567',
+      tenantId: null,
       displayName: 'Abc Cdf',
       photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
       clientInitialized: false,
@@ -206,6 +209,7 @@ describe('createAuthUser: firebaseUserClientSDK', () => {
         claims: {},
         email: 'abc@example.com',
         emailVerified: true,
+        tenantId: null,
         phoneNumber: '+1800-123-4567',
         displayName: 'Abc Cdf',
         photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
@@ -247,6 +251,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       email: 'def@example.com',
       emailVerified: true,
       phoneNumber: '+1800-234-5678',
+      tenantId: null,
       displayName: 'Def Ghi',
       photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
       clientInitialized: false,
@@ -271,6 +276,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
       email: 'def@example.com',
       emailVerified: true,
       phoneNumber: '+1800-234-5678',
+      tenantId: null,
       displayName: 'Def Ghi',
       photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
       clientInitialized: false,
@@ -332,6 +338,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         claims: {},
         email: 'def@example.com',
         emailVerified: true,
+        tenantId: null,
         phoneNumber: '+1800-234-5678',
         displayName: 'Def Ghi',
         photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
@@ -355,6 +362,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         claims: {},
         email: 'def@example.com',
         emailVerified: true,
+        tenantId: null,
         phoneNumber: '+1800-234-5678',
         displayName: 'Def Ghi',
         photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
@@ -387,6 +395,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         claims: customClaims,
         email: 'def@example.com',
         emailVerified: true,
+        tenantId: null,
         phoneNumber: '+1800-234-5678',
         displayName: 'Def Ghi',
         photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
@@ -410,6 +419,7 @@ describe('createAuthUser: firebaseUserAdminSDK', () => {
         claims: {},
         email: 'def@example.com',
         emailVerified: true,
+        tenantId: null,
         phoneNumber: '+1800-234-5678',
         displayName: 'Def Ghi',
         photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
@@ -442,6 +452,7 @@ describe('createAuthUser: serializedAuthUser', () => {
       email: 'ghi@example.com',
       emailVerified: true,
       phoneNumber: '+1800-345-6789',
+      tenantId: null,
       displayName: 'Ghi Jkl',
       photoURL: 'https://ghi.googleusercontent.com/jkl/profile_photo.png',
       clientInitialized: false,
@@ -470,6 +481,7 @@ describe('createAuthUser: serializedAuthUser', () => {
       email: 'ghi@example.com',
       emailVerified: true,
       phoneNumber: '+1800-345-6789',
+      tenantId: null,
       displayName: 'Ghi Jkl',
       photoURL: 'https://ghi.googleusercontent.com/jkl/profile_photo.png',
       clientInitialized: false,
@@ -519,5 +531,85 @@ describe('createAuthUser: serializedAuthUser', () => {
     })
     await AuthUser.signOut()
     expect(signOut).not.toHaveBeenCalled()
+  })
+
+  it('returns expected data when tenantId set in firebaseUserClientSDK', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserJSSDK = createMockFirebaseUserClientSDK({
+      tenantId: 'some-tenant-id',
+    })
+    expect(
+      createAuthUser({
+        firebaseUserClientSDK: firebaseUserJSSDK,
+      })
+    ).toEqual({
+      id: 'abc-123',
+      email: 'abc@example.com',
+      emailVerified: true,
+      phoneNumber: '+1800-123-4567',
+      displayName: 'Abc Cdf',
+      photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: firebaseUserJSSDK,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: {},
+      tenantId: 'some-tenant-id',
+    })
+  })
+
+  it('returns expected data when tenantId set in firebaseUserAdminSDK', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    const firebaseUserAdminSDK = createMockFirebaseUserAdminSDK({
+      tenant: 'some-tenant-id',
+    })
+    expect(
+      createAuthUser({
+        firebaseUserAdminSDK,
+      })
+    ).toEqual({
+      id: 'def-456',
+      email: 'def@example.com',
+      emailVerified: true,
+      phoneNumber: '+1800-234-5678',
+      displayName: 'Def Ghi',
+      photoURL: 'https://def.googleusercontent.com/ghi/profile_photo.png',
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: {},
+      tenantId: 'some-tenant-id',
+    })
+  })
+
+  it('returns the expected data when tenantId in serializedAuthUser', () => {
+    expect.assertions(1)
+    const createAuthUser = require('src/createAuthUser').default
+    expect(
+      createAuthUser({
+        serializedAuthUser: createMockSerializedAuthUser({
+          tenantId: 'some-tenant-id',
+        }),
+      })
+    ).toEqual({
+      id: 'ghi-789',
+      email: 'ghi@example.com',
+      emailVerified: true,
+      phoneNumber: '+1800-345-6789',
+      displayName: 'Ghi Jkl',
+      photoURL: 'https://ghi.googleusercontent.com/jkl/profile_photo.png',
+      clientInitialized: false,
+      getIdToken: expect.any(Function),
+      firebaseUser: null,
+      signOut: expect.any(Function),
+      serialize: expect.any(Function),
+      claims: {},
+      tenantId: 'some-tenant-id',
+    })
   })
 })

@@ -1,7 +1,9 @@
 import { DecodedIdToken } from 'firebase-admin/auth'
 import { User } from 'firebase/auth'
 
-export const createMockFirebaseUserClientSDK = () => {
+export const createMockFirebaseUserClientSDK = ({
+  tenantId = null,
+}: { tenantId?: string | null } = {}) => {
   const mockUser = {
     uid: 'abc-123',
     email: 'abc@example.com',
@@ -11,13 +13,16 @@ export const createMockFirebaseUserClientSDK = () => {
     photoURL: 'https://abc.googleusercontent.com/cdf/profile_photo.png',
     getIdToken: async () => 'my-id-token-abc-123',
     claims: {},
+    tenantId,
     // ... other properties
   } as unknown as User
   return mockUser
 }
 
 // https://firebase.google.com/docs/reference/admin/node/firebase-admin.auth.decodedidtoken
-export const createMockFirebaseUserAdminSDK = () => {
+export const createMockFirebaseUserAdminSDK = ({
+  tenant = null,
+}: { tenant?: string | null } = {}) => {
   const mockUser = {
     uid: 'def-456',
     email: 'def@example.com',
@@ -32,7 +37,9 @@ export const createMockFirebaseUserAdminSDK = () => {
     sub: 'def-456',
     iat: 1540000000,
     exp: 1540000000,
-    firebase: {},
+    firebase: {
+      tenant,
+    },
     // ... other properties
   } as unknown as DecodedIdToken
   return mockUser
@@ -68,12 +75,16 @@ export const createMockIdTokenResult = ({ claims = {} } = {}) => ({
   token: 'my-id-token-ghb-231',
 })
 
-export const createMockSerializedAuthUser = ({ claims = {} } = {}) =>
+export const createMockSerializedAuthUser = ({
+  claims = {},
+  tenantId = null,
+}: { claims?: Record<string, unknown>; tenantId?: string | null } = {}) =>
   JSON.stringify({
     id: 'ghi-789',
     claims,
     email: 'ghi@example.com',
     emailVerified: true,
+    tenantId,
     phoneNumber: '+1800-345-6789',
     displayName: 'Ghi Jkl',
     photoURL: 'https://ghi.googleusercontent.com/jkl/profile_photo.png',

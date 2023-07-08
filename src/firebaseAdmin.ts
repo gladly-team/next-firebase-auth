@@ -1,4 +1,4 @@
-import { getAuth } from 'firebase-admin/auth'
+import { getAuth as getAdminAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import createAuthUser, { AuthUser } from 'src/createAuthUser'
 import { getConfig } from 'src/config'
@@ -25,6 +25,16 @@ const throwIfFetchNotDefined = () => {
       'A `fetch` global is required when using next-firebase-auth. See documentation on setting up a `fetch` polyfill.'
     )
   }
+}
+
+/**
+ * Get the firebase admin TenantAwareAuth or the BasicAuth object needed for the user
+ */
+const getAuth = (tenantId?: string | null) => {
+  if (tenantId) {
+    return getAdminAuth().tenantManager().authForTenant(tenantId)
+  }
+  return getAdminAuth()
 }
 
 /**
@@ -79,8 +89,8 @@ export const verifyIdToken: VerifyIdToken = async (
 
   let firebaseUser
   let newToken: string | null = token
-  const firebaseAdminAuth = getAuth()
-  const { onTokenRefreshError, onVerifyTokenError } = getConfig()
+  const { onTokenRefreshError, onVerifyTokenError, tenantId } = getConfig()
+  const firebaseAdminAuth = getAuth(tenantId)
   try {
     firebaseUser = await firebaseAdminAuth.verifyIdToken(token)
   } catch (e) {
@@ -223,7 +233,7 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   initFirebaseAdminSDK()
 
   const user = await verifyIdToken(token)
-  const firebaseAdminAuth = getAuth()
+  const firebaseAdminAuth = getAuth(user.tenantId)
 
   // Ensure a user is authenticated before proceeding:
   // https://github.com/gladly-team/next-firebase-auth/issues/531

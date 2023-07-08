@@ -122,4 +122,35 @@ describe('initFirebaseClientSDK', () => {
       '[init] Did not initialize the Firebase JS SDK because an app already exists.'
     )
   })
+
+  it('sets the tenantId if config.tenantId is set', () => {
+    expect.assertions(1)
+    const mockConfig = createMockConfig()
+    setConfig({
+      ...mockConfig,
+      firebaseClientInitConfig: {
+        ...mockConfig.firebaseClientInitConfig,
+      },
+      tenantId: 'my-tenant-id',
+    })
+
+    const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
+
+    // Mocking the getter and setter for firebase.auth().tenantId
+    const mockAuth = {
+      mockTenantId: 'test',
+      get tenantId() {
+        return this.mockTenantId
+      },
+      set tenantId(value) {
+        this.mockTenantId = value
+      },
+    }
+
+    mockGetApps.mockReturnValue([])
+    mockGetAuth.mockReturnValue(mockAuth)
+
+    initFirebaseClientSDK()
+    expect(getAuth().tenantId).toEqual('my-tenant-id')
+  })
 })
