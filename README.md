@@ -201,13 +201,13 @@ Finally, use the authenticated user in a page:
 // ./pages/demo
 import React from 'react'
 import {
-  useAuthUser,
+  userUser,
   withUser,
   withUserTokenSSR,
 } from 'next-firebase-auth'
 
 const Demo = () => {
-  const AuthUser = useAuthUser()
+  const AuthUser = userUser()
   return (
     <div>
       <p>Your email is {AuthUser.email ? AuthUser.email : 'unknown'}.</p>
@@ -227,7 +227,7 @@ export default withUser()(Demo)
 - [withUser](#withauthuser-options-pagecomponent)
 - [withUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
 - [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
-- [useAuthUser](#useauthuser)
+- [userUser](#useauthuser)
 - [setAuthCookies](#setauthcookiesreq-res)
 - [unsetAuthCookies](#unsetauthcookiesreq-res)
 - [verifyIdToken](#verifyidtokentoken--promiseauthuser)
@@ -242,7 +242,7 @@ Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be c
 
 #### `withUser({ ...options })(PageComponent)`
 
-A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the [`useAuthUser`](#useauthuser) hook. Optionally, it can client-side redirect based on the user's auth status.
+A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the [`userUser`](#useauthuser) hook. Optionally, it can client-side redirect based on the user's auth status.
 
 It accepts the following options:
 
@@ -305,7 +305,7 @@ For example, this page will SSR for authenticated users, fetching props using th
 
 ```jsx
 import {
-  useAuthUser,
+  userUser,
   withUser,
   withUserTokenSSR,
 } from 'next-firebase-auth'
@@ -348,17 +348,17 @@ This method relies on authed user data from a cookie rather than verify or refre
 
 This takes the same options as `withUserTokenSSR`.
 
-#### `useAuthUser()`
+#### `userUser()`
 
-A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
+A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withUser`. If the user is not authenticated, `userUser` will return an `AuthUser` instance with a null `id`.
 
 For example:
 
 ```jsx
-import { useAuthUser, withUser } from 'next-firebase-auth'
+import { userUser, withUser } from 'next-firebase-auth'
 
 const Demo = () => {
-  const AuthUser = useAuthUser()
+  const AuthUser = userUser()
   return (
     <div>
       <p>Your email is {AuthUser.email ? AuthUser.email : 'unknown'}.</p>
@@ -975,7 +975,7 @@ module.exports = {
   // For example, in tests, this will automatically render the child component of
   // `withUser`.
   withUser: jest.fn(() => (wrappedComponent) => wrappedComponent),
-  useAuthUser: jest.fn(() => ({
+  userUser: jest.fn(() => ({
     // ... you could return a default AuthUser here
   }),
   AuthAction,
@@ -1021,10 +1021,10 @@ Given the following component:
 
 ```javascript
 import React from 'react'
-import { useAuthUser, withUser } from 'next-firebase-auth'
+import { userUser, withUser } from 'next-firebase-auth'
 
 function UserDisplayName() {
-  const AuthUser = useAuthUser()
+  const AuthUser = userUser()
   const { displayName = 'anonymous' } = AuthUser.firebaseUser
   return <span>{displayName}</span>
 }
@@ -1040,7 +1040,7 @@ import { render, screen } from '@testing-library/react'
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withUser } from 'next-firebase-auth'
+import { userUser, withUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
 import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
@@ -1056,7 +1056,7 @@ describe('UserDisplayName', () => {
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    useAuthUser.mockReturnValue(getMockAuthUser())
+    userUser.mockReturnValue(getMockAuthUser())
     withUser.mockImplementation(() => (wrappedComponent) => wrappedComponent))
     UserDisplayName = require('./').default
   })
@@ -1077,7 +1077,7 @@ describe('UserDisplayName', () => {
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
     // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    useAuthUser.mockReturnValue(getMockAuthUser(false))
+    userUser.mockReturnValue(getMockAuthUser(false))
     render(<Header />)
     expect(screen.getByText('anonymous')).toBeInTheDocument()
   })
@@ -1095,7 +1095,7 @@ import { render, screen } from '@testing-library/react'
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withUser } from 'next-firebase-auth'
+import { userUser, withUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
 import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
@@ -1111,7 +1111,7 @@ describe('UserDisplayName', () => {
 
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
-    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser())
+    (userUser as jest.Mock).mockReturnValue(getMockAuthUser())
     (withUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType))
     UserDisplayName = require('./').default as ComponentType
   })
@@ -1132,7 +1132,7 @@ describe('UserDisplayName', () => {
   it('renders "anonymous" when user is not logged in', () => {
     // If you want to test a "logged out" state, then you can mock the function again inside any test,
     // passing a falsy value to `getMockAuthUser`, which will return a logged out AuthUser object.
-    (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser(false))
+    (userUser as jest.Mock).mockReturnValue(getMockAuthUser(false))
     render(<Header />)
     expect(screen.getByText('anonymous')).toBeInTheDocument()
   })

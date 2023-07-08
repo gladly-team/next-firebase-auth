@@ -8,7 +8,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('useAuthUser', () => {
+describe('userUser', () => {
   test('the AuthUser context is created with an undefined default value', () => {
     expect.assertions(1)
     jest.spyOn(React, 'createContext')
@@ -17,13 +17,13 @@ describe('useAuthUser', () => {
     expect(React.createContext).toHaveBeenCalledWith(undefined)
   })
 
-  test('defining the AuthUser context value changes the useAuthUser value', () => {
+  test('defining the AuthUser context value changes the userUser value', () => {
     expect.assertions(1)
     const { AuthUserContext } = require('src/useUser')
-    const useAuthUser = require('src/useUser').default
+    const userUser = require('src/useUser').default
     let childAuthUserVal
     const TestComp = () => {
-      const authUser = useAuthUser()
+      const authUser = userUser()
       childAuthUserVal = authUser
       return null
     }
@@ -35,15 +35,15 @@ describe('useAuthUser', () => {
     expect(childAuthUserVal).toEqual('some fake value')
   })
 
-  test('useAuthUser will throw if used without a defined value for AuthUser context', () => {
+  test('userUser will throw if used without a defined value for AuthUser context', () => {
     expect.assertions(1)
-    const useAuthUser = require('src/useUser').default
+    const userUser = require('src/useUser').default
     const TestComp = () => {
-      useAuthUser() // should throw
+      userUser() // should throw
       return null
     }
     const err = new Error(
-      'When using `useAuthUser`, the page must be wrapped in `withUser`.'
+      'When using `userUser`, the page must be wrapped in `withUser`.'
     )
     // Suppress expected error logs.
     jest
