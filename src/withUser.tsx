@@ -4,7 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createUser, { AuthUserSerialized } from 'src/createUser'
+import createUser, { UserSerialized } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
@@ -51,7 +51,7 @@ export interface WithAuthUserOptions {
 }
 
 interface HOCProps {
-  AuthUserSerialized?: AuthUserSerialized
+  userSerialized?: UserSerialized
 }
 
 /**
@@ -104,7 +104,7 @@ const withUser: WithAuthUser =
     }
 
     const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
-      const { AuthUserSerialized: userSerialized, ...otherProps } = props
+      const { userSerialized, ...otherProps } = props
       const AuthUserFromServer = useMemo(
         () =>
           createUser({

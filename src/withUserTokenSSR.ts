@@ -35,7 +35,7 @@ export interface WithAuthUserSSROptions {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Dictionary<T = any> = Record<string, T>
 
-type GetSSRProps<P> = P & { AuthUserSerialized?: string }
+type GetSSRProps<P> = P & { userSerialized?: string }
 
 type GetSSRResult<P> =
   | {
@@ -135,7 +135,7 @@ const withUserTokenSSR: WithAuthUserSSR =
             ...composedProps,
             props: {
               ...((composedProps.props || {}) as P),
-              AuthUserSerialized: userSerialized,
+              userSerialized,
             },
           }
         }
@@ -150,7 +150,7 @@ const withUserTokenSSR: WithAuthUserSSR =
     }
     return {
       props: {
-        AuthUserSerialized: userSerialized,
+        userSerialized,
       } as unknown as P,
     }
   }

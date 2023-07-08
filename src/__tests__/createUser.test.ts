@@ -200,8 +200,8 @@ describe('createUser: firebaseUserClientSDK', () => {
     const AuthUser = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
     })
-    const AuthUserSerialized = AuthUser.serialize()
-    expect(AuthUserSerialized).toEqual(
+    const userSerialized = AuthUser.serialize()
+    expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'abc-123',
         claims: {},
@@ -329,8 +329,8 @@ describe('createUser: firebaseUserAdminSDK', () => {
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       // token: undefined, // no token
     })
-    const AuthUserSerialized = AuthUser.serialize()
-    expect(AuthUserSerialized).toEqual(
+    const userSerialized = AuthUser.serialize()
+    expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
         claims: {},
@@ -353,8 +353,8 @@ describe('createUser: firebaseUserAdminSDK', () => {
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    const AuthUserSerialized = AuthUser.serialize()
-    expect(AuthUserSerialized).toEqual(
+    const userSerialized = AuthUser.serialize()
+    expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
         claims: {},
@@ -386,8 +386,8 @@ describe('createUser: firebaseUserAdminSDK', () => {
       },
       token: 'my-id-token-def-456',
     })
-    const AuthUserSerialized = AuthUser.serialize()
-    expect(AuthUserSerialized).toEqual(
+    const userSerialized = AuthUser.serialize()
+    expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
         claims: customClaims,
@@ -410,8 +410,8 @@ describe('createUser: firebaseUserAdminSDK', () => {
       firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       token: 'my-id-token-def-456',
     })
-    const AuthUserSerialized = AuthUser.serialize({ includeToken: false })
-    expect(AuthUserSerialized).toEqual(
+    const userSerialized = AuthUser.serialize({ includeToken: false })
+    expect(userSerialized).toEqual(
       JSON.stringify({
         id: 'def-456',
         claims: {},
@@ -511,9 +511,9 @@ describe('createUser: serializedAuthUser', () => {
     const AuthUser = createUser({
       serializedAuthUser: mockSerializedAuthUser,
     })
-    const AuthUserSerialized = AuthUser.serialize()
-    expect(AuthUserSerialized).toEqual(mockSerializedAuthUser)
-    expect(createUser({ serializedAuthUser: AuthUserSerialized })).toEqual({
+    const userSerialized = AuthUser.serialize()
+    expect(userSerialized).toEqual(mockSerializedAuthUser)
+    expect(createUser({ serializedAuthUser: userSerialized })).toEqual({
       ...AuthUser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),

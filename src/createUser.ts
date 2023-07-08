@@ -17,12 +17,12 @@ interface DeserializedAuthUser {
   tenantId: string
 }
 
-export type AuthUserSerialized = string
+export type UserSerialized = string
 
 interface CreateAuthUserInput {
   firebaseUserClientSDK?: User
   firebaseUserAdminSDK?: DecodedIdToken
-  serializedAuthUser?: AuthUserSerialized
+  serializedAuthUser?: UserSerialized
   clientInitialized?: boolean
   token?: string | null
   claims?: Claims

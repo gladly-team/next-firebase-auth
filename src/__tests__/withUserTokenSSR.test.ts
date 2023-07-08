@@ -77,7 +77,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     })
   })
 
-  it('passes an AuthUserSerialized prop when the user is authenticated', async () => {
+  it('passes an userSerialized prop when the user is authenticated', async () => {
     expect.assertions(1)
 
     // Mock the authenticated user.
@@ -94,7 +94,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     const func = withUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
-      props: { AuthUserSerialized: expectedAuthUserProp },
+      props: { userSerialized: expectedAuthUserProp },
     })
   })
 
@@ -108,7 +108,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     const func = withUserTokenSSR()(mockGetSSPFunc)
     const props = await func(createMockNextContext())
     expect(props).toEqual({
-      props: { AuthUserSerialized: expectedAuthUserProp },
+      props: { userSerialized: expectedAuthUserProp },
     })
   })
 
@@ -471,7 +471,7 @@ describe('withUserTokenSSR: authed user cookies and prop', () => {
     const props = await func(createMockNextContext())
     expect(props).toEqual({
       props: {
-        AuthUserSerialized: expectedAuthUserProp,
+        userSerialized: expectedAuthUserProp,
         here: ['is', 'a', 'prop'],
         userEmail: 'def@example.com', // from createMockFirebaseUserAdminSDK
       },
