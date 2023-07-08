@@ -944,7 +944,6 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
     const mockUserRecord = createMockFirebaseUserRecord()
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    console.log('mockFirebaseUser', mockFirebaseUser)
     const firebaseAdminAuth = mockGetAuth()
     firebaseAdminAuth.getUser.mockResolvedValue(mockUserRecord)
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
