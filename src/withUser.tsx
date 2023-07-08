@@ -67,7 +67,7 @@ export type WithAuthUser = <ComponentProps extends object>(
   component: ComponentType<ComponentProps>
 ) => ComponentType<ComponentProps & HOCProps>
 
-const withAuthUser: WithAuthUser =
+const withUser: WithAuthUser =
   <ComponentProps extends object>({
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
@@ -80,7 +80,7 @@ const withAuthUser: WithAuthUser =
   (
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
-    logDebug('[withAuthUser] Calling "withAuthUser".')
+    logDebug('[withUser] Calling "withUser".')
 
     // Some dependencies are optional. Throw if they aren't installed
     // when calling this API.
@@ -96,7 +96,7 @@ const withAuthUser: WithAuthUser =
     } catch (e: any) {
       if (e.code === MODULE_NOT_FOUND) {
         throw new Error(
-          'The dependencies "react" and "next" are required when calling `withAuthUser`.'
+          'The dependencies "react" and "next" are required when calling `withUser`.'
         )
       } else {
         throw e
@@ -184,7 +184,7 @@ const withAuthUser: WithAuthUser =
         [router]
       )
       const redirectToApp = useCallback(() => {
-        logDebug('[withAuthUser] Redirecting to app.')
+        logDebug('[withUser] Redirecting to app.')
         const destination = getAppRedirectInfo({
           AuthUser,
           redirectURL: appPageURL,
@@ -193,7 +193,7 @@ const withAuthUser: WithAuthUser =
         routeToDestination(destination)
       }, [AuthUser, routeToDestination])
       const redirectToLogin = useCallback(() => {
-        logDebug('[withAuthUser] Redirecting to login.')
+        logDebug('[withUser] Redirecting to login.')
         const destination = getLoginRedirectInfo({
           AuthUser,
           redirectURL: authPageURL,
@@ -260,7 +260,7 @@ const withAuthUser: WithAuthUser =
         returnVal = comps
       }
 
-      logDebug('[withAuthUser] Set AuthUser to:', AuthUser)
+      logDebug('[withUser] Set AuthUser to:', AuthUser)
 
       return returnVal
     }
@@ -270,4 +270,4 @@ const withAuthUser: WithAuthUser =
     return WithAuthUserHOC
   }
 
-export default withAuthUser
+export default withUser

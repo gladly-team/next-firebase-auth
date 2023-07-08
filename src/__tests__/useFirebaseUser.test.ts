@@ -687,14 +687,14 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the login endpoint.'
+      '[withUser] Calling the login endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
   })
 
@@ -732,19 +732,19 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the login endpoint.'
+      '[withUser] Calling the login endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      `[withAuthUser] The call to the login endpoint failed with status 500 and response: ${JSON.stringify(
+      `[withUser] The call to the login endpoint failed with status 500 and response: ${JSON.stringify(
         { not: 'good' }
       )}`
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(4)
   })
@@ -769,14 +769,14 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(null)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the logout endpoint.'
+      '[withUser] Calling the logout endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
@@ -811,14 +811,14 @@ describe('useFirebaseUser', () => {
       } catch (e) {}
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the logout endpoint.'
+      '[withUser] Calling the logout endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      `[withAuthUser] The call to the logout endpoint failed with status 500 and response: ${JSON.stringify(
+      `[withUser] The call to the logout endpoint failed with status 500 and response: ${JSON.stringify(
         { not: 'good' }
       )}`
     )
@@ -861,16 +861,16 @@ describe('useFirebaseUser', () => {
     })
 
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the custom "tokenChangedHandler" provided in the config.'
+      '[withUser] Calling the custom "tokenChangedHandler" provided in the config.'
     )
 
     // Shouldn't be called yet.
     expect(mockLogDebug).not.toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
 
     await act(async () => {
@@ -880,7 +880,7 @@ describe('useFirebaseUser', () => {
     })
 
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })

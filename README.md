@@ -202,7 +202,7 @@ Finally, use the authenticated user in a page:
 import React from 'react'
 import {
   useAuthUser,
-  withAuthUser,
+  withUser,
   withUserTokenSSR,
 } from 'next-firebase-auth'
 
@@ -218,13 +218,13 @@ const Demo = () => {
 // Note that this is a higher-order function.
 export const getServerSideProps = withUserTokenSSR()()
 
-export default withAuthUser()(Demo)
+export default withUser()(Demo)
 ```
 
 ## API
 
 - [init](#initconfig)
-- [withAuthUser](#withauthuser-options-pagecomponent)
+- [withUser](#withauthuser-options-pagecomponent)
 - [withUserTokenSSR](#withauthusertokenssr-options-getserversidepropsfunc---authuser---)
 - [withUserSSR](#withauthuserssr-options-getserversidepropsfunc---authuser---)
 - [useAuthUser](#useauthuser)
@@ -240,7 +240,7 @@ export default withAuthUser()(Demo)
 
 Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be called** before calling any other method.
 
-#### `withAuthUser({ ...options })(PageComponent)`
+#### `withUser({ ...options })(PageComponent)`
 
 A higher-order function to provide the `AuthUser` context to a component. Use this with any Next.js page that will access the authed user via the [`useAuthUser`](#useauthuser) hook. Optionally, it can client-side redirect based on the user's auth status.
 
@@ -259,11 +259,11 @@ It accepts the following options:
 For example, this page will redirect to the login page if the user is not authenticated:
 
 ```jsx
-import { withAuthUser, AuthAction } from 'next-firebase-auth'
+import { withUser, AuthAction } from 'next-firebase-auth'
 
 const DemoPage = () => <div>My demo page</div>
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   authPageURL: '/my-login-page/',
 })(DemoPage)
@@ -272,13 +272,13 @@ export default withAuthUser({
 Here's an example of a login page that shows a loader until Firebase is initialized, then redirects to the app if the user is already logged in:
 
 ```jsx
-import { withAuthUser, AuthAction } from 'next-firebase-auth'
+import { withUser, AuthAction } from 'next-firebase-auth'
 
 const MyLoader = () => <div>Loading...</div>
 
 const LoginPage = () => <div>My login page</div>
 
-export default withAuthUser({
+export default withUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.RENDER,
@@ -306,7 +306,7 @@ For example, this page will SSR for authenticated users, fetching props using th
 ```jsx
 import {
   useAuthUser,
-  withAuthUser,
+  withUser,
   withUserTokenSSR,
 } from 'next-firebase-auth'
 
@@ -331,7 +331,7 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withAuthUser()(DemoPage)
+export default withUser()(DemoPage)
 ```
 
 #### `withUserSSR({ ...options })(getServerSidePropsFunc = ({ AuthUser }) => {})`
@@ -350,12 +350,12 @@ This takes the same options as `withUserTokenSSR`.
 
 #### `useAuthUser()`
 
-A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withAuthUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
+A hook that returns the current [`AuthUser`](#authuser). To use this, the Next.js page must be wrapped in `withUser`. If the user is not authenticated, `useAuthUser` will return an `AuthUser` instance with a null `id`.
 
 For example:
 
 ```jsx
-import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { useAuthUser, withUser } from 'next-firebase-auth'
 
 const Demo = () => {
   const AuthUser = useAuthUser()
@@ -366,7 +366,7 @@ const Demo = () => {
   )
 }
 
-export default withAuthUser()(Demo)
+export default withUser()(Demo)
 ```
 
 #### `setAuthCookies(req, res)`
@@ -433,7 +433,7 @@ The value of the auth cookie's signature, if using signed cookies. For example, 
 
 #### `AuthAction`
 
-An object that defines rendering/redirecting options for `withAuthUser` and `withUserTokenSSR`. See [AuthAction](#authaction-1).
+An object that defines rendering/redirecting options for `withUser` and `withUserTokenSSR`. See [AuthAction](#authaction-1).
 
 ## Config
 
@@ -443,13 +443,13 @@ See an [example config here](#example-config). Provide the config when you call 
 
 `String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
+The default URL to navigate to when `withUser` or `withUserTokenSSR` need to redirect to login. Optional unless using the `AuthAction.REDIRECT_TO_LOGIN` auth action.
 
 #### appPageURL
 
 `String|Function|Object` – a [PageURL](#pageurl)
 
-The default URL to navigate to when `withAuthUser` or `withUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
+The default URL to navigate to when `withUser` or `withUserTokenSSR` need to redirect to the app. Optional unless using the `AuthAction.REDIRECT_TO_APP` auth action.
 
 #### loginAPIEndpoint
 
@@ -851,13 +851,13 @@ export default myApiHandler
 
 ### TypeScript
 
-When using `withAuthUser` with TypeScript, use [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html). For example:
+When using `withUser` with TypeScript, use [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html). For example:
 
 ```TypeScript
 // /pages/demo.tsx
 import { VFC } from 'react'
 import { Loading } from 'components/Loading/Loading'
-import { AuthAction, withAuthUser } from 'next-firebase-auth'
+import { AuthAction, withUser } from 'next-firebase-auth'
 
 type DemoDataType = {
   name: string
@@ -867,7 +867,7 @@ const Demo: VFC<DemoDataType> = ({ name }) => {
   return <div>Hello {name}!</div>
 }
 
-export default withAuthUser<DemoDataType>({ // <--- Ensure that the type is provided
+export default withUser<DemoDataType>({ // <--- Ensure that the type is provided
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   LoaderComponent: Loading,
@@ -973,8 +973,8 @@ module.exports = {
   // Customize any mocks as needed.
   init: jest.fn(),
   // For example, in tests, this will automatically render the child component of
-  // `withAuthUser`.
-  withAuthUser: jest.fn(() => (wrappedComponent) => wrappedComponent),
+  // `withUser`.
+  withUser: jest.fn(() => (wrappedComponent) => wrappedComponent),
   useAuthUser: jest.fn(() => ({
     // ... you could return a default AuthUser here
   }),
@@ -1015,13 +1015,13 @@ export default getMockAuthUser
 
 Now, you can use and customize the mock behavior in your tests.
 
-If you're modifying higher-order functions, components being tested need to be `required` inside a `beforeEach` function or each test case. This is because mocking `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (e.g., `export default withAuthUser()(MyComponent)`).
+If you're modifying higher-order functions, components being tested need to be `required` inside a `beforeEach` function or each test case. This is because mocking `next-firebase-auth` has to happen _before_ your component is imported, because the call to the `next-firebase-auth` function is part of the default export of your component (e.g., `export default withUser()(MyComponent)`).
 
 Given the following component:
 
 ```javascript
 import React from 'react'
-import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { useAuthUser, withUser } from 'next-firebase-auth'
 
 function UserDisplayName() {
   const AuthUser = useAuthUser()
@@ -1029,7 +1029,7 @@ function UserDisplayName() {
   return <span>{displayName}</span>
 }
 
-export default withAuthUser()(UserDisplayName)
+export default withUser()(UserDisplayName)
 ```
 
 you can write a test suite like this:
@@ -1040,7 +1040,7 @@ import { render, screen } from '@testing-library/react'
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { useAuthUser, withUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
 import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
@@ -1057,7 +1057,7 @@ describe('UserDisplayName', () => {
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
     useAuthUser.mockReturnValue(getMockAuthUser())
-    withAuthUser.mockImplementation(() => (wrappedComponent) => wrappedComponent))
+    withUser.mockImplementation(() => (wrappedComponent) => wrappedComponent))
     UserDisplayName = require('./').default
   })
 
@@ -1067,7 +1067,7 @@ describe('UserDisplayName', () => {
   })
 
   it('renders the logged in user\'s display name', () => {
-    // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
+    // The default value for the mocked implementation of `withUser` is a fully logged in and verified
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
     render(<UserDisplayName />)
@@ -1095,7 +1095,7 @@ import { render, screen } from '@testing-library/react'
 // Import the functions that the component module calls, which allows jest to mock them
 // in the context of this test run. This allows you to manipulate the return value of each
 // function within this test suite.
-import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { useAuthUser, withUser } from 'next-firebase-auth'
 
 // Import your mock AuthUser generator
 import getMockAuthUser from '../../utils/test-utils/get-mock-auth-user'
@@ -1112,7 +1112,7 @@ describe('UserDisplayName', () => {
   beforeEach(() => {
     // Mock the functions that your component uses, and import your component before each test.
     (useAuthUser as jest.Mock).mockReturnValue(getMockAuthUser())
-    (withAuthUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType))
+    (withUser as jest.Mock).mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent: ComponentType))
     UserDisplayName = require('./').default as ComponentType
   })
 
@@ -1122,7 +1122,7 @@ describe('UserDisplayName', () => {
   })
 
   it('renders the logged in user\'s display name', () => {
-    // The default value for the mocked implementation of `withAuthUser` is a fully logged in and verified
+    // The default value for the mocked implementation of `withUser` is a fully logged in and verified
     // user. Rendering your component directly with the setup above will result in a "logged in" user being
     // passed to your component.
     render(<UserDisplayName />)

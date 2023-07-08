@@ -43,7 +43,7 @@ describe('useAuthUser', () => {
       return null
     }
     const err = new Error(
-      'When using `useAuthUser`, the page must be wrapped in `withAuthUser`.'
+      'When using `useAuthUser`, the page must be wrapped in `withUser`.'
     )
     // Suppress expected error logs.
     jest

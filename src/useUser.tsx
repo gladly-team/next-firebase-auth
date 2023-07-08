@@ -8,7 +8,7 @@ type AuthUserContext =
   | undefined
 
 // Default to undefined. `useAuthUser` will throw if the value is undefined
-// to ensure the developer wraps pages in `withAuthUser`. See:
+// to ensure the developer wraps pages in `withUser`. See:
 // https://github.com/gladly-team/next-firebase-auth/issues/155
 export const AuthUserContext = createContext<AuthUserContext>(undefined)
 
@@ -18,7 +18,7 @@ const useAuthUser: UseAuthUser = () => {
   const authUser = useContext<AuthUserContext>(AuthUserContext)
   if (!authUser) {
     throw new Error(
-      'When using `useAuthUser`, the page must be wrapped in `withAuthUser`.'
+      'When using `useAuthUser`, the page must be wrapped in `withUser`.'
     )
   }
   return authUser
