@@ -10,10 +10,10 @@ import getUserFromCookies from 'src/getUserFromCookies'
 import { AuthAction } from 'src/AuthAction'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import logDebug from 'src/logDebug'
-import { AuthUser } from './createUser'
+import { User } from './createUser'
 import { PageURL } from './redirectTypes'
 
-export interface WithAuthUserSSROptions {
+export interface WithUserSSROptions {
   /**
    * The behavior to take if the user is authenticated.
    */
@@ -51,7 +51,7 @@ type GetSSRResult<P> =
 type SSRPropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData
-> = GetServerSidePropsContext<Q, D> & { user?: AuthUser }
+> = GetServerSidePropsContext<Q, D> & { user?: User }
 
 type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
   context: SSRPropsContext<Q, D>
@@ -65,8 +65,8 @@ type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
  * a higher-order component pattern:
  * https://github.com/vercel/next.js/discussions/10925#discussioncomment-12471
  */
-export type WithAuthUserSSR = (
-  options?: WithAuthUserSSROptions
+export type WithUserSSR = (
+  options?: WithUserSSROptions
 ) => <
   P extends Dictionary = Dictionary,
   Q extends ParsedUrlQuery = ParsedUrlQuery,
@@ -75,14 +75,14 @@ export type WithAuthUserSSR = (
   propGetter?: SSRPropsGetter<P, Q, D>
 ) => GetServerSideProps<P, Q, D>
 
-const withUserTokenSSR: WithAuthUserSSR =
+const withUserTokenSSR: WithUserSSR =
   (
     {
       whenAuthed = AuthAction.RENDER,
       whenUnauthed = AuthAction.RENDER,
       appPageURL = undefined,
       authPageURL = undefined,
-    }: WithAuthUserSSROptions = {},
+    }: WithUserSSROptions = {},
     { useToken = true } = {}
   ) =>
   <P extends Dictionary, Q extends ParsedUrlQuery, D extends PreviewData>(

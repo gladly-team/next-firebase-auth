@@ -1,10 +1,10 @@
 /* eslint no-underscore-dangle: 0 */
-import { User } from 'firebase/auth'
+import { User as FirebaseUser } from 'firebase/auth'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
 
-interface DeserializedAuthUser {
+interface UserDeserialized {
   id?: string
   claims?: object
   email?: string
@@ -19,8 +19,8 @@ interface DeserializedAuthUser {
 
 export type UserSerialized = string
 
-interface CreateAuthUserInput {
-  firebaseUserClientSDK?: User
+interface CreateUserInput {
+  firebaseUserClientSDK?: FirebaseUser
   firebaseUserAdminSDK?: DecodedIdToken
   serializedAuthUser?: UserSerialized
   clientInitialized?: boolean
@@ -30,7 +30,7 @@ interface CreateAuthUserInput {
 
 type getIdToken = (forceRefresh?: boolean) => Promise<string | null>
 
-export interface AuthUser {
+export interface User {
   id: string | null
   email: string | null
   emailVerified: boolean
@@ -41,47 +41,15 @@ export interface AuthUser {
   tenantId: string | null
   getIdToken: (forceRefresh?: boolean) => Promise<string | null>
   clientInitialized: boolean
-  firebaseUser: User | null
+  firebaseUser: FirebaseUser | null
   signOut: () => Promise<void>
   serialize: (a?: { includeToken?: boolean }) => string
 }
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
- * the Firebase JS SDK, Firebase admin SDK, or serialized AuthUser instance.
- * Return a standardized AuthUser object.
- *
- * @param {Object} params
- * @param {Object|undefined} params.firebaseUserClientSDK - The Firebase
- *   user returned from the Firebase JS SDK.
- * @param {Object|undefined} params.firebaseUserAdminSDK - The Firebase
- *   user returned from the Firebase admin SDK.
- * @param {String|undefined} params.serializedAuthUser - The string of
- *   a serialized AuthUser, previously returned from an AuthUser instance's
- *   serialize method.
- *
- * @return {Object} AuthUser - The user object.
- * @return {Boolean} AuthUser.clientInitialized - This will be true if the
- *   Firebase JS SDK has initialized, meaning we know the AuthUser value
- *   is from the source of truth. Defaults to false.
- * @return {Object} AuthUser - The authenticated user's info.
- * @return {String|null} AuthUser.id - The user's ID
- * @return {String|null} AuthUser.email - The user's email
- * @return {Boolean} AuthUser.emailVerified - Whether the user has verified their email
- * @return {Object} AuthUser.claims - All the claims for the current user
- * @return {Function} AuthUser.getIdToken - An asynchronous function that
- *   resolves to the Firebase user's ID token string, or null if the user is
- *   not authenticated or we do not have access to a token.
- * @return {Boolean} AuthUser.clientInitialized - Whether the client-side
- *   Firebase JS SDK has initialized.
- * @return {Function} AuthUser.serialize - An function that returns a
- *   serialized version of AuthUser.
- *  @return {Object|null} AuthUser.firebaseUser - null if the Firebase JS SDK has not
- *   initialized. Otherwise, it is the user value from the Firebase JS SDK.
- * @return {Function} AuthUser.signOut - An asynchronous function that, after the
- *   client side Firebase SDK has initialized, signs the user out. In other
- *   contexts, it is a noop.
-
+ * the Firebase JS SDK, Firebase admin SDK, or serialized User instance.
+ * Return a standardized User object.
  */
 const createUser = ({
   firebaseUserClientSDK,
@@ -90,7 +58,7 @@ const createUser = ({
   clientInitialized = false,
   token = null,
   claims,
-}: CreateAuthUserInput = {}): AuthUser => {
+}: CreateUserInput = {}): User => {
   // Ensure only one of the user input types is defined.
   const numUserInputsDefined = [
     firebaseUserClientSDK,
@@ -201,9 +169,9 @@ const createUser = ({
     getIdTokenFunc = async () => token
     tokenString = token
   } else if (serializedAuthUser) {
-    const deserializedUser: DeserializedAuthUser = JSON.parse(
+    const deserializedUser: UserDeserialized = JSON.parse(
       serializedAuthUser
-    ) as DeserializedAuthUser
+    ) as UserDeserialized
     customClaims = deserializedUser.claims || {}
     userId = deserializedUser.id || null
     email = deserializedUser.email || null

@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
-import { AuthUser } from './createUser'
+import { User } from './createUser'
 
 type UserContext =
-  | (AuthUser & {
+  | (User & {
       serialize: (opts?: { includeToken?: boolean }) => string
     })
   | undefined
@@ -12,9 +12,9 @@ type UserContext =
 // https://github.com/gladly-team/next-firebase-auth/issues/155
 export const UserContext = createContext<UserContext>(undefined)
 
-export type UseAuthUser = () => AuthUser
+export type UseUser = () => User
 
-const useUser: UseAuthUser = () => {
+const useUser: UseUser = () => {
   const authUser = useContext<UserContext>(UserContext)
   if (!authUser) {
     throw new Error(

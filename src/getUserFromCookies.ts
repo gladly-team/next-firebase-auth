@@ -1,4 +1,4 @@
-import createUser, { AuthUser } from 'src/createUser'
+import createUser, { User } from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
@@ -45,7 +45,7 @@ export type GetUserFromCookiesOptions = {
  */
 export type GetUserFromCookies = (
   options: GetUserFromCookiesOptions
-) => Promise<AuthUser>
+) => Promise<User>
 
 const getUserFromCookies: GetUserFromCookies = async ({
   req: initialReq,

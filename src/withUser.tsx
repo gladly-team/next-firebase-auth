@@ -12,7 +12,7 @@ import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 import { PageURL, RedirectObject } from './redirectTypes'
 
-export interface WithAuthUserOptions {
+export interface WithUserOptions {
   /**
    * The behavior to take if the user is authenticated.
    */
@@ -61,13 +61,13 @@ interface HOCProps {
  * To access the user from SSR, this should be paired with
  * `withUserSSR` or `withUserTokenSSR`.
  */
-export type WithAuthUser = <ComponentProps extends object>(
-  options?: WithAuthUserOptions
+export type WithUser = <ComponentProps extends object>(
+  options?: WithUserOptions
 ) => (
   component: ComponentType<ComponentProps>
 ) => ComponentType<ComponentProps & HOCProps>
 
-const withUser: WithAuthUser =
+const withUser: WithUser =
   <ComponentProps extends object>({
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
@@ -76,7 +76,7 @@ const withUser: WithAuthUser =
     appPageURL,
     authPageURL,
     LoaderComponent = null,
-  }: WithAuthUserOptions = {}) =>
+  }: WithUserOptions = {}) =>
   (
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {

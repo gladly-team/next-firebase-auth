@@ -1,6 +1,6 @@
 import { getAuth as getAdminAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import createUser, { AuthUser } from 'src/createUser'
+import createUser, { User } from 'src/createUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
@@ -70,7 +70,7 @@ const refreshExpiredIdToken = async (refreshToken: string) => {
 export type VerifyIdToken = (
   token: string,
   refreshToken?: string
-) => Promise<AuthUser>
+) => Promise<User>
 
 /**
  * Verify the Firebase ID token and return the Firebase user.
@@ -245,7 +245,7 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   logDebug('[setAuthCookies] Getting the Firebase user record.')
   const { customClaims } = await firebaseAdminAuth
     .getUser(user.id)
-    .catch((e) => {
+    .catch(() => {
       logDebug('[setAuthCookies] Failed to get the Firebase user record.')
       return {
         customClaims: {},

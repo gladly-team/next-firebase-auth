@@ -1,6 +1,6 @@
 import type { GetServerSidePropsContext } from 'next'
 
-import { AuthUser as AuthUserType } from 'src/createUser'
+import { User as AuthUserType } from 'src/createUser'
 import { getConfig } from 'src/config'
 import {
   PageURL,
