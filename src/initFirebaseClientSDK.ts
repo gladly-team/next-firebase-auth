@@ -1,4 +1,4 @@
-import { getApp, getApps, initializeApp } from 'firebase/app'
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -6,6 +6,7 @@ import logDebug from 'src/logDebug'
 export default function initFirebaseClientSDK() {
   const { firebaseClientInitConfig, firebaseAuthEmulatorHost, tenantId } =
     getConfig()
+  let app: FirebaseApp
   if (!getApps().length) {
     if (!firebaseClientInitConfig) {
       throw new Error(
@@ -13,12 +14,13 @@ export default function initFirebaseClientSDK() {
       )
     }
 
-    initializeApp(firebaseClientInitConfig)
+    app = initializeApp(firebaseClientInitConfig)
     if (tenantId) {
       getAuth().tenantId = tenantId
     }
     logDebug('[init] Initialized the Firebase JS SDK.')
   } else {
+    app = getApp()
     logDebug(
       '[init] Did not initialize the Firebase JS SDK because an app already exists.'
     )
@@ -27,4 +29,6 @@ export default function initFirebaseClientSDK() {
   if (firebaseAuthEmulatorHost) {
     connectAuthEmulator(getAuth(getApp()), `http://${firebaseAuthEmulatorHost}`)
   }
+  const auth = getAuth(app)
+  return { app, auth }
 }
