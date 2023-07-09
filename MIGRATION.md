@@ -2,7 +2,12 @@
 
 ## v1 from v0.x
 
-### _Work in Progress_
+### Overview
+
+Migrating to v1 requires a few steps:
+1. Upgrade `firebase` and `firebase-admin`
+  * Note: we recommend pinning `firebase` 9.16.0 until issue [#614](https://github.com/gladly-team/next-firebase-auth/issues/614) is resolved
+2. Migrate to the latest API
 
 ### Breaking Changes: API
 
@@ -78,9 +83,10 @@ There is no codemod for this change. Please make edits manually.
 
 ### Breaking Changes: Peer Dependencies
 
-TODO
+* Dropped support for `firebase` <v9
+* Dropped support for `firebase-admin` <v10
 
-## Upgrading to Firebase 9
+#### Upgrading to Firebase 9
 
 Firebase 9 has a new API surface designed to facilitate tree-shaking (removal of unused code) to make your web app as small and fast as possible.
 
