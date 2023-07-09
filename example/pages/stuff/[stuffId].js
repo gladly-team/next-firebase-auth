@@ -14,12 +14,12 @@ const styles = {
 }
 
 const StuffPage = () => {
-  const AuthUser = useUser()
+  const user = useUser()
   const router = useRouter()
   const { stuffId } = router.query
   return (
     <div>
-      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+      <Header email={user.email} signOut={user.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
           <h3>Stuff - A dynamic page example</h3>

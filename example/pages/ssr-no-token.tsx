@@ -35,8 +35,8 @@ const Demo = (props: DataType) => {
             (307) to the login page if the auth cookies are not set.
           </p>
           <p>
-            This page uses `withAuthUserSSR` rather than `withAuthUserTokenSSR`,
-            so it does not have server-side access to the user ID token.
+            This page uses `withUserSSR` rather than `withUserTokenSSR`, so it
+            does not have server-side access to the user ID token.
           </p>
           <p>Your favorite color is: {favoriteColor}</p>
         </div>
@@ -51,10 +51,9 @@ Demo.defaultProps = defaultProps
 export const getServerSideProps = withUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async (ctx) => {
-  const { AuthUser: user, req } = ctx
-  // The ID token will be null, because `withAuthUserSSR` does not
-  // include one. If you need a server-side token, use
-  // `withAuthUserTokenSSR`.
+  const { user, req } = ctx
+  // The ID token will be null, because `withUserSSR` does not include one.
+  // If you need a server-side token, use `withUserTokenSSR`.
   const token = await user?.getIdToken()
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
