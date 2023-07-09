@@ -148,30 +148,7 @@ export default myApiHandler
 
 ### TypeScript
 
-When using `withUser` with TypeScript, use [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html). For example:
-
-```TypeScript
-// /pages/demo.tsx
-import { VFC } from 'react'
-import { Loading } from 'components/Loading/Loading'
-import { AuthAction, withUser } from 'next-firebase-auth'
-
-type DemoDataType = {
-  name: string
-}
-
-const Demo: VFC<DemoDataType> = ({ name }) => {
-  return <div>Hello {name}!</div>
-}
-
-export default withUser<DemoDataType>({ // <--- Ensure that the type is provided
-  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-  LoaderComponent: Loading,
-})(Demo)
-```
-
-For a full example with server-side data fetching, see the [TypeScript demo page](https://github.com/gladly-team/next-firebase-auth/blob/main/example/pages/ssr-no-token.tsx) in the example app.
+See the [TypeScript demo page](https://github.com/gladly-team/next-firebase-auth/blob/main/example/pages/ssr-no-token.tsx) in the example app.
 
 ### Dynamic Redirects
 
