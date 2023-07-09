@@ -23,4 +23,18 @@ describe('withAuthUserTokenSSR argument property change: AuthUser -> user', () =
     const expected = read(`./${transformName}.fixtures/outputA.js`)
     expect(actual).toEqual(expected)
   })
+
+  it('works as expected with reassigned variable name', () => {
+    const actual = transform(
+      {
+        source: read(`./${transformName}.fixtures/inputB.js`),
+        path: require.resolve(`./${transformName}.fixtures/inputB.js`),
+      },
+      { jscodeshift },
+      {}
+    )
+
+    const expected = read(`./${transformName}.fixtures/outputB.js`)
+    expect(actual).toEqual(expected)
+  })
 })
