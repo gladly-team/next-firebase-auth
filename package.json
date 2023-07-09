@@ -35,6 +35,9 @@
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
     "dev:yalc-publish-push": "yalc publish --push",
     "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build",
+    "publish:experimental": "npm-run-all -s publish:experimental:version publish:experimental:release",
+    "publish:experimental:release": "npm publish --tag experimental --dry-run",
+    "publish:experimental:version": "npm version $npm_package_version-$(git rev-parse --short HEAD) --allow-same-version",
     "version:canary": "yarn version --prerelease --preid=canary"
   },
   "devDependencies": {
