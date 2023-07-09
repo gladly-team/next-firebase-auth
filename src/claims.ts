@@ -20,7 +20,7 @@ export const STANDARD_CLAIMS = [
 ]
 
 export interface Claims {
-  [key: string]: string | object | undefined
+  [key: string]: string | object | undefined | unknown
 }
 /**
  * Filter out all standard claims from an object of claims
