@@ -1,6 +1,6 @@
 import { getAuth as getAdminAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import createAuthUser, { AuthUser } from 'src/createAuthUser'
+import createUser, { User } from 'src/createUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
@@ -70,14 +70,8 @@ const refreshExpiredIdToken = async (refreshToken: string) => {
 export type VerifyIdToken = (
   token: string,
   refreshToken?: string
-) => Promise<AuthUser>
+) => Promise<User>
 
-/**
- * Verify the Firebase ID token and return the Firebase user.
- * If the ID token has expired, refresh it if a refreshToken
- * is provided.
- * @return {Object} An AuthUser instance
- */
 export const verifyIdToken: VerifyIdToken = async (
   token: string,
   refreshToken?: string
@@ -181,7 +175,7 @@ export const verifyIdToken: VerifyIdToken = async (
         default:
           // Here, any errors are unexpected. Return an unauthenticated user.
           // Rationale: it's not particularly easy for developers to
-          // catch errors in `withAuthUserSSR`, so default to returning
+          // catch errors in `withUserSSR`, so default to returning
           // an unauthed user and give the developer control over
           // handling the error.
           // https://github.com/gladly-team/next-firebase-auth/issues/366
@@ -202,7 +196,7 @@ export const verifyIdToken: VerifyIdToken = async (
       logDebug(e)
     }
   }
-  const user = createAuthUser({
+  const user = createUser({
     firebaseUserAdminSDK: firebaseUser,
     token: newToken,
   })
@@ -216,15 +210,11 @@ export const verifyIdToken: VerifyIdToken = async (
 
 /**
  * Given a Firebase ID token, return an ID token, refresh token,
- * and AuthUser. We can use the refresh token to refresh expired
+ * and user. We can use the refresh token to refresh expired
  * ID tokens during server-side rendering.
  * See:
  *  https://firebase.google.com/docs/reference/rest/auth/#section-refresh-token
  *  https://stackoverflow.com/a/38284384
- * @return {Object} response
- * @return {String} response.idToken - The user's ID token
- * @return {String} response.refreshToken - The user's refresh token
- * @return {Object} response.AuthUser - An AuthUser instance
  */
 export const getCustomIdAndRefreshTokens = async (token: string) => {
   // Ensure `fetch` is defined.
@@ -245,7 +235,7 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   logDebug('[setAuthCookies] Getting the Firebase user record.')
   const { customClaims } = await firebaseAdminAuth
     .getUser(user.id)
-    .catch((e) => {
+    .catch(() => {
       logDebug('[setAuthCookies] Failed to get the Firebase user record.')
       return {
         customClaims: {},
@@ -291,6 +281,6 @@ export const getCustomIdAndRefreshTokens = async (token: string) => {
   return {
     idToken,
     refreshToken,
-    AuthUser: user,
+    user,
   }
 }

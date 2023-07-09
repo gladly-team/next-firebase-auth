@@ -1,15 +1,12 @@
 import { testApiHandler } from 'next-test-api-route-handler'
 import { getCustomIdAndRefreshTokens } from 'src/firebaseAdmin'
 import { setCookie } from 'src/cookies'
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
+import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
-import createMockAuthUser from 'src/testHelpers/createMockAuthUser'
+import createMockUser from 'src/testHelpers/createMockUser'
 import logDebug from 'src/logDebug'
-import createAuthUser from 'src/createAuthUser'
+import createUser from 'src/createUser'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 jest.mock('src/config')
@@ -20,19 +17,19 @@ jest.mock('src/logDebug')
 
 const mockSetConfig = jest.mocked(setConfig)
 const mockGetCustomIdAndRefreshTokens = getCustomIdAndRefreshTokens as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockSetCookie = jest.mocked(setCookie)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
-  const mockAuthUser = createMockAuthUser()
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  const mockAuthUser = createMockUser()
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
   mockGetCustomIdAndRefreshTokens.mockResolvedValue({
     idToken: 'fake-custom-id-token-here',
     refreshToken: 'fake-refresh-token-here',
-    AuthUser: mockAuthUser,
+    user: mockAuthUser,
   })
 
   const mockConfig = createMockConfig()
@@ -157,7 +154,7 @@ describe('setAuthCookies', () => {
 
   it('sets the AuthUser cookie as expected', async () => {
     expect.assertions(1)
-    const mockAuthUser = createMockAuthUser()
+    const mockAuthUser = createMockUser()
     const setAuthCookies = require('src/setAuthCookies').default
     let mockReq: NextApiRequest
     let mockRes: NextApiResponse
@@ -241,7 +238,7 @@ describe('setAuthCookies', () => {
 
   it('returns the expected values', async () => {
     expect.assertions(1)
-    const mockAuthUser = createMockAuthUser()
+    const mockAuthUser = createMockUser()
     const setAuthCookies = require('src/setAuthCookies').default
     await testApiHandler({
       handler: async (req, res) => {
@@ -250,7 +247,7 @@ describe('setAuthCookies', () => {
           JSON.stringify({
             idToken: 'fake-custom-id-token-here',
             refreshToken: 'fake-refresh-token-here',
-            AuthUser: mockAuthUser,
+            user: mockAuthUser,
           })
         )
         return res.status(200).end()
@@ -280,7 +277,7 @@ describe('setAuthCookies', () => {
           JSON.stringify({
             idToken: null,
             refreshToken: null,
-            AuthUser: createAuthUser(), // unauthed user
+            user: createUser(), // unauthed user
           })
         )
         return res.status(200).end()
@@ -329,7 +326,7 @@ describe('setAuthCookies', () => {
     mockGetCustomIdAndRefreshTokens.mockResolvedValue({
       idToken: null,
       refreshToken: null,
-      AuthUser: createAuthUser(), // unauthenticated
+      user: createUser(), // unauthenticated
     })
     await testApiHandler({
       handler: async (req, res) => {

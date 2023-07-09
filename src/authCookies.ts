@@ -2,17 +2,17 @@ import { getConfig } from 'src/config'
 
 const getBaseCookieName = () => getConfig().cookies.name
 
-export const getAuthUserCookieName = () => {
+export const getUserCookieName = () => {
   const baseAuthCookieName = getBaseCookieName()
-  return `${baseAuthCookieName}.AuthUser`
+  return `${baseAuthCookieName}.AuthUser` // do not modify
 }
 
-export const getAuthUserSigCookieName = () => `${getAuthUserCookieName()}.sig`
+export const getUserSigCookieName = () => `${getUserCookieName()}.sig`
 
-export const getAuthUserTokensCookieName = () => {
+export const getUserTokensCookieName = () => {
   const baseAuthCookieName = getBaseCookieName()
-  return `${baseAuthCookieName}.AuthUserTokens`
+  return `${baseAuthCookieName}.AuthUserTokens` // do not modify
 }
 
-export const getAuthUserTokensSigCookieName = () =>
-  `${getAuthUserTokensCookieName()}.sig`
+export const getUserTokensSigCookieName = () =>
+  `${getUserTokensCookieName()}.sig`

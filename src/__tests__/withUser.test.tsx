@@ -4,17 +4,17 @@ import { render } from '@testing-library/react'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import {
-  createMockSerializedAuthUser,
+  createMockSerializedUser,
   createMockFirebaseUserClientSDK,
-} from 'src/testHelpers/authUserInputs'
-import useAuthUser from 'src/useAuthUser'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
+} from 'src/testHelpers/userInputs'
+import useUser from 'src/useUser'
+import createUser, { User } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import logDebug from 'src/logDebug'
-import withAuthUser from 'src/withAuthUser'
+import withUser from 'src/withUser'
 
-// Note that we don't mock createAuthUser or useAuthUser.
+// Note that we don't mock createUser or useUser.
 const mockRouterPush = jest.fn()
 const mockRouterReplace = jest.fn()
 jest.mock('next/router', () => ({
@@ -73,7 +73,7 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('withAuthUser: rendering/redirecting', () => {
+describe('withUser: rendering/redirecting', () => {
   it('renders the child component when there is no server-side or client-side user by default (rendering is the default setting)', () => {
     expect.assertions(1)
     mockUseFirebaseUser.mockReturnValue({
@@ -81,7 +81,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>()(MockComponent)
+    const MockCompWithUser = withUser<MockComponentProps>()(MockComponent)
     const { queryByText } = render(<MockCompWithUser message="How are you?" />)
     expect(queryByText('Hello! How are you?')).toBeTruthy()
   })
@@ -93,7 +93,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -109,7 +109,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
@@ -125,15 +125,15 @@ describe('withAuthUser: rendering/redirecting', () => {
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const mockSerializedUser = createMockSerializedUser()
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -142,21 +142,21 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the child component when there is a client-side user (but no server-side user) and rendering without a user is *not* allowed', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -165,15 +165,15 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the child component when there is a client-side user after Firebase initializes (but no server-side user) and rendering without a user should return null', () => {
     expect.assertions(2)
-    const MockSerializedAuthUser = undefined // no server-side user
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const mockSerializedUser = undefined // no server-side user
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { queryByText, rerender } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -189,7 +189,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -198,7 +198,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('shows the provided loading component on the client side when there is no user (*before* Firebase initializes) and a "show loader" strategy is set', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -206,14 +206,14 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: false,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       LoaderComponent: MyLoader,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -222,20 +222,20 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('returns null if no loading component is provided but we should show a loader', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
       initialized: false, // not yet initialized
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       LoaderComponent: undefined, // none defined
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -244,7 +244,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('redirects to login on the client side when there is no user (*before* Firebase initializes) and a redirecting strategy is set', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -256,7 +256,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -265,7 +265,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -274,7 +274,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('logs a debugging message when redirecting to login', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -286,7 +286,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -295,18 +295,16 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
-    expect(logDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Redirecting to login.'
-    )
+    expect(logDebug).toHaveBeenCalledWith('[withUser] Redirecting to login.')
   })
 
   it('redirects to login on the client side when there is no user and a redirecting strategy is set, but only *after* Firebase initializes and the auth cookie request is complete', () => {
     expect.assertions(3)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -318,14 +316,14 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/some-auth-page', // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { rerender } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -338,7 +336,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -351,7 +349,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -362,7 +360,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false) // server-side
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -374,7 +372,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: '/my-auth', // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       // A user would normally not set this to render when they're redirecting
       // before initialization. We do this just for testing clarity.
@@ -383,7 +381,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -392,7 +390,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('throws if needing to redirect to login and "authPageURL" is not set in the config', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -404,7 +402,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: undefined, // needs to be set
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -421,7 +419,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          AuthUserSerialized={MockSerializedAuthUser}
+          userSerialized={mockSerializedUser}
           message="How are you?"
         />
       )
@@ -432,7 +430,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('throws if needing to redirect to login and "authPageURL" is a function that does not resolve to a non-empty string', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user exists
@@ -444,7 +442,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       authPageURL: () => undefined as unknown as string, // should be set
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -460,7 +458,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() =>
       render(
         <MockCompWithUser
-          AuthUserSerialized={MockSerializedAuthUser}
+          userSerialized={mockSerializedUser}
           message="How are you?"
         />
       )
@@ -469,9 +467,9 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
   })
 
-  it('calls the "authPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login page on client', () => {
+  it('calls the "authPageURL" function with an undefined context and unauthed User if redirecting to the login page on client', () => {
     expect.assertions(3)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -488,25 +486,25 @@ describe('withAuthUser: rendering/redirecting', () => {
         return `/some-auth-page`
       }, // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
     expect(propsSpy.ctx).toBeUndefined()
-    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(propsSpy.user.id).toBeNull()
     expect(mockRouterReplace).toHaveBeenCalledWith('/some-auth-page')
   })
 
   it('redirects to the app on the client side only when there is a user, a redirect-to-app-when-authed strategy is set, and the request to set cookies has completed', () => {
     expect.assertions(3)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -519,14 +517,14 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     const { rerender } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -540,7 +538,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -554,7 +552,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })
     rerender(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -563,7 +561,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('logs a debugging message when redirecting to the app', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -576,25 +574,25 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
-    expect(logDebug).toHaveBeenCalledWith('[withAuthUser] Redirecting to app.')
+    expect(logDebug).toHaveBeenCalledWith('[withUser] Redirecting to app.')
   })
 
   it('does not redirect to the app on the server side, even when we will redirect to the app on the client side', () => {
     expect.assertions(1)
     const isClientSide = require('src/isClientSide').default
     isClientSide.mockReturnValue(false) // server-side
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -607,14 +605,14 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: '/my-app/here/', // custom app page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -623,7 +621,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('throws if needing to redirect to the app and "appPageURL" is not set in the config', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -635,7 +633,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: undefined, // should be set
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -652,7 +650,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          AuthUserSerialized={MockSerializedAuthUser}
+          userSerialized={mockSerializedUser}
           message="How are you?"
         />
       )
@@ -663,7 +661,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('throws if needing to redirect to the app and "appPageURL" is a function that does not resolve to a non-empty string', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -675,7 +673,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       ...mockConfig,
       appPageURL: () => undefined as unknown as string, // should be set
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
@@ -692,7 +690,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     expect(() => {
       render(
         <MockCompWithUser
-          AuthUserSerialized={MockSerializedAuthUser}
+          userSerialized={mockSerializedUser}
           message="How are you?"
         />
       )
@@ -701,9 +699,9 @@ describe('withAuthUser: rendering/redirecting', () => {
     )
   })
 
-  it('calls "appPageURL" with an undefined context and valid AuthUser if redirecting to the app page and a function is provided', () => {
+  it('calls "appPageURL" with an undefined context and valid User if redirecting to the app page and a function is provided', () => {
     expect.assertions(2)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -714,19 +712,19 @@ describe('withAuthUser: rendering/redirecting', () => {
     let ctxSpy
     setConfig({
       ...mockConfig,
-      appPageURL: ({ ctx, AuthUser }) => {
+      appPageURL: ({ ctx, user }) => {
         ctxSpy = ctx
-        return `/my-app/here/?email=${AuthUser?.email}` // custom app page
+        return `/my-app/here/?email=${user?.email}` // custom app page
       },
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -738,21 +736,21 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders null when redirecting to login and whenUnauthedBeforeInit === AuthAction.RETURN_NULL', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
       initialized: true, // already initialized
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RETURN_NULL,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -761,7 +759,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the loader when redirecting to login and whenUnauthedBeforeInit === AuthAction.SHOW_LOADER', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -769,7 +767,7 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: true,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
@@ -777,7 +775,7 @@ describe('withAuthUser: rendering/redirecting', () => {
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -786,21 +784,21 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the child component when redirecting to login and whenUnauthedBeforeInit === AuthAction.RENDER', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
       initialized: true, // already initialized
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -809,21 +807,21 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders null by default when redirecting to the app', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -832,20 +830,20 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the child component when redirecting to the app and whenAuthedBeforeRedirect === AuthAction.RENDER', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
       authRequestCompleted: true,
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenAuthedBeforeRedirect: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -854,7 +852,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders the loader component when redirecting to the app and whenAuthedBeforeRedirect === AuthAction.SHOW_LOADER', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -862,14 +860,14 @@ describe('withAuthUser: rendering/redirecting', () => {
       authRequestCompleted: true,
     })
     const MyLoader = () => <div>Things are loading up!</div>
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenAuthedBeforeRedirect: AuthAction.SHOW_LOADER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
       LoaderComponent: MyLoader,
     })(MockComponent)
     const { queryByText } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -878,30 +876,30 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('renders null by default when redirecting to the app, even while waiting for authRequestCompleted', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
       initialized: true,
       authRequestCompleted: false, // waiting
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     const { container } = render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
     expect(container.firstChild).toBeNull()
   })
 
-  it('calls the "authPageURL" function with an undefined context and unauthed AuthUser if redirecting to the login outside the base path on client', () => {
+  it('calls the "authPageURL" function with an undefined context and unauthed User if redirecting to the login outside the base path on client', () => {
     expect.assertions(3)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user
@@ -922,25 +920,25 @@ describe('withAuthUser: rendering/redirecting', () => {
         }
       }, // custom auth page
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
       whenAuthed: AuthAction.RENDER,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
     expect(propsSpy.ctx).toBeUndefined()
-    expect(propsSpy.AuthUser.id).toBeNull()
+    expect(propsSpy.user.id).toBeNull()
     expect(window.location.replace).toHaveBeenCalledWith('/some-auth-page')
   })
 
   it('calls location.replace (with appPageURL as a function returning an object) when redirecting to the login outside the base path on client', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -957,14 +955,14 @@ describe('withAuthUser: rendering/redirecting', () => {
         basePath: false,
       }),
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -973,7 +971,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('calls location.replace (with appPageURL as an object) when redirecting to the login outside the base path on client', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -990,14 +988,14 @@ describe('withAuthUser: rendering/redirecting', () => {
         basePath: false,
       },
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -1006,7 +1004,7 @@ describe('withAuthUser: rendering/redirecting', () => {
 
   it('calls router.replace (with appPageURL as an object) when redirecting to the login *within* the base path on client', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: createMockFirebaseUserClientSDK(), // client-side user exists
@@ -1023,14 +1021,14 @@ describe('withAuthUser: rendering/redirecting', () => {
         // basePath is not false
       },
     })
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.REDIRECT_TO_APP,
     })(MockComponent)
     render(
       <MockCompWithUser
-        AuthUserSerialized={MockSerializedAuthUser}
+        userSerialized={mockSerializedUser}
         message="How are you?"
       />
     )
@@ -1038,44 +1036,44 @@ describe('withAuthUser: rendering/redirecting', () => {
   })
 })
 
-describe('withAuthUser: AuthUser context', () => {
-  it('sets the AuthUser context to an empty AuthUser when there is no server-side or client-side user', () => {
+describe('withUser: User context', () => {
+  it('sets the User context to an empty User when there is no server-side or client-side user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null, // no client-side user exists
       initialized: false,
     })
-    const expectedAuthUser = {
-      ...createAuthUser(),
+    const expectedUser = {
+      ...createUser(),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('sets the AuthUser context using the server-side user (when there is no client-side user)', () => {
+  it('sets the User context using the server-side user (when there is no client-side user)', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
-    const expectedAuthUser = {
-      ...createAuthUser({
-        serializedAuthUser: MockSerializedAuthUser,
+    const mockSerializedUser = createMockSerializedUser()
+    const expectedUser = {
+      ...createUser({
+        serializedUser: mockSerializedUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
@@ -1087,25 +1085,25 @@ describe('withAuthUser: AuthUser context', () => {
       initialized: false,
     })
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('sets the AuthUser context using the client-side user (when there is no server-side user)', () => {
+  it('sets the User context using the client-side user (when there is no server-side user)', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
 
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
@@ -1114,8 +1112,8 @@ describe('withAuthUser: AuthUser context', () => {
       initialized: true,
       authRequestCompleted: true,
     })
-    const expectedAuthUser = {
-      ...createAuthUser({
+    const expectedUser = {
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1124,25 +1122,25 @@ describe('withAuthUser: AuthUser context', () => {
       signOut: expect.any(Function),
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('sets the AuthUser context using the client-side user when both client-side and server-side user info exists', () => {
+  it('sets the User context using the client-side user when both client-side and server-side user info exists', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const mockSerializedUser = createMockSerializedUser() // server-side user exists
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
@@ -1152,8 +1150,8 @@ describe('withAuthUser: AuthUser context', () => {
     })
 
     // Will use the client-side user when both exist.
-    const expectedAuthUser = {
-      ...createAuthUser({
+    const expectedUser = {
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1162,25 +1160,25 @@ describe('withAuthUser: AuthUser context', () => {
       signOut: expect.any(Function),
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('sets the AuthUser context using the server-side user when both client-side and server-side user info exists but the Firebase JS SDK has not initialized', () => {
+  it('sets the User context using the server-side user when both client-side and server-side user info exists but the Firebase JS SDK has not initialized', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const mockSerializedUser = createMockSerializedUser() // server-side user exists
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null,
@@ -1189,34 +1187,34 @@ describe('withAuthUser: AuthUser context', () => {
 
     // Will use the server-side user when the Firebase JS SDK has not
     // yet initialized.
-    const expectedAuthUser = {
-      ...createAuthUser({
-        serializedAuthUser: MockSerializedAuthUser,
+    const expectedUser = {
+      ...createUser({
+        serializedUser: mockSerializedUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('sets the AuthUser context to an empty AuthUser when the server-side user exists, but the Firebase JS SDK *has* initialized and has no user', () => {
+  it('sets the User context to an empty User when the server-side user exists, but the Firebase JS SDK *has* initialized and has no user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const mockSerializedUser = createMockSerializedUser() // server-side user exists
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
       user: null,
@@ -1228,38 +1226,38 @@ describe('withAuthUser: AuthUser context', () => {
     // has initialized, even if a server-side user exists. In this
     // case, cookies are set but Firebase JS SDK does not have auth
     // info.
-    const expectedAuthUser = {
-      ...createAuthUser(),
+    const expectedUser = {
+      ...createUser(),
       clientInitialized: true,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('includes custom claims in the AuthUser context when using the server-side user', () => {
+  it('includes custom claims in the User context when using the server-side user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser({
+    const mockSerializedUser = createMockSerializedUser({
       claims: { my: 'custom claims!' },
     })
-    const expectedAuthUser = {
-      ...createAuthUser({
-        serializedAuthUser: MockSerializedAuthUser,
+    const expectedUser = {
+      ...createUser({
+        serializedUser: mockSerializedUser,
       }),
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
@@ -1274,25 +1272,25 @@ describe('withAuthUser: AuthUser context', () => {
       initialized: false,
     })
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('includes custom claims in the AuthUser context when using the client-side user', () => {
+  it('includes custom claims in the User context when using the client-side user', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = undefined // no server-side user
+    const mockSerializedUser = undefined // no server-side user
 
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
@@ -1305,8 +1303,8 @@ describe('withAuthUser: AuthUser context', () => {
       initialized: true,
       authRequestCompleted: true,
     })
-    const expectedAuthUser = {
-      ...createAuthUser({
+    const expectedUser = {
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1319,25 +1317,25 @@ describe('withAuthUser: AuthUser context', () => {
       },
     }
 
-    let wrappedCompAuthUser
+    let wrappedCompUser
     const AnotherMockComponent = () => {
       // eslint-disable-next-line no-unused-vars
-      wrappedCompAuthUser = useAuthUser()
+      wrappedCompUser = useUser()
       return <div>hi!</div>
     }
 
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(wrappedCompAuthUser).toEqual(expectedAuthUser)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(wrappedCompUser).toEqual(expectedUser)
   })
 
-  it('logs a debugging message when it renders the AuthUser', () => {
+  it('logs a debugging message when it renders the User', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser()
+    const mockSerializedUser = createMockSerializedUser()
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     mockUseFirebaseUser.mockReturnValue({
       ...getUseFirebaseUserResponse(),
@@ -1346,8 +1344,8 @@ describe('withAuthUser: AuthUser context', () => {
       authRequestCompleted: true,
     })
 
-    const expectedAuthUser = {
-      ...createAuthUser({
+    const expectedUser = {
+      ...createUser({
         firebaseUserClientSDK: mockFirebaseUser,
       }),
       clientInitialized: true,
@@ -1357,21 +1355,21 @@ describe('withAuthUser: AuthUser context', () => {
     }
 
     const AnotherMockComponent = () => <div>hi!</div>
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
-    render(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
+    render(<MockCompWithUser userSerialized={mockSerializedUser} />)
     expect(logDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Set AuthUser to:',
-      expectedAuthUser
+      '[withUser] Set user to:',
+      expectedUser
     )
   })
 
-  it('provides the same AuthUser object reference after "authRequestCompleted" changes (that is, it does not cause a re-render)', () => {
+  it('provides the same User object reference after "authRequestCompleted" changes (that is, it does not cause a re-render)', () => {
     expect.assertions(1)
-    const MockSerializedAuthUser = createMockSerializedAuthUser() // server-side user exists
+    const mockSerializedUser = createMockSerializedUser() // server-side user exists
     const mockFirebaseUser = createMockFirebaseUserClientSDK()
     const initialFirebaseUserResponse = {
       ...getUseFirebaseUserResponse(),
@@ -1381,25 +1379,25 @@ describe('withAuthUser: AuthUser context', () => {
     }
     mockUseFirebaseUser.mockReturnValue(initialFirebaseUserResponse)
 
-    const authUsers: AuthUserType[] = []
+    const users: User[] = []
     const AnotherMockComponent = () => {
-      const authUser = useAuthUser()
-      authUsers.push(authUser)
+      const user = useUser()
+      users.push(user)
       return <div>hi!</div>
     }
-    const MockCompWithUser = withAuthUser<MockComponentProps>({
+    const MockCompWithUser = withUser<MockComponentProps>({
       whenUnauthedBeforeInit: AuthAction.RENDER,
       whenUnauthedAfterInit: AuthAction.RENDER,
       whenAuthed: AuthAction.RENDER,
     })(AnotherMockComponent)
     const { rerender } = render(
-      <MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />
+      <MockCompWithUser userSerialized={mockSerializedUser} />
     )
     mockUseFirebaseUser.mockReturnValue({
       ...initialFirebaseUserResponse,
       authRequestCompleted: true,
     })
-    rerender(<MockCompWithUser AuthUserSerialized={MockSerializedAuthUser} />)
-    expect(authUsers[0]).toEqual(authUsers[authUsers.length - 1])
+    rerender(<MockCompWithUser userSerialized={mockSerializedUser} />)
+    expect(users[0]).toEqual(users[users.length - 1])
   })
 })

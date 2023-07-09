@@ -1,7 +1,4 @@
-import {
-  getAuthUserCookieName,
-  getAuthUserTokensCookieName,
-} from 'src/authCookies'
+import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { deleteCookie } from 'src/cookies'
 import { testApiHandler } from 'next-test-api-route-handler'
 import { setConfig } from 'src/config'
@@ -15,14 +12,14 @@ jest.mock('src/cookies')
 jest.mock('src/logDebug')
 
 const mockSetConfig = jest.mocked(setConfig)
-const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
 const mockDeleteCookie = jest.mocked(deleteCookie)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   const mockConfig = createMockConfig()
   mockSetConfig({

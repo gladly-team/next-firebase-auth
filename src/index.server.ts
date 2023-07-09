@@ -4,12 +4,9 @@
 import initCommon from 'src/initCommon'
 
 import type { ConfigInput } from './configTypes'
-import type { WithAuthUser } from './withAuthUser'
-import type {
-  WithAuthUserSSR,
-  WithAuthUserSSROptions,
-} from './withAuthUserTokenSSR'
-import type { UseAuthUser } from './useAuthUser'
+import type { WithUser } from './withUser'
+import type { WithUserSSR, WithUserSSROptions } from './withUserTokenSSR'
+import type { UseUser } from './useUser'
 
 // enum: AuthAction
 export * from 'src/AuthAction'
@@ -27,7 +24,7 @@ export { default as setAuthCookies } from 'src/setAuthCookies'
 
 export { default as unsetAuthCookies } from 'src/unsetAuthCookies'
 
-export const useAuthUser: UseAuthUser = () => {
+export const useUser: UseUser = () => {
   // Some dependencies are optional. Throw if they aren't installed
   // when calling this API.
   // https://github.com/gladly-team/next-firebase-auth/issues/502
@@ -36,33 +33,29 @@ export const useAuthUser: UseAuthUser = () => {
     require('react')
   } catch (e) {
     throw new Error(
-      'The dependency "react" is required when calling `useAuthUser`.'
+      'The dependency "react" is required when calling `useUser`.'
     )
   }
-  const useAuthUserModule = require('src/useAuthUser').default
-  return useAuthUserModule()
+  const useUserModule = require('src/useUser').default
+  return useUserModule()
 }
 
 export { verifyIdToken } from 'src/firebaseAdmin'
 
-export const withAuthUser: WithAuthUser = (options) => {
+export const withUser: WithUser = (options) => {
   // Require rather than import the module to support optional
   // peer dependencies. See:
   // https://github.com/gladly-team/next-firebase-auth/issues/502
-  const withAuthUserModule = require('src/withAuthUser').default
-  return withAuthUserModule(options)
+  const withUserModule = require('src/withUser').default
+  return withUserModule(options)
 }
 
-export const withAuthUserSSR: WithAuthUserSSR = (
-  options?: WithAuthUserSSROptions
-) => {
-  const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
-  return withAuthUserTokenSSRModule(options, { useToken: false })
+export const withUserSSR: WithUserSSR = (options?: WithUserSSROptions) => {
+  const withUserTokenSSRModule = require('src/withUserTokenSSR').default
+  return withUserTokenSSRModule(options, { useToken: false })
 }
 
-export const withAuthUserTokenSSR: WithAuthUserSSR = (
-  options?: WithAuthUserSSROptions
-) => {
-  const withAuthUserTokenSSRModule = require('src/withAuthUserTokenSSR').default
-  return withAuthUserTokenSSRModule(options, { useToken: true })
+export const withUserTokenSSR: WithUserSSR = (options?: WithUserSSROptions) => {
+  const withUserTokenSSRModule = require('src/withUserTokenSSR').default
+  return withUserTokenSSRModule(options, { useToken: true })
 }

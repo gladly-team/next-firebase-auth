@@ -4,11 +4,11 @@ import useFirebaseUser from 'src/useFirebaseUser'
 import {
   createMockFirebaseUserClientSDK,
   createMockIdTokenResult,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
 import { setConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
-import createAuthUser from 'src/createAuthUser'
+import createUser from 'src/createUser'
 import logDebug from 'src/logDebug'
 
 jest.mock('firebase/app')
@@ -453,7 +453,7 @@ describe('useFirebaseUser', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 
-  it('calls "tokenChangedHandler" with AuthUser if it is configured', async () => {
+  it('calls "tokenChangedHandler" with user if it is configured', async () => {
     expect.assertions(4)
     const tokenChangedHandler = jest.fn()
     mockSetConfig({
@@ -475,7 +475,7 @@ describe('useFirebaseUser', () => {
       return () => {} // "unsubscribe" function
     })
 
-    const mockAuthUser = createAuthUser({
+    const mockuser = createUser({
       firebaseUserClientSDK: mockFirebaseUser,
       clientInitialized: true,
     })
@@ -487,13 +487,13 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(fetch).not.toHaveBeenCalled()
-    const authUser = {
-      ...mockAuthUser,
+    const user = {
+      ...mockuser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     }
-    expect(tokenChangedHandler).toHaveBeenCalledWith(authUser)
+    expect(tokenChangedHandler).toHaveBeenCalledWith(user)
   })
 
   it('returns "setAuthCookieComplete=false" until the fetch in the default token changed handler resolves', async () => {
@@ -687,14 +687,14 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the login endpoint.'
+      '[withUser] Calling the login endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
   })
 
@@ -732,19 +732,19 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(mockFirebaseUser)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the login endpoint.'
+      '[withUser] Calling the login endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      `[withAuthUser] The call to the login endpoint failed with status 500 and response: ${JSON.stringify(
+      `[withUser] The call to the login endpoint failed with status 500 and response: ${JSON.stringify(
         { not: 'good' }
       )}`
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(4)
   })
@@ -769,14 +769,14 @@ describe('useFirebaseUser', () => {
       await onIdTokenChangedCallback(null)
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the logout endpoint.'
+      '[withUser] Calling the logout endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })
@@ -811,14 +811,14 @@ describe('useFirebaseUser', () => {
       } catch (e) {}
     })
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       null
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the logout endpoint.'
+      '[withUser] Calling the logout endpoint.'
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      `[withAuthUser] The call to the logout endpoint failed with status 500 and response: ${JSON.stringify(
+      `[withUser] The call to the logout endpoint failed with status 500 and response: ${JSON.stringify(
         { not: 'good' }
       )}`
     )
@@ -861,16 +861,16 @@ describe('useFirebaseUser', () => {
     })
 
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+      '[withUser] The Firebase ID token changed. New Firebase user:',
       expect.any(Object)
     )
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Calling the custom "tokenChangedHandler" provided in the config.'
+      '[withUser] Calling the custom "tokenChangedHandler" provided in the config.'
     )
 
     // Shouldn't be called yet.
     expect(mockLogDebug).not.toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
 
     await act(async () => {
@@ -880,7 +880,7 @@ describe('useFirebaseUser', () => {
     })
 
     expect(mockLogDebug).toHaveBeenCalledWith(
-      '[withAuthUser] Completed the auth API request.'
+      '[withUser] Completed the auth API request.'
     )
     expect(mockLogDebug).toHaveBeenCalledTimes(3)
   })

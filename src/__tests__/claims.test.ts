@@ -1,7 +1,7 @@
 /**
  * Test of the claims filter function
  */
-import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
+import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/userInputs'
 
 describe('filterStandardClaims', () => {
   it('should filter out standard claims from an object', () => {

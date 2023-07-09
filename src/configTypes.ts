@@ -1,6 +1,6 @@
 import * as Cookies from 'cookies'
 import { PageURL } from './redirectTypes'
-import { AuthUser } from './createAuthUser'
+import { User } from './createUser'
 import { Spread } from './Spread'
 
 type OnErrorHandler = (error: Error) => void
@@ -37,7 +37,7 @@ export interface ConfigInput {
    * A handler to call on auth state changes. More info:
    * https://github.com/gladly-team/next-firebase-auth#tokenchangedhandler
    */
-  tokenChangedHandler?: (user: AuthUser) => void
+  tokenChangedHandler?: (user: User) => void
   /**
    * Handler called if the login API endpoint returns a non-200 response.
    * Not used if a custom "tokenChangedHandler" is defined. If a handler is

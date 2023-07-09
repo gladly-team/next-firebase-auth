@@ -47,10 +47,10 @@ describe('index.server.ts (resetting modules)', () => {
     require('src/index.server')
   })
 
-  it('throws an error when calling useAuthUser without react installed', () => {
+  it('throws an error when calling useUser without react installed', () => {
     expect.assertions(1)
     const expectedErr = new Error(
-      'The dependency "react" is required when calling `useAuthUser`.'
+      'The dependency "react" is required when calling `useUser`.'
     )
     const MockModuleNotFoundError =
       require('src/testHelpers/mockModuleNotFoundError').default
@@ -59,9 +59,9 @@ describe('index.server.ts (resetting modules)', () => {
         moduleName: 'react',
       })
     })
-    const { useAuthUser } = require('src/index.server')
+    const { useUser } = require('src/index.server')
     expect(() => {
-      useAuthUser()
+      useUser()
     }).toThrow(expectedErr)
   })
 })

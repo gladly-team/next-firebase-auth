@@ -3,7 +3,7 @@ import type { ParsedUrlQuery } from 'querystring'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { setConfig } from 'src/config'
-import { AuthUser as AuthUserType } from 'src/createAuthUser'
+import { User } from 'src/createUser'
 import { RedirectInput } from 'src/redirectTypes'
 
 describe('redirects', () => {
@@ -94,15 +94,15 @@ describe('redirects', () => {
 
         it('returns a redirect object when "redirectDestination" set to a function returning a valid object with a computed "destination"', () => {
           const result = redirectFunc({
-            redirectURL: ({ ctx, AuthUser }) => ({
+            redirectURL: ({ ctx, user }) => ({
               basePath: undefined,
-              destination: `/${ctx?.query.id}/${AuthUser?.id}`,
+              destination: `/${ctx?.query.id}/${user?.id}`,
               permanent: false,
             }),
             ctx: {
               query: { id: 'context-id' },
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            AuthUser: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as User,
           })
 
           expect(result).toEqual({
@@ -135,7 +135,7 @@ describe('redirects', () => {
             ctx: {
               id: 'context-id',
             } as unknown as GetServerSidePropsContext<ParsedUrlQuery>,
-            AuthUser: { id: 'user-id' } as AuthUserType,
+            user: { id: 'user-id' } as User,
             redirectURL: () => ({
               destination: `/hello`,
               basePath: false,

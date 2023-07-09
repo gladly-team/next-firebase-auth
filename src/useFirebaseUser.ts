@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { getApp } from 'firebase/app'
 import {
-  User,
+  User as FirebaseUser,
   getAuth,
   getIdTokenResult,
   onIdTokenChanged,
 } from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createAuthUser, { AuthUser as AuthUserType } from 'src/createAuthUser'
+import createUser, { User } from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
 
-const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
+const defaultTokenChangedHandler = async (user: User) => {
   const {
     loginAPIEndpoint,
     logoutAPIEndpoint,
@@ -20,11 +20,11 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
   } = getConfig()
   let response
   // If the user is authed, call login to set a cookie.
-  if (authUser.id) {
-    // Prefixing with "[withAuthUser]" because that's currently the only
+  if (user.id) {
+    // Prefixing with "[withUser]" because that's currently the only
     // place we use this logic.
-    logDebug('[withAuthUser] Calling the login endpoint.')
-    const userToken = await authUser.getIdToken()
+    logDebug('[withUser] Calling the login endpoint.')
+    const userToken = await user.getIdToken()
     if (!loginAPIEndpoint) {
       throw new Error('Invalid config.')
     }
@@ -39,7 +39,7 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
       if (!response.ok) {
         const responseJSON = await response.json()
         logDebug(
-          `[withAuthUser] The call to the login endpoint failed with status ${
+          `[withUser] The call to the login endpoint failed with status ${
             response.status
           } and response: ${JSON.stringify(responseJSON)}`
         )
@@ -62,7 +62,7 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
     }
   } else {
     // If the user is not authed, call logout to unset the cookie.
-    logDebug('[withAuthUser] Calling the logout endpoint.')
+    logDebug('[withUser] Calling the logout endpoint.')
     if (!logoutAPIEndpoint) {
       throw new Error('Invalid config.')
     }
@@ -74,7 +74,7 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
       if (!response.ok) {
         const responseJSON = await response.json()
         logDebug(
-          `[withAuthUser] The call to the logout endpoint failed with status ${
+          `[withUser] The call to the logout endpoint failed with status ${
             response.status
           } and response: ${JSON.stringify(responseJSON)}`
         )
@@ -99,27 +99,27 @@ const defaultTokenChangedHandler = async (authUser: AuthUserType) => {
   return response
 }
 
-const setAuthCookie = async (firebaseUser?: User) => {
+const setAuthCookie = async (firebaseUser?: FirebaseUser) => {
   const { tokenChangedHandler } = getConfig()
 
-  const authUser = createAuthUser({
+  const user = createUser({
     firebaseUserClientSDK: firebaseUser,
     clientInitialized: true,
   })
 
   if (tokenChangedHandler) {
     logDebug(
-      `[withAuthUser] Calling the custom "tokenChangedHandler" provided in the config.`
+      `[withUser] Calling the custom "tokenChangedHandler" provided in the config.`
     )
-    return tokenChangedHandler(authUser)
+    return tokenChangedHandler(user)
   }
 
-  return defaultTokenChangedHandler(authUser)
+  return defaultTokenChangedHandler(user)
 }
 
 const useFirebaseUser = () => {
   const [userInfo, setUserInfo] = useState<{
-    user: User | null
+    user: FirebaseUser | null
     claims?: Claims
     initialized: boolean
   }>({
@@ -133,11 +133,11 @@ const useFirebaseUser = () => {
   useEffect(() => {
     let isCancelled = false
 
-    const onIdTokenChange = async (firebaseUser: User | null) => {
-      // Prefixing with "[withAuthUser]" because that's currently the only
+    const onIdTokenChange = async (firebaseUser: FirebaseUser | null) => {
+      // Prefixing with "[withUser]" because that's currently the only
       // place we use this hook.
       logDebug(
-        '[withAuthUser] The Firebase ID token changed. New Firebase user:',
+        '[withUser] The Firebase ID token changed. New Firebase user:',
         firebaseUser
       )
 
@@ -166,10 +166,10 @@ const useFirebaseUser = () => {
       // "tokenChangedHandler" return an unsubscribe function.
       if (!isCancelled) {
         setIsAuthCookieRequestComplete(true)
-        logDebug('[withAuthUser] Completed the auth API request.')
+        logDebug('[withUser] Completed the auth API request.')
       } else {
         logDebug(
-          '[withAuthUser] Component unmounted before completing the auth API request.'
+          '[withUser] Component unmounted before completing the auth API request.'
         )
       }
     }

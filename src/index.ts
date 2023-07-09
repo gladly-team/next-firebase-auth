@@ -6,7 +6,7 @@ import type { GetUserFromCookies } from './getUserFromCookies'
 import type { SetAuthCookies } from './setAuthCookies'
 import type { UnsetAuthCookies } from './unsetAuthCookies'
 import type { VerifyIdToken } from './firebaseAdmin'
-import type { WithAuthUserSSR } from './withAuthUserTokenSSR'
+import type { WithUserSSR } from './withUserTokenSSR'
 
 // AuthAction
 export * from 'src/AuthAction'
@@ -32,18 +32,18 @@ export const unsetAuthCookies: UnsetAuthCookies = () => {
   throw new Error('"unsetAuthCookies" can only be called server-side.')
 }
 
-export { default as useAuthUser } from 'src/useAuthUser'
+export { default as useUser } from 'src/useUser'
 
 export const verifyIdToken: VerifyIdToken = () => {
   throw new Error('"verifyIdToken" can only be called server-side.')
 }
 
-export { default as withAuthUser } from 'src/withAuthUser'
+export { default as withUser } from 'src/withUser'
 
-export const withAuthUserSSR: WithAuthUserSSR = () => {
-  throw new Error('"withAuthUserSSR" can only be called server-side.')
+export const withUserSSR: WithUserSSR = () => {
+  throw new Error('"withUserSSR" can only be called server-side.')
 }
 
-export const withAuthUserTokenSSR: WithAuthUserSSR = () => {
-  throw new Error('"withAuthUserTokenSSR" can only be called server-side.')
+export const withUserTokenSSR: WithUserSSR = () => {
+  throw new Error('"withUserTokenSSR" can only be called server-side.')
 }

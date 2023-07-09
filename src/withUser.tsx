@@ -4,7 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createAuthUser, { AuthUserSerialized } from 'src/createAuthUser'
+import createUser, { UserSerialized } from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
@@ -12,7 +12,7 @@ import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 import { PageURL, RedirectObject } from './redirectTypes'
 
-export interface WithAuthUserOptions {
+export interface WithUserOptions {
   /**
    * The behavior to take if the user is authenticated.
    */
@@ -51,23 +51,22 @@ export interface WithAuthUserOptions {
 }
 
 interface HOCProps {
-  AuthUserSerialized?: AuthUserSerialized
+  userSerialized?: UserSerialized
 }
 
 /**
- * A higher-order component that provides pages with the
- * AuthUser and, optionally, redirects or renders different
- * children based on the user's current auth state.
- * To access the user from SSR, this should be paired with
- * `withAuthUserSSR` or `withAuthUserTokenSSR`.
+ * A higher-order component that provides pages with the user and, optionally,
+ * redirects or renders different children based on the user's current auth
+ * state. To access the user from SSR, this should be paired with `withUserSSR`
+ * or `withUserTokenSSR`.
  */
-export type WithAuthUser = <ComponentProps extends object>(
-  options?: WithAuthUserOptions
+export type WithUser = <ComponentProps extends object>(
+  options?: WithUserOptions
 ) => (
   component: ComponentType<ComponentProps>
 ) => ComponentType<ComponentProps & HOCProps>
 
-const withAuthUser: WithAuthUser =
+const withUser: WithUser =
   <ComponentProps extends object>({
     whenAuthed = AuthAction.RENDER,
     whenUnauthedBeforeInit = AuthAction.RENDER,
@@ -76,11 +75,11 @@ const withAuthUser: WithAuthUser =
     appPageURL,
     authPageURL,
     LoaderComponent = null,
-  }: WithAuthUserOptions = {}) =>
+  }: WithUserOptions = {}) =>
   (
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
-    logDebug('[withAuthUser] Calling "withAuthUser".')
+    logDebug('[withUser] Calling "withUser".')
 
     // Some dependencies are optional. Throw if they aren't installed
     // when calling this API.
@@ -90,25 +89,25 @@ const withAuthUser: WithAuthUser =
       var React = require('react')
       var { useEffect, useCallback, useMemo } = require('react')
       var { useRouter } = require('next/router')
-      var { AuthUserContext } = require('src/useAuthUser')
+      var { UserContext } = require('src/useUser')
       /* eslint-enable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.code === MODULE_NOT_FOUND) {
         throw new Error(
-          'The dependencies "react" and "next" are required when calling `withAuthUser`.'
+          'The dependencies "react" and "next" are required when calling `withUser`.'
         )
       } else {
         throw e
       }
     }
 
-    const WithAuthUserHOC = (props: ComponentProps & HOCProps) => {
-      const { AuthUserSerialized: userSerialized, ...otherProps } = props
-      const AuthUserFromServer = useMemo(
+    const WithUserHOC = (props: ComponentProps & HOCProps) => {
+      const { userSerialized, ...otherProps } = props
+      const userFromServer = useMemo(
         () =>
-          createAuthUser({
-            serializedAuthUser: userSerialized,
+          createUser({
+            serializedUser: userSerialized,
           }),
         [userSerialized]
       )
@@ -119,9 +118,9 @@ const withAuthUser: WithAuthUser =
         initialized: firebaseInitialized,
         authRequestCompleted,
       } = useFirebaseUser()
-      const AuthUserFromClient = useMemo(
+      const userFromClient = useMemo(
         () =>
-          createAuthUser({
+          createUser({
             firebaseUserClientSDK: firebaseUser || undefined,
             clientInitialized: firebaseInitialized,
             claims,
@@ -129,16 +128,14 @@ const withAuthUser: WithAuthUser =
         [firebaseUser, firebaseInitialized, claims]
       )
 
-      // Set the AuthUser to values from the Firebase JS SDK user
+      // Set the user to values from the Firebase JS SDK user
       // once it has initialized. On the server side and before the
-      // client-side SDK has initialized, use the AuthUser from the
+      // client-side SDK has initialized, use the user from the
       // session.
-      const AuthUser = firebaseInitialized
-        ? AuthUserFromClient
-        : AuthUserFromServer
+      const user = firebaseInitialized ? userFromClient : userFromServer
 
-      const isAuthed = !!AuthUser.id
-      const isInitialized = AuthUser.clientInitialized
+      const isAuthed = !!user.id
+      const isInitialized = user.clientInitialized
 
       // Redirect to the app if all are true:
       // * the user is authed
@@ -184,27 +181,27 @@ const withAuthUser: WithAuthUser =
         [router]
       )
       const redirectToApp = useCallback(() => {
-        logDebug('[withAuthUser] Redirecting to app.')
+        logDebug('[withUser] Redirecting to app.')
         const destination = getAppRedirectInfo({
-          AuthUser,
+          user,
           redirectURL: appPageURL,
         })
 
         routeToDestination(destination)
-      }, [AuthUser, routeToDestination])
+      }, [user, routeToDestination])
       const redirectToLogin = useCallback(() => {
-        logDebug('[withAuthUser] Redirecting to login.')
+        logDebug('[withUser] Redirecting to login.')
         const destination = getLoginRedirectInfo({
-          AuthUser,
+          user,
           redirectURL: authPageURL,
         })
 
         routeToDestination(destination)
-      }, [AuthUser, routeToDestination])
+      }, [user, routeToDestination])
 
       useEffect(() => {
         // Only redirect on the client side. To redirect server-side,
-        // use `withAuthUserSSR` or `withAuthUserTokenSSR`.
+        // use `withUserSSR` or `withUserTokenSSR`.
         if (!isClientSide()) {
           return
         }
@@ -224,13 +221,13 @@ const withAuthUser: WithAuthUser =
       let returnVal = null
       const loaderComp = LoaderComponent ? <LoaderComponent /> : null
       const comps = (
-        <AuthUserContext.Provider value={AuthUser}>
+        <UserContext.Provider value={user}>
           {/**
            * https://github.com/Microsoft/TypeScript/issues/28938#issuecomment-450636046
            * */}
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <ChildComponent {...(otherProps as ComponentProps)} />
-        </AuthUserContext.Provider>
+        </UserContext.Provider>
       )
       if (willRedirectToApp) {
         if (whenAuthedBeforeRedirect === AuthAction.RENDER) {
@@ -260,14 +257,14 @@ const withAuthUser: WithAuthUser =
         returnVal = comps
       }
 
-      logDebug('[withAuthUser] Set AuthUser to:', AuthUser)
+      logDebug('[withUser] Set user to:', user)
 
       return returnVal
     }
 
-    WithAuthUserHOC.displayName = 'WithAuthUserHOC'
-    hoistNonReactStatics(WithAuthUserHOC, ChildComponent)
-    return WithAuthUserHOC
+    WithUserHOC.displayName = 'WithUserHOC'
+    hoistNonReactStatics(WithUserHOC, ChildComponent)
+    return WithUserHOC
   }
 
-export default withAuthUser
+export default withUser

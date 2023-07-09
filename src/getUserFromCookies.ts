@@ -1,11 +1,11 @@
-import createAuthUser, { AuthUser } from 'src/createAuthUser'
+import createUser, { User } from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
-  getAuthUserCookieName,
-  getAuthUserSigCookieName,
-  getAuthUserTokensCookieName,
-  getAuthUserTokensSigCookieName,
+  getUserCookieName,
+  getUserSigCookieName,
+  getUserTokensCookieName,
+  getUserTokensSigCookieName,
 } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
@@ -20,10 +20,10 @@ export type GetUserFromCookiesOptions = {
   req?: NextApiRequest | GetServerSidePropsContext['req']
   /**
    * Whether or not the returned user should include a Firebase ID token. When
-   * true, the behavior follows `withAuthUserTokenSSR`; when false, it follows
-   * `withAuthUserSSR`. Defaults to true. Read more about the distinction in
-   * the docs for `withAuthUserSSR` here:
-   * https://github.com/gladly-team/next-firebase-auth#withauthuserssr-options-getserversidepropsfunc---authuser---
+   * true, the behavior follows `withUserTokenSSR`; when false, it follows
+   * `withUserSSR`. Defaults to true. Read more about the distinction in
+   * the docs for `withUserSSR` here:
+   * https://github.com/gladly-team/next-firebase-auth#withuserssr-options-getserversidepropsfunc---user---
    */
   includeToken?: boolean
   /**
@@ -45,7 +45,7 @@ export type GetUserFromCookiesOptions = {
  */
 export type GetUserFromCookies = (
   options: GetUserFromCookiesOptions
-) => Promise<AuthUser>
+) => Promise<User>
 
 const getUserFromCookies: GetUserFromCookies = async ({
   req: initialReq,
@@ -68,11 +68,11 @@ const getUserFromCookies: GetUserFromCookies = async ({
       throw new Error('Either "req" or "authCookieValue" must be provided.')
     }
     const cookieName = includeToken
-      ? getAuthUserTokensCookieName()
-      : getAuthUserCookieName()
+      ? getUserTokensCookieName()
+      : getUserCookieName()
     const cookieSigName = includeToken
-      ? getAuthUserTokensSigCookieName()
-      : getAuthUserSigCookieName()
+      ? getUserTokensSigCookieName()
+      : getUserSigCookieName()
     const sigCookieStr = authCookieSigValue
       ? `${cookieSigName}=${authCookieSigValue};`
       : ''
@@ -96,19 +96,18 @@ const getUserFromCookies: GetUserFromCookies = async ({
   }
 
   // Get the user either from:
-  // * the ID token, refreshing the token as needed (via a network
-  //   request), which will make `AuthUser.getIdToken` resolve to
-  //   a valid ID token value
-  // * the "AuthUser" cookie (no network request), which will make
-  //  `AuthUser.getIdToken` resolve to null
+  // * the ID token, refreshing the token as needed (via a network request),
+  //   which will make `user.getIdToken` resolve to a valid ID token value.
+  // * the user cookie (no network request), which will make `user.getIdToken`
+  //   resolve to null.
   if (includeToken) {
     // Get the user's ID token from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
+    // as needed), and return the serialized user in props.
     logDebug(
       '[getUserFromCookies] Attempting to get user info from cookies via the ID token.'
     )
     const cookieValStr = getCookie(
-      getAuthUserTokensCookieName(),
+      getUserTokensCookieName(),
       {
         req,
       },
@@ -131,21 +130,21 @@ const getUserFromCookies: GetUserFromCookies = async ({
       logDebug(
         "[getUserFromCookies] Failed to retrieve the ID token from cookies. This will happen if the user is not logged in, the provided cookie values are invalid, or the cookie values don't align with your cookie settings. The user will be unauthenticated."
       )
-      user = createAuthUser() // unauthenticated AuthUser
+      user = createUser() // unauthenticated user
     }
   } else {
     // https://github.com/gladly-team/next-firebase-auth/issues/195
     if (!signed) {
-      throw new Error('Cookies must be signed when using withAuthUserSSR.')
+      throw new Error('Cookies must be signed when using withUserSSR.')
     }
 
     // Get the user's info from a cookie, verify it (refreshing
-    // as needed), and return the serialized AuthUser in props.
+    // as needed), and return the serialized user in props.
     logDebug(
       '[getUserFromCookies] Attempting to get user info from cookies (not using the ID token).'
     )
     const cookieValStr = getCookie(
-      getAuthUserCookieName(),
+      getUserCookieName(),
       {
         req,
       },
@@ -160,8 +159,8 @@ const getUserFromCookies: GetUserFromCookies = async ({
         '[getUserFromCookies] Failed to retrieve the user info from cookies. The provided cookie values might be invalid or not align with your cookie settings. The user will be unauthenticated.'
       )
     }
-    user = createAuthUser({
-      serializedAuthUser: cookieValStr,
+    user = createUser({
+      serializedUser: cookieValStr,
     })
   }
   return user

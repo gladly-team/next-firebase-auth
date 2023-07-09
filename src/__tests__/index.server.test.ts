@@ -2,9 +2,9 @@ import { setConfig } from 'src/config'
 import { setDebugEnabled } from 'src/logDebug'
 import setAuthCookies from 'src/setAuthCookies'
 import unsetAuthCookies from 'src/unsetAuthCookies'
-import withAuthUser from 'src/withAuthUser'
-import useAuthUser from 'src/useAuthUser'
-import withAuthUserTokenSSR from 'src/withAuthUserTokenSSR'
+import withUser from 'src/withUser'
+import useUser from 'src/useUser'
+import withUserTokenSSR from 'src/withUserTokenSSR'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import getUserFromCookies from 'src/getUserFromCookies'
@@ -13,9 +13,9 @@ jest.mock('src/config')
 jest.mock('src/logDebug')
 jest.mock('src/setAuthCookies')
 jest.mock('src/unsetAuthCookies')
-jest.mock('src/withAuthUser')
-jest.mock('src/useAuthUser')
-jest.mock('src/withAuthUserTokenSSR')
+jest.mock('src/withUser')
+jest.mock('src/useUser')
+jest.mock('src/withUserTokenSSR')
 jest.mock('src/initFirebaseAdminSDK')
 jest.mock('src/firebaseAdmin')
 jest.mock('src/getUserFromCookies')
@@ -70,72 +70,72 @@ describe('index.server.ts: init', () => {
   })
 })
 
-describe('index.server.js: withAuthUser', () => {
-  it('exports withAuthUser', () => {
+describe('index.server.js: withUser', () => {
+  it('exports withUser', () => {
     expect.assertions(2)
     const indexServer = require('src/index.server')
-    expect(indexServer.withAuthUser).toBeDefined()
-    expect(indexServer.withAuthUser).toEqual(expect.any(Function))
+    expect(indexServer.withUser).toBeDefined()
+    expect(indexServer.withUser).toEqual(expect.any(Function))
   })
 
-  it('calls the withAuthUser module', () => {
+  it('calls the withUser module', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server')
-    indexServer.withAuthUser({ appPageURL: '/my-fake-app-page' })
-    expect(withAuthUser).toHaveBeenCalledWith({
+    indexServer.withUser({ appPageURL: '/my-fake-app-page' })
+    expect(withUser).toHaveBeenCalledWith({
       appPageURL: '/my-fake-app-page',
     })
   })
 })
 
-describe('index.server.js: useAuthUser', () => {
-  it('exports useAuthUser', () => {
+describe('index.server.js: useUser', () => {
+  it('exports useUser', () => {
     expect.assertions(2)
     const indexServer = require('src/index.server')
-    expect(indexServer.useAuthUser).toBeDefined()
-    expect(indexServer.useAuthUser).toEqual(expect.any(Function))
+    expect(indexServer.useUser).toBeDefined()
+    expect(indexServer.useUser).toEqual(expect.any(Function))
   })
 
-  it('calls the useAuthUser module', () => {
+  it('calls the useUser module', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server')
-    indexServer.useAuthUser()
-    expect(useAuthUser).toHaveBeenCalled()
+    indexServer.useUser()
+    expect(useUser).toHaveBeenCalled()
   })
 })
 
-describe('index.server.js: withAuthUserSSR', () => {
-  it('exports withAuthUserSSR', () => {
+describe('index.server.js: withUserSSR', () => {
+  it('exports withUserSSR', () => {
     expect.assertions(2)
     const indexServer = require('src/index.server')
-    expect(indexServer.withAuthUserSSR).toBeDefined()
-    expect(indexServer.withAuthUserSSR).toEqual(expect.any(Function))
+    expect(indexServer.withUserSSR).toBeDefined()
+    expect(indexServer.withUserSSR).toEqual(expect.any(Function))
   })
 
-  it('calls the withAuthUserTokenSSR module with useToken=false', () => {
+  it('calls the withUserTokenSSR module with useToken=false', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server')
-    indexServer.withAuthUserSSR({ some: 'options' })
-    expect(withAuthUserTokenSSR).toHaveBeenCalledWith(
+    indexServer.withUserSSR({ some: 'options' })
+    expect(withUserTokenSSR).toHaveBeenCalledWith(
       { some: 'options' },
       { useToken: false }
     )
   })
 })
 
-describe('index.server.js: withAuthUserTokenSSR', () => {
-  it('exports withAuthUserTokenSSR', () => {
+describe('index.server.js: withUserTokenSSR', () => {
+  it('exports withUserTokenSSR', () => {
     expect.assertions(2)
     const indexServer = require('src/index.server')
-    expect(indexServer.withAuthUserTokenSSR).toBeDefined()
-    expect(indexServer.withAuthUserTokenSSR).toEqual(expect.any(Function))
+    expect(indexServer.withUserTokenSSR).toBeDefined()
+    expect(indexServer.withUserTokenSSR).toEqual(expect.any(Function))
   })
 
-  it('calls the withAuthUserTokenSSR module with useToken=true', () => {
+  it('calls the withUserTokenSSR module with useToken=true', () => {
     expect.assertions(1)
     const indexServer = require('src/index.server')
-    indexServer.withAuthUserTokenSSR({ some: 'options' })
-    expect(withAuthUserTokenSSR).toHaveBeenCalledWith(
+    indexServer.withUserTokenSSR({ some: 'options' })
+    expect(withUserTokenSSR).toHaveBeenCalledWith(
       { some: 'options' },
       { useToken: true }
     )

@@ -2,15 +2,15 @@ import { testApiHandler } from 'next-test-api-route-handler'
 import getUserFromCookies from 'src/getUserFromCookies'
 import { setConfig } from 'src/config'
 import getMockConfig from 'src/testHelpers/createMockConfig'
-import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/authUserInputs'
-import createAuthUser from 'src/createAuthUser'
+import { createMockFirebaseUserAdminSDK } from 'src/testHelpers/userInputs'
+import createUser from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
-  getAuthUserCookieName,
-  getAuthUserSigCookieName,
-  getAuthUserTokensCookieName,
-  getAuthUserTokensSigCookieName,
+  getUserCookieName,
+  getUserSigCookieName,
+  getUserTokensCookieName,
+  getUserTokensSigCookieName,
 } from 'src/authCookies'
 import logDebug from 'src/logDebug'
 import { NextApiRequest } from 'next'
@@ -18,7 +18,7 @@ import { NextApiRequest } from 'next'
 /**
  * We intentionally don't mock a few modules whose behavior we want to
  * test:
- * - createAuthUser
+ * - createUser
  * - src/config
  */
 jest.mock('src/cookies')
@@ -29,12 +29,10 @@ jest.mock('src/logDebug')
 
 const mockGetCookie = jest.mocked(getCookie)
 const mockVerifyIdToken = verifyIdToken as jest.Mock
-const mockGetAuthUserCookieName = jest.mocked(getAuthUserCookieName)
-const mockGetAuthUserSigCookieName = jest.mocked(getAuthUserSigCookieName)
-const mockGetAuthUserTokensCookieName = jest.mocked(getAuthUserTokensCookieName)
-const mockGetAuthUserTokensSigCookieName = jest.mocked(
-  getAuthUserTokensSigCookieName
-)
+const mockGetUserCookieName = jest.mocked(getUserCookieName)
+const mockGetUserSigCookieName = jest.mocked(getUserSigCookieName)
+const mockGetUserTokensCookieName = jest.mocked(getUserTokensCookieName)
+const mockGetUserTokensSigCookieName = jest.mocked(getUserTokensSigCookieName)
 const mockLogDebug = jest.mocked(logDebug)
 
 beforeEach(() => {
@@ -42,8 +40,8 @@ beforeEach(() => {
   const isClientSide = require('src/isClientSide').default
   isClientSide.mockReturnValue(false)
 
-  mockGetAuthUserCookieName.mockReturnValue('SomeName.AuthUser')
-  mockGetAuthUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
+  mockGetUserCookieName.mockReturnValue('SomeName.AuthUser')
+  mockGetUserTokensCookieName.mockReturnValue('SomeName.AuthUserTokens')
 
   // Default to an authed user.
   mockGetCookie.mockImplementation((cookieName) => {
@@ -54,7 +52,7 @@ beforeEach(() => {
       })
     }
     if (cookieName === 'SomeName.AuthUser') {
-      return createAuthUser({
+      return createUser({
         firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
       }).serialize()
     }
@@ -86,7 +84,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -95,7 +93,7 @@ describe('getUserFromCookies: with ID token', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -115,7 +113,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: {
             ...createMockFirebaseUserAdminSDK(),
             email: 'some-different-email@example.com', // differs from token result
@@ -125,7 +123,7 @@ describe('getUserFromCookies: with ID token', () => {
       return undefined
     })
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -145,7 +143,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -154,7 +152,7 @@ describe('getUserFromCookies: with ID token', () => {
     mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
     mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
-    const expectedUser = createAuthUser()
+    const expectedUser = createUser()
     const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq })
     expect(user).toEqual({
@@ -167,7 +165,7 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -200,14 +198,14 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
       return undefined
     })
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -230,7 +228,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -265,10 +263,10 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -290,10 +288,10 @@ describe('getUserFromCookies: with ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (*not* incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -335,7 +333,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -344,7 +342,7 @@ describe('getUserFromCookies: with ID token', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -372,7 +370,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -405,7 +403,7 @@ describe('getUserFromCookies: with ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -413,7 +411,7 @@ describe('getUserFromCookies: with ID token', () => {
     })
 
     // Mock the Firebase admin user verification.
-    const expectedUser = createAuthUser() // unauthenticated user!
+    const expectedUser = createUser() // unauthenticated user!
     mockVerifyIdToken.mockResolvedValue(expectedUser)
     const mockReq = {} as NextApiRequest
 
@@ -447,7 +445,7 @@ describe('getUserFromCookies: *without* ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -456,7 +454,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -474,7 +472,7 @@ describe('getUserFromCookies: *without* ID token', () => {
   it('uses the *auth info cookie*, not the ID token, when "includeToken" is false', async () => {
     expect.assertions(1)
 
-    const mockUserNoToken = createAuthUser({
+    const mockUserNoToken = createUser({
       firebaseUserAdminSDK: {
         ...createMockFirebaseUserAdminSDK(),
         email: 'some-different-email@example.com', // differs from token result
@@ -495,7 +493,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const mockUserWithToken = createAuthUser({
+    const mockUserWithToken = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -515,7 +513,7 @@ describe('getUserFromCookies: *without* ID token', () => {
     mockGetCookie.mockReturnValue(undefined) // the user has no auth cookies
     const mockFirebaseAdminUser = undefined
     mockVerifyIdToken.mockResolvedValue(mockFirebaseAdminUser)
-    const expectedUser = createAuthUser()
+    const expectedUser = createUser()
     const mockReq = {} as NextApiRequest
     const user = await getUserFromCookies({ req: mockReq, includeToken: false })
     expect(user).toEqual({
@@ -528,7 +526,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected values to getCookie', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
     const mockConfig = getMockConfig()
     setConfig({
       ...mockConfig,
@@ -563,14 +561,14 @@ describe('getUserFromCookies: *without* ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
       return undefined
     })
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
@@ -601,21 +599,21 @@ describe('getUserFromCookies: *without* ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
       return undefined
     })
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })
     mockVerifyIdToken.mockResolvedValue(expectedUser)
     const mockReq = {} as NextApiRequest
     const expectedErr = new Error(
-      'Cookies must be signed when using withAuthUserSSR.'
+      'Cookies must be signed when using withUserSSR.'
     )
     await expect(
       getUserFromCookies({ req: mockReq, includeToken: false })
@@ -645,10 +643,10 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -670,10 +668,10 @@ describe('getUserFromCookies: *without* ID token', () => {
 
   it('passes the expected request object structure to getCookie when cookie values are provided *instead of* the `req` object (not incl. signed cookie)', async () => {
     expect.assertions(1)
-    mockGetAuthUserCookieName.mockReturnValue('MyCookie.AuthUser')
-    mockGetAuthUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
-    mockGetAuthUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
-    mockGetAuthUserTokensSigCookieName.mockReturnValue(
+    mockGetUserCookieName.mockReturnValue('MyCookie.AuthUser')
+    mockGetUserSigCookieName.mockReturnValue('MyCookie.AuthUser.sig')
+    mockGetUserTokensCookieName.mockReturnValue('MyCookie.AuthUserTokens')
+    mockGetUserTokensSigCookieName.mockReturnValue(
       'MyCookie.AuthUserTokens.sig'
     )
     const authCookieValue = 'thequickbrownfox'
@@ -715,7 +713,7 @@ describe('getUserFromCookies: *without* ID token', () => {
         })
       }
       if (cookieName === 'SomeName.AuthUser') {
-        return createAuthUser({
+        return createUser({
           firebaseUserAdminSDK: createMockFirebaseUserAdminSDK(),
         }).serialize()
       }
@@ -724,7 +722,7 @@ describe('getUserFromCookies: *without* ID token', () => {
 
     // Mock the Firebase admin user verification.
     const mockFirebaseAdminUser = createMockFirebaseUserAdminSDK()
-    const expectedUser = createAuthUser({
+    const expectedUser = createUser({
       token: 'a-user-identity-token-abc',
       firebaseUserAdminSDK: mockFirebaseAdminUser,
     })

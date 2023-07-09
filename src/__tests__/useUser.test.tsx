@@ -8,42 +8,42 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('useAuthUser', () => {
-  test('the AuthUser context is created with an undefined default value', () => {
+describe('useUser', () => {
+  test('the user context is created with an undefined default value', () => {
     expect.assertions(1)
     jest.spyOn(React, 'createContext')
     // eslint-disable-next-line no-unused-expressions
-    require('src/useAuthUser').default
+    require('src/useUser').default
     expect(React.createContext).toHaveBeenCalledWith(undefined)
   })
 
-  test('defining the AuthUser context value changes the useAuthUser value', () => {
+  test('defining the user context value changes the useUser value', () => {
     expect.assertions(1)
-    const { AuthUserContext } = require('src/useAuthUser')
-    const useAuthUser = require('src/useAuthUser').default
-    let childAuthUserVal
+    const { UserContext } = require('src/useUser')
+    const useUser = require('src/useUser').default
+    let childUserVal
     const TestComp = () => {
-      const authUser = useAuthUser()
-      childAuthUserVal = authUser
+      const user = useUser()
+      childUserVal = user
       return null
     }
     render(
-      <AuthUserContext.Provider value="some fake value">
+      <UserContext.Provider value="some fake value">
         <TestComp />
-      </AuthUserContext.Provider>
+      </UserContext.Provider>
     )
-    expect(childAuthUserVal).toEqual('some fake value')
+    expect(childUserVal).toEqual('some fake value')
   })
 
-  test('useAuthUser will throw if used without a defined value for AuthUser context', () => {
+  test('useUser will throw if used without a defined value for user context', () => {
     expect.assertions(1)
-    const useAuthUser = require('src/useAuthUser').default
+    const useUser = require('src/useUser').default
     const TestComp = () => {
-      useAuthUser() // should throw
+      useUser() // should throw
       return null
     }
     const err = new Error(
-      'When using `useAuthUser`, the page must be wrapped in `withAuthUser`.'
+      'When using `useUser`, the page must be wrapped in `withUser`.'
     )
     // Suppress expected error logs.
     jest

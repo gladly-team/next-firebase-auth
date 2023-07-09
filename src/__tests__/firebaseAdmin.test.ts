@@ -6,9 +6,9 @@ import { getAuth } from 'firebase-admin/auth'
 import {
   createMockFirebaseUserAdminSDK,
   createMockFirebaseUserRecord,
-} from 'src/testHelpers/authUserInputs'
+} from 'src/testHelpers/userInputs'
 import createMockFetchResponse from 'src/testHelpers/createMockFetchResponse'
-import createAuthUser from 'src/createAuthUser'
+import createUser from 'src/createUser'
 import { setConfig, getConfig } from 'src/config'
 import createMockConfig from 'src/testHelpers/createMockConfig'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
@@ -87,11 +87,11 @@ describe('verifyIdToken', () => {
     expect(mockInitFirebaseAdminSDK).toHaveBeenCalled()
   })
 
-  it('returns an AuthUser', async () => {
+  it('returns a user', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    const expectedReturn = createAuthUser({
+    const expectedReturn = createUser({
       firebaseUserAdminSDK: mockFirebaseUser,
       token: 'some-token',
     })
@@ -106,18 +106,18 @@ describe('verifyIdToken', () => {
     })
   })
 
-  it('returns an AuthUser with the same token when the token has not expired', async () => {
+  it('returns a user with the same token when the token has not expired', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
     const firebaseAdminAuth = mockGetAuth()
     firebaseAdminAuth.verifyIdToken.mockResolvedValue(mockFirebaseUser)
-    const AuthUser = await verifyIdToken('some-token')
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token')
+    const token = await user.getIdToken()
     expect(token).toEqual('some-token')
   })
 
-  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/id-token-expired error', async () => {
+  it('returns a user with a new token when the token is refreshed because of a Firebase auth/id-token-expired error', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -152,12 +152,12 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    const token = await user.getIdToken()
     expect(token).toEqual('a-new-token')
   })
 
-  it('returns an AuthUser with a new token when the token is refreshed because of a Firebase auth/argument-error error', async () => {
+  it('returns a user with a new token when the token is refreshed because of a Firebase auth/argument-error error', async () => {
     expect.assertions(1)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -192,8 +192,8 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    const token = await user.getIdToken()
     expect(token).toEqual('a-new-token')
   })
 
@@ -282,7 +282,7 @@ describe('verifyIdToken', () => {
     })
   })
 
-  it('returns an unauthenticated AuthUser if verifying the token fails with auth/invalid-user-token', async () => {
+  it('returns an unauthenticated user if verifying the token fails with auth/invalid-user-token', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -301,13 +301,13 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
-  it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-token-expired', async () => {
+  it('returns an unauthenticated user if verifying the token fails with auth/user-token-expired', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -326,13 +326,13 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
-  it('returns an unauthenticated AuthUser if verifying the token fails with auth/user-disabled', async () => {
+  it('returns an unauthenticated user if verifying the token fails with auth/user-disabled', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -351,13 +351,13 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
-  it('returns an unauthenticated AuthUser if there is no refresh token and the id token has expired', async () => {
+  it('returns an unauthenticated user if there is no refresh token and the id token has expired', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -376,9 +376,9 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
@@ -471,7 +471,7 @@ describe('verifyIdToken', () => {
     }
   })
 
-  it('returns an unauthenticated AuthUser if there is an error refreshing the token', async () => {
+  it('returns an unauthenticated user if there is an error refreshing the token', async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     fetchSpy.mockImplementation(async () => ({
@@ -495,9 +495,9 @@ describe('verifyIdToken', () => {
         }
       }
     )
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
@@ -587,7 +587,7 @@ describe('verifyIdToken', () => {
     }
   })
 
-  it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
+  it("returns an unauthenticated user if Firebase admin's verifyIdToken throws something other than an expired token error", async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
     fetchSpy.mockImplementation(async (endpoint) => {
@@ -611,9 +611,9 @@ describe('verifyIdToken', () => {
     firebaseAdminAuth.verifyIdToken.mockImplementation(async () => {
       throw otherErr
     })
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
@@ -683,7 +683,7 @@ describe('verifyIdToken', () => {
     }
   })
 
-  it("returns an unauthenticated AuthUser if Firebase admin's verifyIdToken throws an error for the refreshed token", async () => {
+  it("returns an unauthenticated user if Firebase admin's verifyIdToken throws an error for the refreshed token", async () => {
     expect.assertions(2)
     const { verifyIdToken } = require('src/firebaseAdmin')
 
@@ -697,9 +697,9 @@ describe('verifyIdToken', () => {
     firebaseAdminAuth.verifyIdToken.mockImplementation(async () => {
       throw expiredTokenErr
     })
-    const AuthUser = await verifyIdToken('some-token', 'my-refresh-token')
-    expect(AuthUser.id).toEqual(null)
-    const token = await AuthUser.getIdToken()
+    const user = await verifyIdToken('some-token', 'my-refresh-token')
+    expect(user.id).toEqual(null)
+    const token = await user.getIdToken()
     expect(token).toEqual(null)
   })
 
@@ -1075,7 +1075,7 @@ describe('getCustomIdAndRefreshTokens', () => {
     })
   })
 
-  it('returns the expected AuthUser value', async () => {
+  it('returns the expected user value', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 
@@ -1091,7 +1091,7 @@ describe('getCustomIdAndRefreshTokens', () => {
 
     const mockUserRecord = createMockFirebaseUserRecord()
     const mockFirebaseUser = createMockFirebaseUserAdminSDK()
-    const expectedAuthUser = createAuthUser({
+    const expecteduser = createUser({
       firebaseUserAdminSDK: mockFirebaseUser,
     })
     const firebaseAdminAuth = mockGetAuth()
@@ -1100,15 +1100,15 @@ describe('getCustomIdAndRefreshTokens', () => {
     firebaseAdminAuth.createCustomToken.mockResolvedValue('my-custom-token')
     const response = await getCustomIdAndRefreshTokens('some-token')
 
-    expect(response.AuthUser).toEqual({
-      ...expectedAuthUser,
+    expect(response.user).toEqual({
+      ...expecteduser,
       getIdToken: expect.any(Function),
       serialize: expect.any(Function),
       signOut: expect.any(Function),
     })
   })
 
-  it('returns the expected AuthUser with claims', async () => {
+  it('returns the expected user with claims', async () => {
     expect.assertions(1)
     const { getCustomIdAndRefreshTokens } = require('src/firebaseAdmin')
 

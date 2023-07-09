@@ -1,6 +1,6 @@
-// Tests for withAuthUser.js that require resetting all
+// Tests for withUser.js that require resetting all
 // modules between tests. Most tests should reside in
-// withAuthUser.test.js.
+// withUser.test.js.
 
 // eslint-disable-next-line jest/no-export
 export {}
@@ -23,12 +23,12 @@ afterEach(() => {
   jest.resetModules()
 })
 
-describe('withAuthUser (resetting modules)', () => {
+describe('withUser (resetting modules)', () => {
   it('runs without error by default', () => {
     expect.assertions(1)
-    const withAuthUser = require('src/withAuthUser').default
+    const withUser = require('src/withUser').default
     expect(() => {
-      withAuthUser()(MockComponent)
+      withUser()(MockComponent)
     }).not.toThrow()
   })
 
@@ -45,13 +45,13 @@ describe('withAuthUser (resetting modules)', () => {
     })
 
     // eslint-disable-next-line no-unused-expressions
-    require('src/withAuthUser').default
+    require('src/withUser').default
   })
 
   it('throws the expected error if the "react" package is not importable', () => {
     expect.assertions(1)
     const expectedErr = new Error(
-      'The dependencies "react" and "next" are required when calling `withAuthUser`.'
+      'The dependencies "react" and "next" are required when calling `withUser`.'
     )
     const mockModuleNotFoundError =
       require('src/testHelpers/mockModuleNotFoundError').default
@@ -61,16 +61,16 @@ describe('withAuthUser (resetting modules)', () => {
       })
     })
 
-    const withAuthUser = require('src/withAuthUser').default
+    const withUser = require('src/withUser').default
     expect(() => {
-      withAuthUser()(MockComponent)
+      withUser()(MockComponent)
     }).toThrow(expectedErr)
   })
 
   it('throws the expected error if the "next" package is not importable', () => {
     expect.assertions(1)
     const expectedErr = new Error(
-      'The dependencies "react" and "next" are required when calling `withAuthUser`.'
+      'The dependencies "react" and "next" are required when calling `withUser`.'
     )
     const mockModuleNotFoundError =
       require('src/testHelpers/mockModuleNotFoundError').default
@@ -80,9 +80,9 @@ describe('withAuthUser (resetting modules)', () => {
       })
     })
 
-    const withAuthUser = require('src/withAuthUser').default
+    const withUser = require('src/withUser').default
     expect(() => {
-      withAuthUser()(MockComponent)
+      withUser()(MockComponent)
     }).toThrow(expectedErr)
   })
 
@@ -91,9 +91,9 @@ describe('withAuthUser (resetting modules)', () => {
     jest.mock('react', () => {
       throw new Error('Something else.')
     })
-    const withAuthUser = require('src/withAuthUser').default
+    const withUser = require('src/withUser').default
     expect(() => {
-      withAuthUser()(MockComponent)
+      withUser()(MockComponent)
     }).toThrow(new Error('Something else.'))
   })
 })
