@@ -37,7 +37,7 @@
     "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build",
     "publish:experimental": "npm-run-all -s test build publish:experimental:version publish:experimental:release",
     "publish:experimental:release": "npm publish --tag experimental",
-    "publish:experimental:version": "npm version $(echo $(echo $npm_package_version | cut -d \"-\" -f 1)-experimental.$(git rev-parse --short HEAD)) --allow-same-version"
+    "publish:experimental:version": "npm version $(echo $(echo $npm_package_version | cut -d \"-\" -f 1)-experimental.$(git rev-parse --short HEAD))"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
