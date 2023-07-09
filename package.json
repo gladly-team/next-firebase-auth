@@ -75,7 +75,7 @@
     "firebase-admin": "11.0.0",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.6.1",
-    "jscodeshift": "^0.14.0",
+    "jscodeshift": "^0.15.0",
     "lodash": "^4.17.21",
     "mockdate": "^3.0.2",
     "moment": "^2.29.4",
