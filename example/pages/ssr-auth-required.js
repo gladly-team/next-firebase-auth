@@ -1,8 +1,8 @@
 import React from 'react'
 import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR,
+  useUser,
+  withUser,
+  withUserTokenSSR,
   AuthAction,
 } from 'next-firebase-auth'
 import Header from '../components/Header'
@@ -19,10 +19,10 @@ const styles = {
 }
 
 const Demo = ({ favoriteColor, favoriteAnimal, email }) => {
-  const AuthUser = useAuthUser()
+  const user = useUser()
   return (
     <div>
-      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+      <Header email={user.email} signOut={user.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
           <h3>Example: SSR + data fetching</h3>
@@ -42,14 +42,14 @@ const Demo = ({ favoriteColor, favoriteAnimal, email }) => {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(async ({ AuthUser, req }) => {
+})(async ({ user, req }) => {
   // Optionally, get other props.
   // You can return anything you'd normally return from
   // `getServerSideProps`, including redirects.
   // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-  const token = await AuthUser.getIdToken()
+  const token = await user.getIdToken()
 
   // This endpoint uses an ID token.
   // Note: you shouldn't typically fetch your own API routes from within
@@ -99,6 +99,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)

@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserSSR,
-  AuthAction,
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserSSR, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import getAbsoluteURL from '../utils/getAbsoluteURL'
@@ -28,7 +23,7 @@ const defaultProps = {
 
 const Demo = (props: DataType) => {
   const { favoriteColor } = props
-  const user = useAuthUser()
+  const user = useUser()
   return (
     <div>
       <Header email={user.email} signOut={user.signOut} />
@@ -40,8 +35,8 @@ const Demo = (props: DataType) => {
             (307) to the login page if the auth cookies are not set.
           </p>
           <p>
-            This page uses `withAuthUserSSR` rather than `withAuthUserTokenSSR`,
-            so it does not have server-side access to the user ID token.
+            This page uses `withUserSSR` rather than `withUserTokenSSR`, so it
+            does not have server-side access to the user ID token.
           </p>
           <p>Your favorite color is: {favoriteColor}</p>
         </div>
@@ -53,13 +48,12 @@ const Demo = (props: DataType) => {
 
 Demo.defaultProps = defaultProps
 
-export const getServerSideProps = withAuthUserSSR({
+export const getServerSideProps = withUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async (ctx) => {
-  const { AuthUser: user, req } = ctx
-  // The ID token will be null, because `withAuthUserSSR` does not
-  // include one. If you need a server-side token, use
-  // `withAuthUserTokenSSR`.
+  const { user, req } = ctx
+  // The ID token will be null, because `withUserSSR` does not include one.
+  // If you need a server-side token, use `withUserTokenSSR`.
   const token = await user?.getIdToken()
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -86,6 +80,6 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
-export default withAuthUser<DataType>({
+export default withUser<DataType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)

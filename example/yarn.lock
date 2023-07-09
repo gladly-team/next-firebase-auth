@@ -2769,10 +2769,10 @@ next-absolute-url@^1.2.2:
   resolved "https://registry.yarnpkg.com/next-absolute-url/-/next-absolute-url-1.2.2.tgz#9aba5adcee8effcffd63271d99e13213ad04c23b"
   integrity sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==
 
-next-firebase-auth@1.0.0-canary.24:
-  version "1.0.0-canary.24"
-  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-1.0.0-canary.24.tgz#a3ef9c462dc2fc99d940c3d41eb85243c9b81866"
-  integrity sha512-miGHRQdNcvzWKkVNsMhwaLBDoMFaAVd1MnwqrUpItKQn0+AF/hADImR4IINhe6fcnB4xZgPc8d3KF1zart2C/g==
+next-firebase-auth@1.0.0-canary.26:
+  version "1.0.0-canary.26"
+  resolved "https://registry.yarnpkg.com/next-firebase-auth/-/next-firebase-auth-1.0.0-canary.26.tgz#ff74a20d65ac22ebc8bb55c00e285aaccf6344ae"
+  integrity sha512-kLitSnxlAy60FAR6uICpHVhsAj8KNLpyifwWo9E5qh1GkpuKJFq6ze0oBQWQr3EekzkyhNywRlQGB11CzOcm4g==
   dependencies:
     "@babel/runtime" "^7.18.9"
     cookies "^0.8.0"

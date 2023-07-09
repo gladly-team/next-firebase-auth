@@ -1,5 +1,5 @@
 import React from 'react'
-import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { AuthAction, useUser, withUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import Header from '../../components/Header'
 import DemoPageLinks from '../../components/DemoPageLinks'
@@ -14,12 +14,12 @@ const styles = {
 }
 
 const StuffPage = () => {
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
   const { stuffId } = router.query
   return (
     <div>
-      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+      <Header email={user.email} signOut={user.signOut} />
       <div style={styles.content}>
         <div style={styles.infoTextContainer}>
           <h3>Stuff - A dynamic page example</h3>
@@ -31,6 +31,6 @@ const StuffPage = () => {
   )
 }
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(StuffPage)

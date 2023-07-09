@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
+import { useUser, withUser, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import FullPageLoader from '../components/FullPageLoader'
@@ -15,7 +15,7 @@ const styles = {
 }
 
 const Demo = () => {
-  const AuthUser = useAuthUser() // the user is guaranteed to be authenticated
+  const AuthUser = useUser() // the user is guaranteed to be authenticated
 
   const [favoriteColor, setFavoriteColor] = useState()
   const fetchData = useCallback(async () => {
@@ -77,7 +77,7 @@ const Demo = () => {
   )
 }
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   LoaderComponent: FullPageLoader,
