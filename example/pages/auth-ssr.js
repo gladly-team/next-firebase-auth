@@ -1,7 +1,7 @@
 import React from 'react'
 import {
-  withAuthUser,
-  withAuthUserTokenSSR,
+  withUser,
+  withUserTokenSSR,
   AuthAction,
 } from 'next-firebase-auth'
 import FirebaseAuth from '../components/FirebaseAuth'
@@ -32,10 +32,10 @@ const Auth = () => (
   </div>
 )
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
 })()
 
-export default withAuthUser({
+export default withUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP,
 })(Auth)

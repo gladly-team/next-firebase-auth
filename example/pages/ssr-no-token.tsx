@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  useAuthUser,
-  withAuthUser,
-  withAuthUserSSR,
-  AuthAction,
-} from 'next-firebase-auth'
+import { useUser, withUser, withUserSSR, AuthAction } from 'next-firebase-auth'
 import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import getAbsoluteURL from '../utils/getAbsoluteURL'
@@ -28,7 +23,7 @@ const defaultProps = {
 
 const Demo = (props: DataType) => {
   const { favoriteColor } = props
-  const user = useAuthUser()
+  const user = useUser()
   return (
     <div>
       <Header email={user.email} signOut={user.signOut} />
@@ -53,7 +48,7 @@ const Demo = (props: DataType) => {
 
 Demo.defaultProps = defaultProps
 
-export const getServerSideProps = withAuthUserSSR({
+export const getServerSideProps = withUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async (ctx) => {
   const { AuthUser: user, req } = ctx
@@ -86,6 +81,6 @@ export const getServerSideProps = withAuthUserSSR({
   }
 })
 
-export default withAuthUser<DataType>({
+export default withUser<DataType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)
