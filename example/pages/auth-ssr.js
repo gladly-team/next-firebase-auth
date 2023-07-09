@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-  withUser,
-  withUserTokenSSR,
-  AuthAction,
-} from 'next-firebase-auth'
+import { withUser, withUserTokenSSR, AuthAction } from 'next-firebase-auth'
 import FirebaseAuth from '../components/FirebaseAuth'
 
 const styles = {
