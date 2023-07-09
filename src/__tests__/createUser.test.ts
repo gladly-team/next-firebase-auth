@@ -7,6 +7,7 @@ import {
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
+jest.mock('src/getAuth')
 
 afterEach(() => {
   jest.clearAllMocks()

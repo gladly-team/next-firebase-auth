@@ -39,6 +39,9 @@
     "publish:experimental:release": "npm publish --tag experimental",
     "publish:experimental:version": "npm version $(echo $(echo $npm_package_version | cut -d \"-\" -f 1)-experimental.$(git rev-parse --short HEAD))"
   },
+  "scriptsComments": {
+    "publish:experimental": "Be sure to run with npm, not yarn."
+  },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",

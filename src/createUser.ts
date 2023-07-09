@@ -116,11 +116,10 @@ const createUser = ({
   if (firebaseUserClientSDK) {
     if (isClientSide()) {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const { getApp } = require('firebase/app')
+      const getAuth = require('src/getAuth').default
       // eslint-disable-next-line global-require,  @typescript-eslint/no-var-requires
-      const { getAuth, signOut } = require('firebase/auth')
-
-      signOutFunc = async () => signOut(getAuth(getApp()))
+      const { signOut } = require('firebase/auth')
+      signOutFunc = async () => signOut(getAuth())
     }
 
     /**

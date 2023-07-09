@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getApp } from 'firebase/app'
 import {
   User as FirebaseUser,
-  getAuth,
   getIdTokenResult,
   onIdTokenChanged,
 } from 'firebase/auth'
@@ -10,6 +8,7 @@ import { getConfig } from 'src/config'
 import createUser, { User } from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
+import getAuth from 'src/getAuth'
 
 const defaultTokenChangedHandler = async (user: User) => {
   const {
@@ -175,7 +174,7 @@ const useFirebaseUser = () => {
     }
 
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
-    const unsubscribe = onIdTokenChanged(getAuth(getApp()), onIdTokenChange)
+    const unsubscribe = onIdTokenChanged(getAuth(), onIdTokenChange)
     return () => {
       unsubscribe()
       isCancelled = true
