@@ -11,7 +11,6 @@ import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
 import { PageURL, RedirectObject } from './redirectTypes'
-import initFirebaseClientSDK from './initFirebaseClientSDK'
 
 export interface WithUserOptions {
   /**
@@ -81,11 +80,6 @@ const withUser: WithUser =
     ChildComponent: ComponentType<ComponentProps>
   ): ComponentType<ComponentProps & HOCProps> => {
     logDebug('[withUser] Calling "withUser".')
-
-    // Ensure the Firebase JS SDK is initialized.
-    if (isClientSide()) {
-      initFirebaseClientSDK()
-    }
 
     // Some dependencies are optional. Throw if they aren't installed
     // when calling this API.

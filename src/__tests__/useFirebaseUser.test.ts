@@ -13,7 +13,6 @@ import logDebug from 'src/logDebug'
 
 jest.mock('firebase/app')
 jest.mock('firebase/auth')
-jest.mock('src/getAuth')
 jest.mock('src/config')
 jest.mock('src/logDebug')
 
