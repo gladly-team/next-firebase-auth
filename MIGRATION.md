@@ -19,6 +19,8 @@ v1 renames "AuthUser" to "user" where it's used across methods and properties. C
 npx -p next-firebase-auth codemod all-v1 .
 ```
 
+[This pull request](https://github.com/gladly-team/next-firebase-auth/pull/666) shows all changes made when migrating the example app.
+
 #### The SSR data property `AuthUser` has become `user`
 
 The `withAuthUserTokenSSR` and `withAuthUserSSR` functions will receive an object with a `user` property rather than an `AuthUser` property.
