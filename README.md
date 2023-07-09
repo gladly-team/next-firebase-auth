@@ -8,7 +8,7 @@
 
 Simple Firebase authentication for all Next.js rendering strategies.
 
-#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Upgrading to Firebase 9](#upgrading-to-firebase-9) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
+#### [Demo](#demo) • [Alternatives](#when-not-to-use-this-package) • [Getting Started](#get-started) • [API](#api) • [Config](#config) • [Types](#types) • [Migrating to v1](#migrating-to-v1) • [Examples](#examples) • [Troubleshooting](#troubleshooting) • [Contributing](./CONTRIBUTING.md)
 
 ## What It Does
 
@@ -661,45 +661,9 @@ const redirect = ({ ctx, user }) => {
 
 The `ctx` is the [Next.js context value](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) if server side, or undefined if client side.
 
-## Upgrading to Firebase 9
+## Migrating to v1
 
-Firebase 9 has a new API surface designed to facilitate tree-shaking (removal of unused code) to make your web app as small and fast as possible.
-
-If you were previously using version 7 of 8 of the SDK you can easily upgrade by following the [official guide](https://firebase.google.com/docs/web/modular-upgrade).
-
-Here is an example of how the migration might look in your app:
-
-```diff
--import firebase from 'firebase/app'
--import 'firebase/firestore'
-+import { getApp } from 'firebase/app'
-+import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
- import { useEffect } from 'react'
-
- const Artists = () => {
-   const [artists, setArtists] = useState(artists)
-
-   useEffect(() => {
--    return firebase.firestore()
--      .collection('artists')
--      .onSnapshot((snap) => {
-+    return onSnapshot(collection(getFirestore(getApp()), 'artists'), (snap) => {
-       if (!snap) {
-         return
-       }
-       setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
-     })
-   }, [])
-
-   return (
-     <div>
-       {artists.map((artist) => (
-         <div>{artist.name}</div>
-       ))}
-     </div>
-   )
- }
-```
+See [MIGRATION.md](./MIGRATION.md).
 
 ## Examples
 

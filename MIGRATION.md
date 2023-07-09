@@ -79,3 +79,43 @@ There is no codemod for this change. Please make edits manually.
 ### Breaking Changes: Peer Dependencies
 
 TODO
+
+## Upgrading to Firebase 9
+
+Firebase 9 has a new API surface designed to facilitate tree-shaking (removal of unused code) to make your web app as small and fast as possible.
+
+If you were previously using version 7 of 8 of the SDK you can easily upgrade by following the [official guide](https://firebase.google.com/docs/web/modular-upgrade).
+
+Here is an example of how the migration might look in your app:
+
+```diff
+-import firebase from 'firebase/app'
+-import 'firebase/firestore'
++import { getApp } from 'firebase/app'
++import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
+ import { useEffect } from 'react'
+
+ const Artists = () => {
+   const [artists, setArtists] = useState(artists)
+
+   useEffect(() => {
+-    return firebase.firestore()
+-      .collection('artists')
+-      .onSnapshot((snap) => {
++    return onSnapshot(collection(getFirestore(getApp()), 'artists'), (snap) => {
+       if (!snap) {
+         return
+       }
+       setArtists(snap.docs.map((doc) => ({ ...doc.data(), key: doc.id })))
+     })
+   }, [])
+
+   return (
+     <div>
+       {artists.map((artist) => (
+         <div>{artist.name}</div>
+       ))}
+     </div>
+   )
+ }
+```
