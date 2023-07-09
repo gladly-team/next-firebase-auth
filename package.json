@@ -57,7 +57,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "bundlesize": "^0.18.1",
     "copy-webpack-plugin": "^11.0.0",
-    "core-js": "^3.23.5",
+    "core-js": "^3.31.1",
     "datwd": "^0.2.0",
     "dts-bundle-generator": "^8.0.1",
     "eslint": "^8.20.0",
