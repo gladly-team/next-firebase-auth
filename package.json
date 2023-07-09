@@ -35,7 +35,12 @@
     "dev:publish": "npm-run-all -s build dev:yalc-publish-push",
     "dev:yalc-publish-push": "yalc publish --push",
     "analyze-bundle": "WEBPACK_ANALYZE_BUNDLE=true yarn run build",
-    "version:canary": "yarn version --prerelease --preid=canary"
+    "publish:experimental": "npm-run-all -s test build publish:experimental:version publish:experimental:release",
+    "publish:experimental:release": "npm publish --tag experimental",
+    "publish:experimental:version": "npm version $(echo $(echo $npm_package_version | cut -d \"-\" -f 1)-experimental.$(git rev-parse --short HEAD))"
+  },
+  "scriptsComments": {
+    "publish:experimental": "Be sure to run with npm, not yarn."
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
