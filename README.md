@@ -1,6 +1,6 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/gladly-team/next-firebase-auth/node.js.yml?branch=v1.x)](https://github.com/gladly-team/next-firebase-auth/actions/workflows/node.js.yml?query=branch%3Av1.x+)
 [![codecov](https://codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x/graph/badge.svg)](https://app.codecov.io/gh/gladly-team/next-firebase-auth/branch/v1.x)
-[![npm](https://img.shields.io/npm/v/next-firebase-auth/canary)](https://www.npmjs.com/package/next-firebase-auth)
+[![npm](https://img.shields.io/npm/v/next-firebase-auth/latest)](https://www.npmjs.com/package/next-firebase-auth)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/next-firebase-auth?label=bundle%20size)](https://bundlephobia.com/package/next-firebase-auth)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](./CODE_OF_CONDUCT.md)
 
