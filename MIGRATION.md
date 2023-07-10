@@ -7,7 +7,7 @@
 Migrating to v1 requires a few steps:
 1. Migrate to the latest API
 2. Upgrade `firebase` and `firebase-admin`
-    * Note: we recommend pinning `firebase` 9.16.0 until issue [#614](https://github.com/gladly-team/next-firebase-auth/issues/614) is resolved
+    * Note: we recommend pinning `firebase` to 9.16.0 until issue [#614](https://github.com/gladly-team/next-firebase-auth/issues/614) is resolved
 
 ### Breaking Changes: API
 
