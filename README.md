@@ -63,11 +63,11 @@ Install:
 
 `yarn add next-firebase-auth` or `npm i next-firebase-auth`
 
-> ⚠️ If you're using Firebase JS SDK v8 or below, use `next-firebase-auth@^0.15.0`.
-
 Make sure peer dependencies are also installed:
 
 `yarn add firebase firebase-admin next react react-dom`
+
+> ⚠️ Note: we recommend pinning `firebase` to 9.16.0 until issue [#614](https://github.com/gladly-team/next-firebase-auth/issues/614) is resolved
 
 Create a module to initialize `next-firebase-auth`.
 
