@@ -61,7 +61,7 @@ Codemod:
 npx -p next-firebase-auth codemod withauthuserssr-to-withuserssr .
 ```
 
-#### `useAuthUser` has become `useAuthUser`
+#### `useAuthUser` has become `useUser`
 
 Codemod:
 
