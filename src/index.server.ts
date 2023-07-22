@@ -30,7 +30,7 @@ export const useUser: UseUser = () => {
   // https://github.com/gladly-team/next-firebase-auth/issues/502
   try {
     // eslint-disable-next-line global-require
-    require('react')
+    // require('react')
   } catch (e) {
     throw new Error(
       'The dependency "react" is required when calling `useUser`.'

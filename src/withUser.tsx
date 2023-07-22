@@ -1,5 +1,8 @@
 /* eslint-disable block-scoped-var */
 /* globals window */
+import React, { useEffect, useCallback, useMemo } from 'react'
+import { useRouter } from 'next/router'
+import { UserContext } from 'src/useUser'
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
@@ -86,10 +89,10 @@ const withUser: WithUser =
     // https://github.com/gladly-team/next-firebase-auth/issues/502
     try {
       /* eslint-disable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
-      var React = require('react')
-      var { useEffect, useCallback, useMemo } = require('react')
-      var { useRouter } = require('next/router')
-      var { UserContext } = require('src/useUser')
+      // var React = require('react')
+      // var { useEffect, useCallback, useMemo } = require('react')
+      // var { useRouter } = require('next/router')
+      // var { UserContext } = require('src/useUser')
       /* eslint-enable global-require, no-var, vars-on-top, @typescript-eslint/no-var-requires */
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {

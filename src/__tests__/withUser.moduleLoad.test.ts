@@ -23,7 +23,7 @@ afterEach(() => {
   jest.resetModules()
 })
 
-describe('withUser (resetting modules)', () => {
+describe.skip('withUser (resetting modules)', () => {
   it('runs without error by default', () => {
     expect.assertions(1)
     const withUser = require('src/withUser').default

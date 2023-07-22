@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: 0 */
-import { User as FirebaseUser } from 'firebase/auth'
+import { getApp } from 'firebase/app'
+import { getAuth, signOut, User as FirebaseUser } from 'firebase/auth'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
@@ -115,10 +116,10 @@ const createUser = ({
   let tokenString: string | null = null // used for serialization
   if (firebaseUserClientSDK) {
     if (isClientSide()) {
-      // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const { getApp } = require('firebase/app')
-      // eslint-disable-next-line global-require,  @typescript-eslint/no-var-requires
-      const { getAuth, signOut } = require('firebase/auth')
+      // // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+      // const { getApp } = require('firebase/app')
+      // // eslint-disable-next-line global-require,  @typescript-eslint/no-var-requires
+      // const { getAuth, signOut } = require('firebase/auth')
 
       signOutFunc = async () => signOut(getAuth(getApp()))
     }

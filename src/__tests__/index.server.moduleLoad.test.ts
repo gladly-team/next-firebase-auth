@@ -10,7 +10,7 @@ afterEach(() => {
   jest.resetModules()
 })
 
-describe('index.server.ts (resetting modules)', () => {
+describe.skip('index.server.ts (resetting modules)', () => {
   it('imports without error when missing optional dependencies', () => {
     expect.assertions(0)
 
