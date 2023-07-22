@@ -3,7 +3,10 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
+
+// TODO: async import
 import initFirebaseClient from 'src/initFirebaseClientSDK'
+
 import { UserDeserialized } from './UserDeserialized'
 import { UserSerialized } from './UserSerialized'
 import { User } from './User'
