@@ -5,9 +5,10 @@ import {
   onIdTokenChanged,
 } from 'firebase/auth'
 import { getConfig } from 'src/config'
-import createUser, { User } from 'src/createUser'
+import createUser from 'src/createUser'
 import { Claims, filterStandardClaims } from 'src/claims'
 import logDebug from 'src/logDebug'
+import { User } from './User'
 import initFirebaseClientSDK from './initFirebaseClientSDK'
 
 const defaultTokenChangedHandler = async (user: User) => {

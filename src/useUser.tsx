@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { User } from './createUser'
+import { User } from './User'
 
 type UserContext =
   | (User & {

@@ -1,4 +1,4 @@
-import createUser, { User } from 'src/createUser'
+import createUser from 'src/createUser'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {
@@ -11,6 +11,7 @@ import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
+import { User } from './User'
 
 export type GetUserFromCookiesOptions = {
   /**

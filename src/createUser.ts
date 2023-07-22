@@ -3,21 +3,10 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
-
-interface UserDeserialized {
-  id?: string
-  claims?: object
-  email?: string
-  emailVerified: boolean
-  phoneNumber?: string
-  displayName?: string
-  photoURL?: string
-  clientInitialized: boolean
-  _token?: string
-  tenantId: string
-}
-
-export type UserSerialized = string
+import initFirebaseClient from 'src/initFirebaseClientSDK'
+import { UserDeserialized } from './UserDeserialized'
+import { UserSerialized } from './UserSerialized'
+import { User } from './User'
 
 interface CreateUserInput {
   firebaseUserClientSDK?: FirebaseUser
@@ -29,22 +18,6 @@ interface CreateUserInput {
 }
 
 type getIdToken = (forceRefresh?: boolean) => Promise<string | null>
-
-export interface User {
-  id: string | null
-  email: string | null
-  emailVerified: boolean
-  phoneNumber: string | null
-  displayName: string | null
-  photoURL: string | null
-  claims: Record<string, string | boolean>
-  tenantId: string | null
-  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
-  clientInitialized: boolean
-  firebaseUser: FirebaseUser | null
-  signOut: () => Promise<void>
-  serialize: (a?: { includeToken?: boolean }) => string
-}
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
@@ -116,7 +89,6 @@ const createUser = ({
   if (firebaseUserClientSDK) {
     if (isClientSide()) {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const initFirebaseClient = require('src/initFirebaseClientSDK').default
       const { auth } = initFirebaseClient()
       // eslint-disable-next-line global-require,  @typescript-eslint/no-var-requires
       const { signOut } = require('firebase/auth')

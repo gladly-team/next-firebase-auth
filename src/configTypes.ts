@@ -1,6 +1,6 @@
 import * as Cookies from 'cookies'
 import { PageURL } from './redirectTypes'
-import { User } from './createUser'
+import { User } from './User'
 import { Spread } from './Spread'
 
 type OnErrorHandler = (error: Error) => void
