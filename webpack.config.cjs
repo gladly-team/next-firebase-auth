@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-// const path = require('path')
-// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-// const nodeExternals = require('webpack-node-externals')
-// const CopyPlugin = require('copy-webpack-plugin')
-// const includeSubdependencies = require('datwd')
-// const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const path = require('path')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const nodeExternals = require('webpack-node-externals')
+const CopyPlugin = require('copy-webpack-plugin')
+const includeSubdependencies = require('datwd')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
-import path from 'path'
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-import nodeExternals from 'webpack-node-externals'
-import CopyPlugin from 'copy-webpack-plugin'
-import includeSubdependencies from 'datwd'
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+// import path from 'path'
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+// import nodeExternals from 'webpack-node-externals'
+// import CopyPlugin from 'copy-webpack-plugin'
+// import includeSubdependencies from 'datwd'
+// import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 
 const analyzeBundle = process.env.WEBPACK_ANALYZE_BUNDLE
 
@@ -103,9 +103,9 @@ const serverConfig = {
 const clientConfig = {
   ...sharedConfig,
   entry: './src/index.ts',
-  target: 'web',
+  // target: 'web',
   // target: 'node',
-  // target: 'es6',
+  target: 'es6',
   output: {
     ...sharedConfig.output,
     filename: 'index.browser.js',
@@ -120,4 +120,4 @@ const clientConfig = {
   ],
 }
 
-export default [serverConfig, clientConfig]
+module.exports = [serverConfig, clientConfig]
