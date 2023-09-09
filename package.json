@@ -132,7 +132,8 @@
   "dependencies": {
     "@babel/runtime": "^7.22.6",
     "cookies": "^0.8.0",
-    "hoist-non-react-statics": "^3.3.2"
+    "hoist-non-react-statics": "^3.3.2",
+    "workbox-precaching": "^7.0.0"
   },
   "files": [
     "/build"

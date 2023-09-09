@@ -1,7 +1,6 @@
 'use client'
 
-import { getApp, getApps, initializeApp } from 'firebase/app'
-import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import { getApps, initializeApp } from 'firebase/app'
 
 export default function initFirebase() {
   // Only initialize on the client side.
@@ -16,9 +15,9 @@ export default function initFirebase() {
     })
     console.log('Initialized the Firebase JS SDK.')
   } else {
-    console.log(
-      'Did not initialize the Firebase JS SDK because an app already exists.'
-    )
+    // console.log(
+    //   'Did not initialize the Firebase JS SDK because an app already exists.'
+    // )
   }
 }
 

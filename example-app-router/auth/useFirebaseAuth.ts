@@ -1,16 +1,9 @@
-import { getApp } from "firebase/app"
-import { getAuth } from "firebase/auth"
-import initFirebase from "./initFirebase"
 import { useCallback } from "react"
+import getFirebaseAuth from "./getFirebaseAuth"
 
 const useFirebaseAuth = () => {
-  const getFirebaseAuth = useCallback(() => {
-    initFirebase()
-    const auth = getAuth(getApp())
-    return auth
-  }, [])
-
-  return { getFirebaseAuth }
+  const getFirebaseAuthMemoized = useCallback(() => getFirebaseAuth(), [])
+  return { getFirebaseAuth: getFirebaseAuthMemoized }
 }
 
 export default useFirebaseAuth
