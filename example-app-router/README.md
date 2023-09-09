@@ -1,34 +1,26 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Using Service Worker for Auth
 
-First, run the development server:
+This is a proof of concept for using a service worker to send ID tokens to server-rendered pages. See [this issue](https://github.com/gladly-team/next-firebase-auth/issues/287) and [Firebase docs](https://firebase.google.com/docs/auth/web/service-worker-sessions).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+### General flow:
+1. On the auth page, register the service worker, which initializes Firebase, sets up request interception, and will save the authed user.
+2. On future requests, the service worker gets the ID token (refreshing if needed) and adds it as a request header.
+3. Middleware on the server receives the ID token, verifies it, and gets the user. We add the user to auth context.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### WIP Notes
+To develop at the moment:
+1. Run this app to register the service worker on localhost 
+2. Auth in another app on localhost, since auth is not yet set up here
+3. Return to this app
+4. Inspect requests to see SW-added headers
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### To Do
+1. Add middlware to get the user from the ID token server-side
+2. Pass user to auth provider (server component)
+3. Clean up service worker: remove unneeded logic, maybe use Workbox, make sure types aren't erroring
+4. Add auth to this example
+5. Move code into NFA under unstable APIs
+6. Clean up this example: get parent ESLint config working
+7. Later: see if the middleware can also support existing cookies (see [issue](https://github.com/gladly-team/next-firebase-auth/issues/418#issuecomment-1203655282)). This way, developers with apps on the edge could use either cookies (no ID token) or integrate a service worker.
