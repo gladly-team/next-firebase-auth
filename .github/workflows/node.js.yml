@@ -10,7 +10,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v1
         with:
-          node-version: 18.x
+          node-version: 20.x
       - name: Install dependencies
         run: yarn install
       # Build before running unit tests so that built types are updated before
@@ -21,7 +21,9 @@ jobs:
         run: yarn test # generates coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
-      - name: Check bundle sizes
-        run: yarn run bundlesize:no-build
-        env:
-          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
+      # Disabling bundlesize for now because of:
+      # https://github.com/siddharthkp/bundlesize/pull/370
+      # - name: Check bundle sizes
+      #   run: yarn run bundlesize:no-build
+      #   env:
+      #     BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
