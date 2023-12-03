@@ -1,6 +1,6 @@
 /* globals window */
 import React, { useEffect, useState } from 'react'
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import StyledFirebaseAuth from './StyledFirebaseAuth'
 import { getApp } from 'firebase/app'
 import { getAuth, EmailAuthProvider } from 'firebase/auth'
 
