@@ -67,8 +67,6 @@ Make sure peer dependencies are also installed:
 
 `yarn add firebase firebase-admin next react react-dom`
 
-> ⚠️ Note: we recommend pinning `firebase` to 9.16.0 until issue [#614](https://github.com/gladly-team/next-firebase-auth/issues/614) is resolved
-
 Create a module to initialize `next-firebase-auth`.
 
 #### Example config:
@@ -77,9 +75,17 @@ _See [config documentation](#config) for details_
 
 ```js
 // ./initAuth.js
+import { initializeApp } from 'firebase/app'
 import { init } from 'next-firebase-auth'
 
 const initAuth = () => {
+  const firebaseClientInitConfig = {
+    apiKey: 'MyExampleAppAPIKey123', // required
+    authDomain: 'my-example-app.firebaseapp.com',
+    databaseURL: 'https://my-example-app.firebaseio.com',
+    projectId: 'my-example-app-id',
+  }
+  initializeApp(firebaseClientInitConfig)
   init({
     authPageURL: '/auth',
     appPageURL: '/',
@@ -103,12 +109,7 @@ const initAuth = () => {
     },
     // Use application default credentials (takes precedence over firebaseAdminInitConfig if set)
     // useFirebaseAdminDefaultCredential: true,
-    firebaseClientInitConfig: {
-      apiKey: 'MyExampleAppAPIKey123', // required
-      authDomain: 'my-example-app.firebaseapp.com',
-      databaseURL: 'https://my-example-app.firebaseio.com',
-      projectId: 'my-example-app-id',
-    },
+    firebaseClientInitConfig,
     // tenantId: 'example-tenant-id', // Optional, only necessary in multi-tenant configuration
     cookies: {
       name: 'ExampleApp', // required
@@ -238,7 +239,9 @@ export default withUser()(Demo)
 
 #### `init(config)`
 
-Initializes `next-firebase-auth`, taking a [config](#config) object. **Must be called** before calling any other method.
+Initializes `next-firebase-auth`, taking a [config](#config) object.
+* This **must** before calling any other method.
+* We recommend initializing the Firebase client SDK prior to calling this.
 
 #### `withUser({ ...options })(PageComponent)`
 
@@ -523,7 +526,7 @@ When true, `firebase-admin` will implicitly find your hosting environment servic
 
 `Object`
 
-Configuration passed to the Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. Other properties are required unless you initialize the `firebase` app yourself before initializing `next-firebase-auth` (or, less commonly, if you're running `next-firebase-auth` solely on the server side).
+Configuration matching Firebase JS SDK's [`initializeApp`](https://firebase.google.com/docs/reference/node/firebase#initializeapp). The `firebaseClientInitConfig.apiKey` value is **always required**. We recommend initializing the Firebase client SDK yourself prior to initializing `next-firebase-auth`; however, `next-firebase-auth` will attempt to initialize Firebase if a Firebase app does not already exist.
 
 #### cookies
 
