@@ -1,6 +1,4 @@
 /* eslint-disable global-require */
-import 'firebase/app'
-import 'firebase/auth'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import initCommon, { Init } from 'src/initCommon'
 import type { GetUserFromCookies } from './getUserFromCookies'
