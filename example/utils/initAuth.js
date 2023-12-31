@@ -1,8 +1,17 @@
 /* globals window */
+// import { initializeApp } from 'firebase/app'
 import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
 
 const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
+
+// This fixes the error:
+// initializeApp({
+//   apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
+//   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+//   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+//   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+// })
 
 const initAuth = () => {
   init({
