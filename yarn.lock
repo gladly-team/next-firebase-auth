@@ -3929,10 +3929,10 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-dts-bundle-generator@^9.2.1:
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/dts-bundle-generator/-/dts-bundle-generator-9.2.1.tgz#e918d956588ca1deb1d3bcacc4c4cd4baef8853a"
-  integrity sha512-sMyIGJcn+FSc4f4VzRgX4muZS2uG91c/DjC++HkpZJyudGedSpGNR5bY9HEkSyyYFay0ERzjoDM7uKgUycaRvw==
+dts-bundle-generator@^8.0.1:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/dts-bundle-generator/-/dts-bundle-generator-8.1.2.tgz#598990bcf0f35f0334908c73404be3ee5d6bd4bb"
+  integrity sha512-/yvy9Xw0cfFodA8n6jEq8/COZ/WXgJtPabnLBAzIfP/TfxWbD/0a0dvfqNHneNqswQrH0kUcaAfGJC9UNvH97w==
   dependencies:
     typescript ">=5.0.2"
     yargs "^17.6.0"

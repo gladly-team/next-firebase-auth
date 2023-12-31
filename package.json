@@ -64,7 +64,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "core-js": "^3.35.0",
     "datwd": "^0.2.0",
-    "dts-bundle-generator": "^9.2.1",
+    "dts-bundle-generator": "^8.0.1",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.1.0",
