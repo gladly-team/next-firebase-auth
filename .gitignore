@@ -104,3 +104,6 @@ dist
 .tern-port
 
 build
+.env.local
+next-env.d.ts
+service-worker.js

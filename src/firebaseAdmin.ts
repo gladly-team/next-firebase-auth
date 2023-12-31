@@ -154,6 +154,8 @@ export const verifyIdToken: VerifyIdToken = async (
                 } else {
                   logDebug(verifyErr)
                 }
+
+                newTokenFailure = true
               }
             }
 

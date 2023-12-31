@@ -20,7 +20,8 @@ A clear and concise description of the bug.
 **Versions**
 
 `next-firebase-auth` version: 
-Firebase JS SDK: 
+Firebase JS SDK (`firebase`): 
+Firebase admin SDK (`firebase-admin`): 
 Next.js: 
 
 **To Reproduce**
