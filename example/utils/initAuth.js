@@ -5,17 +5,17 @@ import absoluteUrl from 'next-absolute-url'
 
 const TWELVE_DAYS_IN_MS = 12 * 60 * 60 * 24 * 1000
 
-// TODO:
-// Let's recommend initializing the Firebase app manually.
-
 const initAuth = () => {
-  // This fixes the error:
-  initializeApp({
+  // Initialize Firebase.
+  const firebaseClientInitConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  })
+  }
+  initializeApp(firebaseClientInitConfig)
+
+  // Initialize next-firebase-auth.
   init({
     debug: true,
 
@@ -89,12 +89,7 @@ const initAuth = () => {
       },
       databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     },
-    firebaseClientInitConfig: {
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    },
+    firebaseClientInitConfig,
     cookies: {
       name: 'ExampleApp',
       keys: [
