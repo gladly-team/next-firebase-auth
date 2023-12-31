@@ -1,4 +1,4 @@
-import * as Cookies from 'cookies'
+import Cookies from 'cookies'
 import { PageURL } from './redirectTypes'
 import { User } from './createUser'
 import { Spread } from './Spread'

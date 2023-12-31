@@ -22,7 +22,7 @@ type SpreadTwo<L, R> = Id<
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Spread<A extends readonly [...any]> = A extends [
   infer L,
-  ...infer R
+  ...infer R,
 ]
   ? SpreadTwo<L, Spread<R>>
   : unknown
