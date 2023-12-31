@@ -1,6 +1,4 @@
 /* globals window */
-import 'firebase/app'
-import 'firebase/auth'
 import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
 
