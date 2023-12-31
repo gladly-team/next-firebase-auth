@@ -9,7 +9,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export type SetAuthCookies = (
   req: NextApiRequest,
   res: NextApiResponse,
-  options: { token?: string }
+  options?: { token?: string }
 ) => Promise<{
   idToken: string | null
   refreshToken: string | null
