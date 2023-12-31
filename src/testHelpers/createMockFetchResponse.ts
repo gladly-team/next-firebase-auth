@@ -15,6 +15,6 @@ const createMockFetchResponse = () =>
     text: '',
     type: 'cors' as ResponseType,
     url: 'https://example.com/foo/',
-  } as unknown as Response)
+  }) as unknown as Response
 
 export default createMockFetchResponse

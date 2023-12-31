@@ -39,9 +39,8 @@ const setAuthCookies: SetAuthCookies = async (
   let refreshToken = null
   let user = createUser() // default to an unauthed user
   try {
-    ;({ idToken, refreshToken, user } = await getCustomIdAndRefreshTokens(
-      token
-    ))
+    ;({ idToken, refreshToken, user } =
+      await getCustomIdAndRefreshTokens(token))
   } catch (e) {
     logDebug(
       '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
