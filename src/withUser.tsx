@@ -4,12 +4,13 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import type { ComponentType } from 'react'
 
 import { MODULE_NOT_FOUND } from 'src/constants'
-import createUser, { UserSerialized } from 'src/createUser'
+import createUser from 'src/createUser'
 import useFirebaseUser from 'src/useFirebaseUser'
 import { AuthAction } from 'src/AuthAction'
 import isClientSide from 'src/isClientSide'
 import logDebug from 'src/logDebug'
 import { getAppRedirectInfo, getLoginRedirectInfo } from 'src/redirects'
+import { UserSerialized } from './UserSerialized'
 import { PageURL, RedirectObject } from './redirectTypes'
 
 export interface WithUserOptions {

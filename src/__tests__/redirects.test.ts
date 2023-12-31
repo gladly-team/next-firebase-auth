@@ -3,7 +3,7 @@ import type { ParsedUrlQuery } from 'querystring'
 import { getLoginRedirectInfo, getAppRedirectInfo } from 'src/redirects'
 import getMockConfig from 'src/testHelpers/createMockConfig'
 import { setConfig } from 'src/config'
-import { User } from 'src/createUser'
+import { User } from 'src/User'
 import { RedirectInput } from 'src/redirectTypes'
 
 describe('redirects', () => {

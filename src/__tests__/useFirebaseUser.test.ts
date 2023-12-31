@@ -14,6 +14,7 @@ import logDebug from 'src/logDebug'
 jest.mock('firebase/app')
 jest.mock('firebase/auth')
 jest.mock('src/config')
+jest.mock('src/initFirebaseClientSDK')
 jest.mock('src/logDebug')
 
 const mockGetIdTokenResult = getIdTokenResult as jest.Mock

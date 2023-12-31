@@ -9,11 +9,11 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "9.16.0",
+    "firebase": "9.17.1",
     "firebase-admin": "^11.9.0",
     "next": "13.4.9",
     "next-absolute-url": "^1.2.2",
-    "next-firebase-auth": "1.0.0",
+    "next-firebase-auth": "experimental",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-firebaseui": "^6.0.0"

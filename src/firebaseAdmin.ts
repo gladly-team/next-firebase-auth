@@ -1,9 +1,10 @@
 import { getAuth as getAdminAuth } from 'firebase-admin/auth'
 import initFirebaseAdminSDK from 'src/initFirebaseAdminSDK'
-import createUser, { User } from 'src/createUser'
+import createUser from 'src/createUser'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
 import { FirebaseError as FirebaseErrorType } from 'firebase-admin/app'
+import { User } from './User'
 
 // If the FIREBASE_AUTH_EMULATOR_HOST variable is set, send the token request to the emulator
 const getTokenPrefix = () =>
