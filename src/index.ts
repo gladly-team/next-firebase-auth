@@ -1,4 +1,6 @@
 /* eslint-disable global-require */
+import 'firebase/app'
+import 'firebase/auth'
 import initFirebaseClientSDK from 'src/initFirebaseClientSDK'
 import isClientSide from 'src/isClientSide'
 import initCommon, { Init } from 'src/initCommon'
