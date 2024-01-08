@@ -4,7 +4,7 @@ import 'firebaseui/dist/firebaseui.css'
 import {auth} from "firebaseui"
 
 interface Props {
-// The Firebase UI Web UI Config object.
+  // The Firebase UI Web UI Config object.
   // See: https://github.com/firebase/firebaseui-web#configuration
   uiConfig: auth.Config;
   // Callback that will be passed the FirebaseUi instance before it is
