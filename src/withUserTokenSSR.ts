@@ -50,7 +50,7 @@ type GetSSRResult<P> =
 
 type SSRPropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
-  D extends PreviewData = PreviewData
+  D extends PreviewData = PreviewData,
 > = GetServerSidePropsContext<Q, D> & { user?: User }
 
 type SSRPropsGetter<P, Q extends ParsedUrlQuery, D extends PreviewData> = (
@@ -70,7 +70,7 @@ export type WithUserSSR = (
 ) => <
   P extends Dictionary = Dictionary,
   Q extends ParsedUrlQuery = ParsedUrlQuery,
-  D extends PreviewData = PreviewData
+  D extends PreviewData = PreviewData,
 >(
   propGetter?: SSRPropsGetter<P, Q, D>
 ) => GetServerSideProps<P, Q, D>

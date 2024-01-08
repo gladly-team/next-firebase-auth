@@ -9,7 +9,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export type SetAuthCookies = (
   req: NextApiRequest,
   res: NextApiResponse,
-  options: { token?: string }
+  options?: { token?: string }
 ) => Promise<{
   idToken: string | null
   refreshToken: string | null
@@ -39,9 +39,8 @@ const setAuthCookies: SetAuthCookies = async (
   let refreshToken = null
   let user = createUser() // default to an unauthed user
   try {
-    ;({ idToken, refreshToken, user } = await getCustomIdAndRefreshTokens(
-      token
-    ))
+    ;({ idToken, refreshToken, user } =
+      await getCustomIdAndRefreshTokens(token))
   } catch (e) {
     logDebug(
       '[setAuthCookies] Failed to verify the ID token. Cannot authenticate the user or get a refresh token.'
