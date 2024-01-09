@@ -72,24 +72,6 @@ export interface ConfigInput {
    * https://firebase.google.com/docs/emulator-suite/connect_auth
    */
   firebaseAuthEmulatorHost?: string
-  /**
-   * The config passed to the Firebase client JS SDK's `initializeApp`.
-   */
-  firebaseClientInitConfig: {
-    apiKey: string
-    projectId?: string
-    appId?: string
-    // "PROJECT_ID.firebaseapp.com"
-    authDomain?: string
-    // "https://PROJECT_ID.firebaseio.com"
-    databaseURL?: string
-    // "PROJECT_ID.appspot.com"
-    storageBucket?: string
-    // "SENDER_ID"
-    messagingSenderId?: string
-    // "G-MEASUREMENT_ID"
-    measurementId?: string
-  }
   tenantId?: string
   cookies: Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {
     // The base name for the auth cookies.
