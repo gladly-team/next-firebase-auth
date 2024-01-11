@@ -132,7 +132,6 @@
   "dependencies": {
     "@babel/runtime": "^7.23.7",
     "cookies": "^0.8.0",
-    "firebaseui": "^6.1.0",
     "hoist-non-react-statics": "^3.3.2"
   },
   "files": [
