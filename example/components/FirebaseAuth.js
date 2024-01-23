@@ -1,8 +1,8 @@
 /* globals window */
 import React, { useEffect, useState } from 'react'
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import { getApp } from 'firebase/app'
 import { getAuth, EmailAuthProvider } from 'firebase/auth'
+import StyledFirebaseAuth from './StyledFirebaseAuth'
 
 // Note that next-firebase-auth inits Firebase for us,
 // so we don't need to.
