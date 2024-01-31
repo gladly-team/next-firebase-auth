@@ -50,6 +50,8 @@ Depending on your app's needs, other approaches might work better for you.
 
 **If your app needs a generalized authentication solution**—not specifically Firebase authentication—you could consider using [NextAuth.js](https://github.com/nextauthjs/next-auth). NextAuth.js does *not* use Firebase authentication but supports a wide variety of identity providers, including Google. [Read more here](https://github.com/gladly-team/next-firebase-auth/discussions/522#discussioncomment-3336440) about the differences between `next-firebase-auth` and NextAuth.js to see which works best for your needs.
 
+**If your app uses Next.js's app router,** this package does not yet support it. You can follow progress in [#568](https://github.com/gladly-team/next-firebase-auth/issues/568).
+
 **This package will likely be helpful** if you expect to use both static pages and SSR or if you need access to Firebase ID tokens server side.
 
 > A quick note on what this package does _not_ do:
