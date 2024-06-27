@@ -90,6 +90,7 @@ export interface ConfigInput {
     // "G-MEASUREMENT_ID"
     measurementId?: string
   }
+  firebaseClientAppName?: string
   tenantId?: string
   cookies: Omit<Cookies.Option & Cookies.SetOption, 'sameSite'> & {
     // The base name for the auth cookies.
