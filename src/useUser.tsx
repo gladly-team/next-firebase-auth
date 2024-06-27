@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { User } from './createUser'
+import { User } from './sharedTypes'
 
 type UserContext =
   | (User & {

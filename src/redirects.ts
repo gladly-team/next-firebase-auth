@@ -1,6 +1,6 @@
 import type { GetServerSidePropsContext } from 'next'
 
-import { User } from 'src/createUser'
+import { User } from 'src/sharedTypes'
 import { getConfig } from 'src/config'
 import {
   PageURL,
