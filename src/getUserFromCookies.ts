@@ -1,4 +1,5 @@
-import createUser, { User } from 'src/createUser'
+import createUser from 'src/createUser'
+import { User } from 'src/sharedTypes'
 import { getCookie } from 'src/cookies'
 import { verifyIdToken } from 'src/firebaseAdmin'
 import {

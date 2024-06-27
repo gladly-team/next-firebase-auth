@@ -3,7 +3,8 @@ import { setCookie } from 'src/cookies'
 import { getUserCookieName, getUserTokensCookieName } from 'src/authCookies'
 import { getConfig } from 'src/config'
 import logDebug from 'src/logDebug'
-import createUser, { User } from 'src/createUser'
+import createUser from 'src/createUser'
+import { User } from 'src/sharedTypes'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export type SetAuthCookies = (
