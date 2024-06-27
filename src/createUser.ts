@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: 0 */
 import { User as FirebaseUser } from 'firebase/auth'
+import { User } from './sharedTypes'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
@@ -30,22 +31,6 @@ interface CreateUserInput {
 }
 
 type getIdToken = (forceRefresh?: boolean) => Promise<string | null>
-
-export interface User {
-  id: string | null
-  email: string | null
-  emailVerified: boolean
-  phoneNumber: string | null
-  displayName: string | null
-  photoURL: string | null
-  claims: Record<string, string | boolean>
-  tenantId: string | null
-  getIdToken: (forceRefresh?: boolean) => Promise<string | null>
-  clientInitialized: boolean
-  firebaseUser: FirebaseUser | null
-  signOut: () => Promise<void>
-  serialize: (a?: { includeToken?: boolean }) => string
-}
 
 /**
  * Take a representation of a Firebase user from a maximum of one of:
