@@ -1,9 +1,9 @@
 /* eslint no-underscore-dangle: 0 */
 import { User as FirebaseUser } from 'firebase/auth'
-import { User } from './sharedTypes'
 import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
+import { User } from './sharedTypes'
 import { getConfig } from './config'
 
 interface UserDeserialized {
