@@ -30,12 +30,15 @@ describe('initFirebaseClientSDK', () => {
     expect.assertions(1)
     const initFirebaseClientSDK = require('src/initFirebaseClientSDK').default
     initFirebaseClientSDK()
-    expect(mockInitializeApp).toHaveBeenCalledWith({
-      apiKey: 'fakeAPIKey123',
-      authDomain: 'my-example-app.firebaseapp.com',
-      databaseURL: 'https://my-example-app.firebaseio.com',
-      projectId: 'my-example-app-id',
-    })
+    expect(mockInitializeApp).toHaveBeenCalledWith(
+      {
+        apiKey: 'fakeAPIKey123',
+        authDomain: 'my-example-app.firebaseapp.com',
+        databaseURL: 'https://my-example-app.firebaseio.com',
+        projectId: 'my-example-app-id',
+      },
+      undefined
+    )
   })
 
   it('does not call firebase.initializeApp if Firebase already has an initialized app', () => {

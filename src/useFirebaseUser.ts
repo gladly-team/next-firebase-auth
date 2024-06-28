@@ -176,16 +176,13 @@ const useFirebaseUser = () => {
     }
 
     // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onidtokenchanged
-    try {
-      const { firebaseClientAppName } = getConfig()
-      const app = getApp(firebaseClientAppName)
-      const unsubscribe = onIdTokenChanged(getAuth(app), onIdTokenChange)
-      return () => {
-        unsubscribe()
-        isCancelled = true
-      }
-    } catch (error) {
-      throw error
+
+    const { firebaseClientAppName } = getConfig()
+    const app = getApp(firebaseClientAppName)
+    const unsubscribe = onIdTokenChanged(getAuth(app), onIdTokenChange)
+    return () => {
+      unsubscribe()
+      isCancelled = true
     }
   }, [])
 
