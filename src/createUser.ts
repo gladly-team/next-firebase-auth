@@ -4,7 +4,6 @@ import { DecodedIdToken } from 'firebase-admin/auth'
 import isClientSide from 'src/isClientSide'
 import { Claims, filterStandardClaims } from 'src/claims'
 import { User } from './sharedTypes'
-import { getConfig } from './config'
 
 interface UserDeserialized {
   id?: string
@@ -105,9 +104,7 @@ const createUser = ({
       const { getApp } = require('firebase/app')
       // eslint-disable-next-line global-require,  @typescript-eslint/no-var-requires
       const { getAuth, signOut } = require('firebase/auth')
-      const { firebaseClientAppName } = getConfig()
 
-      signOutFunc = async () => signOut(getAuth(getApp(firebaseClientAppName)))
       signOutFunc = async () => signOut(getAuth(getApp()))
     }
 
