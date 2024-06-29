@@ -1,4 +1,6 @@
 import { signOut } from 'firebase/auth'
+import { setConfig } from 'src/config'
+import createMockConfig from 'src/testHelpers/createMockConfig'
 import {
   createMockFirebaseUserClientSDK,
   createMockFirebaseUserAdminSDK,
@@ -7,6 +9,8 @@ import {
 
 jest.mock('firebase/auth')
 jest.mock('firebase/app')
+
+const mockSetConfig = jest.mocked(setConfig)
 
 afterEach(() => {
   jest.clearAllMocks()
@@ -117,6 +121,9 @@ describe('createUser: basic tests', () => {
 describe('createUser: firebaseUserClientSDK', () => {
   it('returns the expected data', () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const firebaseUserJSSDK = createMockFirebaseUserClientSDK()
     expect(createUser({ firebaseUserClientSDK: firebaseUserJSSDK })).toEqual({
@@ -138,6 +145,9 @@ describe('createUser: firebaseUserClientSDK', () => {
 
   it('returns the expected data when custom claims are included', () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const customClaims = {
       foo: 'bar',
@@ -170,6 +180,9 @@ describe('createUser: firebaseUserClientSDK', () => {
 
   it('does not throw when custom claims are defined but the client user is not defined', () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     expect(() => {
       createUser({
@@ -186,6 +199,9 @@ describe('createUser: firebaseUserClientSDK', () => {
 
   it('returns the expected value from getIdToken', async () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
@@ -196,6 +212,9 @@ describe('createUser: firebaseUserClientSDK', () => {
 
   it('returns the expected value from serialize', async () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
@@ -219,6 +238,9 @@ describe('createUser: firebaseUserClientSDK', () => {
 
   it("calls Firebase's signOut method when we call user.signOut", async () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const user = createUser({
       firebaseUserClientSDK: createMockFirebaseUserClientSDK(),
@@ -521,6 +543,9 @@ describe('createUser: serializedUser', () => {
 
   it("does not call Firebase's signOut method when we call user.signOut (it should be a noop)", async () => {
     expect.assertions(1)
+    mockSetConfig({
+      ...createMockConfig(),
+    })
     const createUser = require('src/createUser').default
     const user = createUser({
       serializedUser: createMockSerializedUser(),
