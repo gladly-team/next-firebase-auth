@@ -37,7 +37,7 @@ describe('initFirebaseClientSDK', () => {
         databaseURL: 'https://my-example-app.firebaseio.com',
         projectId: 'my-example-app-id',
       },
-      undefined
+      'example-app-name'
     )
   })
 

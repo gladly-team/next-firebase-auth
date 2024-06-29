@@ -29,6 +29,7 @@ const createMockConfig = ({ clientSide }: { clientSide?: boolean } = {}) => {
       databaseURL: 'https://my-example-app.firebaseio.com',
       projectId: 'my-example-app-id',
     },
+    firebaseClientAppName: 'example-app-name',
     cookies: {
       name: 'someExample',
       keys: useClientSideConfig ? [] : ['abc', 'def'],
