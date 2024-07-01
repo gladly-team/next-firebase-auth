@@ -111,7 +111,6 @@ export const defaultConfig = {
   onVerifyTokenError: (_err: Error) => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
   onTokenRefreshError: (_err: Error) => {},
-  firebaseClientAppName: 'example-app-name',
   cookies: {
     // Required to be provided by the user.
     // name: undefined,
