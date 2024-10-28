@@ -109,7 +109,7 @@
     "next": "v13.4.x breaks tests. Unknown why. May need to wait for updates to next-test-api-route-handler."
   },
   "peerDependencies": {
-    "firebase": ">=9.0.0 <11",
+    "firebase": ">=9.0.0 <12",
     "firebase-admin": ">=10.0.0 <12",
     "next": ">=9.5.0 <16",
     "react": ">=16.8.0 <19",
