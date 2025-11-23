@@ -1,10 +1,11 @@
 export {}
 
-const { Auth } = jest.requireActual('firebase-admin/auth')
-
-const firebaseAdminAuth: jest.Mocked<typeof Auth> = jest.createMockFromModule(
-  'firebase-admin/auth'
-)
+// Avoid using jest.requireActual for firebase-admin/auth as it causes issues
+// with firebase-admin v13+ due to dependencies like 'jose' that don't work
+// well in Jest's Node environment. Instead, create a manual mock.
+const firebaseAdminAuth = {
+  getAuth: jest.fn(),
+}
 
 const mockTenantValue = {
   createCustomToken: jest.fn(() => Promise.resolve(null)),
